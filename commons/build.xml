@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project>
+<project basedir="." default="jar" name="api-core">
+	<property name="name" value="api-core" />
+	<property name="company" value="Baidu.com Inc." />
+	<property name="version" value="1.0.0" />
+	<property name="author" value="Xie, Jiyun" />
+	<property name="author-email" value="xiejiyun@baidu.com" />
+	<property name="mainclass" value="com.baidu.api.core.config.PropUtil" />
+
+	<tstamp>
+		<format property="TODAY" pattern="yyyy-MM-dd" locale="en" />
+	</tstamp>
+
+	<property name="javac.debug" value="off" />
+	<property name="javac.deprecation" value="on" />
+	<property name="javac.encoding" value="UTF-8" />
+
+	<!-- java源文件路径 -->
+	<property name="src.dir" value="${basedir}/src" />
+
+	<!-- jar包路径 -->
+	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="classes.dir" value="bin" />
+	<property name="api-web.lib" value="E:/svn/api-service/api-web/WebRoot/WEB-INF/lib" />
+	<property name="api-sem.lib" value="E:/svn/api-service/sem/WebRoot/WEB-INF/lib" />
+	<property name="api-internal.lib" value="E:/svn/api-service/api-internal/WebContent/WEB-INF/lib" />
+	<property name="api-gateway.lib" value="E:/svn/api-service/api-gateway/WebContent/WEB-INF/lib" />
+
+	<!-- webapp路径 -->
+	<property name="build.dir" value="build" />
+	<property name="output.dir" value="output" />
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement location="${classes.dir}" />
+	</path>
+
+	<!-- =================================================================== -->
+	<!-- Help on usage -->
+	<!-- =================================================================== -->
+	<target name="usage">
+		<echo message="${name} Build file [${TODAY}]" />
+		<echo message="-------------------------------------------------------------" />
+		<echo message="" />
+		<echo message=" available targets are:" />
+		<echo message="" />
+		<echo message=" jar --> generate the ${name}-${version}.jar file" />
+		<echo message=" javac --> compiles the source code" />
+		<echo message=" javadoc --> generates the API documentation" />
+		<echo message="" />
+		<echo message="" />
+		<echo message=" See the comments inside the build.xml file for more details." />
+		<echo message="-------------------------------------------------------------" />
+		<echo message="" />
+		<echo message="" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${output.dir}" />
+	</target>
+
+	<target name="init" depends="clean">
+		<echo message="----------- Build ${name} ${version} [${TODAY}] ------------" />
+		<echo message="----------- ANT version [${ant.version}] java version [${java.version}] ------------" />
+		<filter token="year" value="2010" />
+		<filter token="version" value="${version}" />
+		<filter token="company" value="${company}" />
+		<filter token="author" value="${author}" />
+		<filter token="author-email" value="${author-email}" />
+		<filter token="date" value="${TODAY}" />
+		<mkdir dir="${build.dir}/${classes.dir}" />
+		<mkdir dir="${output.dir}" />
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- 单元测试项目-->
+	<!-- =================================================================== -->
+
+	<target name="junit" depends="init">
+		<mkdir dir="${output.dir}/report" />
+		<junit printsummary="yes">
+			<classpath>
+				<path location="${basedir}/bin" />
+				<path refid="classpath" />
+				<path location="E:/jars/junit-4.8.2/junit-4.8.2.jar" />
+			</classpath>
+			<formatter type="xml" />
+			<batchtest fork="yes" todir="${output.dir}/report">
+				<fileset dir="${basedir}/test" includes="**/**Test.java" />
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="junit-report" depends="junit">
+		<junitreport todir="${output.dir}/report">
+			<fileset dir="${output.dir}/report" includes="TEST-*.xml" />
+			<report format="frames" todir="${output.dir}/report/html" />
+		</junitreport>
+		<tar destfile="${output.dir}/${name}-junit-report.tar.gz" basedir="${output.dir}/report/html" compression="gzip" />
+		<delete dir="${output.dir}/report" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- 编译源文件-->
+	<!-- =================================================================== -->
+	<target name="javac" depends="junit">
+		<copy todir="${build.dir}/src" filtering="true" encoding="${javac.encoding}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.java" />
+			</fileset>
+		</copy>
+		<javac srcdir="${build.dir}/src" destdir="${build.dir}/${classes.dir}" encoding="${javac.encoding}" deprecation="${javac.deprecation}" debug="${javac.debug}" target="1.5">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- 打jar包-->
+	<!-- =================================================================== -->
+
+	<target name="jar" depends="javac">
+		<jar destfile="${output.dir}/${name}-${version}.jar">
+			<fileset dir="${build.dir}/${classes.dir}" />
+			<manifest>
+				<attribute name="Main-Class" value="${mainclass}" />
+				<attribute name="Author" value="${author}" />
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${build.dir}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- 发布jar包-->
+	<!-- =================================================================== -->
+	<target name="deploy-jar" depends="jar">
+		<delete>
+			<fileset dir="${api-sem.lib}" includes="${name}-*.jar" />
+			<fileset dir="${api-internal.lib}" includes="${name}-*.jar" />
+			<fileset dir="${api-gateway.lib}" includes="${name}-*.jar" />
+		</delete>
+
+		<copy file="${output.dir}/${name}-${version}.jar" todir="${api-web.lib}" />
+		<copy file="${output.dir}/${name}-${version}.jar" todir="${api-sem.lib}" />
+		<copy file="${output.dir}/${name}-${version}.jar" todir="${api-internal.lib}" />
+		<copy file="${output.dir}/${name}-${version}.jar" todir="${api-gateway.lib}" />
+		<copy file="${output.dir}/${name}-${version}.jar" todir="C:/tdown/output" />
+		<delete dir="${output.dir}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- 产生javadoc api 文档-->
+	<!-- =================================================================== -->
+	<target name="javadoc" depends="javac">
+		<mkdir dir="${output.dir}/javadocs" />
+		<javadoc sourcepath="${build.dir}/src" destdir="${output.dir}/javadocs" author="true" version="true" use="true" splitindex="true" Windowtitle="${name} API" doctitle="${name}">
+			<classpath refid="classpath" />
+		</javadoc>
+		<tar destfile="${output.dir}/${name}-doc.tar.gz" basedir="${output.dir}/javadocs" compression="gzip" />
+	</target>
+
+</project>

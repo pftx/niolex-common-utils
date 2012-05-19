@@ -1,0 +1,17 @@
+			
+            <xsd:element name="%METHOD_NAME%Request">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="campaignIds" type="xsd:long" minOccurs="0" maxOccurs="unbounded" />
+                        <xsd:element name="includeTemp" type="xsd:boolean" minOccurs="0" />
+                        <xsd:element name="format" type="xsd:int" minOccurs="0" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="%METHOD_NAME%Response">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="fileId" type="xsd:string" minOccurs="0" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>

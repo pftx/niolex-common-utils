@@ -1,0 +1,69 @@
+/**
+ * RandomUtilTest.java
+ *
+ * Copyright 2011 Baidu, Inc.
+ *
+ * Baidu licenses this file to you under the Apache License, version 2.0
+ * (the "License"); you may not use this file except in compliance with the
+ * License.  You may obtain a copy of the License at:
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.niolex.commons.util;
+
+import junit.framework.Assert;
+
+import org.apache.niolex.commons.util.RandomUtil;
+import org.junit.Test;
+
+
+/**
+ * @author @author@ (@author-email@)
+ * 
+ * @version @version@, $Date: 2011-9-2$
+ * 
+ */
+public class RandomUtilTest {
+    static int i1, i2, i3, i4, i5, i6, i7, i8;
+    
+    @Test
+    public void doTest() {
+        int[] a = RandomUtil.randIntArray(8);
+        Assert.assertEquals(8, a.length);
+    }
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        long start = System.currentTimeMillis();
+        int i = 1000000, j = 3;
+        while (i-- > 0) {
+            int[] a = RandomUtil.randIntArray(8);
+            if (a[0] == j) ++i1;
+            if (a[2] == j) ++i2;
+            if (a[3] == j) ++i3;
+            if (a[4] == j) ++i4;
+            if (a[5] == j) ++i5;
+            if (a[6] == j) ++i6;
+            if (a[7] == j) ++i7;
+            if (a[1] == j) ++i8;
+        }
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(i1);
+        System.out.println(i2);
+        System.out.println(i3);
+        System.out.println(i4);
+        System.out.println(i5);
+        System.out.println(i6);
+        System.out.println(i7);
+        System.out.println(i8);
+    }
+
+}
