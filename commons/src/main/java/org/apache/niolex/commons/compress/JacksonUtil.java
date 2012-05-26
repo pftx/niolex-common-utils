@@ -82,8 +82,9 @@ public abstract class JacksonUtil {
      * @throws JsonMappingException
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     public static final <T> T str2Obj(String s, JavaType valueType) throws JsonParseException, JsonMappingException, IOException {
-    	return mapper.readValue(s, valueType);
+    	return (T)mapper.readValue(s, valueType);
     }
 
     /**

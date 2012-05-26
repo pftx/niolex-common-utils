@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration>
 
-    <!-- DR-API log configuration file. upgrade to logback @ 2010-11-25 -->
+    <!-- commons-core log configuration file. upgrade to logback        -->
     <!--                                                                -->
     <!-- For professional support please see                            -->
     <!--    http://www.qos.ch/shop/products/professionalSupport         -->

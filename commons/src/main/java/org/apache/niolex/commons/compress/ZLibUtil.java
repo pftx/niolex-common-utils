@@ -128,9 +128,10 @@ public abstract class ZLibUtil {
      * @throws JsonMappingException
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     public static final <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException, JsonMappingException,
             IOException {
-    	return JacksonUtil.str2Obj(decompressString(data), valueType);
+    	return (T)JacksonUtil.str2Obj(decompressString(data), valueType);
     }
 
 
