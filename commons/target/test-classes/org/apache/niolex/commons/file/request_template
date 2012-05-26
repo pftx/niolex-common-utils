@@ -1,0 +1,50 @@
+HOW-TOs, samples
+Here is some sample code, contributed by Jackson users on mailing lists. It is not intended to define official or canonical way of doing things, but showing possible alternatives -- and if you do end up finding better ways, or have incremental improvement suggestions, please let us know so we can update samples!
+
+How-to Ignore Unknown properties in JSON content?
+
+Basic:
+Servlet/javascript sample code
+
+Simple POJO mappper
+
+Dyna-beans? (extensible beans)
+
+Intermediate:
+Custom date handling
+
+"Jackson serialization narrowed" -- how to exclude informations when serializing objects using JSON views, @JsonIgnore, mix-in annotations
+
+Advanced:
+Jackson Type Proxy for extremely dynamic generation of types
+
+Quoting JSON String characters -- in case your clients can not handle all legal Unicode characters.
+
+Custom JSON View implementation (contributed by Andrei V)
+
+Jackson to rescue: how to handle one-to-many fields from ORM (parent / child)
+
+Prevent cross-site scripting when using JSON objects...: How to add custom String serializer to add escaping, quoting, using latest (1.7) features.
+
+
+Term Glossary
+Term Glossary contains list of commonly referred internal terms, such as names of often-used core classes.
+
+
+Best Practices
+Thread-safety
+
+Performance
+
+
+Related extension projects
+Beyond core Jackson project and its deliverables, there are related external projects that can solve problems with third party libaries and data types, and even non-Java JVM languages or non-JSON data formats:
+
+Jackson Modules offer pluggable extensions for third-party datatypes or non-Java JVM languages.
+
+Jackson outside of JSON page lists projects that aim to support data formats other than JSON, but using Jackson data binding functionality.
+
+
+Forward-looking
+TODO list
+
