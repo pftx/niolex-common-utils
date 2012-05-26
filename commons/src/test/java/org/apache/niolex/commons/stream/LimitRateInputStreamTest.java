@@ -17,36 +17,44 @@
  */
 package org.apache.niolex.commons.stream;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 
-import org.apache.niolex.commons.stream.LimitRateInputStream;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * 
+ *
  * @version 1.0.0, $Date: 2011-6-2$
- * 
+ *
  */
 public class LimitRateInputStreamTest {
-    
+
     @Test
     public void testRatesMoke() throws Exception {
-        InputStream stub = new InputStreamStub();
+        InputStream stub = new LimitRateInputStream(new InputStreamStub());
         byte[] b = new byte[1024];
         double cnt = 0, rate;
         DecimalFormat myFormatter = new DecimalFormat("#,###.##");
         long init = System.currentTimeMillis();
         while (System.currentTimeMillis() - init < 100) {
             cnt += stub.read(b);
-            rate = cnt / 1024 / 1024 * 1000 / (System.currentTimeMillis() - init);
-            System.out.println("Current download rate: " + myFormatter.format(rate) + "MB/s.");
+            ++cnt;
+            stub.read();
+            if (cnt % (1025 * 120) == 0) {
+            	rate = cnt / 1024 / 1024 * 1000 / (System.currentTimeMillis() - init);
+            	System.out.println("Current download rate: " + myFormatter.format(rate) + "MB/s.");
+            	assertTrue(rate < 21);
+            }
         }
     }
-    
+
     @Test
     public void testRatesReal() throws Exception {
         System.out.println("Current testRatesReal");
@@ -57,13 +65,38 @@ public class LimitRateInputStreamTest {
         DecimalFormat myFormatter = new DecimalFormat("#,###.##");
         while (t-- > 0) {
             cnt += stub.read(b);
-            if (cnt > 1048576) {
+            cnt += stub.read(b, 0, 1023);
+            ++cnt;
+            stub.read();
+            if (cnt % (1024 * 200) == 0) {
                 rate = cnt / 1024 / 1024 * 1000 / (System.currentTimeMillis() - s);
                 System.out.println("Current download rate: " + myFormatter.format(rate) + "MB/s.");
-                cnt = 0;
-                s = System.currentTimeMillis();
+                assertTrue(rate < 50);
             }
         }
+    }
+
+
+    @Test
+    public void testOther() throws Exception {
+    	InputStream mock = Mockito.mock(InputStream.class);
+    	InputStream test = new LimitRateInputStream(mock);
+    	test.available();
+    	assertTrue(test.equals(mock));
+    	test.mark(5);
+    	when(mock.markSupported()).thenReturn(true);
+    	assertTrue(test.markSupported());
+    	test.reset();
+    	test.skip(123);
+    	when(test.toString()).thenReturn("DUEj IEf OIEfOJ");
+    	assertEquals("DUEj IEf OIEfOJ", test.toString());
+    	test.close();
+    	test.hashCode();
+    	verify(mock).available();
+    	verify(mock).close();
+    	verify(mock).mark(5);
+    	verify(mock).reset();
+    	verify(mock).skip(123);
     }
 
 }

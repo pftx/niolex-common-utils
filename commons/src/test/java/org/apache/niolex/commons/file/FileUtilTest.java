@@ -17,6 +17,10 @@
  */
 package org.apache.niolex.commons.file;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
 import junit.framework.Assert;
 
 import org.apache.niolex.commons.file.FileUtil;
@@ -25,24 +29,49 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * 
+ *
  * @version 1.0.0, $Date: 2011-9-13$
- * 
+ *
  */
 public class FileUtilTest {
 
     @Test
     public final void testClass() {
-        String str = FileUtil.getCharacterFileContentFromClassPath("/com/gmail/api/core/file/request_template", "utf-8");
-        System.out.println("SL " + str.length() + "\n" + str);
-        Assert.assertEquals(834, str.length());
+        String str = FileUtil.getCharacterFileContentFromClassPath("request_template", FileUtilTest.class, "utf-8");
+        System.out.println("SL " + str.length());
+        Assert.assertEquals(1833, str.length());
+        assertTrue(str.startsWith("HOW-TOs, samples"));
     }
-    
+
+    @Test
+    public final void testClassE() {
+    	String str = FileUtil.getCharacterFileContentFromClassPath("request_template", FileUtilTest.class, "utf-9");
+    	System.out.println("SL " + str.length());
+    	Assert.assertEquals(0, str.length());
+    }
+
     @Test
     public final void testFile() {
-        String str = FileUtil.getCharacterFileContentFromFileSystem("/home/work/darwin/api-gateway/conf/apiquota", "utf-8");
-        System.out.println("SL " + str.length() + "\n" + str);
-        Assert.assertEquals(13, str.length());
-        Assert.assertTrue(FileUtil.setCharacterFileContentToFileSystem("c:/tdown/a.txt", str, "utf-8"));
+    	String str = FileUtil.getCharacterFileContentFromClassPath("request_template", FileUtilTest.class, "utf-8");
+    	String prex = System.getProperty("java.io.tmpdir");
+    	Assert.assertTrue(FileUtil.setCharacterFileContentToFileSystem(prex + "/tmp_file.txt", str, "utf-8"));
+
+        String str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp_file.txt", "utf-8");
+        System.out.println("SL " + str2.length());
+        Assert.assertEquals(str, str2);
+    }
+
+    @Test
+    public final void testFileE() {
+    	String prex = System.getProperty("java.io.tmpdir");
+    	File f = new File(prex + "/tmp_file.txt");
+    	if (f.exists()) {
+    		f.delete();
+    	}
+    	String str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp_file.txt", "utf-8");
+    	FileUtil.setCharacterFileContentToFileSystem(prex + "/tmp\\_f^i$le:.txt", str2, "utf-9");
+    	FileUtil.setCharacterFileContentToFileSystem(null, str2, "utf-9");
+
+    	FileUtil.getCharacterFileContentFromClassPath(null, FileUtilTest.class, "utf-8");
     }
 }

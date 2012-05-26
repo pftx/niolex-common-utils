@@ -20,9 +20,28 @@ public class DownloadUtilTest {
 	@Test
 	public final void testDownloadFileString() throws Exception, Throwable {
 		byte[] con = DownloadUtil
-				.downloadFile("http://f.hiphotos.baidu.com/space/pic/item/060828381f30e924c5dc37974c086e061d95f718.jpg");
+				.downloadFile("http://mat1.gtimg.com/www/mb/images/nloginBg110617.jpg",
+						10000, 20000, 1230000);
 		System.out.println("SL " + con.length);
-		Assert.assertEquals(136013, con.length);
+		Assert.assertEquals(69661, con.length);
+	}
+
+	@Test(expected=DownloadException.class)
+	public final void testDownloadFileStringFast() throws Exception, Throwable {
+		try {
+			byte[] con = DownloadUtil
+					.downloadFile("http://f.hiphotos.baidu.com/space/pic/item/060828381f30e924c5dc37974c086e061d95f718.jpg",
+							1000, 1000, 1230000);
+			System.out.println("SL " + con.length);
+			Assert.assertEquals(136013, con.length);
+		} catch (DownloadException et) {
+			assertEquals(et.getCode(), DownloadException.ExCode.IOEXCEPTION);
+			System.out.println("SL " + et.getMessage());
+			et = new DownloadException(et.getCode());
+			et = new DownloadException(et.getCode(), et.toString(), et);
+
+			throw et;
+		}
 	}
 
 	@Test
@@ -67,13 +86,12 @@ public class DownloadUtilTest {
 		assertFalse(DownloadUtil.isTextFileType("dijfewaoifjaw"));
 		assertTrue(DownloadUtil.isTextFileType("/hone/text"));
 		assertTrue(DownloadUtil.isTextFileType("jaxa/html"));
-		assertTrue(DownloadUtil.isTextFileType("local/txt"));
-		assertTrue(DownloadUtil.isTextFileType("remote/xml"));
 	}
 
 	@Test
 	public void testDownloadUtil() throws Exception {
-
+		assertTrue(DownloadUtil.isTextFileType("local/txt"));
+		assertTrue(DownloadUtil.isTextFileType("remote/xml"));
 	}
 
 }

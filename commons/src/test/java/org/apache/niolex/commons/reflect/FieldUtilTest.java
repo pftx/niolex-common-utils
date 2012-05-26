@@ -26,45 +26,28 @@ import org.apache.niolex.commons.reflect.FieldUtil;
 import org.junit.Test;
 
 
-class FieldTestBean {
-    private String strName;
-    @SuppressWarnings("unused")
-    private int intId;
-    private int intLevel;
-    @SuppressWarnings("unused")
-    private Integer age;
-    
-    public String echoName() {
-        System.out.println("My Name IS " + strName + ", Welcome to use FieldUtil!");
-        return strName;
-    }
-    
-    public int echoLevel() {
-        System.out.println("My English IS " + intLevel + ", Welcome to use FieldUtil!");
-        return intLevel;
-    }
-}
 public class FieldUtilTest {
-    
+
     @Test
     public void testFields() throws Exception {
         Field[] fields = FieldUtil.getFields(FieldTestBean.class);
         System.out.println("FieldTestBean fields => " + Arrays.toString(fields));
-        Assert.assertEquals(fields.length, 4);
+        Assert.assertEquals(fields.length, 12);
     }
-        
+
     @Test
     public void testFieldsInt() throws Exception {
         Field[] fields = FieldUtil.getFields(FieldTestBean.class, int.class);
         System.out.println("FieldTestBean int fields => " + Arrays.toString(fields));
         Assert.assertEquals(fields.length, 2);
     }
-        
+
     @Test
     public void testField() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "strName");
         System.out.println("FieldTestBean strName field => " + field);
         Assert.assertEquals(field.getName(), "strName");
+        Assert.assertEquals(field.getType(), String.class);
     }
 
     @Test
@@ -73,16 +56,79 @@ public class FieldUtilTest {
         FieldTestBean bean = new FieldTestBean();
         FieldUtil.setFieldValue(field, bean, "Xie, Jiyun");
         Assert.assertEquals(bean.echoName(), "Xie, Jiyun");
-        
-        String strBeanName = FieldUtil.getFieldValue(field, bean);
-        Assert.assertEquals(strBeanName, "Xie, Jiyun");
-        
+
+        String fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(fieldValue, "Xie, Jiyun");
+
         field = FieldUtil.getField(FieldTestBean.class, "intLevel");
         FieldUtil.setFieldValue(field, bean, 5);
         Assert.assertEquals(bean.echoLevel(), 5);
-        
+
         int intBeanLevel = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(intBeanLevel, 5);
     }
-    
+
+    @Test
+    public void testValueLong() throws Exception {
+    	Field field = FieldUtil.getField(FieldTestBean.class, "empno");
+    	FieldTestBean bean = new FieldTestBean();
+    	FieldUtil.setFieldValue(field, bean, 2130918321029L);
+    	long fieldValue = FieldUtil.getFieldValue(field, bean);
+    	Assert.assertEquals(fieldValue, 2130918321029L);
+    }
+
+    @Test
+    public void testValueBool() throws Exception {
+    	Field field = FieldUtil.getField(FieldTestBean.class, "gender");
+    	FieldTestBean bean = new FieldTestBean();
+    	FieldUtil.setFieldValue(field, bean, true);
+    	boolean fieldValue = FieldUtil.getFieldValue(field, bean);
+    	Assert.assertEquals(fieldValue, true);
+    }
+
+    @Test
+    public void testValueByte() throws Exception {
+    	Field field = FieldUtil.getField(FieldTestBean.class, "resvered");
+    	FieldTestBean bean = new FieldTestBean();
+    	FieldUtil.setFieldValue(field, bean, (byte)35);
+    	byte fieldValue = FieldUtil.getFieldValue(field, bean);
+    	Assert.assertEquals(fieldValue, (byte)35);
+    }
+
+    @Test
+    public void testValueShort() throws Exception {
+    	Field field = FieldUtil.getField(FieldTestBean.class, "veridk");
+    	FieldTestBean bean = new FieldTestBean();
+    	FieldUtil.setFieldValue(field, bean, (short)33225);
+    	short fieldValue = FieldUtil.getFieldValue(field, bean);
+    	Assert.assertEquals(fieldValue, (short)33225);
+    }
+
+    @Test
+    public void testValueChar() throws Exception {
+    	Field field = FieldUtil.getField(FieldTestBean.class, "chdier");
+    	FieldTestBean bean = new FieldTestBean();
+    	FieldUtil.setFieldValue(field, bean, 'c');
+    	char fieldValue = FieldUtil.getFieldValue(field, bean);
+    	Assert.assertEquals(fieldValue, 'c');
+    }
+
+    @Test
+    public void testValueDouble() throws Exception {
+    	Field field = FieldUtil.getField(FieldTestBean.class, "earned");
+    	FieldTestBean bean = new FieldTestBean();
+    	FieldUtil.setFieldValue(field, bean, 32212314.3134);
+    	double fieldValue = FieldUtil.getFieldValue(field, bean);
+    	Assert.assertEquals(fieldValue, 32212314.3134, 0.0001);
+    }
+
+    @Test
+    public void testValueFloat() throws Exception {
+    	Field field = FieldUtil.getField(FieldTestBean.class, "tax");
+    	FieldTestBean bean = new FieldTestBean();
+    	FieldUtil.setFieldValue(field, bean, 312314.3134F);
+    	float fieldValue = FieldUtil.getFieldValue(field, bean);
+    	Assert.assertEquals(fieldValue, 312314.3134F, 0.0001F);
+    }
+
 }

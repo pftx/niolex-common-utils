@@ -24,55 +24,64 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Restrict the input rate.
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * 
+ *
  * @version 1.0.0, $Date: 2011-6-2$
- * 
+ *
  */
 public class LimitRateInputStream extends InputStream {
 
-    private static final Logger log = LoggerFactory.getLogger(LimitRateInputStream.class);
-    private static final int CHECK_SIZE_THRESHOLD = 1048576;
+    private static final Logger LOG = LoggerFactory.getLogger(LimitRateInputStream.class);
+    // We check when we received every 1K for rate.
+    private static final int CHECK_SIZE_THRESHOLD = 10240;
     private final InputStream delegate;
-    private final long expect;
+    // The rate of 1 Byte/Nanosecond.
+    private final double expectedRate;
 
-    private long start = System.currentTimeMillis();
+    private final long startedTime;
     private long cnt = 0;
+    private long chunk = CHECK_SIZE_THRESHOLD;
 
     /**
+     * Create a LimitRateInputStream with the given rate
+     * @param delegate
      * @param rate
      *            MB/s
-     * @param delegate
      */
     public LimitRateInputStream(InputStream delegate, double rate) {
         super();
         this.delegate = delegate;
-        this.expect = (long) (CHECK_SIZE_THRESHOLD * 1000 / (rate * 1024 * 1024));
+        this.expectedRate = (rate * 1024 * 1024) / 1000000000L;
+        startedTime = System.nanoTime();
     }
 
     /**
+     * Create a LimitRateInputStream with the rate of 20 MB/seconds
      * @param delegate
      */
     public LimitRateInputStream(InputStream delegate) {
-        super();
-        this.delegate = delegate;
-        this.expect = 20;
+        this(delegate, 20);
     }
 
+    /**
+     * This is the core method to restrict the rate.
+     * @param size
+     */
     private void checkSize(int size) {
         cnt += size;
-        if (cnt > CHECK_SIZE_THRESHOLD) {
-            start = System.currentTimeMillis() - start;
-            if (start < expect - 3) {
+        if (cnt > chunk) {
+            long usedTime = System.nanoTime() - startedTime;
+            long needTime = (long) (cnt / expectedRate);
+            if (usedTime < needTime - 300000) {
                 try {
-                    Thread.sleep(expect - start - 1, 888);
-                    System.out.println("Sleep: " + start + " " + expect);
+                    Thread.sleep((needTime - usedTime) / 1000000 + 1);
                 } catch (Exception e) {
-                    log.info("Exception while sleep - ", e.getMessage());
+                    LOG.info("Exception while sleep - ", e.getMessage());
                 }
             }
-            start = System.currentTimeMillis();
-            cnt = 0;
+            chunk += CHECK_SIZE_THRESHOLD;
         }
     }
 
