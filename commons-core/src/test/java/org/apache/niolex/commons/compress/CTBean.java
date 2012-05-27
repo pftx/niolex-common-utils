@@ -2,18 +2,18 @@ package org.apache.niolex.commons.compress;
 
 import java.util.Date;
 
-public class TestBean {
+public class CTBean {
 	private int likely;
 	private String name;
 	private long id;
 	private Date birth;
 
 
-	public TestBean() {
+	public CTBean() {
 		super();
 	}
 
-	public TestBean(int likely, String name, long id, Date birth) {
+	public CTBean(int likely, String name, long id, Date birth) {
 		super();
 		this.likely = likely;
 		this.name = name;
@@ -51,8 +51,8 @@ public class TestBean {
 		if (super.equals(obj)) {
 			return true;
 		}
-		if (obj instanceof TestBean) {
-			TestBean other = (TestBean) obj;
+		if (obj instanceof CTBean) {
+			CTBean other = (CTBean) obj;
 			return this.birth.equals(other.birth) && this.name.equals(other.name)
 					&& this.id == other.id && this.likely == other.likely;
 		}

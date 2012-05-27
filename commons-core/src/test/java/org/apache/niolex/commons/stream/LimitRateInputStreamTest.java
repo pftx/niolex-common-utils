@@ -71,7 +71,7 @@ public class LimitRateInputStreamTest {
             if (cnt % (1024 * 200) == 0) {
                 rate = cnt / 1024 / 1024 * 1000 / (System.currentTimeMillis() - s);
                 System.out.println("Current download rate: " + myFormatter.format(rate) + "MB/s.");
-                assertTrue(rate < 50);
+                assertTrue(rate < 60);
             }
         }
     }

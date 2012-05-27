@@ -34,7 +34,7 @@ public class ProxyUtilTest {
     @Test
     public void testProxy() {
         Map<String, String> mapTest = new HashMap<String, String>();
-        TestProxyHandler h = new TestProxyHandler();
+        ProxyTestHandler h = new ProxyTestHandler();
         mapTest = ProxyUtil.newProxyInstance(mapTest, h);
         
         mapTest.put("gmail", "Xie, Jiyun");
@@ -53,7 +53,7 @@ public class ProxyUtilTest {
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */
-class TestProxyHandler implements ProxyHandler {
+class ProxyTestHandler implements ProxyHandler {
     // Record the start time when invoke a method.
     private long start;
     // Record the method invoke number.

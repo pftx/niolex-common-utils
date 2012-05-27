@@ -83,21 +83,21 @@ public class ZLibUtilTest {
 
     @Test
     public void doCompress_1() throws IOException {
-    	TestBean t = new TestBean(3, "Qute", 12212, new Date());
+    	CTBean t = new CTBean(3, "Qute", 12212, new Date());
     	byte[] data = ZLibUtil.compressObj(t);
     	System.out.println("Obj data size => " + data.length);
-    	TestBean q = ZLibUtil.decompressObj(data, TestBean.class);
+    	CTBean q = ZLibUtil.decompressObj(data, CTBean.class);
     	assertEquals(q, t);
     }
 
     @SuppressWarnings("deprecation")
 	@Test
     public void doCompress_2() throws IOException {
-    	TestBean t = new TestBean(3, "Qute", 12212, new Date());
-    	byte[] data = ZLibUtil.compressObj(new TestBean[] {t});
+    	CTBean t = new CTBean(3, "Qute", 12212, new Date());
+    	byte[] data = ZLibUtil.compressObj(new CTBean[] {t});
     	System.out.println("Obj data size => " + data.length);
-    	JavaType s = TypeFactory.collectionType(ArrayList.class, TestBean.class);
-    	List<TestBean> m = ZLibUtil.decompressObj(data, s);
+    	JavaType s = TypeFactory.collectionType(ArrayList.class, CTBean.class);
+    	List<CTBean> m = ZLibUtil.decompressObj(data, s);
     	assertEquals(m.size(), 1);
     	assertEquals(m.get(0), t);
     }

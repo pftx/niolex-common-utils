@@ -168,6 +168,9 @@ public class DateTimeUtilTest {
         Date d = DateTimeUtil.getYesterday();
         int wday1 = DateTimeUtil.getWeekDay(d);
         int wday2 = DateTimeUtil.getWeekDay(new Date());
+        if (wday2 == 1) {
+        	wday2 += 7;
+        }
         Assert.assertEquals(1, Math.abs(wday2 - wday1));
     }
 

@@ -10,7 +10,7 @@ public class DownloadUtilTest {
 
 	@Test
 	public final void testGetClassPathResource() throws Exception, Throwable {
-		String str = new String(DownloadUtil.getClassPathResource("../file/request_template", DownloadUtilTest.class),
+		String str = new String(DownloadUtil.getClassPathResource("../file/Data.txt", DownloadUtilTest.class),
 				"utf-8");
 		System.out.println("SL " + str.length());
 		Assert.assertEquals(1833, str.length());
@@ -31,7 +31,7 @@ public class DownloadUtilTest {
 		try {
 			byte[] con = DownloadUtil
 					.downloadFile("http://f.hiphotos.baidu.com/space/pic/item/060828381f30e924c5dc37974c086e061d95f718.jpg",
-							1000, 1000, 1230000);
+							1000, 500, 1230000);
 			System.out.println("SL " + con.length);
 			Assert.assertEquals(136013, con.length);
 		} catch (DownloadException et) {
