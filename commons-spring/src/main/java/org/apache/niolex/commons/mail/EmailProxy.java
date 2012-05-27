@@ -20,31 +20,34 @@ package org.apache.niolex.commons.mail;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.niolex.commons.stream.LimitRateInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 
 
 /**
+ * 能够发送有劲啊的代理类
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * 
+ *
  * @version 1.0.0, $Date: 2011-8-9$
- * 
+ *
  */
 public class EmailProxy {
 
-    private static final Logger log = LoggerFactory.getLogger(LimitRateInputStream.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EmailProxy.class);
+
     private String from;
     private List<String> to;
     private String title;
     private String encoding;
-    
-    public void sendEmail(String text, boolean isHtml) {
+
+    public boolean sendEmail(String text, boolean isHtml) {
         try {
             EmailUtil.sendMail(from, to, title, text, null, "1", isHtml, encoding);
+            return true;
         } catch (Exception e) {
-            log.warn("Failed to send email.", e);
+            LOG.warn("Failed to send email.", e);
+            return false;
         }
     }
 
@@ -59,11 +62,19 @@ public class EmailProxy {
         }
     }
 
-    public void setTitle(String title) {
+    public void setTo(List<String> to) {
+		this.to = to;
+	}
+
+	public void setTitle(String title) {
         this.title = title;
     }
 
-    public void setMailSender(JavaMailSender mailSender) {
+    public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
+	public void setMailSender(JavaMailSender mailSender) {
         EmailUtil.setMailSender(mailSender);
     }
 }
