@@ -30,8 +30,8 @@ public class DownloadUtilTest {
 	public final void testDownloadFileStringFast() throws Exception, Throwable {
 		try {
 			byte[] con = DownloadUtil
-					.downloadFile("http://f.hiphotos.baidu.com/space/pic/item/060828381f30e924c5dc37974c086e061d95f718.jpg",
-							1000, 500, 1230000);
+					.downloadFile("http://apache.etoak.com/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.zip",
+							1000, 50, 1230000);
 			System.out.println("SL " + con.length);
 			Assert.assertEquals(136013, con.length);
 		} catch (DownloadException et) {

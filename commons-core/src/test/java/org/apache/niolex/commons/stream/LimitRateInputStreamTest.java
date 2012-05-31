@@ -43,14 +43,17 @@ public class LimitRateInputStreamTest {
         double cnt = 0, rate;
         DecimalFormat myFormatter = new DecimalFormat("#,###.##");
         long init = System.currentTimeMillis();
-        while (System.currentTimeMillis() - init < 100) {
+        while (System.currentTimeMillis() - init < 150) {
             cnt += stub.read(b);
             ++cnt;
             stub.read();
+            if (cnt < 1025 * 1000) {
+            	continue;
+            }
             if (cnt % (1025 * 120) == 0) {
             	rate = cnt / 1024 / 1024 * 1000 / (System.currentTimeMillis() - init);
             	System.out.println("Current download rate: " + myFormatter.format(rate) + "MB/s.");
-            	assertTrue(rate < 21);
+            	assertTrue(rate < 25);
             }
         }
     }
@@ -68,6 +71,9 @@ public class LimitRateInputStreamTest {
             cnt += stub.read(b, 0, 1023);
             ++cnt;
             stub.read();
+            if (cnt < 1025 * 2203) {
+            	continue;
+            }
             if (cnt % (1024 * 200) == 0) {
                 rate = cnt / 1024 / 1024 * 1000 / (System.currentTimeMillis() - s);
                 System.out.println("Current download rate: " + myFormatter.format(rate) + "MB/s.");

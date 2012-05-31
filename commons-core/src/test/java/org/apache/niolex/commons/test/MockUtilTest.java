@@ -59,7 +59,7 @@ public class MockUtilTest {
             if (a[7] == j) ++i7;
             if (a[1] == j) ++i8;
         }
-        System.out.println(System.currentTimeMillis() - start);
+        System.out.println("reorder " + (System.currentTimeMillis() - start));
         System.out.println(i1);
         System.out.println(i2);
         System.out.println(i3);
@@ -68,10 +68,33 @@ public class MockUtilTest {
         System.out.println(i6);
         System.out.println(i7);
         System.out.println(i8);
-        Assert.assertTrue(Math.abs(i1 - i2) / (double)i1 < 0.01);
-        Assert.assertTrue(Math.abs(i3 - i4) / (double)i1 < 0.01);
-        Assert.assertTrue(Math.abs(i5 - i6) / (double)i1 < 0.01);
-        Assert.assertTrue(Math.abs(i7 - i8) / (double)i1 < 0.01);
+        Assert.assertTrue(Math.abs(i1 - i2) / (double)i1 < 0.015);
+        Assert.assertTrue(Math.abs(i3 - i4) / (double)i1 < 0.015);
+        Assert.assertTrue(Math.abs(i5 - i6) / (double)i1 < 0.015);
+        Assert.assertTrue(Math.abs(i7 - i8) / (double)i1 < 0.015);
+    }
+
+    @Test
+    public void reinternal() {
+    	int i = 1000, j = 3;
+    	int[] o = new int[8];
+    	while (i-- > 0) {
+    		int[] a = MockUtil.reorderIntArray(8);
+    		j = 0;
+    		++o[a[j++]];
+    		++o[a[j++]];
+    		++o[a[j++]];
+    		++o[a[j++]];
+    		++o[a[j++]];
+    		++o[a[j++]];
+    		++o[a[j++]];
+    		++o[a[j++]];
+    	}
+    	System.out.println("internal");
+    	for (i = 0; i < 8; ++i) {
+    		System.out.println("internal " + o[i]);
+    		Assert.assertEquals(1000, o[i]);
+    	}
     }
 
 }
