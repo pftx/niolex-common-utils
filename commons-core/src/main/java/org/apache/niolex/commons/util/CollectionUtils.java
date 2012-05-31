@@ -77,4 +77,33 @@ public abstract class CollectionUtils {
 		return dest;
 	}
 
+	/**
+	 * Concatenating all the parameters into one list.
+	 * @param src
+	 * @param args
+	 * @return
+	 */
+	public static final <E> List<E> concat(E src, Collection<E> args) {
+		List<E> dest = new ArrayList<E>(1 + args.size());
+		dest.add(src);
+		for (E e : args) {
+			dest.add(e);
+		}
+		return dest;
+	}
+
+	/**
+	 * Make a copy of the parameter.
+	 * @param src
+	 * @param args
+	 * @return
+	 */
+	public static final <E> List<E> copy(Collection<E> args) {
+		List<E> dest = new ArrayList<E>(args.size());
+		for (E e : args) {
+			dest.add(e);
+		}
+		return dest;
+	}
+
 }

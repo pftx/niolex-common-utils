@@ -70,4 +70,35 @@ public class CollectionUtilsTest {
 		assertEquals("methods22", dest.get(4));
 	}
 
+	@Test
+	public void testConcatCollec() {
+		List<String> dest = new ArrayList<String>(3);
+		dest.add("methods1");
+		dest.add("methods2");
+		dest.add("methods3");
+		dest = CollectionUtils.concat("Nice", dest);
+		assertEquals(4, dest.size());
+		assertEquals("Nice", dest.get(0));
+	}
+
+	@Test
+	public void testColec() {
+		List<String> dest = new ArrayList<String>(3);
+		dest.add("methods1");
+		dest.add("methods2");
+		dest.add("methods3");
+		List<String> ddest = CollectionUtils.copy(dest);
+		assertEquals(3, ddest.size());
+		assertEquals("methods1", dest.get(0));
+		assertEquals("methods2", dest.get(1));
+		assertEquals("methods3", dest.get(2));
+	}
+
+	@Test
+	public void testColec0() {
+		List<String> dest = new ArrayList<String>(3);
+		List<String> ddest = CollectionUtils.copy(dest);
+		assertEquals(0, ddest.size());
+	}
+
 }
