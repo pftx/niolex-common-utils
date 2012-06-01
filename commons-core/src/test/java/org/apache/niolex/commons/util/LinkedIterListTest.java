@@ -153,7 +153,7 @@ public class LinkedIterListTest {
 					}
 				}
 			}};
-		System.out.println(">> " + inn.getSize());
+		System.out.println(">> " + inn.size());
 		Thread t = new Thread(rn);
 		Thread q = new Thread(rn);
 		Thread r = new Thread(rn);
@@ -169,7 +169,7 @@ public class LinkedIterListTest {
 		r.join();
 		s.join();
 		v.join();
-		System.out.println(">> " + inn.getSize());
+		System.out.println(">> " + inn.size());
 		System.out.println(">> " + zkz);
 		assertEquals(61960, zkz.intValue());
 		for (int i = 0; i < 12392; ++i) {
@@ -184,7 +184,7 @@ public class LinkedIterListTest {
 		assertEquals(9123, it.next().intValue());
 		assertEquals(null, it.next());
 		inn.poll();
-		assertEquals(0, inn.getSize());
+		assertEquals(0, inn.size());
 		assertFalse(it.hasNext());
 		inn.add(231423);
 		assertTrue(it.hasNext());

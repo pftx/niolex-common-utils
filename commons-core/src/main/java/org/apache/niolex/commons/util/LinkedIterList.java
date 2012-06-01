@@ -87,7 +87,7 @@ public class LinkedIterList<E> {
 	 * Get the current size of this list.
 	 * @return
 	 */
-	public int getSize() {
+	public int size() {
 		return size;
 	}
 
