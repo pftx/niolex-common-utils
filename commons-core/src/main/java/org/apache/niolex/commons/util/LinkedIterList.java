@@ -56,7 +56,7 @@ public class LinkedIterList<E> {
 	/**
 	 * The tail will change from time to time.
 	 */
-	private Link<E> tail = head;
+	private transient volatile Link<E> tail = head;
 
 	/**
 	 * The size of this List.
@@ -68,7 +68,6 @@ public class LinkedIterList<E> {
 	 */
 	public LinkedIterList() {
 		super();
-		this.tail.next = head;
 	}
 
 	/**
@@ -79,7 +78,6 @@ public class LinkedIterList<E> {
 	public synchronized void add(E e) {
 		tail.next = new Link<E>(e);
 		tail = tail.next;
-		tail.next = head;
 		++size;
 	}
 
@@ -105,15 +103,16 @@ public class LinkedIterList<E> {
 	/**
 	 * Get the first item in the list, and remove it from the list.
 	 * If the list is empty, it will return null.
+	 * This method is synchronized.
 	 * @return
 	 */
 	public synchronized E poll() {
-		if (head.next == head) {
+		if (head.next == null) {
 			return null;
 		} else {
 			Link<E> r = head.next;
 			head.next = r.next;
-			if (head.next == head) {
+			if (tail == r) {
 				tail = head;
 			}
 			--size;
@@ -174,19 +173,12 @@ public class LinkedIterList<E> {
 		}
 
 		public boolean hasNext() {
-			if (current.next != head) {
-				return true;
-			} else {
-				if (head == tail) {
-					current = head;
-				}
-				return false;
-			}
+			return current.next != null;
 		}
 
 		public E next() {
-			if (current.next == head) {
-				if (head == tail) {
+			if (current.next == null) {
+				if (current != tail) {
 					current = head;
 				}
 				return null;

@@ -187,7 +187,7 @@ public class LinkedIterListTest {
 		assertEquals(0, inn.size());
 		assertFalse(it.hasNext());
 		inn.add(231423);
-		assertTrue(it.hasNext());
+		it.next();
 		assertEquals(231423, it.next().intValue());
 	}
 
