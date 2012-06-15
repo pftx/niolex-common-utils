@@ -83,4 +83,11 @@ public class RRList<E> extends AbstractList<E> {
 		return size;
 	}
 
+	/**
+	 * @return The capacity of this RRList
+	 */
+	public int capacity() {
+		return array.length;
+	}
+
 }

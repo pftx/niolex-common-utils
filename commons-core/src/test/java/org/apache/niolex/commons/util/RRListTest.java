@@ -37,6 +37,7 @@ public class RRListTest {
 		assertEquals(0, rr.size());
 		rr.add(123);
 		assertEquals(1, rr.size());
+		assertEquals(9, rr.capacity());
 	}
 
 	/**
@@ -79,6 +80,7 @@ public class RRListTest {
 		assertEquals(9, rr.size());
 		assertEquals(6453, rr.get(0).intValue());
 		assertEquals(1534, rr.get(3).intValue());
+		assertEquals(5, rr.capacity());
 	}
 
 	/**
