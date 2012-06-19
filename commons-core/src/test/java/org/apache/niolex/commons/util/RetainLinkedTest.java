@@ -1,5 +1,5 @@
 /**
- * LinkIterTest.java
+ * RetainLinkedTest.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -27,12 +27,12 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-6-6
+ * @Date: 2012-6-19
  */
-public class LinkIterTest {
+public class RetainLinkedTest {
 
 	private int runSize = 100000;
-	private LinkedIterList<Integer> linked = new LinkedIterList<Integer>();
+	private RetainLinkedList<Integer> linked = new RetainLinkedList<Integer>(5);
 	private Map<Integer, Integer> check = new ConcurrentHashMap<Integer, Integer>();
 
 	private class LetsRun implements Runnable {
@@ -64,7 +64,7 @@ public class LinkIterTest {
 			int k = (int)Thread.currentThread().getId();
 			System.out.println(k + " Take start at " + System.currentTimeMillis());
 			while (true) {
-				Integer r = linked.poll();
+				Integer r = linked.handleNext();
 				if (r == null) {
 					break;
 				}
@@ -103,5 +103,4 @@ public class LinkIterTest {
 		System.out.println(check.size() + " total time at " + o);
 		assertEquals(1000000, check.size());
 	}
-
 }

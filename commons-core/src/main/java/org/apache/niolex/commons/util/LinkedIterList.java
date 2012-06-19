@@ -61,7 +61,7 @@ public class LinkedIterList<E> {
 	/**
 	 * The size of this List.
 	 */
-	private int size = 0;
+	private transient volatile int size = 0;
 
 	/**
 	 * Initialize head and tail here.
@@ -116,6 +116,7 @@ public class LinkedIterList<E> {
 				tail = head;
 			}
 			--size;
+			r.next = null;
 			return r.e;
 		}
 	}
