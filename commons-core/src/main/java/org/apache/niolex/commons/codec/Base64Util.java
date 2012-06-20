@@ -17,8 +17,6 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.io.UnsupportedEncodingException;
-
 import org.apache.commons.codec.binary.Base64;
 
 
@@ -48,12 +46,12 @@ public abstract class Base64Util {
      *
      * @param data 待转换的byte数组
      * @return 转换后的64进制字符串
-     * @throws UnsupportedEncodingException 假如用户的环境不支持UTF-8编码
+     * @throws IllegalStateException 假如用户的环境不支持UTF-8编码
      */
-    public static String byteToBase64(byte[] data) throws UnsupportedEncodingException {
+    public static String byteToBase64(byte[] data) {
         if (data == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return new String(Base64.encodeBase64(data), "UTF-8");
+        return StringUtil.utf8ByteToStr(Base64.encodeBase64(data));
     }
 
     /**
@@ -62,11 +60,11 @@ public abstract class Base64Util {
      *
      * @param str 待转换的64进制字符串
      * @return 转换后的byte数组
-     * @throws UnsupportedEncodingException 假如用户的环境不支持UTF-8编码
+     * @throws IllegalStateException 假如用户的环境不支持UTF-8编码
      */
-    public static byte[] base64toByte(String str) throws UnsupportedEncodingException {
+    public static byte[] base64toByte(String str) {
         if (str == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return Base64.decodeBase64(str.getBytes("UTF-8"));
+        return Base64.decodeBase64(StringUtil.strToUTF8Byte(str));
     }
 }
