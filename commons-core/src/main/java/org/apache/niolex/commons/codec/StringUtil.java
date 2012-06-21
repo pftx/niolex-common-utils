@@ -18,6 +18,8 @@
 package org.apache.niolex.commons.codec;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+import java.util.Iterator;
 
 
 /**
@@ -48,7 +50,7 @@ public abstract class StringUtil {
 	 * @param str
 	 * @return
 	 */
-	public static final byte[] strToUTF8Byte(String str) {
+	public static final byte[] strToUtf8Byte(String str) {
 		try {
 			return str.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -75,11 +77,50 @@ public abstract class StringUtil {
 	 * @param str
 	 * @return
 	 */
-	public static final byte[] strToASCIIByte(String str) {
+	public static final byte[] strToAsciiByte(String str) {
 		try {
 			return str.getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalStateException("Your JDK do not support US-ASCII", e);
 		}
+	}
+
+	/**
+	 * Join the string array into one single string by the separator.
+	 *
+	 * @param strs
+	 * @param sep
+	 * @return
+	 */
+	public static final String join(String[] strs, String sep) {
+		StringBuilder sb = new StringBuilder();
+		if (strs == null || strs.length == 0) {
+			return "";
+		}
+		sb.append(strs[0]);
+		for (int i = 1; i < strs.length; ++i) {
+			sb.append(sep).append(strs[i]);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Join the string collection into one single string by the separator.
+	 *
+	 * @param strs
+	 * @param sep
+	 * @return
+	 */
+	public static final String join(Collection<String> strs, String sep) {
+		StringBuilder sb = new StringBuilder();
+		if (strs == null || strs.size() == 0) {
+			return "";
+		}
+		Iterator<String> it = strs.iterator();
+		sb.append(it.next());
+		while (it.hasNext()) {
+			sb.append(sep).append(it.next());
+		}
+		return sb.toString();
 	}
 }

@@ -17,9 +17,12 @@
  */
 package org.apache.niolex.commons.codec;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.niolex.commons.test.MockUtil;
 import org.junit.Test;
@@ -45,12 +48,12 @@ public class StringUtilTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.codec.StringUtil#strToUTF8Byte(java.lang.String)}.
+	 * Test method for {@link org.apache.niolex.commons.codec.StringUtil#strToUtf8Byte(java.lang.String)}.
 	 */
 	@Test
-	public void testStrToUTF8Byte() {
+	public void testStrToUtf8Byte() {
 		String s = "初始化密钥,产生1024bit的密钥对";
-		byte[] b = StringUtil.strToUTF8Byte(s);
+		byte[] b = StringUtil.strToUtf8Byte(s);
 		String c = StringUtil.utf8ByteToStr(b);
 		System.out.println(c);
 		assertEquals(c, s);
@@ -62,22 +65,55 @@ public class StringUtilTest {
 	@Test
 	public void testAsciiByteToStr() {
 		String s = "初始化密钥,产生1024bit的密钥对";
-		byte[] b = StringUtil.strToASCIIByte(s);
+		byte[] b = StringUtil.strToAsciiByte(s);
 		String c = StringUtil.utf8ByteToStr(b);
 		System.out.println(c);
 		assertNotSame(c, s);
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.codec.StringUtil#strToASCIIByte(java.lang.String)}.
+	 * Test method for {@link org.apache.niolex.commons.codec.StringUtil#strToAsciiByte(java.lang.String)}.
 	 */
 	@Test
-	public void testStrToASCIIByte() {
+	public void testStrToAsciiByte() {
 		String s = "Randomly reorder the int array, with all data stay the same.";
-		byte[] b = StringUtil.strToUTF8Byte(s);
+		byte[] b = StringUtil.strToUtf8Byte(s);
 		String c = StringUtil.utf8ByteToStr(b);
 		System.out.println(c);
 		assertEquals(c, s);
+	}
+
+	@Test
+	public void testJoin() {
+		String s = "Randomly reorder the int array, with all data stay the same.";
+		String[] arr = s.split("a");
+		String b = StringUtil.join(arr, "a");
+		assertEquals(b, s);
+	}
+
+	@Test
+	public void testJoin2() {
+		String s = "Randomly reorder the int array, with all data stay the same.";
+		String[] arr = s.split(" ");
+		List<String> sarr = new ArrayList<String>(12);
+		for (String t : arr)
+			sarr.add(t);
+		System.out.println(sarr);
+		String b = StringUtil.join(sarr, " ");
+		assertEquals(b, s);
+	}
+
+	@Test
+	public void testJoin3() {
+		String b = StringUtil.join(new String[0], " ");
+		assertEquals(b, "");
+	}
+
+
+	@Test
+	public void testJoin4() {
+		String b = StringUtil.join(new ArrayList<String>(0), " ");
+		assertEquals(b, "");
 	}
 
 }

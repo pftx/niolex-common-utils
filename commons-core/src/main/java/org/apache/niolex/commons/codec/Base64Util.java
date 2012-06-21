@@ -65,6 +65,6 @@ public abstract class Base64Util {
     public static byte[] base64toByte(String str) {
         if (str == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return Base64.decodeBase64(StringUtil.strToUTF8Byte(str));
+        return Base64.decodeBase64(StringUtil.strToUtf8Byte(str));
     }
 }
