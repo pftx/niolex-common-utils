@@ -75,6 +75,14 @@
 					<include>**/*.properties</include>
 				</includes>
 			</testResource>
+			<testResource>
+				<directory>src/main/conf</directory>
+				<includes>
+					<include>**/*.txt</include>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
+			</testResource>
 		</testResources>
 		<plugins>
 			<plugin>
