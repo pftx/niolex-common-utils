@@ -18,6 +18,7 @@
 package org.apache.niolex.commons.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -44,8 +45,50 @@ public class RunmeTest {
 		me.setSleepInterval(100);
 		me.start();
 		Thread.sleep(120);
-		assertEquals(1, au.intValue());
+		assertEquals(2, au.intValue());
 		me.stopMe();
+		me.interrupt();
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.util.Runme#start()}.
+	 */
+	@Test
+	public void testInitSleep() throws Throwable {
+		final AtomicInteger au = new AtomicInteger(0);
+		Runme me = new Runme(){
+			@Override
+			public void runMe() {
+				au.incrementAndGet();
+			}};
+		me.setSleepInterval(1000000);
+		me.setInitialSleep(true);
+		me.start();
+		Thread.sleep(10);
+		assertTrue(2 > au.intValue());
+		me.stopMe();
+		me.interrupt();
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.util.Runme#start()}.
+	 */
+	@Test
+	public void testInitSleepGo() throws Throwable {
+		final AtomicInteger au = new AtomicInteger(0);
+		Runme me = new Runme(){
+			@Override
+			public void runMe() {
+				au.incrementAndGet();
+			}};
+			me.setSleepInterval(100);
+			me.setInitialSleep(true);
+			me.start();
+			Thread.sleep(120);
+			assertTrue(3 > au.intValue());
+			assertTrue(0 < au.intValue());
+			me.stopMe();
+			me.interrupt();
 	}
 
 	/**
@@ -60,11 +103,12 @@ public class RunmeTest {
 				au.incrementAndGet();
 			}};
 		me.setSleepInterval(10000);
+		me.setInitialSleep(false);
 		me.start();
 		Thread.sleep(10);
 		me.stopMe();
 		me.interrupt();
-		assertEquals(0, au.intValue());
+		assertEquals(1, au.intValue());
 	}
 
 

@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.util;
 
+import java.util.Random;
+
 /**
  * This Runme utility class is for run a job periodically.
  * If you want to run only once, do not use it.
@@ -30,7 +32,7 @@ public abstract class Runme extends Thread {
 	/**
 	 * Current working status
 	 */
-	private boolean isWorking = true;
+	private boolean isWorking = false;
 
 	/**
 	 * Sleep interval between each run.
@@ -44,7 +46,6 @@ public abstract class Runme extends Thread {
 	 * @see java.lang.Thread#start()
 	 */
 	public void start() {
-		isWorking = true;
 		this.setDaemon(true);
 		super.start();
 	}
@@ -56,10 +57,18 @@ public abstract class Runme extends Thread {
 	 * @see java.lang.Thread#run()
 	 */
 	public void run() {
+		if (isWorking) {
+			// Do initial sleep.
+			try {
+				Thread.sleep(new Random().nextLong() % sleepInterval);
+			} catch (Exception e) {}
+		} else {
+			isWorking = true;
+		}
 		while (isWorking) {
 			try {
-				Thread.sleep(sleepInterval);
 				runMe();
+				Thread.sleep(sleepInterval);
 			} catch (Exception e) {}
 		}
 	}
@@ -82,6 +91,14 @@ public abstract class Runme extends Thread {
 	 */
 	public void setSleepInterval(long sleepInterval) {
 		this.sleepInterval = sleepInterval;
+	}
+
+	/**
+	 * Set whether you need we to sleep a little time before run.
+	 * @param sleep
+	 */
+	public void setInitialSleep(boolean sleep) {
+		this.isWorking = sleep;
 	}
 
 }

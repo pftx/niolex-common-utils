@@ -59,7 +59,7 @@ public class FileUtilTest {
     	Assert.assertTrue(FileUtil.setCharacterFileContentToFileSystem(prex + "/tmp_file.txt", str, "utf-8"));
 
         String str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp_file.txt", "utf-8");
-        System.out.println("SL " + str2.length());
+        System.out.println("SL1 " + str2.length());
         Assert.assertEquals(str, str2);
 
         str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp_file.txt", "utf-10");
@@ -67,6 +67,12 @@ public class FileUtilTest {
 
         byte[] a = FileUtil.getBinaryFileContentFromFileSystem(prex + "/t/m/p/_/file.txt");
         Assert.assertEquals(null, a);
+
+        str = "TIMESTAMP NULL DEFAULT NULL";
+        Assert.assertTrue(FileUtil.setCharacterFileContentToFileSystem(prex + "/tmp_file.txt", str, "utf-8"));
+        str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp_file.txt", "utf-8");
+        System.out.println("SL2 " + str2.length());
+        Assert.assertEquals(str, str2);
     }
 
     @Test
