@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.niolex.commons.stream.StreamUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,13 +149,8 @@ public abstract class DownloadUtil {
 			String msg = "Failed to download file " + strUrl + " msg=" + e.getMessage();
 			throw new DownloadException(DownloadException.ExCode.IOEXCEPTION, msg);
 		} finally {
-			try {
-				if (in != null)
-					in.close();
-			} catch (IOException e) {
-				// 关闭过程中的异常我们不关心
-				LOG.info("Exception while close url - " + e.getMessage());
-			}
+			// 关闭过程中的异常我们不关心
+			StreamUtil.closeStream(in);
 		}
 	}
 

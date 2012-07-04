@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -59,6 +61,12 @@ public class FileUtilTest {
         String str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp_file.txt", "utf-8");
         System.out.println("SL " + str2.length());
         Assert.assertEquals(str, str2);
+
+        str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp_file.txt", "utf-10");
+        Assert.assertEquals("", str2);
+
+        byte[] a = FileUtil.getBinaryFileContentFromFileSystem(prex + "/t/m/p/_/file.txt");
+        Assert.assertEquals(null, a);
     }
 
     @Test
@@ -68,10 +76,48 @@ public class FileUtilTest {
     	if (f.exists()) {
     		f.delete();
     	}
+    	String str1 = "可以对每个连接设置当前的时区，相关描述参见5.10.8节，“MySQL服务器时区支持”。TIMESTAMP值";
+    	FileUtil.setCharacterFileContentToFileSystem(prex + "/tmp_file.txt", str1, "utf-8");
+
     	String str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp_file.txt", "utf-8");
-    	FileUtil.setCharacterFileContentToFileSystem(prex + "/tmp\\_f^i$le:.txt", str2, "utf-9");
-    	FileUtil.setCharacterFileContentToFileSystem(null, str2, "utf-9");
+    	System.out.println("filee " + str2);
+    	assertEquals(str1, str2);
+    	boolean b;
+    	b = FileUtil.setCharacterFileContentToFileSystem(prex + "'_f^i$le:.txt", str2, "utf-9");
+    	assertFalse(b);
+    	b = FileUtil.setCharacterFileContentToFileSystem(prex + "'.../_f^i$le:.txt", str2, "utf-8");
+    	assertFalse(b);
 
     	FileUtil.getCharacterFileContentFromClassPath(null, FileUtilTest.class, "utf-8");
+    }
+
+    @Test
+    public final void testMkdirs() {
+    	String prex = "/home/work/data/sync";
+    	File f = new File(prex + "/tmp/tmp2/tmp_file.txt");
+    	if (f.exists()) {
+    		f.delete();
+    	}
+    	f = new File(prex + "/tmp/tmp2");
+    	if (f.exists()) {
+    		f.delete();
+    	}
+    	f = new File(prex + "/tmp");
+    	if (f.exists()) {
+    		f.delete();
+    	}
+    	boolean b;
+    	b = FileUtil.mkdirsIfAbsent(prex + "/tmp/tmp2");
+    	assertTrue(b);
+    	b = FileUtil.mkdirsIfAbsent(prex + "/tmp/tmp2");
+    	assertTrue(b);
+    	String str1 = "如果未指定NULL属性，将列设置为NULL设置则会将它设置为当前的时间戳";
+    	FileUtil.setCharacterFileContentToFileSystem(prex + "/tmp/tmp2/tmp_file.txt", str1, "utf-8");
+
+    	String str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp/tmp2/tmp_file.txt", "utf-8");
+    	System.out.println("mkdir " + str2);
+    	assertEquals(str1, str2);
+    	b = FileUtil.mkdirsIfAbsent(prex + "/tmp/tmp2/tmp_file.txt/c");
+    	assertFalse(b);
     }
 }

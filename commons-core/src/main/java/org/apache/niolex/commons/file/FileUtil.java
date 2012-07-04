@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.niolex.commons.stream.StreamUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ public abstract class FileUtil {
         try {
             result = new String(getBinaryFileContentFromFileSystem(pathname), encoding);
         } catch (Exception e) {
-            LOG.error("Error occured while format the file content into String - " + e.getMessage());
+            LOG.error("Error occured while format the file content into String - " + e.toString());
         }
         return result;
     }
@@ -72,14 +73,9 @@ public abstract class FileUtil {
             in.read(raw);
             return raw;
         } catch (Exception e) {
-            LOG.warn("Error occured while read file [" + pathname + "] message - " + e.getMessage());
+            LOG.warn("Error occured while read file [" + pathname + "] message - " + e.toString());
         } finally {
-            try {
-                if (in != null)
-                    in.close();
-            } catch (Exception ie) {
-                LOG.info("Failed to close file " + pathname + " error message - " + ie.getMessage());
-            }
+        	StreamUtil.closeStream(in);
         }
         return null;
     }
@@ -88,7 +84,7 @@ public abstract class FileUtil {
         try {
             return setBinaryFileContentToFileSystem(pathname, content.getBytes(charsetName));
         } catch (Exception e) {
-            LOG.error("Error occured while format the file content into String - " + e.getMessage());
+            LOG.error("Error occured while store character content to file - " + e.toString());
         }
         return false;
     }
@@ -101,14 +97,9 @@ public abstract class FileUtil {
             out.flush();
             return true;
         } catch (Exception e) {
-            LOG.warn("Error occured while read file [" + pathname + "] message - " + e.getMessage());
+            LOG.warn("Error occured while store content to file [" + pathname + "] message - " + e.toString());
         } finally {
-            try {
-                if (out != null)
-                    out.close();
-            } catch (Exception ie) {
-                LOG.info("Failed to close file " + pathname + " error message - " + ie.getMessage());
-            }
+        	StreamUtil.closeStream(out);
         }
         return false;
     }
@@ -127,7 +118,7 @@ public abstract class FileUtil {
         try {
             result = new String(getBinaryFileContentFromClassPath(pathname, cls), encoding);
         } catch (Exception e) {
-            LOG.error("Error occured while format the file content into String - " + e.getMessage());
+            LOG.error("Error occured while format the file content into String - " + e.toString());
         }
         return result;
     }
@@ -145,4 +136,17 @@ public abstract class FileUtil {
     }
 
 
+    /**
+     * Make Directories (including parent directories) if not exist.
+     *
+     * @param pathname
+     * @return true if Directory exist or successfully created, false otherwise.
+     */
+    public static final boolean mkdirsIfAbsent(String pathname) {
+        File file = new File(pathname);
+        if (!file.exists()) {
+        	return file.mkdirs();
+        }
+        return true;
+    }
 }
