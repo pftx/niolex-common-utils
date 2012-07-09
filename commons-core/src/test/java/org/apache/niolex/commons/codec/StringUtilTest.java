@@ -116,4 +116,10 @@ public class StringUtilTest {
 		assertEquals(b, "");
 	}
 
+
+	@Test
+	public void testConcat() {
+		String b = StringUtil.concat(" ", "good", "morning");
+		assertEquals(b, "good morning");
+	}
 }

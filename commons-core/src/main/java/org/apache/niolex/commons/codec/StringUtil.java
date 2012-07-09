@@ -123,4 +123,15 @@ public abstract class StringUtil {
 		}
 		return sb.toString();
 	}
+
+	/**
+	 * Concatenates all the parameters into one string by the specified seperator.
+	 *
+	 * @param sep
+	 * @param arr
+	 * @return
+	 */
+	public static final String concat(String sep, String ...arr) {
+		return join(arr, sep);
+	}
 }
