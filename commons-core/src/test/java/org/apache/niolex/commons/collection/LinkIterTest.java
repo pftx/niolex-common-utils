@@ -15,13 +15,14 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.util;
+package org.apache.niolex.commons.collection;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.niolex.commons.collection.LinkedIterList;
 import org.junit.Test;
 
 /**

@@ -1,5 +1,5 @@
 /**
- * LRUHashMapTest.java
+ * CounterTest.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.util;
+package org.apache.niolex.commons.test;
 
 import static org.junit.Assert.*;
 
@@ -24,26 +24,28 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-5-31
+ * @Date: 2012-7-12
  */
-public class LRUHashMapTest {
+public class CounterTest {
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.LRUHashMap#removeEldestEntry(java.util.Map.Entry)}.
+	 * Test method for {@link org.apache.niolex.commons.test.Counter#inc()}.
 	 */
 	@Test
-	public void testRemoveEldestEntryEntryOfKV() {
-		LRUHashMap<String, String> map = new LRUHashMap<String, String>(5);
-		map.put("12345", "12345");
-		map.put("1234", "12345");
-		map.put("123", "12345");
-		map.put("12", "12345");
-		map.put("1", "12345");
-		assertEquals("12345", map.get("12345"));
-		assertEquals("12345", map.get("1234"));
-		map.put("0", "12345");
-		assertNull(map.get("12345"));
-		assertEquals("12345", map.get("1234"));
+	public void testInc() {
+		Counter c = new Counter();
+		c.inc();
+		c.inc();
+		assertEquals(2, c.cnt());
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.test.Counter#cnt()}.
+	 */
+	@Test
+	public void testCnt() {
+		Counter c = new Counter();
+		assertEquals(0, c.cnt());
 	}
 
 }

@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.util;
+package org.apache.niolex.commons.collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.niolex.commons.collection.RetainLinkedList;
 import org.junit.Test;
 
 /**
@@ -34,7 +35,7 @@ import org.junit.Test;
 public class RetainLinkedListTest {
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RetainLinkedList#RetainLinkedList(int)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#RetainLinkedList(int)}.
 	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void testRetainLinkedList() {
@@ -42,7 +43,7 @@ public class RetainLinkedListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RetainLinkedList#add(java.lang.Object)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#add(java.lang.Object)}.
 	 */
 	@Test
 	public void testAdd() {
@@ -67,7 +68,7 @@ public class RetainLinkedListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RetainLinkedList#handleNext()}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#handleNext()}.
 	 */
 	@Test
 	public void testHandleNext() {
@@ -94,7 +95,7 @@ public class RetainLinkedListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RetainLinkedList#addAll(org.apache.niolex.commons.util.RetainLinkedList)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#addAll(org.apache.niolex.commons.collection.RetainLinkedList)}.
 	 */
 	@Test
 	public void testAddAllRetainLinkedListOfE() {
@@ -117,7 +118,7 @@ public class RetainLinkedListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RetainLinkedList#addAll(java.util.Collection)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#addAll(java.util.Collection)}.
 	 */
 	@Test
 	public void testAddAllCollectionOfE() {
@@ -140,7 +141,7 @@ public class RetainLinkedListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RetainLinkedList#toArray(E[])}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#toArray(E[])}.
 	 */
 	@Test
 	public void testToArray() {
@@ -161,7 +162,7 @@ public class RetainLinkedListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RetainLinkedList#isEmpty()}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#isEmpty()}.
 	 */
 	@Test
 	public void testIsEmpty() {
@@ -172,7 +173,7 @@ public class RetainLinkedListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RetainLinkedList#size()}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#size()}.
 	 */
 	@Test
 	public void testSize() {

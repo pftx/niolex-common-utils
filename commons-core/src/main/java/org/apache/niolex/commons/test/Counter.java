@@ -1,5 +1,5 @@
 /**
- * LRUHashMap.java
+ * Counter.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -15,35 +15,34 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.util;
-
-import java.util.LinkedHashMap;
+package org.apache.niolex.commons.test;
 
 /**
- * This HashMap will maintain the map size to <code>maxSize</code>
- * If there are more put than that, the eldest item will be removed.
+ * This is used for count.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-5-31
+ * @Date: 2012-7-12
  */
-public class LRUHashMap<K, V> extends LinkedHashMap<K, V> {
+public class Counter {
+
+	// The internal count.
+	private int cnt = 0;
 
 	/**
-	 * Generated serial version UID
+	 * Increment the current count.
+	 * This method is synchronized.
 	 */
-	private static final long serialVersionUID = -1355706789097024625L;
-	// The max map size.
-	private int maxSize;
-
-	public LRUHashMap(int maxSize) {
-		super((int)(maxSize * 1.4));
-		this.maxSize = maxSize;
+	public synchronized void inc() {
+		++cnt;
 	}
 
-	@Override
-	protected boolean removeEldestEntry(java.util.Map.Entry<K, V> eldest) {
-		return size() > maxSize;
+	/**
+	 * Get the current count.
+	 * @return
+	 */
+	public int cnt() {
+		return cnt;
 	}
 
 }

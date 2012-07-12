@@ -28,7 +28,18 @@ import java.util.Random;
  *
  */
 public abstract class MockUtil {
+
     private static Random generator = new Random();
+
+    /**
+     * Generate a random int uniformly distributed int value between 0 (inclusive) and the specified value
+     * (exclusive), drawn from this random number generator's sequence.
+     * @param max
+     * @return
+     */
+    public static final int ranInt(int max) {
+    	return generator.nextInt(max);
+    }
 
     /**
      * Generate a randomly reordered int array.

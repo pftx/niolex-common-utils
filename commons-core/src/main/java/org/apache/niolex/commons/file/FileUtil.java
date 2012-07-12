@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.file;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -52,7 +53,7 @@ public abstract class FileUtil {
         try {
             result = new String(getBinaryFileContentFromFileSystem(pathname), encoding);
         } catch (Exception e) {
-            LOG.error("Error occured while format the file content into String - " + e.toString());
+            LOG.error("Error occured while format the file content into String - {}", e.toString());
         }
         return result;
     }
@@ -73,7 +74,7 @@ public abstract class FileUtil {
             in.read(raw);
             return raw;
         } catch (Exception e) {
-            LOG.warn("Error occured while read file [" + pathname + "] message - " + e.toString());
+            LOG.warn("Error occured while read file [{}] reason - {}", pathname, e.toString());
         } finally {
         	StreamUtil.closeStream(in);
         }
@@ -84,7 +85,7 @@ public abstract class FileUtil {
         try {
             return setBinaryFileContentToFileSystem(pathname, content.getBytes(charsetName));
         } catch (Exception e) {
-            LOG.error("Error occured while store character content to file - " + e.toString());
+            LOG.error("Error occured while store character content to file - {}", e.toString());
         }
         return false;
     }
@@ -97,7 +98,7 @@ public abstract class FileUtil {
             out.flush();
             return true;
         } catch (Exception e) {
-            LOG.warn("Error occured while store content to file [" + pathname + "] message - " + e.toString());
+            LOG.warn("Error occured while store content to file [{}] reason - {}", pathname, e.toString());
         } finally {
         	StreamUtil.closeStream(out);
         }
@@ -118,7 +119,7 @@ public abstract class FileUtil {
         try {
             result = new String(getBinaryFileContentFromClassPath(pathname, cls), encoding);
         } catch (Exception e) {
-            LOG.error("Error occured while format the file content into String - " + e.toString());
+            LOG.error("Error occured while format the file content into String - {}", e.toString());
         }
         return result;
     }
@@ -131,8 +132,22 @@ public abstract class FileUtil {
      * @return The file content as byte array.
      */
     public static <T> byte[] getBinaryFileContentFromClassPath(String pathname, Class<T> cls) {
-    	String apth = cls.getResource(pathname).toExternalForm().substring(6);
-        return getBinaryFileContentFromFileSystem(apth);
+    	InputStream in = null;
+    	try {
+    		in = cls.getResourceAsStream(pathname);
+	    	ByteArrayOutputStream bos = new ByteArrayOutputStream(10240);
+	    	byte[] buffer = new byte[4096];
+	    	int cnt = 0;
+	    	while ((cnt = in.read(buffer)) > 0) {
+	    		bos.write(buffer, 0, cnt);
+	    	}
+	        return bos.toByteArray();
+    	} catch (Exception e) {
+    		LOG.warn("Error occured while read file [{}] from class [{}] message - " + e.toString(), pathname, cls);
+        } finally {
+        	StreamUtil.closeStream(in);
+        }
+        return null;
     }
 
 

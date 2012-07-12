@@ -33,9 +33,15 @@ public class MockUtilTest {
 	static int i1, i2, i3, i4, i5, i6, i7, i8;
 
     @Test
+    public void doTestRanInt() {
+        int a = MockUtil.ranInt(128);
+        Assert.assertTrue(a < 128);
+    }
+
+    @Test
     public void doTestInt() {
-        int[] a = MockUtil.randIntArray(8);
-        Assert.assertEquals(8, a.length);
+    	int[] a = MockUtil.randIntArray(8);
+    	Assert.assertEquals(8, a.length);
     }
 
     @Test

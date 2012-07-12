@@ -15,10 +15,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.util;
+package org.apache.niolex.commons.collection;
 
 import static org.junit.Assert.*;
 
+import org.apache.niolex.commons.collection.RRList;
 import org.junit.Test;
 
 /**
@@ -29,7 +30,7 @@ import org.junit.Test;
 public class RRListTest {
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RRList#size()}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RRList#size()}.
 	 */
 	@Test
 	public void testSize() {
@@ -41,7 +42,7 @@ public class RRListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RRList#add(int, java.lang.Object)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RRList#add(int, java.lang.Object)}.
 	 */
 	@Test
 	public void testAddIntE() {
@@ -62,7 +63,7 @@ public class RRListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RRList#get(int)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RRList#get(int)}.
 	 */
 	@Test
 	public void testGetInt() {
@@ -84,7 +85,7 @@ public class RRListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.RRList#get(int)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.RRList#get(int)}.
 	 */
 	@Test(expected=IndexOutOfBoundsException.class)
 	public void testGetIntExc() {

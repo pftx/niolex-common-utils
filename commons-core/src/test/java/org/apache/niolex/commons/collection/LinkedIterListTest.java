@@ -15,13 +15,14 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.util;
+package org.apache.niolex.commons.collection;
 
 import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.niolex.commons.util.LinkedIterList.Iter;
+import org.apache.niolex.commons.collection.LinkedIterList;
+import org.apache.niolex.commons.collection.LinkedIterList.Iter;
 import org.junit.Test;
 
 /**
@@ -32,7 +33,7 @@ import org.junit.Test;
 public class LinkedIterListTest {
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.LinkedIterList#add(java.lang.Object)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.LinkedIterList#add(java.lang.Object)}.
 	 */
 	@Test
 	public void testAdd() {
@@ -52,7 +53,7 @@ public class LinkedIterListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.LinkedIterList#offer(java.lang.Object)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.LinkedIterList#offer(java.lang.Object)}.
 	 */
 	@Test
 	public void testOffer() {
@@ -68,7 +69,7 @@ public class LinkedIterListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.LinkedIterList#poll()}.
+	 * Test method for {@link org.apache.niolex.commons.collection.LinkedIterList#poll()}.
 	 * @throws Exception
 	 */
 	@Test
@@ -120,7 +121,7 @@ public class LinkedIterListTest {
 	AtomicInteger zkz = new AtomicInteger(0);
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.LinkedIterList#iterator()}.
+	 * Test method for {@link org.apache.niolex.commons.collection.LinkedIterList#iterator()}.
 	 */
 	@Test
 	public void testIterator() throws Exception {
