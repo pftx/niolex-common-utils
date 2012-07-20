@@ -2,9 +2,9 @@ package org.apache.niolex.commons.reflect;
 
 @SuppressWarnings("unused")
 public class FieldTestBean {
-    private String strName;
+    public String strName;
     private int intId;
-    private int intLevel;
+    protected int intLevel;
     private Integer age;
     private long empno;
     private boolean gender;
@@ -12,7 +12,7 @@ public class FieldTestBean {
     private short veridk;
     private char chdier;
     private double earned;
-    private float tax;
+    float tax;
 
     public String echoName() {
         System.out.println("My Name IS " + strName + ", Welcome to use FieldTestBean!");
