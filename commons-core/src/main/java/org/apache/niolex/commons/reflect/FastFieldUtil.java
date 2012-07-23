@@ -25,7 +25,7 @@ import com.esotericsoftware.reflectasm.FieldAccess;
  *
  * 目前提供的功能如下：
  * 1. public static final String[] getFields(Class<?> clazz)
- * 获取一个Java类所有定义的属性
+ * 获取一个Java类所有非私有的属性
  *
  * 2. public static final FieldAccess getFieldAccess(Class<?> clazz)
  * 获取一个Java类所对应的属性操作类
@@ -33,7 +33,7 @@ import com.esotericsoftware.reflectasm.FieldAccess;
  * 3. public static final <T> T getFieldValue(String f, Object host)
  * 获取一个Java对象中指定属性的值
  *
- * 5. public static final void setFieldValue(String f, Object host, * value)
+ * 4. public static final void setFieldValue(String f, Object host, * value)
  * 设置一个Java对象中指定属性的值
  *
  * @used 暂无项目使用

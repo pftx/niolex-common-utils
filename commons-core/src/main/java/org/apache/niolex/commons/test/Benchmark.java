@@ -228,43 +228,6 @@ public class Benchmark {
 			return g;
 		}
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
-			result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
-			result = prime * result + ((list == null) ? 0 : list.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Group other = (Group) obj;
-			if (groupId == null) {
-				if (other.groupId != null)
-					return false;
-			} else if (!groupId.equals(other.groupId))
-				return false;
-			if (groupName == null) {
-				if (other.groupName != null)
-					return false;
-			} else if (!groupName.equals(other.groupName))
-				return false;
-			if (list == null) {
-				if (other.list != null)
-					return false;
-			} else if (!list.equals(other.list))
-				return false;
-			return true;
-		}
-
 	}
 
 
@@ -275,7 +238,7 @@ public class Benchmark {
 	 * @version 1.0.0
 	 * @Date: 2012-7-23
 	 */
-	public static  class Bean {
+	public static class Bean {
 		private int likely;
 		private String name;
 		private long id;
