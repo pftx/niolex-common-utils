@@ -1,5 +1,5 @@
 /**
- * JacksonUtil.java
+ * SmileUtil.java
  *
  * Copyright 2011 Niolex, Inc.
  *
@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.compress;
+package org.apache.niolex.commons.seri;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,15 +28,19 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.smile.SmileFactory;
+import org.codehaus.jackson.smile.SmileGenerator;
 import org.codehaus.jackson.type.JavaType;
 
 /**
+ * This Utility use Jackson Smile as the binary format to serialize ojbects.
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  *
  * @version 1.0.0, $Date: 2011-3-18$
  *
  */
-public abstract class JacksonUtil {
+public abstract class SmileUtil {
     // can reuse, share globally
     private static final ObjectMapper mapper;
 
@@ -44,10 +48,15 @@ public abstract class JacksonUtil {
     	/**
     	 * Init the Object Mapper as follows.
     	 */
-        mapper = new ObjectMapper();
+    	SmileFactory factory = new SmileFactory();
+    	factory.configure(SmileGenerator.Feature.WRITE_END_MARKER, false);
+    	factory.configure(SmileGenerator.Feature.ENCODE_BINARY_AS_7BIT, false);
+    	factory.configure(SmileGenerator.Feature.CHECK_SHARED_STRING_VALUES, true);
+        mapper = new ObjectMapper(factory);
         mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
+
 
     /**
      * Get the internal Json Factory this Object Mapper is using.
@@ -58,19 +67,19 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Convert Object to String
+     * Convert Object to binary
      * @param o
      * @return
      * @throws JsonGenerationException
      * @throws JsonMappingException
      * @throws IOException
      */
-    public static final String obj2Str(Object o) throws JsonGenerationException, JsonMappingException, IOException {
-        return mapper.writeValueAsString(o);
+    public static final byte[] obj2bin(Object o) throws JsonGenerationException, JsonMappingException, IOException {
+        return mapper.writeValueAsBytes(o);
     }
 
     /**
-     * Convert String to Object
+     * Convert binary to Object
      * @param s
      * @param valueType
      * @return
@@ -78,12 +87,12 @@ public abstract class JacksonUtil {
      * @throws JsonMappingException
      * @throws IOException
      */
-    public static final <T> T str2Obj(String s, Class<T> valueType) throws JsonParseException, JsonMappingException, IOException {
-        return mapper.readValue(s, valueType);
+    public static final <T> T bin2Obj(byte[] bin, Class<T> valueType) throws JsonParseException, JsonMappingException, IOException {
+        return mapper.readValue(bin, valueType);
     }
 
     /**
-     * Convert String to Object
+     * Convert binary to Object
      * @param s
      * @param valueType
      * @return
@@ -92,8 +101,8 @@ public abstract class JacksonUtil {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public static final <T> T str2Obj(String s, JavaType valueType) throws JsonParseException, JsonMappingException, IOException {
-    	return (T)mapper.readValue(s, valueType);
+    public static final <T> T bin2Obj(byte[] bin, JavaType valueType) throws JsonParseException, JsonMappingException, IOException {
+    	return (T)mapper.readValue(bin, valueType);
     }
 
     /**
