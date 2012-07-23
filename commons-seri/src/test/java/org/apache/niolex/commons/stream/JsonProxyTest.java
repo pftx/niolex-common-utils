@@ -28,6 +28,7 @@ import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.test.Benchmark.Bean;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 
 /**
@@ -55,24 +56,11 @@ public class JsonProxyTest {
 		ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
 		JsonProxy proxy = new JsonProxy(in);
 		Bean r = proxy.readObject(Bean.class);
-		Bean s = proxy.readObject(Bean.class);
+		Bean s = proxy.readObject(new TypeReference<Bean>(){});
 		assertEquals(t, r);
 		assertEquals(q, s);
 		System.out.println("q => " + r.getLikely() + ", " + s.getLikely());
 	}
 
-	/**
-	 * Test method for {@link org.apache.niolex.commons.stream.JsonProxy#readObject(org.codehaus.jackson.type.TypeReference)}.
-	 */
-	@Test
-	public void testReadObjectTypeReferenceOfQ() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testReadObject()
-	 throws Exception {
-
-	}
 
 }
