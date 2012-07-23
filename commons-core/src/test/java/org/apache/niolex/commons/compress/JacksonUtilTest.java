@@ -5,10 +5,12 @@ import static org.apache.niolex.commons.compress.JacksonUtil.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.niolex.commons.codec.StringUtil;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.junit.Test;
 
@@ -72,10 +74,20 @@ public class JacksonUtilTest {
 		assertEquals(1, m.size());
 	}
 
-	@Test
-	public void testReadObj()
-	 throws Exception {
-
+	@Test(expected=EOFException.class)
+	public void testReadObjOfTwo() throws Exception {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		CTBean t = new CTBean(3, "Qute", 12212, new Date(1338008328709L));
+		CTBean q = new CTBean(3, "Another", 523212, new Date(1338008328334L));
+		writeObj(out, t);
+		writeObj(out, q);
+		out.close();
+		System.out.println("s => " + StringUtil.utf8ByteToStr(out.toByteArray()));
+		ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+		CTBean r = readObj(in, CTBean.class);
+		CTBean s = readObj(in, CTBean.class);
+		assertEquals(t, r);
+		assertEquals(q, s);
 	}
 
 }
