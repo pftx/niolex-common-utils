@@ -24,11 +24,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import org.apache.niolex.commons.compress.JacksonUtil;
+import org.apache.niolex.commons.stream.JsonProxy;
 import org.apache.niolex.commons.stream.KryoInstream;
 import org.apache.niolex.commons.stream.KryoOutstream;
 import org.apache.niolex.commons.stream.SmileProxy;
 import org.apache.niolex.commons.test.Benchmark;
 import org.apache.niolex.commons.test.Benchmark.Bean;
+import org.apache.niolex.commons.test.Benchmark.Group;
 import org.apache.niolex.commons.test.Performance;
 import org.junit.Test;
 
@@ -47,7 +50,7 @@ public class PerfTest {
 	class Kryoo extends Performance {
 		Kryo kryo = new Kryo();
 		Benchmark bench = Benchmark.makeBenchmark();
-		byte[] bs;
+		Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
 
 		/**
 		 * @param innerIteration
@@ -56,13 +59,11 @@ public class PerfTest {
 		public Kryoo() {
 			super(innerIteration, outerIteration);
 			System.out.print("Kryoo\t");
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			KryoOutstream ooo = new KryoOutstream(kryo, bos);
-			Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
-			ooo.writeObject(bench);
-			ooo.writeObject(q);
-			ooo.close();
-			bs = bos.toByteArray();
+			kryo.register(Benchmark.class, 10);
+			kryo.register(Group.class, 11);
+			kryo.register(Bean.class, 12);
+			kryo.setReferences(false);
+			kryo.setAutoReset(false);
 		}
 
 		/**
@@ -71,6 +72,12 @@ public class PerfTest {
 		 */
 		@Override
 		protected void run() {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			KryoOutstream ooo = new KryoOutstream(kryo, bos);
+			ooo.writeObject(bench);
+			ooo.writeObject(q);
+			ooo.close();
+			byte[] bs = bos.toByteArray();
 			KryoInstream iii = new KryoInstream(kryo, new ByteArrayInputStream(bs));
 			Benchmark cp = iii.readObject(Benchmark.class);
 			Bean t = iii.readObject(Bean.class);
@@ -82,7 +89,7 @@ public class PerfTest {
 
 	class Smile extends Performance {
 		Benchmark bench = Benchmark.makeBenchmark();
-		byte[] bs;
+		Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
 
 		/**
 		 * @param innerIteration
@@ -91,15 +98,6 @@ public class PerfTest {
 		public Smile() {
 			super(innerIteration, outerIteration);
 			System.out.print("Smile\t");
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
-			try {
-				SmileUtil.writeObj(bos, bench);
-				SmileUtil.writeObj(bos, q);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			bs = bos.toByteArray();
 		}
 
 		/**
@@ -109,7 +107,47 @@ public class PerfTest {
 		@Override
 		protected void run() {
 			try {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				SmileUtil.writeObj(bos, bench);
+				SmileUtil.writeObj(bos, q);
+				byte[] bs = bos.toByteArray();
 				SmileProxy iii = new SmileProxy(new ByteArrayInputStream(bs));
+				Benchmark cp = iii.readObject(Benchmark.class);
+				Bean t = iii.readObject(Bean.class);
+				assertTrue(t.getId() != 0);
+				assertTrue(t.getBirth().getTime() == 1338008328334L);
+				assertTrue(bench.equals(cp));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	class Json extends Performance {
+		Benchmark bench = Benchmark.makeBenchmark();
+		Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
+
+		/**
+		 * @param innerIteration
+		 * @param outerIteration
+		 */
+		public Json() {
+			super(innerIteration, outerIteration);
+			System.out.print("Json\t");
+		}
+
+		/**
+		 * Override super method
+		 * @see org.apache.niolex.commons.test.Performance#run()
+		 */
+		@Override
+		protected void run() {
+			try {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				JacksonUtil.writeObj(bos, bench);
+				JacksonUtil.writeObj(bos, q);
+				byte[] bs = bos.toByteArray();
+				JsonProxy iii = new JsonProxy(new ByteArrayInputStream(bs));
 				Benchmark cp = iii.readObject(Benchmark.class);
 				Bean t = iii.readObject(Bean.class);
 				assertTrue(t.getId() != 0);
@@ -126,5 +164,6 @@ public class PerfTest {
 		new SmileUtil() {};
 		new Kryoo().start();
 		new Smile().start();
+		new Json().start();
 	}
 }
