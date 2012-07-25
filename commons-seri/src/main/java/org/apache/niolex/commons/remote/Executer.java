@@ -38,6 +38,7 @@ public abstract class Executer {
 
 	// can reuse, share globally
     private static final ObjectMapper mapper;
+    public static String END_LINE = "\n";
 
     static {
     	/**
@@ -74,7 +75,7 @@ public abstract class Executer {
 		 */
 		@Override
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
-			String s = mapper.writeValueAsString(o) + "\n";
+			String s = mapper.writeValueAsString(o) + END_LINE;
 			out.write(StringUtil.strToUtf8Byte(s));
 		}
 
@@ -99,11 +100,11 @@ public abstract class Executer {
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
 			Field[] fields = o.getClass().getDeclaredFields();
 			StringBuilder sb = new StringBuilder();
-			sb.append("All Fields Of ").append(o.getClass().getSimpleName()).append('\n');
+			sb.append("All Fields Of ").append(o.getClass().getSimpleName()).append(END_LINE);
 			for (Field f : fields) {
-				sb.append("    ").append(f.getName()).append("\n");
+				sb.append("    ").append(f.getName()).append(END_LINE);
 			}
-			sb.append("---\n");
+			sb.append("---").append(END_LINE);
 			out.write(StringUtil.strToUtf8Byte(sb.toString()));
 		}
 
@@ -128,7 +129,7 @@ public abstract class Executer {
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
 			Field[] fields = o.getClass().getDeclaredFields();
 			if (args.length != 4) {
-				out.write(StringUtil.strToAsciiByte("Invalid Command.\n"));
+				out.write(StringUtil.strToAsciiByte("Invalid Command." + END_LINE));
 				return;
 			}
 			String fieldName = args[2];
@@ -169,18 +170,18 @@ public abstract class Executer {
 							f.setFloat(o, Float.parseFloat(value));
 						} else {
 							out.write(StringUtil.strToAsciiByte("This Field Type " + type.getSimpleName()
-									+ " Is Not Supported.\n"));
+									+ " Is Not Supported." + END_LINE));
 							return;
 						}
-						out.write(StringUtil.strToAsciiByte("Set Field Success.\n"));
+						out.write(StringUtil.strToAsciiByte("Set Field Success." + END_LINE));
 					} catch (Exception e) {
-						out.write(StringUtil.strToAsciiByte("Failed to Set Field:" + e.getMessage() + ".\n"));
+						out.write(StringUtil.strToAsciiByte("Failed to Set Field:" + e.getMessage() + "." + END_LINE));
 					}
 					break;
 				}
 			}
 			if (!found) {
-				out.write(StringUtil.strToAsciiByte("Field Not Found.\n"));
+				out.write(StringUtil.strToAsciiByte("Field Not Found." + END_LINE));
 			}
 		}
 

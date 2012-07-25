@@ -17,9 +17,16 @@
  */
 package org.apache.niolex.commons.remote;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.niolex.commons.test.Benchmark;
+import org.apache.niolex.commons.test.Benchmark.Bean;
 import org.apache.niolex.commons.test.Benchmark.Group;
 import org.junit.Test;
 
@@ -38,6 +45,22 @@ public class BeanServerTest {
 		Integer i = new Integer(128);
 		final Boolean b = Boolean.FALSE;
 		Byte by = new Byte((byte) 3);
+		Map<Integer, String> map = new HashMap<Integer, String>();
+		Map<String, String> smap = new HashMap<String, String>();
+		Map<String, Object> bmap = new HashMap<String, Object>();
+		Map<Object, Object> imap = new HashMap<Object, Object>();
+		Set<String> set = new HashSet<String>();
+
+		public A() {
+			map.put(1, "Good");
+			smap.put("test", "but");
+			bmap.put("b", new Bean(3, "Bean", 12212, new Date()));
+			bmap.put("c", Benchmark.makeBenchmark());
+			imap.put(new Date(), new Bean(3, "Bean", 12212, new Date()));
+			set.add("Goog Morning");
+			set.add("This is Good");
+			set.add("中文");
+		}
 	}
 
 	/**

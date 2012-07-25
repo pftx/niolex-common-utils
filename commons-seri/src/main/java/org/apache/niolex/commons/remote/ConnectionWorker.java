@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class ConnectionWorker implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(ConnectionWorker.class);
 	private static final Map<String, Executer> COMMAND_MAP = new HashMap<String, Executer>();
+	public static String END_LINE = "\n";
 
 	// Add all executers here.
 	static {
@@ -106,20 +107,33 @@ public class ConnectionWorker implements Runnable {
 				continue;
 			}
 			final String comm = args[0].toLowerCase();
+			// Change End Of Line
+			if (comm.startsWith("win")) {
+				END_LINE = "\r\n";
+				Executer.END_LINE = "\r\n";
+				out.write(StringUtil.strToAsciiByte("End Line Changed." + END_LINE));
+				continue;
+			}
+			if (comm.startsWith("lin")) {
+				END_LINE = "\n";
+				Executer.END_LINE = "\n";
+				out.write(StringUtil.strToAsciiByte("End Line Changed." + END_LINE));
+				continue;
+			}
 			// Quit
 			if ("quit".equals(comm) || "exit".equals(comm)) {
-				out.write(StringUtil.strToAsciiByte("Goodbye.\n"));
+				out.write(StringUtil.strToAsciiByte("Goodbye." + END_LINE));
 				break;
 			}
 			// Invalid command.
 			if (!COMMAND_MAP.containsKey(comm) || args.length < 2) {
-				out.write(StringUtil.strToAsciiByte("Invalid Command.\n"));
+				out.write(StringUtil.strToAsciiByte("Invalid Command." + END_LINE));
 				continue;
 			}
 			// Parse tree.
 			final String[] path = args[1].split("\\.");
 			if (path.length < 1) {
-				out.write(StringUtil.strToAsciiByte("Invalid Path Length.\n"));
+				out.write(StringUtil.strToAsciiByte("Invalid Path Length." + END_LINE));
 				continue;
 			}
 			Object parent = beanMap.get(path[0]);
@@ -129,7 +143,7 @@ public class ConnectionWorker implements Runnable {
 				String name = path[pathIdx];
 				if (name.length() == 0) {
 					out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-							+ pathIdx + " length 0\n"));
+							+ pathIdx + " length 0" + END_LINE));
 					break;
 				}
 				// Check collection.
@@ -140,7 +154,7 @@ public class ConnectionWorker implements Runnable {
 					int et = name.indexOf(']');
 					if (et < st) {
 						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-								+ pathIdx + "." + name + "\n"));
+								+ pathIdx + "." + name + END_LINE));
 						break;
 					}
 					realName = name.substring(0, st);
@@ -148,13 +162,62 @@ public class ConnectionWorker implements Runnable {
 						idx = Integer.parseInt(name.substring(st + 1, et));
 					} catch (Exception e) {
 						out.write(StringUtil.strToAsciiByte("Invalid Index at "
-								+ pathIdx + "." + name + "\n"));
+								+ pathIdx + "." + name + END_LINE));
 						break;
 					}
 				}
 				// Check Map.
+				int mt = name.indexOf('{');
+				boolean isMap = false;
+				String realKey = null;
+				if (mt > 0) {
+					int rt = name.indexOf('}');
+					if (rt < mt) {
+						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
+								+ pathIdx + "." + name + END_LINE));
+						break;
+					}
+					realName = name.substring(0, mt);
+					realKey = name.substring(mt + 1, rt);
+					isMap = true;
+				}
 				try {
-					if (idx == -1) {
+					if (isMap) {
+						Field f = FieldUtil.getField(parent.getClass(), realName);
+						f.setAccessible(true);
+						parent = f.get(parent);
+						// Want to visit map here.
+						if (parent instanceof Map<?, ?>) {
+							Map<? extends Object, ? extends Object> map = (Map<?, ?>) parent;
+							if (map.size() == 0) {
+								out.write(StringUtil.strToAsciiByte("Map at "
+										+ pathIdx + "." + name + " Is Empty." + END_LINE));
+								break;
+							}
+							Object key = map.keySet().iterator().next();
+							if (key instanceof String) {
+								parent = map.get(realKey);
+							} else if (key instanceof Integer) {
+								try {
+									idx = Integer.parseInt(realKey);
+									parent = map.get(idx);
+								} catch (Exception e) {
+									out.write(StringUtil.strToAsciiByte("Invalid Map Key at "
+											+ pathIdx + "." + name + END_LINE));
+									break;
+								}
+							} else {
+								out.write(StringUtil.strToAsciiByte("This Map Key Type "
+										+ key.getClass().getSimpleName() + " at "
+										+ pathIdx + "." + name + " Is Not Supported." + END_LINE));
+								break;
+							}
+						} else {
+							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
+									+ pathIdx + "." + name + " Not Map." + END_LINE));
+							break;
+						}
+					} else if (idx == -1) {
 						Field f = FieldUtil.getField(parent.getClass(), name);
 						f.setAccessible(true);
 						parent = f.get(parent);
@@ -166,7 +229,7 @@ public class ConnectionWorker implements Runnable {
 							Collection<? extends Object> os = (Collection<?>) parent;
 							if (os.size() <= idx) {
 								out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-										+ pathIdx + "." + name + " Array Out of Bound.\n"));
+										+ pathIdx + "." + name + " Array Out of Bound." + END_LINE));
 								break;
 							}
 							Iterator<? extends Object> iter = os.iterator();
@@ -177,25 +240,25 @@ public class ConnectionWorker implements Runnable {
 						} else if (parent.getClass().isArray()) {
 							if (Array.getLength(parent) <= idx) {
 								out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-										+ pathIdx + "." + name + " Array Out of Bound.\n"));
+										+ pathIdx + "." + name + " Array Out of Bound." + END_LINE));
 								break;
 							}
 							parent = Array.get(parent, idx);
 						} else {
 							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-									+ pathIdx + "." + name + " Not Array.\n"));
+									+ pathIdx + "." + name + " Not Array." + END_LINE));
 							break;
 						}
 					}
 					++pathIdx;
 				} catch (Exception e) {
 					out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-							+ pathIdx + "." + name + "\n"));
+							+ pathIdx + "." + name + END_LINE));
 					break;
 				}
 			}
 			if (parent == null) {
-				out.write(StringUtil.strToAsciiByte("Path Not Found.\n"));
+				out.write(StringUtil.strToAsciiByte("Path Not Found." + END_LINE));
 				continue;
 			}
 			if (pathIdx < path.length) {
