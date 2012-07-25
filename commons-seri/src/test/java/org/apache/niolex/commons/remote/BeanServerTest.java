@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.remote;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -68,7 +68,8 @@ public class BeanServerTest {
 	 */
 	@Test
 	public void testPutIfAbsent() {
-		fail("Not yet implemented");
+		Object o = beanS.putIfAbsent("fail", "Not yet implemented");
+		assertNull(o);
 	}
 
 	/**
@@ -76,7 +77,7 @@ public class BeanServerTest {
 	 */
 	@Test
 	public void testRemove() {
-		fail("Not yet implemented");
+		beanS.remove("fail");
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class BeanServerTest {
 	 */
 	@Test
 	public void testReplace() {
-		fail("Not yet implemented");
+		beanS.replace("fail", "Not yet implemented", "New value");
 	}
 
 	/**
@@ -96,15 +97,8 @@ public class BeanServerTest {
 		beanS.putIfAbsent("bench", Benchmark.makeBenchmark());
 		beanS.putIfAbsent("group", new A());
 		beanS.start();
-		Thread.sleep(3000000);
-	}
-
-	/**
-	 * Test method for {@link org.apache.niolex.commons.remote.BeanServer#run()}.
-	 */
-	@Test
-	public void testRun() {
-		fail("Not yet implemented");
+		Thread.sleep(3000);
+		beanS.stop();
 	}
 
 	/**
@@ -112,7 +106,7 @@ public class BeanServerTest {
 	 */
 	@Test
 	public void testSetPort() {
-		fail("Not yet implemented");
+		beanS.setPort(1234);
 	}
 
 }

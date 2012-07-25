@@ -67,7 +67,7 @@ public class BeanServer implements Runnable {
 	 * Removes the key (and its corresponding value) from this map. This method does nothing if the key is not in the map.
 	 *
 	 * @param key
-	 * @return
+	 * @return the previous value associated with key, or null if there was no mapping for key
 	 */
 	public Object remove(Object key) {
 		return map.remove(key);
@@ -110,6 +110,13 @@ public class BeanServer implements Runnable {
             LOG.error("Can not start the bean server", e);
         }
 		return false;
+	}
+
+	/**
+	 * Stop this bean server.
+	 */
+	public void stop() {
+		isListening = false;
 	}
 
 	/**
