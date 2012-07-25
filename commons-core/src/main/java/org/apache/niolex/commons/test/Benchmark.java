@@ -221,9 +221,9 @@ public class Benchmark {
 			g.setList(list);
 			Bean t = new Bean(3, "Qute", 12212, new Date());
 			list.add(t);
-			t = new Bean(4, "Eda", 1312, new Date());
+			t = new Bean(4, "Eda", 21312, new Date());
 			list.add(t);
-			t = new Bean(5, "Rdet", 1312, new Date());
+			t = new Bean(5, "Rdet", 31312, new Date());
 			list.add(t);
 			return g;
 		}
