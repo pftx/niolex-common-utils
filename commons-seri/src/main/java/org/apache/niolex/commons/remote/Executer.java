@@ -186,4 +186,38 @@ public abstract class Executer {
 		}
 
 	}
+
+	/**
+	 * Invoke method on target object.
+	 *
+	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+	 * @version 1.0.0
+	 * @Date: 2012-7-26
+	 */
+	public static class Invoker extends Executer {
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * Override super method
+		 * @see org.apache.niolex.commons.remote.Executer#execute(java.lang.Object, java.io.OutputStream)
+		 */
+		@Override
+		public void execute(Object o, OutputStream out, String[] args) throws IOException {
+			StringBuilder sb = new StringBuilder();
+			if (o instanceof Invokable) {
+				((Invokable)o).invoke();
+			} else if (o instanceof Runnable) {
+				((Runnable)o).run();
+			} else {
+				sb.append("Target ").append(o.getClass().getSimpleName());
+				sb.append(" Is not Allowed to Invoke.");
+				sb.append(END_LINE);
+				out.write(StringUtil.strToUtf8Byte(sb.toString()));
+			}
+			sb.append("---Invoke Success---").append(END_LINE);
+			out.write(StringUtil.strToUtf8Byte(sb.toString()));
+		}
+
+	}
 }

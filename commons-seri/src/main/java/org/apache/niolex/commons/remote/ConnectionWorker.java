@@ -52,6 +52,7 @@ public class ConnectionWorker implements Runnable {
 		COMMAND_MAP.put("get", new Executer.Getter());
 		COMMAND_MAP.put("list", new Executer.Lister());
 		COMMAND_MAP.put("set", new Executer.Setter());
+		COMMAND_MAP.put("invoke", new Executer.Invoker());
 	}
 
 	// Scan input stream.

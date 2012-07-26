@@ -39,6 +39,25 @@ import org.junit.Test;
 public class BeanServerTest {
 	BeanServer beanS = new BeanServer();
 
+	class B implements Invokable {
+
+		private String msg = "Please invoke me!";
+
+		/**
+		 * Override super method
+		 * @see org.apache.niolex.commons.remote.Invokable#invoke()
+		 */
+		@Override
+		public void invoke() {
+			System.out.println("I am invoked.");
+		}
+
+		public String getMsg() {
+			return msg;
+		}
+
+	}
+
 	class A {
 		int[] ids = new int[] {1, 2, 3, 4, 5};
 		String[] names = new String[] {"Adam", "Shalve", "Bob"};
@@ -58,6 +77,7 @@ public class BeanServerTest {
 			smap.put("this.[is].good", "See You!");
 			bmap.put("b", new Bean(3, "Bean", 12212, new Date()));
 			bmap.put("c", Benchmark.makeBenchmark());
+			bmap.put("invoke", new B());
 			imap.put(new Date(), new Bean(3, "Bean", 12212, new Date()));
 			set.add("Goog Morning");
 			set.add("This is Good");
