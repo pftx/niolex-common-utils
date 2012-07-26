@@ -103,7 +103,9 @@ public class BeanServer implements Runnable {
             listenerSocket.setSoTimeout(10000);
             // Start Listening
             isListening = true;
-            new Thread(this).start();
+            Thread s = new Thread(this, "BeanServer");
+            s.setDaemon(true);
+            s.start();
             LOG.info("BeanServer started at port " + port);
             return true;
         } catch (IOException e) {
@@ -130,7 +132,9 @@ public class BeanServer implements Runnable {
             try {
                 Socket socket = listenerSocket.accept();
                 ConnectionWorker connection = new ConnectionWorker(socket, map);
-                new Thread(connection).start();
+                Thread c = new Thread(connection, "BeanServer.ConnectionWorker");
+                c.setDaemon(true);
+                c.start();
             } catch (SocketTimeoutException e) {
                 // Ignore the timeout exception thrown by accept.
             } catch (IOException e) {

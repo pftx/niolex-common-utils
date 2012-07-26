@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.niolex.commons.test.Benchmark;
+import org.apache.niolex.commons.test.SystemInfo;
 import org.apache.niolex.commons.test.Benchmark.Bean;
 import org.apache.niolex.commons.test.Benchmark.Group;
 import org.junit.Test;
@@ -97,6 +98,7 @@ public class BeanServerTest {
 		BeanServerTest test = new BeanServerTest();
 		test.beanS.putIfAbsent("bench", Benchmark.makeBenchmark());
 		test.beanS.putIfAbsent("group", test.new A());
+		test.beanS.putIfAbsent("system", SystemInfo.getInstance());
 		test.beanS.start();
 		Thread.sleep(3000000);
 		test.beanS.stop();
