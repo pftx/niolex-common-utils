@@ -54,6 +54,7 @@ public class BeanServerTest {
 		public A() {
 			map.put(1, "Good");
 			smap.put("test", "but");
+			smap.put("this.[is].good", "See You!");
 			bmap.put("b", new Bean(3, "Bean", 12212, new Date()));
 			bmap.put("c", Benchmark.makeBenchmark());
 			imap.put(new Date(), new Bean(3, "Bean", 12212, new Date()));
@@ -92,13 +93,13 @@ public class BeanServerTest {
 	 * Test method for {@link org.apache.niolex.commons.remote.BeanServer#start()}.
 	 * @throws InterruptedException
 	 */
-	@Test
-	public void testStart() throws InterruptedException {
-		beanS.putIfAbsent("bench", Benchmark.makeBenchmark());
-		beanS.putIfAbsent("group", new A());
-		beanS.start();
-		Thread.sleep(3000);
-		beanS.stop();
+	public static void main(String[] args) throws InterruptedException {
+		BeanServerTest test = new BeanServerTest();
+		test.beanS.putIfAbsent("bench", Benchmark.makeBenchmark());
+		test.beanS.putIfAbsent("group", test.new A());
+		test.beanS.start();
+		Thread.sleep(3000000);
+		test.beanS.stop();
 	}
 
 	/**

@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.reflect.FieldUtil;
+import org.apache.niolex.commons.remote.Path.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,142 +127,106 @@ public class ConnectionWorker implements Runnable {
 				break;
 			}
 			// Invalid command.
-			if (!COMMAND_MAP.containsKey(comm) || args.length < 2) {
+			if (!COMMAND_MAP.containsKey(comm) || args.length < 2 || args[1].length() == 0) {
 				out.write(StringUtil.strToAsciiByte("Invalid Command." + END_LINE));
 				continue;
 			}
 			// Parse tree.
-			final String[] path = args[1].split("\\.");
-			if (path.length < 1) {
-				out.write(StringUtil.strToAsciiByte("Invalid Path Length." + END_LINE));
+			Path path = Path.parsePath(args[1]);
+			if (path.getType() == Type.INVALID) {
+				out.write(StringUtil.strToAsciiByte(path.getName() + "^" + END_LINE));
 				continue;
 			}
-			Object parent = beanMap.get(path[0]);
+			Object parent = beanMap.get(path.getName());
 			int pathIdx = 1;
-			while (parent != null && pathIdx < path.length) {
+			// We need to break this while loop.
+			Outter:
+			while (parent != null && path != null) {
 				// Navigate into bean according to the path.
-				String name = path[pathIdx];
-				if (name.length() == 0) {
-					out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-							+ pathIdx + " length 0" + END_LINE));
-					break;
-				}
-				// Check collection.
-				String realName = "";
-				int idx = -1;
-				int st = name.indexOf('[');
-				if (st > 0) {
-					int et = name.indexOf(']');
-					if (et < st) {
-						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-								+ pathIdx + "." + name + END_LINE));
-						break;
-					}
-					realName = name.substring(0, st);
-					try {
-						idx = Integer.parseInt(name.substring(st + 1, et));
-					} catch (Exception e) {
-						out.write(StringUtil.strToAsciiByte("Invalid Index at "
-								+ pathIdx + "." + name + END_LINE));
-						break;
-					}
-				}
-				// Check Map.
-				int mt = name.indexOf('{');
-				boolean isMap = false;
-				String realKey = null;
-				if (mt > 0) {
-					int rt = name.indexOf('}');
-					if (rt < mt) {
-						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-								+ pathIdx + "." + name + END_LINE));
-						break;
-					}
-					realName = name.substring(0, mt);
-					realKey = name.substring(mt + 1, rt);
-					isMap = true;
-				}
+				String name = path.getName();
 				try {
-					if (isMap) {
-						Field f = FieldUtil.getField(parent.getClass(), realName);
-						f.setAccessible(true);
-						parent = f.get(parent);
-						// Want to visit map here.
-						if (parent instanceof Map<?, ?>) {
-							Map<? extends Object, ? extends Object> map = (Map<?, ?>) parent;
-							if (map.size() == 0) {
-								out.write(StringUtil.strToAsciiByte("Map at "
-										+ pathIdx + "." + name + " Is Empty." + END_LINE));
-								break;
-							}
-							Object key = map.keySet().iterator().next();
-							if (key instanceof String) {
-								parent = map.get(realKey);
-							} else if (key instanceof Integer) {
-								try {
-									idx = Integer.parseInt(realKey);
-									parent = map.get(idx);
-								} catch (Exception e) {
-									out.write(StringUtil.strToAsciiByte("Invalid Map Key at "
-											+ pathIdx + "." + name + END_LINE));
-									break;
-								}
-							} else {
-								out.write(StringUtil.strToAsciiByte("This Map Key Type "
-										+ key.getClass().getSimpleName() + " at "
-										+ pathIdx + "." + name + " Is Not Supported." + END_LINE));
-								break;
-							}
-						} else {
-							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-									+ pathIdx + "." + name + " Not Map." + END_LINE));
-							break;
-						}
-					} else if (idx == -1) {
+					if (pathIdx != 1) {
 						Field f = FieldUtil.getField(parent.getClass(), name);
 						f.setAccessible(true);
 						parent = f.get(parent);
-					} else {
-						Field f = FieldUtil.getField(parent.getClass(), realName);
-						f.setAccessible(true);
-						parent = f.get(parent);
-						if (parent instanceof Collection<?>) {
-							Collection<? extends Object> os = (Collection<?>) parent;
-							if (os.size() <= idx) {
-								out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-										+ pathIdx + "." + name + " Array Out of Bound." + END_LINE));
-								break;
-							}
-							Iterator<? extends Object> iter = os.iterator();
-							for (int i = 0; i < idx; ++i) {
-								iter.next();
-							}
-							parent = iter.next();
-						} else if (parent.getClass().isArray()) {
-							if (Array.getLength(parent) <= idx) {
-								out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-										+ pathIdx + "." + name + " Array Out of Bound." + END_LINE));
-								break;
-							}
-							parent = Array.get(parent, idx);
-						} else {
-							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-									+ pathIdx + "." + name + " Not Array." + END_LINE));
-							break;
-						}
 					}
-					++pathIdx;
 				} catch (Exception e) {
 					out.write(StringUtil.strToAsciiByte("Invalid Path started at "
 							+ pathIdx + "." + name + END_LINE));
 					break;
 				}
+				switch(path.getType()) {
+				case ARRAY:
+					// Want to visit collection[array, list, set] here.
+					int idx = path.getIdx();
+					if (parent instanceof Collection<?>) {
+						Collection<? extends Object> os = (Collection<?>) parent;
+						if (os.size() <= idx) {
+							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
+									+ pathIdx + "." + name + " Array Out of Bound." + END_LINE));
+							break Outter;
+						}
+						Iterator<? extends Object> iter = os.iterator();
+						for (int i = 0; i < idx; ++i) {
+							iter.next();
+						}
+						parent = iter.next();
+					} else if (parent.getClass().isArray()) {
+						if (Array.getLength(parent) <= idx) {
+							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
+									+ pathIdx + "." + name + " Array Out of Bound." + END_LINE));
+							break Outter;
+						}
+						parent = Array.get(parent, idx);
+					} else {
+						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
+								+ pathIdx + "." + name + " Not Array." + END_LINE));
+						break Outter;
+					}
+					break;
+				case MAP:
+					// Want to visit map here.
+					if (parent instanceof Map<?, ?>) {
+						Map<? extends Object, ? extends Object> map = (Map<?, ?>) parent;
+						if (map.size() == 0) {
+							out.write(StringUtil.strToAsciiByte("Map at "
+									+ pathIdx + "." + name + " Is Empty." + END_LINE));
+							break Outter;
+						}
+						Object key = map.keySet().iterator().next();
+						String realKey = path.getKey();
+						if (key instanceof String) {
+							parent = map.get(realKey);
+						} else if (key instanceof Integer) {
+							try {
+								idx = Integer.parseInt(realKey);
+								parent = map.get(idx);
+							} catch (Exception e) {
+								out.write(StringUtil.strToAsciiByte("Invalid Map Key at "
+										+ pathIdx + "." + name + END_LINE));
+								break Outter;
+							}
+						} else {
+							out.write(StringUtil.strToAsciiByte("This Map Key Type "
+									+ key.getClass().getSimpleName() + " at "
+									+ pathIdx + "." + name + " Is Not Supported." + END_LINE));
+							break Outter;
+						}
+					} else {
+						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
+								+ pathIdx + "." + name + " Not Map." + END_LINE));
+						break Outter;
+					}
+					break;
+				}
+				++pathIdx;
+				path = path.next();
 			}
 			if (parent == null) {
 				out.write(StringUtil.strToAsciiByte("Path Not Found." + END_LINE));
 				continue;
 			}
-			if (pathIdx < path.length) {
+			if (path != null) {
 				continue;
 			}
 			Executer ex = COMMAND_MAP.get(comm);
