@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 public class ConnectionWorker implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(ConnectionWorker.class);
 	private static final Map<String, Executer> COMMAND_MAP = new HashMap<String, Executer>();
+	private static String AUTH_INFO = null;
 	public static String END_LINE = "\n";
 
 	// Add all executers here.
@@ -60,6 +61,28 @@ public class ConnectionWorker implements Runnable {
 	private final OutputStream out;
 	private final Socket sock;
 	private final ConcurrentHashMap<String, Object> beanMap;
+	private boolean isAuth = false;
+
+
+	/**
+	 * Add a custom command to worker.
+	 *
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public static final Object addCommand(String key, Executer value) {
+		return COMMAND_MAP.put(key, value);
+	}
+
+	/**
+	 * Set authentication info to worker.
+	 *
+	 * @param s
+	 */
+	public static final void setAuthInfo(String s) {
+		AUTH_INFO = s;
+	}
 
 	/**
 	 * @param socket
@@ -126,6 +149,20 @@ public class ConnectionWorker implements Runnable {
 			if ("quit".equals(comm) || "exit".equals(comm)) {
 				out.write(StringUtil.strToAsciiByte("Goodbye." + END_LINE));
 				break;
+			}
+			// Auth
+			if ("auth".equals(comm)) {
+				if (AUTH_INFO == null || (args.length == 2 && AUTH_INFO.equals(args[1]))) {
+					out.write(StringUtil.strToAsciiByte("Authenticate Success." + END_LINE));
+					isAuth = true;
+				} else {
+					out.write(StringUtil.strToAsciiByte("Authenticate failed." + END_LINE));
+				}
+				continue;
+			}
+			if (AUTH_INFO != null && !isAuth) {
+				out.write(StringUtil.strToAsciiByte("Please authenticate." + END_LINE));
+				continue;
 			}
 			// Invalid command.
 			if (!COMMAND_MAP.containsKey(comm) || args.length < 2 || args[1].length() == 0) {

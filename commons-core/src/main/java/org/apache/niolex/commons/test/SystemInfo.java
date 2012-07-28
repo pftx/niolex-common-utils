@@ -17,11 +17,13 @@
  */
 package org.apache.niolex.commons.test;
 
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
+import java.util.List;
 
 import org.apache.niolex.commons.util.Runme;
 
@@ -36,12 +38,16 @@ public class SystemInfo {
 	private MemoryUsage heapMem;
 	private int usedRatio;
 	private MemoryUsage nonHeapMem;
+	// GC
+	private List<GarbageCollectorMXBean> gcList;
+	// CPU
 	private int cpuNumber;
 	private double loadAverage;
+	// Threads
 	private int totalThreadCount;
 	private int activeThreadCount;
 
-	private static SystemInfo INSTANCE = new SystemInfo();
+	private static final SystemInfo INSTANCE = new SystemInfo();
 	private static ThreadGroup TOP_GROUP;
 
 	static {
@@ -78,9 +84,12 @@ public class SystemInfo {
 		usedRatio = (int) ((heapMem.getUsed()) * 100 / heapMem.getCommitted());
 		nonHeapMem = m.getNonHeapMemoryUsage();
 
+		gcList = ManagementFactory.getGarbageCollectorMXBeans();
+
 		OperatingSystemMXBean o = ManagementFactory.getOperatingSystemMXBean();
 		cpuNumber = o.getAvailableProcessors();
 		loadAverage = o.getSystemLoadAverage();
+
 		ThreadMXBean t = ManagementFactory.getThreadMXBean();
 		totalThreadCount = t.getThreadCount();
 		activeThreadCount = TOP_GROUP.activeCount();
@@ -96,6 +105,10 @@ public class SystemInfo {
 
 	public int getCpuNumber() {
 		return cpuNumber;
+	}
+
+	public List<GarbageCollectorMXBean> getGcList() {
+		return gcList;
 	}
 
 	public double getLoadAverage() {

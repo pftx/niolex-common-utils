@@ -19,12 +19,15 @@ package org.apache.niolex.commons.remote;
 
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.test.Benchmark;
 import org.apache.niolex.commons.test.SystemInfo;
 import org.apache.niolex.commons.test.Benchmark.Bean;
@@ -45,11 +48,13 @@ public class BeanServerTest {
 
 		/**
 		 * Override super method
+		 * @throws IOException
 		 * @see org.apache.niolex.commons.remote.Invokable#invoke()
 		 */
 		@Override
-		public void invoke() {
+		public void invoke(OutputStream out, String[] args) throws IOException {
 			System.out.println("I am invoked.");
+			out.write(StringUtil.strToAsciiByte("I am invoked." + ConnectionWorker.END_LINE));
 		}
 
 		public String getMsg() {
@@ -78,6 +83,7 @@ public class BeanServerTest {
 			bmap.put("b", new Bean(3, "Bean", 12212, new Date()));
 			bmap.put("c", Benchmark.makeBenchmark());
 			bmap.put("invoke", new B());
+			bmap.put("os", new OSInfo());
 			imap.put(new Date(), new Bean(3, "Bean", 12212, new Date()));
 			set.add("Goog Morning");
 			set.add("This is Good");
@@ -115,6 +121,7 @@ public class BeanServerTest {
 	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws InterruptedException {
+		ConnectionWorker.setAuthInfo("abcD");
 		BeanServerTest test = new BeanServerTest();
 		test.beanS.putIfAbsent("bench", Benchmark.makeBenchmark());
 		test.beanS.putIfAbsent("group", test.new A());

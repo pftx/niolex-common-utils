@@ -206,7 +206,7 @@ public abstract class Executer {
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
 			StringBuilder sb = new StringBuilder();
 			if (o instanceof Invokable) {
-				((Invokable)o).invoke();
+				((Invokable)o).invoke(out, args);
 			} else if (o instanceof Runnable) {
 				((Runnable)o).run();
 			} else {

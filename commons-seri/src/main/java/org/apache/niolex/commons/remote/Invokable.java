@@ -17,6 +17,9 @@
  */
 package org.apache.niolex.commons.remote;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * Implement this interface then your code can be invoked from Bean Server.
  *
@@ -28,7 +31,11 @@ public interface Invokable {
 
 	/**
 	 * Do real work here.
+	 *
+	 * @param out The output stream is for write invoke result.
+	 * @param args The arguments from remote.
+	 * @throws IOException
 	 */
-	public void invoke();
+	public void invoke(OutputStream out, String[] args) throws IOException;
 
 }
