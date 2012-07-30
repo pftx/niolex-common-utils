@@ -20,7 +20,12 @@ package org.apache.niolex.commons.remote;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.lang.management.OperatingSystemMXBean;
+import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -28,14 +33,12 @@ import org.apache.niolex.commons.codec.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.management.OperatingSystemMXBean;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @Date: 2012-7-28
  */
-@SuppressWarnings("restriction")
 public class OSInfo implements Invokable {
 	private static final Logger LOG = LoggerFactory.getLogger(OSInfo.class);
 	private static final int CPUTIME = 30;
@@ -54,7 +57,7 @@ public class OSInfo implements Invokable {
 		osName = props.getProperty("os.name"); // 操作系统名称
 		osArch = props.getProperty("os.arch"); // 操作系统构架
 		osVersion = props.getProperty("os.version"); // 操作系统版本
-		osmxb = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+		osmxb = ManagementFactory.getOperatingSystemMXBean();
 	}
 
 	/**
@@ -70,13 +73,20 @@ public class OSInfo implements Invokable {
 		sb.append(' ').append(osVersion).append("----------------").append(endLine);
 
 		sb.append("Memory Info:").append(endLine);
-		final long gBsize = 1024 * 1024 * 1024;
-		final long halfg = gBsize / 2;
-		long totalMemorySize = (halfg + osmxb.getTotalPhysicalMemorySize()) / gBsize;// 总的物理内存
-		long freePhysicalMemorySize = (halfg + osmxb.getFreePhysicalMemorySize()) / gBsize;// 剩余的物理内存
-		long usedMemorySize = totalMemorySize - freePhysicalMemorySize;// 已使用的物理内存
-		sb.append("    Total ").append(totalMemorySize).append("G, Used ").append(usedMemorySize);
-		sb.append("G, Free ").append(freePhysicalMemorySize).append("G").append(endLine);
+		final long millionSize = 1024 * 1024;
+		MemoryMXBean m = ManagementFactory.getMemoryMXBean();
+		MemoryUsage heapMem = m.getHeapMemoryUsage();
+		long totalMemorySize = heapMem.getCommitted() / millionSize;// 总的物理内存
+		long usedMemorySize = heapMem.getUsed() / millionSize;// 已使用的物理内存
+		long freePhysicalMemorySize = totalMemorySize - usedMemorySize;// 剩余的物理内存
+
+		sb.append("    Heap Total ").append(totalMemorySize).append("MB, Used ").append(usedMemorySize);
+		sb.append("MB, Free ").append(freePhysicalMemorySize).append("MB").append(endLine);
+		List<GarbageCollectorMXBean> gcList = ManagementFactory.getGarbageCollectorMXBeans();
+		for (GarbageCollectorMXBean bean : gcList) {
+			sb.append("    ").append(bean.getName()).append(" GC Count ").append(bean.getCollectionCount());
+			sb.append(", Time ").append(bean.getCollectionTime()).append(endLine);
+		}
 
 		sb.append(endLine).append("CPU Info:").append(endLine);
 		if (osName.toLowerCase().startsWith("win")) {
@@ -89,12 +99,13 @@ public class OSInfo implements Invokable {
 		sb.append("    Load Average ").append(osmxb.getSystemLoadAverage()).append(endLine);
 
 		sb.append(endLine).append("Disk Info:").append(endLine);
+		final long gSize = millionSize * 1024;
 		File[] roots = File.listRoots();// 获取磁盘分区列表
 		for (int i = 0; i < roots.length; i++) {
 			File root = roots[i];
-			long freeSpace = root.getFreeSpace() / gBsize;
-			long totalSpace = root.getTotalSpace() / gBsize;
-			long usableSpace = root.getUsableSpace() / gBsize;
+			long freeSpace = root.getFreeSpace() / gSize;
+			long totalSpace = root.getTotalSpace() / gSize;
+			long usableSpace = root.getUsableSpace() / gSize;
 			sb.append("    Info of [").append(root).append("]:").append(endLine);
 			sb.append("        Free ").append(freeSpace).append("G, Total ").append(totalSpace);
 			sb.append("G, Usable ").append(usableSpace).append("G").append(endLine);
