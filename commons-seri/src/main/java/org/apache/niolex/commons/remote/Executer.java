@@ -214,6 +214,7 @@ public abstract class Executer {
 				sb.append(" Is not Allowed to Invoke.");
 				sb.append(END_LINE);
 				out.write(StringUtil.strToUtf8Byte(sb.toString()));
+				return;
 			}
 			sb.append("---Invoke Success---").append(END_LINE);
 			out.write(StringUtil.strToUtf8Byte(sb.toString()));
