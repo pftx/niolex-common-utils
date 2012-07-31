@@ -20,6 +20,7 @@ package org.apache.niolex.commons.stream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.niolex.commons.codec.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +57,19 @@ public class StreamUtil {
 				s.close();
 		} catch (Exception ie) {
 			LOG.info("Failed to close stream - " + ie.getMessage());
+		}
+	}
+
+	/**
+	 * Write an string to the output stream.
+	 * @param out
+	 * @param s
+	 */
+	public static final void writeString(OutputStream out, String s) {
+		try {
+			out.write(StringUtil.strToUtf8Byte(s));
+		} catch (Exception ie) {
+			LOG.info("Failed to write string to stream - " + ie.getMessage());
 		}
 	}
 

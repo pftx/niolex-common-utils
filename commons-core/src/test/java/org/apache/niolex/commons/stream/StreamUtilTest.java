@@ -17,6 +17,9 @@
  */
 package org.apache.niolex.commons.stream;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
@@ -53,5 +56,17 @@ public class StreamUtilTest {
 		StreamUtil.closeStream(out);
 	}
 
+	@Test
+	public void testWriteStringOutputStream() throws IOException {
+		PipedOutputStream out = null;
+		StreamUtil.closeStream(out);
+		out = new PipedOutputStream();
+		PipedInputStream snk = new PipedInputStream();
+		out.connect(snk);
+		System.out.println(snk.available());
+		StreamUtil.writeString(out, "This is so good");
+		System.out.println(snk.available());
+		assertEquals(15, snk.available());
+	}
 
 }
