@@ -69,22 +69,34 @@ public class SystemInfo {
 	 */
 	private SystemInfo() {
 		super();
-		new Runme() {
+
+		gcList = ManagementFactory.getGarbageCollectorMXBeans();
+	}
+
+	/**
+	 * Set automatically refresh system info at the specified time interval.
+	 * @param refreshInterval in milliseconds
+	 */
+	public void autoRefresh(int refreshInterval) {
+		Runme r = new Runme() {
 			@Override
 			public void runMe() {
 				refreshSystemInfo();
-			}}.start();
+			}
+		};
+		r.setSleepInterval(refreshInterval);
+		r.start();
 	}
 
 
-
+	/**
+	 * Refresh the system info.
+	 */
 	public void refreshSystemInfo() {
 		MemoryMXBean m = ManagementFactory.getMemoryMXBean();
 		heapMem = m.getHeapMemoryUsage();
 		usedRatio = (int) ((heapMem.getUsed()) * 100 / heapMem.getCommitted());
 		nonHeapMem = m.getNonHeapMemoryUsage();
-
-		gcList = ManagementFactory.getGarbageCollectorMXBeans();
 
 		OperatingSystemMXBean o = ManagementFactory.getOperatingSystemMXBean();
 		cpuNumber = o.getAvailableProcessors();

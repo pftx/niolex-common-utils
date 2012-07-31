@@ -25,11 +25,13 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.test.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +45,11 @@ public class OSInfo implements Invokable {
 	private static final Logger LOG = LoggerFactory.getLogger(OSInfo.class);
 	private static final int CPUTIME = 30;
 
+	private SystemInfo systemInfo = SystemInfo.getInstance();
+	private OperatingSystemMXBean osmxb;
 	private String osName;
 	private String osArch;
 	private String osVersion;
-	private OperatingSystemMXBean osmxb;
 
 	/**
 	 * Get the operating system information. Constructor
@@ -87,29 +90,52 @@ public class OSInfo implements Invokable {
 			sb.append("    ").append(bean.getName()).append(" GC Count ").append(bean.getCollectionCount());
 			sb.append(", Time ").append(bean.getCollectionTime()).append(endLine);
 		}
+		// Next is Linux memory info and disk info, windows if ignored.
+		String[] cmsArr = null;
+		if (osName.toLowerCase().startsWith("win")) {
+			//
+		} else {
+			cmsArr = getCpuMemSwapForLinux();
+		}
+		if (cmsArr != null) {
+			sb.append("    ").append(cmsArr[1]).append(endLine);
+			sb.append("    ").append(cmsArr[2]).append(endLine);
+		}
 
 		sb.append(endLine).append("CPU Info:").append(endLine);
 		if (osName.toLowerCase().startsWith("win")) {
 			int retn = getCpuIdleForWindows();
 			sb.append("    CPU Idle ").append(formatPercent(retn)).append(endLine);
-		} else {
+		} else if (cmsArr != null) {
 			// We just think it's Linux.
-			sb.append("    ").append(getCpuRateForLinux()).append(endLine);
+			sb.append("    ").append(cmsArr[0]).append(endLine);
+			sb.append("    Load Average ").append(osmxb.getSystemLoadAverage()).append(endLine);
 		}
-		sb.append("    Load Average ").append(osmxb.getSystemLoadAverage()).append(endLine);
 
 		sb.append(endLine).append("Disk Info:").append(endLine);
 		final long gSize = millionSize * 1024;
-		File[] roots = File.listRoots();// 获取磁盘分区列表
-		for (int i = 0; i < roots.length; i++) {
-			File root = roots[i];
-			long freeSpace = root.getFreeSpace() / gSize;
-			long totalSpace = root.getTotalSpace() / gSize;
-			long usableSpace = root.getUsableSpace() / gSize;
-			sb.append("    Info of [").append(root).append("]:").append(endLine);
-			sb.append("        Free ").append(freeSpace).append("G, Total ").append(totalSpace);
-			sb.append("G, Usable ").append(usableSpace).append("G").append(endLine);
+		if (osName.toLowerCase().startsWith("win")) {
+			File[] roots = File.listRoots();// 获取磁盘分区列表
+			for (int i = 0; i < roots.length; i++) {
+				File root = roots[i];
+				long freeSpace = root.getFreeSpace() / gSize;
+				long totalSpace = root.getTotalSpace() / gSize;
+				long usableSpace = root.getUsableSpace() / gSize;
+				sb.append("    Info of [").append(root).append("]:").append(endLine);
+				sb.append("        Free ").append(freeSpace).append("G, Total ").append(totalSpace);
+				sb.append("G, Usable ").append(usableSpace).append("G").append(endLine);
+			}
+		} else {
+			List<String> list = getDiskFreeForLinux();
+			for (String s : list) {
+				sb.append("    ").append(s).append(endLine);
+			}
 		}
+
+		sb.append(endLine).append("Threads Info:").append(endLine);
+		systemInfo.refreshSystemInfo();
+		sb.append("    Total Threads ").append(systemInfo.getTotalThreadCount());
+		sb.append(", Active ").append(systemInfo.getActiveThreadCount()).append(endLine);
 		// At the end.
 		out.write(StringUtil.strToUtf8Byte(sb.toString()));
 	}
@@ -191,7 +217,11 @@ public class OSInfo implements Invokable {
 		return retn;
 	}
 
-	public String getCpuRateForLinux() {
+	/**
+	 * Get Linux CPU Info, Memory Info, and Swap Info all at the same time.
+	 * @return
+	 */
+	public String[] getCpuMemSwapForLinux() {
 		Scanner scan = null;
 		try {
 			Process process = Runtime.getRuntime().exec("top -b -n 1");
@@ -203,21 +233,69 @@ public class OSInfo implements Invokable {
 				scan.nextLine();
 				scan.nextLine();
 				scan.nextLine();
-				return scan.nextLine();
+				return new String[] { scan.nextLine(), scan.nextLine()
+						, scan.nextLine() };
 			} else {
 				scan.nextLine();
 				scan.nextLine();
-				return scan.nextLine();
+				return new String[] { scan.nextLine(), scan.nextLine()
+						, scan.nextLine() };
 			}
 
 		} catch (IOException ioe) {
-			return "Error Occured.";
+			return null;
 		} finally {
 			if (scan != null) {
 				scan.close();
 			}
 		}
 
+	}
+
+	/**
+	 * Get the Linux disk free information.
+	 * @return
+	 */
+	public List<String> getDiskFreeForLinux() {
+		Scanner scan = null;
+		try {
+			Process process = Runtime.getRuntime().exec("df -h");
+			process.getOutputStream().close();
+			scan = new Scanner(process.getInputStream());
+
+			List<String> list = new ArrayList<String>();
+			while (scan.hasNext()) {
+				list.add(scan.nextLine());
+			}
+			return list;
+		} catch (IOException ioe) {
+			return null;
+		} finally {
+			if (scan != null) {
+				scan.close();
+			}
+		}
+
+	}
+
+	public SystemInfo getSystemInfo() {
+		return systemInfo;
+	}
+
+	public OperatingSystemMXBean getOsmxb() {
+		return osmxb;
+	}
+
+	public String getOsName() {
+		return osName;
+	}
+
+	public String getOsArch() {
+		return osArch;
+	}
+
+	public String getOsVersion() {
+		return osVersion;
 	}
 
 }

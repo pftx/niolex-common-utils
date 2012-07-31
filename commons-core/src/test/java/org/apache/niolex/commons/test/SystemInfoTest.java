@@ -35,11 +35,8 @@ public class SystemInfoTest {
 	 */
 	@Test
 	public void testRefreshSystemInfo() {
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		info.autoRefresh(100);
+		info.refreshSystemInfo();
 		int num = info.getTotalThreadCount();
 		new Thread() { public void run() {try {
 			Thread.sleep(2000);
@@ -47,7 +44,7 @@ public class SystemInfoTest {
 			e.printStackTrace();
 		}}}.start();
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -77,6 +74,7 @@ public class SystemInfoTest {
 	@Test
 	public void testGetCpuNumber() {
 		assertTrue(2 <= info.getCpuNumber());
+		assertTrue(2 <= info.getGcList().size());
 	}
 
 	/**
