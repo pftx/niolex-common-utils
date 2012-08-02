@@ -19,6 +19,7 @@ package org.apache.niolex.commons.remote;
 
 import static org.junit.Assert.*;
 
+import org.apache.niolex.commons.remote.Path.Type;
 import org.junit.Test;
 
 /**
@@ -36,6 +37,11 @@ public class PathTest {
 		Path p = Path.parsePath("abc.edf.eee.dd...ddtail");
 		System.out.println(p);
 		assertEquals(".abc => .edf => .eee => .dd => .ddtail", p.toString());
+		assertEquals(p.getType(), Type.FIELD);
+		assertEquals(p.getName(), "abc");
+		assertEquals(p.getKey(), null);
+		assertEquals(p.getIdx(), 0);
+		assertEquals(p.next().getName(), "edf");
 	}
 
 	/**
@@ -56,6 +62,8 @@ public class PathTest {
 		Path p = Path.parsePath("ggg{abc.def}");
 		System.out.println(p);
 		assertEquals("ggg{abc.def}", p.toString());
+		assertEquals(p.getKey(), "abc.def");
+		assertEquals(p.getIdx(), 0);
 	}
 
 	/**
@@ -66,6 +74,7 @@ public class PathTest {
 		Path p = Path.parsePath("ggg[123]");
 		System.out.println(p);
 		assertEquals("ggg[123]", p.toString());
+		assertEquals(p.getIdx(), 123);
 	}
 
 	/**
@@ -113,9 +122,9 @@ public class PathTest {
 	 */
 	@Test
 	public void testNext() {
-		Path p = Path.parsePath("arr[123]goodMap{abc}.{dbc}");
+		Path p = Path.parsePath("arr[123]goodMap{a{bc}.{dbc}");
 		System.out.println(p);
-		assertEquals("Invalid Path at arr[123]goodMap{abc}.{dbc => arr[123] => goodMap{abc}", p.toString());
+		assertEquals("Invalid Path at arr[123]goodMap{a{bc}.{dbc => arr[123] => goodMap{a{bc}", p.toString());
 	}
 
 	@Test
@@ -140,6 +149,22 @@ public class PathTest {
 		Path p = Path.parsePath("benc[goodM");
 		System.out.println(p);
 		assertEquals("Invalid Path at benc[goodM", p.toString());
+	}
+
+	@Test
+	public void testMakePath4()
+			throws Exception {
+		Path p = Path.parsePath("benc[go[odM");
+		System.out.println(p);
+		assertEquals("Invalid Path at benc[go", p.toString());
+	}
+
+	@Test
+	public void testMakePath5()
+			throws Exception {
+		Path p = Path.parsePath("benc[go{odM");
+		System.out.println(p);
+		assertEquals("Invalid Path at benc[go", p.toString());
 	}
 
 }
