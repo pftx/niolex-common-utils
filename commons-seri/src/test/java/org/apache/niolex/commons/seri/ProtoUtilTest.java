@@ -45,13 +45,15 @@ public class ProtoUtilTest {
 	 */
 	@Test
 	public void testParseOne() {
+		ProtoUtil pu = new ProtoUtil();
 		int i = 2345;
 		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
 				.setName("Niolex [" + i + "]")
 				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
 				.build();
 		byte[] ret = p.toByteArray();
-		byte[] tar = seriOne(p);
+		@SuppressWarnings("static-access")
+		byte[] tar = pu.seriOne(p);
 		assertArrayEquals(ret, tar);
 		Person p2 = (Person)parseOne(tar, Person.class);
 		assertEquals(p2.getEmail(), "kjdfjkdf" + i + "@xxx.com");
