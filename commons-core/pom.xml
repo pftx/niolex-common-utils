@@ -72,15 +72,8 @@
 				<directory>src/test/java</directory>
 				<includes>
 					<include>**/*.txt</include>
-					<include>**/*.properties</include>
-				</includes>
-			</testResource>
-			<testResource>
-				<directory>src/main/conf</directory>
-				<includes>
-					<include>**/*.txt</include>
-					<include>**/*.properties</include>
 					<include>**/*.xml</include>
+					<include>**/*.properties</include>
 				</includes>
 			</testResource>
 		</testResources>
