@@ -76,8 +76,8 @@ public class ZLibUtilTest {
         System.out.println("Original size => " + data.length);
         byte[] q = ZLibUtil.compress(data);
         System.out.println("Compressed size => " + q.length);
-        Assert.assertEquals(data.length, 56776);
-        Assert.assertEquals(q.length, 18150);
+        Assert.assertEquals(data.length, 54757);
+        Assert.assertEquals(q.length, 18029);
 
     }
 

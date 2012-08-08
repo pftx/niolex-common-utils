@@ -13,7 +13,7 @@ public class DownloadUtilTest {
 		String str = new String(DownloadUtil.getClassPathResource("../file/Data.txt", DownloadUtilTest.class),
 				"utf-8");
 		System.out.println("SL " + str.length());
-		Assert.assertEquals(1833, str.length());
+		Assert.assertEquals(1783, str.length());
 		assertTrue(str.startsWith("HOW-TOs, samples"));
 	}
 

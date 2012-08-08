@@ -76,8 +76,8 @@ public class GZipUtilTest {
         System.out.println("Original size => " + data.length);
         byte[] q = GZipUtil.compress(data);
         System.out.println("Compressed size => " + q.length);
-        Assert.assertEquals(data.length, 56776);
-        Assert.assertEquals(q.length, 18162);
+        Assert.assertEquals(data.length, 54757);
+        Assert.assertEquals(q.length, 18041);
         q = GZipUtil.decompress(q);
         assertArrayEquals(data, q);
     }

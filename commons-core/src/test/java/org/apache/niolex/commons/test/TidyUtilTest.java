@@ -37,7 +37,7 @@ public class TidyUtilTest {
 		String str = FileUtil.getCharacterFileContentFromClassPath("Data.txt", TidyUtilTest.class, "utf-8");
 		str = TidyUtil.removePrefix(str, 2);
         System.out.println("SL " + str.length());
-        assertEquals(676, str.length());
+        assertEquals(652, str.length());
 	}
 
 }
