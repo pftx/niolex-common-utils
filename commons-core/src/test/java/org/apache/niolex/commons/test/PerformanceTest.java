@@ -64,7 +64,7 @@ public class PerformanceTest {
 	}
 
 	private static int innerIteration = 1000000;
-	private static int outerIteration = 100;
+	private static int outerIteration = 10;
 
 	class DirectMethod extends Performance {
 		KTestBean bean = new KTestBean();
