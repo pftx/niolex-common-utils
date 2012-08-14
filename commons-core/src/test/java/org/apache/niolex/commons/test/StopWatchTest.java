@@ -21,14 +21,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.niolex.commons.test.StopWatch.Stop;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @Date: 2012-8-14
  */
+@RunWith(OrderedRunner.class)
 public class StopWatchTest {
 
 	static StopWatch sw = new StopWatch(1);
@@ -37,8 +38,8 @@ public class StopWatchTest {
 	 * Test method for {@link org.apache.niolex.commons.test.StopWatch#begin()}.
 	 * @throws InterruptedException
 	 */
-	@BeforeClass
-	public static void testBegin() throws InterruptedException {
+	@Test
+	public void testBegin() throws InterruptedException {
 		sw.begin();
 	}
 
@@ -47,7 +48,7 @@ public class StopWatchTest {
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testStart() throws InterruptedException {
+	public void testCStart() throws InterruptedException {
 		Stop s = sw.start();
 		Stop s1 = sw.start();
 		Thread.sleep(10);
@@ -74,7 +75,7 @@ public class StopWatchTest {
 	 * Test method for {@link org.apache.niolex.commons.test.StopWatch#print()}.
 	 */
 	@Test
-	public void testPrint() {
+	public void testEPrint() {
 		sw.print();
 	}
 
