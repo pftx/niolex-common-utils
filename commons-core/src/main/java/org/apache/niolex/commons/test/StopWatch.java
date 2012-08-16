@@ -18,7 +18,12 @@
 package org.apache.niolex.commons.test;
 
 import java.text.NumberFormat;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.niolex.commons.util.Runme;
 
 /**
  * This class is calculating average time, max time, min time, time distribution.
@@ -32,6 +37,12 @@ public class StopWatch {
 
 	private final int distributionInterval;
 	private final ConcurrentLinkedQueue<Integer> linkList = new ConcurrentLinkedQueue<Integer>();
+
+	// These three variables are for rps calculation.
+	private final LinkedList<Long> rpsList = new LinkedList<Long>();
+	private final AtomicLong counter = new AtomicLong(0);
+	private Runme rumme;
+
 	private long startTime;
 	private int[] distributions;
 	private int avg;
@@ -53,6 +64,20 @@ public class StopWatch {
 	 */
 	public void begin() {
 		startTime = System.currentTimeMillis();
+		counter.getAndSet(0);
+
+		rumme = new Runme() {
+
+			@Override
+			public void runMe() {
+				Long l = counter.getAndSet(0);
+				rpsList.add(l);
+			}
+
+		};
+
+		rumme.setInitialSleep(true);
+		rumme.start();
 	}
 
 	/**
@@ -69,6 +94,9 @@ public class StopWatch {
 	 * Mark this Stop Watch as done and calculate all the statistics.
 	 */
 	public void done() {
+		if (rumme != null) {
+			rumme.stopMe();
+		}
 		final int distNum = 1000 / distributionInterval + 1;
 		final long wholeTime = System.currentTimeMillis() - startTime;
 		long totalCnt = 0, totalTime = 0;
@@ -119,6 +147,11 @@ public class StopWatch {
 			l = r;
 			r += distributionInterval;
 		}
+		sb.append("---------------------------------------\n");
+		Iterator<Long> it = rpsList.iterator();
+		while (it.hasNext()) {
+			sb.append(rf.format(it.next())).append('\n');
+		}
 		sb.append("----------------END--------------------\n");
 		System.out.print(sb);
 	}
@@ -145,6 +178,10 @@ public class StopWatch {
 
 	public int getRps() {
 		return rps;
+	}
+
+	public LinkedList<Long> getRpsList() {
+		return rpsList;
 	}
 
 	//------------------------------------------------------------------
@@ -175,6 +212,7 @@ public class StopWatch {
 		public void stop() {
 			long time = System.currentTimeMillis() - startTime;
 			linkList.add(new Integer((int) time));
+			counter.incrementAndGet();
 		}
 	}
 }

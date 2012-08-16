@@ -122,6 +122,7 @@ public class StopWatchTest {
 	@Test
 	public void testGetRps() {
 		assertTrue(sw.getRps() < 100);
+		assertTrue(sw.getRpsList().size() < 3);
 	}
 
 }
