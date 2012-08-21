@@ -61,8 +61,10 @@ public class StopWatch {
 
 	/**
 	 * Begin the time calculation.
+	 *
+	 * @param printDirectly Whether to print rps directly into console.
 	 */
-	public void begin() {
+	public void begin(final boolean printDirectly) {
 		startTime = System.currentTimeMillis();
 		counter.getAndSet(0);
 
@@ -71,7 +73,11 @@ public class StopWatch {
 			@Override
 			public void runMe() {
 				Long l = counter.getAndSet(0);
-				rpsList.add(l);
+				if (printDirectly) {
+					System.out.println("rps -> " + l);
+				} else {
+					rpsList.add(l);
+				}
 			}
 
 		};

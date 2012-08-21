@@ -40,7 +40,10 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testBegin() throws InterruptedException {
-		sw.begin();
+		try {
+		sw.done();
+		} catch (Exception e) {}
+		sw.begin(true);
 	}
 
 	/**
@@ -76,6 +79,47 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testEPrint() {
+		sw.print();
+	}
+
+	@Test
+	public void testFBegin() throws InterruptedException {
+		sw.begin(false);
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.test.StopWatch#start()}.
+	 * @throws InterruptedException
+	 */
+	@Test
+	public void testFCStart() throws InterruptedException {
+		Stop s = sw.start();
+		Stop s1 = sw.start();
+		Thread.sleep(10);
+		s.stop();
+		s1.stop();
+		s = sw.start();
+		Thread.sleep(20);
+		s.stop();
+		s = sw.start();
+		Thread.sleep(1500);
+		s.stop();
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.test.StopWatch#done()}.
+	 */
+	@Test
+	public void testFDone() {
+		System.out.println(System.currentTimeMillis());
+		sw.done();
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.test.StopWatch#print()}.
+	 */
+	@Test
+	public void testFEPrint() {
 		sw.print();
 	}
 
