@@ -94,12 +94,12 @@
 		<repository>
 			<id>Ad-nexus-releases</id>
 			<name>Ad nexus releases</name>
-			<url>http://10.22.197.188:8081/nexus/content/repositories/Ad-nexus-releases/</url>
+			<url>http://10.22.197.190:8081/nexus/content/repositories/Ad-nexus-releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>Ad-nexus-snapshots</id>
 			<name>Ad nexus snapshots</name>
-			<url>http://10.22.197.188:8081/nexus/content/repositories/Ad-nexus-snapshots/</url>
+			<url>http://10.22.197.190:8081/nexus/content/repositories/Ad-nexus-snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
