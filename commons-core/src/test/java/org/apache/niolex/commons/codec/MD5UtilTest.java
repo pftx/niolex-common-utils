@@ -53,4 +53,12 @@ public class MD5UtilTest {
         System.out.println("md5 => " + md5);
         Assert.assertTrue(MD5Util.md5Check(md5, "gmail", "ajin"));
     }
+
+    @Test
+    public void testMD5_Null() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    	String md5 = MD5Util.md5("gmail", null, "ajin");
+    	System.out.println("md5 => " + md5);
+    	Assert.assertFalse(MD5Util.md5Check(md5, "gmail", "ajin"));
+    	Assert.assertTrue(MD5Util.md5Check(md5, "gmail", null, "ajin"));
+    }
 }

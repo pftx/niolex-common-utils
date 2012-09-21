@@ -49,6 +49,10 @@ public abstract class MD5Util {
     public static final String md5(String... plainTexts) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         for (String plainText : plainTexts) {
+        	if (plainText == null) {
+        		md.update((byte) 216);
+        		continue;
+        	}
             md.update(plainText.getBytes("UTF-8"));
         }
         byte bytes[] = md.digest();
@@ -68,6 +72,10 @@ public abstract class MD5Util {
     public static final boolean md5Check(String md5, String... plainTexts) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         for (String plainText : plainTexts) {
+        	if (plainText == null) {
+        		md.update((byte) 216);
+        		continue;
+        	}
             md.update(plainText.getBytes("UTF-8"));
         }
         byte bytes[] = md.digest();
