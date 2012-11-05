@@ -1,5 +1,5 @@
 /**
- * Pair.java
+ * KMin2Array.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -15,37 +15,30 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.util;
+package org.apache.niolex.common.sort;
 
 /**
- * A common utility class to store two variables into one object.
- *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-7-12
+ * @Date: 2012-10-25
  */
-public class Pair<A, B> {
+public class KMin2Array {
 
-	public A a;
-	public B b;
-
-	/**
-	 * Create an empty Pair.
-	 */
-	public Pair() {
-		super();
-	}
-
-	/**
-	 * Create a Pair with the specified value.
-	 *
-	 * @param a
-	 * @param b
-	 */
-	public Pair(A a, B b) {
-		super();
-		this.a = a;
-		this.b = b;
+	public static int findTheKMin(int[] A, int[] B, int k) {
+		int i = k / 2;
+		int j = k - i - 1;
+		if (A[i] <= B[j]) {
+			if (A[i] >= B[j - 1]) {
+				// found.
+				return A[i];
+			}
+			;
+		} else {
+			if (B[j] > A[i - 1]) {
+				return B[j];
+			}
+		}
+		return 0;
 	}
 
 }
