@@ -34,7 +34,8 @@ public class KryoOutstream {
 
 	/**
 	 * Create a simple kryo by this output stream.
-	 * @param in
+	 *
+	 * @param out
 	 */
 	public KryoOutstream(OutputStream out) {
 		this(new Kryo(), out);
@@ -42,8 +43,9 @@ public class KryoOutstream {
 
 	/**
 	 * Create a kryo outstream directly.
+	 *
 	 * @param kryo
-	 * @param outp
+	 * @param out
 	 */
 	public KryoOutstream(Kryo kryo, OutputStream out) {
 		super();

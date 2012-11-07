@@ -80,7 +80,7 @@ public abstract class SmileUtil {
 
     /**
      * Convert binary to Object
-     * @param s
+     * @param bin
      * @param valueType
      * @return
      * @throws JsonParseException
@@ -93,7 +93,7 @@ public abstract class SmileUtil {
 
     /**
      * Convert binary to Object
-     * @param s
+     * @param bin
      * @param valueType
      * @return
      * @throws JsonParseException

@@ -45,7 +45,7 @@ public class KryoInstream {
 	/**
 	 * Create a kryo instream directly.
 	 * @param kryo
-	 * @param inp
+	 * @param in
 	 */
 	public KryoInstream(Kryo kryo, InputStream in) {
 		super();
