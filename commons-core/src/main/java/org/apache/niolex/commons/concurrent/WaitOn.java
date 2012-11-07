@@ -62,7 +62,6 @@ public class WaitOn<E> {
 	 * If there is any exception thrown from the release side, that exception will
 	 * be thrown to you.
 	 *
-	 * @param key
 	 * @param time
 	 * @return
 	 * @throws InterruptedException

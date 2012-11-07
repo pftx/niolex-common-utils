@@ -147,7 +147,6 @@ public class DESCoder extends BaseCoder {
      * 加密
      *
      * @param data
-     * @param key
      * @return
      * @throws Exception
      */
@@ -164,7 +163,6 @@ public class DESCoder extends BaseCoder {
      * 解密
      *
      * @param data
-     * @param key
      * @return
      * @throws Exception
      */

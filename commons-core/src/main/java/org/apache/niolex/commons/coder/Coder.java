@@ -19,12 +19,12 @@ package org.apache.niolex.commons.coder;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * 
+ *
  * @version 1.0.0, $Date: 2011-7-13$
- * 
+ *
  */
 public interface Coder {
-    
+
     String ENC = "UTF-8";
 
     /**
@@ -33,39 +33,37 @@ public interface Coder {
      * @throws Exception
      */
     public void initKey(String key) throws Exception;
-    
+
     /**
      * 加密
-     * 
+     *
      * @param data
-     * @param key
      * @return
      * @throws Exception
      */
     public byte[] encrypt(byte[] data) throws Exception;
-    
+
     /**
      * 解密
-     * 
+     *
      * @param data
-     * @param key
      * @return
      * @throws Exception
      */
     public byte[] decrypt(byte[] data) throws Exception;
-    
+
     /**
      * 加密字符串
-     * 
+     *
      * @param str
      * @return
      * @throws Exception
      */
     public String encode(String str) throws Exception;
-    
+
     /**
      * 解密字符串
-     * 
+     *
      * @param str
      * @return
      * @throws Exception

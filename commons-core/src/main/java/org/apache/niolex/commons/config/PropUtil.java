@@ -82,7 +82,8 @@ public abstract class PropUtil {
     /**
      * 从class path中加载指定名字的配置文件
      *
-     * @param fileName 待加载的文件名
+     * @param resource 待加载的文件的资源名
+     * @param cls 携带待使用的类加载器
      * @throws IOException 假如读文件出错
      * @throws IllegalArgumentException 假如文件中含有非法字符
      * @throws NullPointerException 假如文件名是null
@@ -128,7 +129,7 @@ public abstract class PropUtil {
     /**
      * 从配置文件中读取字符串类型的配置
      *
-     * @see public static final String getProperty(String key)
+     * @see #getProperty(String)
      * @param key 待读取的配置的键
      * @return 待读取的配置的值，如果配置不存在则返回null
      */
@@ -139,7 +140,7 @@ public abstract class PropUtil {
     /**
      * 从配置文件中读取字符串类型的配置
      *
-     * @see public static final String getProperty(String key, String defaultValue)
+     * @see #getProperty(String, String)
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值
      * @return 待读取的配置的值，如果配置不存在则返回<code>defaultValue</code>

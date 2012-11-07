@@ -59,7 +59,6 @@ public class Blowfish2Coder extends BaseCoder {
      * 加密
      *
      * @param data
-     * @param key
      * @return
      * @throws Exception
      */
@@ -74,7 +73,6 @@ public class Blowfish2Coder extends BaseCoder {
      * 解密
      *
      * @param data
-     * @param key
      * @return
      * @throws Exception
      */

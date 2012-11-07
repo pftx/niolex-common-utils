@@ -202,7 +202,7 @@ public abstract class RSAUtil {
      * 用私钥解密通过公钥加密的数据
      *
      * @param data 通过公钥加密的数据
-     * @param key 用来解密的私钥
+     * @param privateKey 用来解密的私钥
      * @return 解密后的数据
      *
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
@@ -300,7 +300,7 @@ public abstract class RSAUtil {
      * 用公钥加密数据
      *
      * @param data 等待加密的原始数据
-     * @param key 用来加密的公钥
+     * @param publicKey 用来加密的公钥
      * @return 加密后的数据
      *
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
@@ -365,7 +365,7 @@ public abstract class RSAUtil {
      * 用私钥加密数据
      *
      * @param data 等待加密的原始数据
-     * @param key 用来加密的私钥
+     * @param privateKey 用来加密的私钥
      * @return 加密后的数据
      *
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
@@ -394,7 +394,7 @@ public abstract class RSAUtil {
     /**
      * 取得私钥
      *
-     * @param keyMap 密钥对Map
+     * @param key 密钥对加密后形成的字符串
      * @return 私钥
      * @throws UnsupportedEncodingException 假如用户的环境不支持UTF-8
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA

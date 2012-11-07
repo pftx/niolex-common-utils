@@ -31,25 +31,25 @@ import org.apache.niolex.commons.codec.Base64Util;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * 
+ *
  * @version 1.0.0, $Date: 2011-7-12$
- * 
+ *
  */
 public class RC2Coder extends BaseCoder {
 
     /**
      * ALGORITHM 算法 <br>
      * 可替换为以下任意一种算法，同时key值的size相应改变。
-     * 
+     *
      * <pre>
-     * DES                  key size must be equal to 56  
-     * DESede(TripleDES)    key size must be equal to 112 or 168  
-     * AES                  key size must be equal to 128, 192 or 256, but 192 and 256 bits may not be available  
-     * Blowfish             key size must be multiple of 8, and can only range from 32 to 448 (inclusive)  
-     * RC2                  key size must be between 40 and 1024 bits  
+     * DES                  key size must be equal to 56
+     * DESede(TripleDES)    key size must be equal to 112 or 168
+     * AES                  key size must be equal to 128, 192 or 256, but 192 and 256 bits may not be available
+     * Blowfish             key size must be multiple of 8, and can only range from 32 to 448 (inclusive)
+     * RC2                  key size must be between 40 and 1024 bits
      * RC4(ARCFOUR)         key size must be between 40 and 1024 bits
      * </pre>
-     * 
+     *
      * </code>
      */
 
@@ -61,7 +61,7 @@ public class RC2Coder extends BaseCoder {
 
     /**
      * 转换密钥<br>
-     * 
+     *
      * @param key
      * @return
      * @throws Exception
@@ -71,10 +71,10 @@ public class RC2Coder extends BaseCoder {
 
         return secretKey;
     }
-    
+
     /**
      * 初始化密钥和IV参数
-     * 
+     *
      * @param key
      * @throws Exception
      */
@@ -83,7 +83,7 @@ public class RC2Coder extends BaseCoder {
         ivParam = new RC2ParameterSpec(128, keyData, 0);
         secretKey = toKey(ArrayUtils.subarray(keyData, 17, 33));
     }
-    
+
     public void secureInitKey(String key) throws Exception {
         byte[] keyData = Base64Util.base64toByte(key);
         byte[] ivData = new byte[8];
@@ -106,9 +106,8 @@ public class RC2Coder extends BaseCoder {
 
     /**
      * 加密
-     * 
+     *
      * @param data
-     * @param key
      * @return
      * @throws Exception
      */
@@ -121,9 +120,8 @@ public class RC2Coder extends BaseCoder {
 
     /**
      * 解密
-     * 
+     *
      * @param data
-     * @param key
      * @return
      * @throws Exception
      */

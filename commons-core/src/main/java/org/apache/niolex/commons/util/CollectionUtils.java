@@ -94,7 +94,6 @@ public abstract class CollectionUtils {
 
 	/**
 	 * Make a copy of the parameter.
-	 * @param src
 	 * @param args
 	 * @return
 	 */

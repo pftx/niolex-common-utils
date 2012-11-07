@@ -63,7 +63,7 @@ public class Blocker<E> {
 	 * When use this method, the application need to make sure only one thread waiting for one key at the
 	 * same time, or the old wait on object will be replaced and that thread can not get result at all.
 	 *
-	 * @see init(Object key)
+	 * @see #init(Object)
 	 *
 	 * @param key
 	 * @return
