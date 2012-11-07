@@ -1,0 +1,12 @@
+#!/bin/bash
+# Script for start multi Agents for multi Redis instances on one machchine.
+#
+# Each redis instance should have one agent.
+# Redis instances on one machine have the same ip addr but different ports. 
+# Config the variables below then start the script.
+
+if [ $# -gt 0 ]; then
+	btrace -p 35627 -cp /data/follower/local/btrace/build:. $*
+else
+	echo -e "Usage: $0 pid XXX.java" >&2
+fi
