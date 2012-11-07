@@ -19,6 +19,8 @@ package org.apache.niolex.commons.test;
 
 import static org.junit.Assert.*;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.Test;
 
 /**
@@ -32,23 +34,26 @@ public class SystemInfoTest {
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.test.SystemInfo#refreshSystemInfo()}.
+	 * @throws InterruptedException
 	 */
 	@Test
-	public void testRefreshSystemInfo() {
-		info.autoRefresh(100);
+	public void testRefreshSystemInfo() throws InterruptedException {
+		info.autoRefresh(10);
 		info.refreshSystemInfo();
 		int num = info.getTotalThreadCount();
+		final CountDownLatch startSignal = new CountDownLatch(1);
+		final CountDownLatch doneSignal = new CountDownLatch(1);
+
 		new Thread() { public void run() {try {
-			Thread.sleep(2000);
+			startSignal.countDown();
+			doneSignal.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}}}.start();
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		startSignal.await();
+		Thread.sleep(100);
 		int k = info.getTotalThreadCount();
+		doneSignal.countDown();
 		assertEquals(k, num + 1);
 	}
 

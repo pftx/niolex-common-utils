@@ -18,9 +18,7 @@
 package org.apache.niolex.commons.concurrent;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.niolex.commons.util.Pair;
 
@@ -32,11 +30,6 @@ import org.apache.niolex.commons.util.Pair;
  * @Date: 2012-7-12
  */
 public class Blocker<E> {
-
-	/**
-	 * The lock to stop threads.
-	 */
-	private final Lock lock = new ReentrantLock();
 
 	/**
 	 * The current waiting map.
@@ -52,22 +45,17 @@ public class Blocker<E> {
 	 * @return Pair.a true if the wait on object is newly created. Pair.b the wait on object.
 	 */
 	public Pair<Boolean, WaitOn<E>> init(Object key) {
-		lock.lock();
-		try {
-			Condition waitOn = lock.newCondition();
-			WaitOn<E> value = new WaitOn<E>(waitOn, lock);
-			Pair<Boolean, WaitOn<E>> p = new Pair<Boolean, WaitOn<E>>();
-			p.b = waitMap.putIfAbsent(key, value);
-			if (p.b == null) {
-				p.a = Boolean.TRUE;
-				p.b = value;
-			} else {
-				p.a = Boolean.FALSE;
-			}
-			return p;
-		} finally {
-			lock.unlock();
+		CountDownLatch latch = new CountDownLatch(1);
+		WaitOn<E> value = new WaitOn<E>(latch);
+		Pair<Boolean, WaitOn<E>> p = new Pair<Boolean, WaitOn<E>>();
+		p.b = waitMap.putIfAbsent(key, value);
+		if (p.b == null) {
+			p.a = Boolean.TRUE;
+			p.b = value;
+		} else {
+			p.a = Boolean.FALSE;
 		}
+		return p;
 	}
 
 	/**
@@ -81,19 +69,14 @@ public class Blocker<E> {
 	 * @return
 	 */
 	public WaitOn<E> initWait(Object key) {
-		lock.lock();
-		try {
-			Condition waitOn = lock.newCondition();
-			WaitOn<E> value = new WaitOn<E>(waitOn, lock);
-			waitMap.put(key, value);
-			return value;
-		} finally {
-			lock.unlock();
-		}
+		CountDownLatch latch = new CountDownLatch(1);
+		WaitOn<E> value = new WaitOn<E>(latch);
+		waitMap.put(key, value);
+		return value;
 	}
 
 	/**
-	 * A short method for initWait(key).waitForResult(time).
+	 * A concise alias for initWait(key).waitForResult(time).
 	 * Just for some one do not care about initialization.
 	 *
 	 * @param key
@@ -107,16 +90,19 @@ public class Blocker<E> {
 
 	/**
 	 * Release the thread waiting on the key with this result.
+	 * The result must not be #java.lang.Exception or it's subclass.
+	 * Release with an exception has different meaning.
+	 *
+	 * @see #release(Object, Exception)
 	 *
 	 * @param key
 	 * @param value
 	 * @return true if success to release, false if no thread waiting on it.
 	 */
 	public boolean release(Object key, E value) {
-		WaitOn<E> it = waitMap.get(key);
+		// Remove the key from wait map, and return the value.
+		WaitOn<E> it = waitMap.remove(key);
 		if (it != null) {
-			// Remove the key from wait map.
-			waitMap.remove(key);
 			it.release(value);
 			return true;
 		} else {
@@ -125,17 +111,17 @@ public class Blocker<E> {
 	}
 
 	/**
-	 * Release the thread waiting on the key with this result.
+	 * Release the thread waiting on the key with this exception.
+	 * The exception will be thrown to user application waiting on this key.
 	 *
 	 * @param key
 	 * @param value
 	 * @return true if success to release, false if no thread waiting on it.
 	 */
 	public boolean release(Object key, Exception value) {
-		WaitOn<E> it = waitMap.get(key);
+		// Remove the key from wait map, and return the value.
+		WaitOn<E> it = waitMap.remove(key);
 		if (it != null) {
-			// Remove the key from wait map.
-			waitMap.remove(key);
 			it.release(value);
 			return true;
 		} else {

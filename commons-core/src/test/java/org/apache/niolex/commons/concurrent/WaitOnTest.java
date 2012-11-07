@@ -20,9 +20,7 @@ package org.apache.niolex.commons.concurrent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,14 +32,13 @@ import org.junit.Test;
  */
 public class WaitOnTest {
 
-	private Lock lock = new ReentrantLock();
+	private CountDownLatch latch = new CountDownLatch(1);
 
 	private WaitOn<String> waitOn;
 
 	@Before
 	public void createWaitOn() throws Exception {
-		Condition wai2tOn = lock.newCondition();
-		waitOn = new WaitOn<String>(wai2tOn, lock);
+		waitOn = new WaitOn<String>(latch);
 	}
 
 	/**

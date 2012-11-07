@@ -31,12 +31,12 @@ public class DownloadUtilTest {
 		try {
 			byte[] con = DownloadUtil
 					.downloadFile("http://apache.etoak.com/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.zip",
-							1000, 50, 1230000);
+							1000, 50, 7990180);
 			System.out.println("SL " + con.length);
 			Assert.assertEquals(136013, con.length);
 		} catch (DownloadException et) {
+			System.out.println("MSG " + et.getMessage());
 			assertEquals(et.getCode(), DownloadException.ExCode.IOEXCEPTION);
-			System.out.println("SL " + et.getMessage());
 			et = new DownloadException(et.getCode());
 			et = new DownloadException(et.getCode(), et.toString(), et);
 

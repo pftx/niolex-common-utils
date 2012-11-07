@@ -17,9 +17,8 @@
  */
 package org.apache.niolex.commons.concurrent;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Use this class to wait for the specified result to happen.
@@ -31,31 +30,37 @@ import java.util.concurrent.locks.Lock;
 public class WaitOn<E> {
 
 	/**
-	 * The internal managed wait item.
+	 * The internal managed wait latch.
 	 */
-	private final Condition waitOn;
-	private final Lock lock;
+	private final CountDownLatch latch;
+
+	/**
+	 * The expected result.
+	 */
 	private E result;
+
+	/**
+	 * The unexpected exception.
+	 */
 	private Exception exc;
 
 
 	/**
-	 * The only constructor. Initialize all fields.
+	 * The only constructor. Initialize with the wait latch.
 	 *
-	 * @param waitOn
-	 * @param lock
+	 * @param latch
 	 */
-	public WaitOn(Condition waitOn, Lock lock) {
+	public WaitOn(CountDownLatch latch) {
 		super();
-		this.waitOn = waitOn;
-		this.lock = lock;
+		this.latch = latch;
 	}
 
 
 	/**
-	 * Wait for result from server.
+	 * Wait for result from the release side.
 	 * If result is not ready after the given time, will return null.
-	 * If there is any exception thrown from the release side, that exception will be thrown.
+	 * If there is any exception thrown from the release side, that exception will
+	 * be thrown to you.
 	 *
 	 * @param key
 	 * @param time
@@ -63,44 +68,40 @@ public class WaitOn<E> {
 	 * @throws InterruptedException
 	 */
 	public E waitForResult(long time) throws Exception {
-		lock.lock();
-		try {
-			if (result != null)
-				return result;
-			if (exc != null) {
-				// Release with exception.
-				throw exc;
-			}
-			// Not ready yet, let's wait.
-			waitOn.await(time, TimeUnit.MILLISECONDS);
-			if (exc != null) {
-				// Release with exception.
-				throw exc;
-			}
-			// Just return, if not ready, will return null.
+		// First, let's check whether data is ready for now?
+		if (result != null)
 			return result;
-		} finally {
-			lock.unlock();
+		if (exc != null) {
+			// Release with exception.
+			throw exc;
 		}
+		// Not ready yet, let's wait.
+		latch.await(time, TimeUnit.MILLISECONDS);
+		if (exc != null) {
+			// Release with exception.
+			throw exc;
+		}
+		// Just return, if not ready, will return null.
+		return result;
 	}
 
+	/**
+	 * Release the wait thread with result.
+	 *
+	 * @param result
+	 */
 	public void release(E result) {
 		this.result = result;
-		lock.lock();
-		try {
-			waitOn.signalAll();
-		} finally {
-			lock.unlock();
-		}
+		latch.countDown();
 	}
 
+	/**
+	 * Release the wait thread with exception.
+	 *
+	 * @param exc
+	 */
 	public void release(Exception exc) {
 		this.exc = exc;
-		lock.lock();
-		try {
-			waitOn.signalAll();
-		} finally {
-			lock.unlock();
-		}
+		latch.countDown();
 	}
 }
