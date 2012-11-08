@@ -49,22 +49,22 @@ public class LinkedIterList<E> {
 	}
 
 	/**
-	 * The internal head, which is a sub to mark the head of this List.
+	 * The internal head, which is a stub to mark the head of this List.
 	 */
 	private final Link<E> head = new Link<E>();
 
 	/**
 	 * The tail will change from time to time.
 	 */
-	private transient volatile Link<E> tail = head;
+	private Link<E> tail = head;
 
 	/**
 	 * The size of this List.
 	 */
-	private transient volatile int size = 0;
+	private int size = 0;
 
 	/**
-	 * Initialize head and tail here.
+	 * Initialize an empty list.
 	 */
 	public LinkedIterList() {
 		super();
@@ -122,11 +122,13 @@ public class LinkedIterList<E> {
 	}
 
 	/**
-	 * Get a lazy fail iterator of this list.
+	 * Get a lazy failure iterator of this list.
 	 * The iterator will not fail on all cases, but there is a known issue:
 	 * When this iterator is focus on the tail item and which is then removed, the iterator
 	 * can not find the correct tail again, so it will fail.
+	 *
 	 * The price to fix this is very high, so I will just leave it as it is.
+	 *
 	 * @return
 	 */
 	public Iter<E> iterator() {
@@ -177,6 +179,13 @@ public class LinkedIterList<E> {
 			return current.next != null;
 		}
 
+		/**
+		 * If we navigate to the end of list and find it's not the tail any more,
+		 * we will change the current pointer to the head of new list.
+		 *
+		 * Override super method
+		 * @see org.apache.niolex.commons.collection.LinkedIterList.Iter#next()
+		 */
 		public E next() {
 			if (current.next == null) {
 				if (current != tail) {

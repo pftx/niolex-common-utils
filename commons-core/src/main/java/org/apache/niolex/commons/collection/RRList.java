@@ -54,6 +54,14 @@ public class RRList<E> extends AbstractList<E> {
 		this.currIdx = 0;
 	}
 
+	/**
+	 * We will append the new item to the oldest position regardless
+	 * the value of <code>index</code>
+	 *
+	 * Override super method
+	 * @see java.util.AbstractList#add(int, java.lang.Object)
+	 */
+	@Override
 	public void add(int index, E element) {
 		array[currIdx] = element;
 		currIdx = (currIdx + 1) % array.length;
@@ -75,6 +83,10 @@ public class RRList<E> extends AbstractList<E> {
 	}
 
 	/**
+	 * Return the number of items added into this list.
+	 * If this value is larger than the capacity of this list,
+	 * we will replace the eldest automatically.
+	 *
 	 * Override super method
 	 * @see java.util.AbstractCollection#size()
 	 */

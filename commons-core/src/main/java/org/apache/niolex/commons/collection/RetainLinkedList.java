@@ -39,19 +39,19 @@ public class RetainLinkedList<E> {
 	private final int retainSize;
 
 	/**
-	 * The internal head, which is a sub to mark the head of this List.
+	 * The internal head, which is a stub to mark the head of this List.
 	 */
 	private final Link<E> head = new Link<E>();
 
 	/**
 	 * The pointer is the current visit head of this list.
 	 */
-	private transient volatile Link<E> pointer = head;
+	private transient Link<E> pointer = head;
 
 	/**
 	 * The tail will change from time to time.
 	 */
-	private transient volatile Link<E> tail = head;
+	private transient Link<E> tail = head;
 
 	/**
 	 * The size of this List.
@@ -61,7 +61,7 @@ public class RetainLinkedList<E> {
 	/**
 	 * The size between head and pointer
 	 */
-	private transient volatile int headPointerSize = 0;
+	private transient int headPointerSize = 0;
 
 	/**
 	 * Lock the list head for delete item from head.
@@ -159,9 +159,9 @@ public class RetainLinkedList<E> {
 	 * Dump all the items into the specified array.
 	 *
 	 * If the array size is small than this list size, the first K items will be filled
-	 * into the array until the array if full.
+	 * into the array until the array is full.
 	 *
-	 * If the array size if greater than this list size, all the items will be filled
+	 * If the array size is greater than this list size, all the items will be filled
 	 * into the array and the tail of the array will be left unchanged.
 	 *
 	 * This method is thread safe, but if there are any concurrent add at the tail, this
