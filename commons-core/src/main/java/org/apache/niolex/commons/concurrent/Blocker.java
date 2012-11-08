@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.concurrent;
 
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
@@ -127,6 +128,19 @@ public class Blocker<E> {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Release all the keys under control with IllegalStateException as the value.
+	 * and then clean the internal map.
+	 */
+	public void releaseAll() {
+		Iterator<WaitOn<E>> iter = waitMap.values().iterator();
+		while (iter.hasNext()) {
+			WaitOn<E> it = iter.next();
+			it.release(new IllegalStateException("User triggered release all."));
+		}
+		waitMap.clear();
 	}
 
 }

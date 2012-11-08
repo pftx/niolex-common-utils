@@ -35,6 +35,15 @@ public class LangTest {
 		System.out.println(cls.getConstructors().length);
 	}
 
+	@Test
+	public void testByte() {
+		byte a = -128;
+		byte b = 127;
+		System.out.println("127 + 1 = " + (byte)(b + 1));
+		System.out.println("-128 - 1 = " + (byte)(a - 1));
+		int c = a - b;
+		System.out.println("-128 - 127 = " + (c));
+	}
 
 	class A extends B {
 		public int a = 100;
@@ -56,5 +65,20 @@ public class LangTest {
 	@Test
 	public void tem() {
 		System.out.println("Rem " + new A().a);
+	}
+
+	@SuppressWarnings("finally")
+	public int go() {
+		try {
+			return 1;
+		} finally {
+			System.out.println("Let's be here -1.");
+			return -1;
+		}
+	}
+
+	@Test
+	public void tFinal() {
+		System.out.println("Final " + go());
 	}
 }
