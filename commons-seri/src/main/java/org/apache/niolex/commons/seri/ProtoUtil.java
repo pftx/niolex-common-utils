@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.niolex.commons.codec.IntegerUtil;
 import org.apache.niolex.commons.reflect.MethodUtil;
 
 import com.google.protobuf.GeneratedMessage;
@@ -75,7 +76,7 @@ public class ProtoUtil {
 		int idx = 0;
 		Object[] r = new Object[generic.length];
 		for (int i = 0; i < generic.length; ++i) {
-			int size = ((data[idx++] & 0xff) << 8) + (data[idx++] & 0xff);
+			int size = IntegerUtil.threeBytes(data[idx++], data[idx++], data[idx++]);
 			byte[] ret = Arrays.copyOfRange(data, idx, size + idx);
 			idx += size;
 			r[i] = parseOne(ret, generic[i]);
@@ -109,9 +110,10 @@ public class ProtoUtil {
 		for (int i = 0; i < params.length; ++i) {
 			byte[] ret = seriOne(params[i]);
 			int size = ret.length;
-			if (size > 0xffff) {
-				throw new SeriException("We can not support object larger than 0xffff.");
+			if (size > 0xffffff) {
+				throw new SeriException("We can not support object larger than 0xffffff.");
 			}
+			out.write(size >> 16);
 			out.write(size >> 8);
 			out.write(size);
 			out.write(ret, 0, size);
