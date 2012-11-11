@@ -26,7 +26,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 
 /**
- * 能够发送有劲啊的代理类
+ * 能够发送邮件的代理类
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  *
  * @version 1.0.0, $Date: 2011-8-9$
