@@ -134,4 +134,14 @@ public class BlockerTest {
 		assertEquals(1, c.cnt());
 	}
 
+	@Test(expected=IllegalStateException.class)
+	public void testReleaseAll()
+	 throws Exception {
+		blocker.init("a");
+		blocker.init("b");
+		WaitOn<Integer> k = blocker.initWait("c");
+		blocker.releaseAll();
+		k.waitForResult(20);
+	}
+
 }
