@@ -53,7 +53,7 @@ public abstract class DownloadUtil {
 	 *
 	 * @param res
 	 * @param cls
-	 * @return
+	 * @return the download bytes
 	 * @throws DownloadException
 	 */
 	public static <T> byte[] getClassPathResource(String res, Class<T> cls) throws DownloadException {

@@ -51,7 +51,7 @@ public abstract class DateTimeUtil {
     /**
      * Format the given date time to "yyyy-MM-dd HH:mm:ss.SSS" format string.
      * @param date
-     * @return
+     * @return the result
      */
     public static final String formatDate2LongStr(Date date) {
         SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -61,7 +61,7 @@ public abstract class DateTimeUtil {
     /**
      * Format the given date time to "yyyy-MM-dd HH:mm:ss.SSS" format string.
      * @param date
-     * @return
+     * @return the result
      */
     public static final String formatDate2LongStr(long date) {
         SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -78,7 +78,7 @@ public abstract class DateTimeUtil {
     /**
      * Format the given date time to "yyyy-MM-dd HH:mm:ss" format string.
      * @param date
-     * @return
+     * @return the result
      */
     public static final String formatDate2DateTimeStr(Date date) {
         SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -88,7 +88,7 @@ public abstract class DateTimeUtil {
     /**
      * Format the given date time to "yyyy-MM-dd HH:mm:ss" format string.
      * @param date
-     * @return
+     * @return the result
      */
     public static final String formatDate2DateTimeStr(long date) {
         SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -97,7 +97,7 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the current date time to "yyyy-MM-dd" format string.
-     * @return
+     * @return the result
      */
     public static final String formatDate2DateStr() {
         return formatDate2DateStr(new Date());
@@ -106,7 +106,7 @@ public abstract class DateTimeUtil {
     /**
      * Format the given date time to "yyyy-MM-dd" format string.
      * @param date
-     * @return
+     * @return the result
      */
     public static final String formatDate2DateStr(Date date) {
         SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
@@ -116,7 +116,7 @@ public abstract class DateTimeUtil {
     /**
      * Format the given date time to "yyyy-MM-dd" format string.
      * @param date
-     * @return
+     * @return the result
      */
     public static final String formatDate2DateStr(long date) {
         SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
@@ -125,7 +125,7 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the current date time to "yyyyMMdd" format string.
-     * @return
+     * @return the result
      */
     public static final String formatDate2ShortStr() {
         return formatDate2ShortStr(new Date());
@@ -134,7 +134,7 @@ public abstract class DateTimeUtil {
     /**
      * Format the given date time to "yyyyMMdd" format string.
      * @param date
-     * @return
+     * @return the result
      */
     public static final String formatDate2ShortStr(Date date) {
         SimpleDateFormat s = new SimpleDateFormat("yyyyMMdd");
@@ -144,7 +144,7 @@ public abstract class DateTimeUtil {
     /**
      * Format the given date time to "yyyyMMdd" format string.
      * @param date
-     * @return
+     * @return the result
      */
     public static final String formatDate2ShortStr(long date) {
     	SimpleDateFormat s = new SimpleDateFormat("yyyyMMdd");

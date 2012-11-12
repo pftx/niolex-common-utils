@@ -60,7 +60,7 @@ public abstract class JacksonUtil {
     /**
      * Convert Object to String
      * @param o
-     * @return
+     * @return the string represents the object
      * @throws JsonGenerationException
      * @throws JsonMappingException
      * @throws IOException
@@ -73,7 +73,7 @@ public abstract class JacksonUtil {
      * Convert String to Object
      * @param s
      * @param valueType
-     * @return
+     * @return the object
      * @throws JsonParseException
      * @throws JsonMappingException
      * @throws IOException
@@ -86,7 +86,7 @@ public abstract class JacksonUtil {
      * Convert String to Object
      * @param s
      * @param valueType
-     * @return
+     * @return the object
      * @throws JsonParseException
      * @throws JsonMappingException
      * @throws IOException
@@ -112,7 +112,7 @@ public abstract class JacksonUtil {
      * Read object from the InputStream
      * @param in
      * @param valueType
-     * @return
+     * @return the object
      * @throws JsonParseException
      * @throws JsonMappingException
      * @throws IOException
@@ -125,7 +125,7 @@ public abstract class JacksonUtil {
      * Read object from the InputStream
      * @param in
      * @param valueType
-     * @return
+     * @return the object
      * @throws JsonParseException
      * @throws JsonMappingException
      * @throws IOException

@@ -66,7 +66,7 @@ public class Blocker<E> {
 	 * @see #init(Object)
 	 *
 	 * @param key
-	 * @return
+	 * @return the object to wait on.
 	 */
 	public WaitOn<E> initWait(Object key) {
 		CountDownLatch latch = new CountDownLatch(1);
@@ -81,7 +81,7 @@ public class Blocker<E> {
 	 *
 	 * @param key
 	 * @param time
-	 * @return
+	 * @return the result
 	 * @throws InterruptedException
 	 */
 	public E waitForResult(Object key, long time) throws Exception {

@@ -62,7 +62,7 @@ public class WaitOn<E> {
 	 * be thrown to you.
 	 *
 	 * @param time
-	 * @return
+	 * @return the result
 	 * @throws InterruptedException
 	 */
 	public E waitForResult(long time) throws Exception {

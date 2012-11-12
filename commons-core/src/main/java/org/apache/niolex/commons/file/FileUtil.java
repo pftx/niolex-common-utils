@@ -79,6 +79,14 @@ public abstract class FileUtil {
         return null;
     }
 
+    /**
+     * Store the string into local file system.
+     *
+     * @param pathname the file path and name
+     * @param content the string to store
+     * @param charsetName the charset to use
+     * @return true if file store success
+     */
     public static boolean setCharacterFileContentToFileSystem(String pathname, String content, String charsetName) {
         try {
             return setBinaryFileContentToFileSystem(pathname, content.getBytes(charsetName));
@@ -88,6 +96,13 @@ public abstract class FileUtil {
         return false;
     }
 
+    /**
+     * Store binary data into local disk.
+     *
+     * @param pathname the file path name
+     * @param raw the data to store
+     * @return true if file store success
+     */
     public static boolean setBinaryFileContentToFileSystem(String pathname, byte[] raw) {
         OutputStream out = null;
         try {

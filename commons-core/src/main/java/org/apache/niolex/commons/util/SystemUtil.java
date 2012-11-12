@@ -34,7 +34,7 @@ public class SystemUtil {
 
 	/**
 	 * Get all the local Internet addresses.
-	 * @return
+	 * @return the result
 	 */
 	public static final Set<InetAddress> getAllLocalAddresses() {
 		Enumeration<NetworkInterface> interfaces = null;

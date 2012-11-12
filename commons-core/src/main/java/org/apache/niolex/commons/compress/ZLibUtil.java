@@ -81,7 +81,7 @@ public abstract class ZLibUtil {
      * 压缩字符串
      *
      * @param str
-     * @return
+     * @return 压缩后的数据
      * @throws IOException
      */
     public static final byte[] compressString(String str) throws IOException {
@@ -93,7 +93,7 @@ public abstract class ZLibUtil {
      * 解压缩字符串
      *
      * @param data
-     * @return
+     * @return 解压后的字符串
      * @throws IOException
      */
     public static final String decompressString(byte[] data) throws IOException {
@@ -107,7 +107,7 @@ public abstract class ZLibUtil {
      * @param <T>
      * @param data
      * @param valueType
-     * @return
+     * @return the object
      * @throws JsonParseException
      * @throws JsonMappingException
      * @throws IOException
@@ -123,7 +123,7 @@ public abstract class ZLibUtil {
      * @param <T>
      * @param data
      * @param valueType
-     * @return
+     * @return the object
      * @throws JsonParseException
      * @throws JsonMappingException
      * @throws IOException
@@ -139,7 +139,7 @@ public abstract class ZLibUtil {
      * 压缩对象，使用Json作为内部表现形式
      *
      * @param value
-     * @return
+     * @return the compressed data
      * @throws IOException
      */
     public static byte[] compressObj(Object value) throws IOException {
