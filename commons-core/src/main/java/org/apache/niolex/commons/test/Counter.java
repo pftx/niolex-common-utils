@@ -39,7 +39,7 @@ public class Counter {
 
 	/**
 	 * Get the current count.
-	 * @return
+	 * @return the result
 	 */
 	public int cnt() {
 		return cnt;

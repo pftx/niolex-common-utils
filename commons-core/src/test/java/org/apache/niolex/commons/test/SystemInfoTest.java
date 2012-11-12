@@ -38,7 +38,7 @@ public class SystemInfoTest {
 	 */
 	@Test
 	public void testRefreshSystemInfo() throws InterruptedException {
-		info.autoRefresh(10);
+		info.autoRefresh(1);
 		info.refreshSystemInfo();
 		int num = info.getTotalThreadCount();
 		final CountDownLatch startSignal = new CountDownLatch(1);
@@ -51,7 +51,7 @@ public class SystemInfoTest {
 			e.printStackTrace();
 		}}}.start();
 		startSignal.await();
-		Thread.sleep(100);
+		Thread.sleep(20);
 		int k = info.getTotalThreadCount();
 		doneSignal.countDown();
 		assertEquals(k, num + 1);

@@ -35,7 +35,7 @@ public abstract class MockUtil {
      * Generate a random int uniformly distributed int value between 0 (inclusive) and the specified value
      * (exclusive), drawn from this random number generator's sequence.
      * @param max
-     * @return
+     * @return the result
      */
     public static final int ranInt(int max) {
     	return generator.nextInt(max);
@@ -76,7 +76,7 @@ public abstract class MockUtil {
     /**
      * Generate a random array.
      * @param length
-     * @return
+     * @return the result
      */
     public static final int[] randIntArray(int length) {
     	int[] ar = new int[length];
@@ -89,7 +89,7 @@ public abstract class MockUtil {
     /**
      * Generates random bytes and places them into a byte array.
      * @param length
-     * @return
+     * @return the result
      */
     public static final byte[] randByteArray(int length) {
     	byte[] ar = new byte[length];
