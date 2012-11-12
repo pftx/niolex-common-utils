@@ -28,8 +28,7 @@ import java.util.Set;
  * System information related utility class.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-8-1
+ * @version 1.0.0, Date: 2012-8-1
  */
 public class SystemUtil {
 

@@ -21,8 +21,9 @@ import org.apache.niolex.commons.codec.Base64Util;
 
 
 /**
- * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+ * Blowfish2算法的加密和解密工具。
  *
+ * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2011-7-12$
  *
  */

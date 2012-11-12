@@ -1,5 +1,16 @@
+/**
+ * Blowfish2.java
+ *
+ * 该算法来自互联网，具体实现者不详，应该为多人合作而成。
+ */
 package org.apache.niolex.commons.coder;
 
+/**
+ * Blowfish2的实现。
+ *
+ * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+ * @version 1.0.0
+ */
 class Blowfish2 {
     private static final int[] KP = { 0x273F6A88, 0x85A308E3, 0x13198A2E, 0x03707344, 0xA4093822, 0x299F31E0,
             0x082EFA98, 0xEC4E6C89, 0x452821E6, 0x38D01397, 0xBE5466CF, 0x34E90C6C, 0xC0AC29B7, 0xC97C50ED, 0x3F84D5B5,
@@ -241,7 +252,7 @@ class Blowfish2 {
         /*
          * - comments are from _Applied Crypto_, Schneier, p338 please be careful comparing the two, AC numbers the
          * arrays from 1, the enclosed code from 0.
-         * 
+         *
          * (1) Initialise the S-boxes and the P-array, with a fixed string This string contains the hexadecimal digits
          * of pi (3.141...)
          */
@@ -278,13 +289,13 @@ class Blowfish2 {
 
         /*
          * (3) Encrypt the all-zero string with the Blowfish algorithm, using the subkeys described in (1) and (2)
-         * 
+         *
          * (4) Replace P1 and P2 with the output of step (3)
-         * 
+         *
          * (5) Encrypt the output of step(3) using the Blowfish algorithm, with the modified subkeys.
-         * 
+         *
          * (6) Replace P3 and P4 with the output of step (5)
-         * 
+         *
          * (7) Continue the process, replacing all elements of the P-array and then all four S-boxes in order, with the
          * output of the continuously changing Blowfish algorithm
          */

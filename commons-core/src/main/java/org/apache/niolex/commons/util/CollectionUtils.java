@@ -25,8 +25,7 @@ import java.util.List;
  * A collect of utility methods operating on collections.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-5-31
+ * @version 1.0.0, Date: 2012-5-31
  */
 public abstract class CollectionUtils {
 

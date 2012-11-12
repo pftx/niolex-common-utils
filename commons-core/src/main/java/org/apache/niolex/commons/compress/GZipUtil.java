@@ -28,10 +28,10 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.JavaType;
 
 /**
+ * 利用GZIP算法进行数据压缩的工具类。
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2011-3-28$
- *
  */
 public abstract class GZipUtil {
 
@@ -81,8 +81,8 @@ public abstract class GZipUtil {
     /**
      * 压缩字符串
      *
-     * @param str
-     * @return
+     * @param str 准备压缩的字符串
+     * @return 压缩后的二进制数组
      * @throws IOException
      */
     public static final byte[] compressString(String str) throws IOException {
@@ -93,8 +93,8 @@ public abstract class GZipUtil {
     /**
      * 解压缩字符串
      *
-     * @param data
-     * @return
+     * @param data 准备解压的数据
+     * @return 解压后的字符串
      * @throws IOException
      */
     public static final String decompressString(byte[] data) throws IOException {
@@ -108,7 +108,7 @@ public abstract class GZipUtil {
      * @param <T>
      * @param data
      * @param valueType
-     * @return
+     * @return 解压后的对象
      * @throws JsonParseException
      * @throws JsonMappingException
      * @throws IOException
@@ -129,7 +129,7 @@ public abstract class GZipUtil {
      * @param <T>
      * @param data
      * @param valueType
-     * @return
+     * @return 解压后的对象
      * @throws JsonParseException
      * @throws JsonMappingException
      * @throws IOException
@@ -149,7 +149,7 @@ public abstract class GZipUtil {
      * 压缩对象，使用Json作为内部表现形式
      *
      * @param value
-     * @return
+     * @return 压缩后的数据
      * @throws IOException
      */
     public static byte[] compressObj(Object value) throws IOException {

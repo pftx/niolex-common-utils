@@ -426,6 +426,25 @@ public abstract class RSAUtil {
     /**
      * 取得公钥
      *
+     * @param key 密钥对加密后形成的字符串
+     * @return 公钥
+     * @throws UnsupportedEncodingException 假如用户的环境不支持UTF-8
+     * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
+     * @throws InvalidKeySpecException 假如根据publicKey生成密钥失败
+     */
+    public static Key getPublicKey(String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException {
+        // 对密钥解密
+        byte[] keyBytes = Base64Util.base64toByte(key);
+
+        // 取得私钥
+        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        return keyFactory.generatePublic(x509KeySpec);
+    }
+
+    /**
+     * 取得公钥
+     *
      * @param keyMap 密钥对Map
      * @return 公钥
      * @throws UnsupportedEncodingException 假如用户的环境不支持UTF-8

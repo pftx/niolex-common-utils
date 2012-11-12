@@ -33,9 +33,7 @@ import org.slf4j.LoggerFactory;
  * Generate Key for Coders, encoded in Base64.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2011-7-14$
- *
  */
 public abstract class KeyUtil {
     private static final Logger LOG = LoggerFactory.getLogger(KeyUtil.class);

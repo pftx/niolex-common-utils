@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit;
  * Use this class to wait for the specified result to happen.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-7-12
+ * @version 1.0.0, Date: 2012-7-12
  */
 public class WaitOn<E> {
 

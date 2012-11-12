@@ -28,8 +28,7 @@ import org.slf4j.LoggerFactory;
  * Some common function for input and output streams.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-7-4
+ * @version 1.0.0, Date: 2012-7-4
  */
 public class StreamUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(StreamUtil.class);

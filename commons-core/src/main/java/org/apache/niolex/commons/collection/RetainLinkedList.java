@@ -31,8 +31,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * This list is thread safe.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-6-19
+ * @version 1.0.0, Date: 2012-6-19
  */
 public class RetainLinkedList<E> {
 

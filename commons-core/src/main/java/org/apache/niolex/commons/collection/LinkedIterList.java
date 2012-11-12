@@ -22,8 +22,7 @@ package org.apache.niolex.commons.collection;
  * Add or remove data from the Linked List will not make Iterator invalid.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-6-1
+ * @version 1.0.0, Date: 2012-6-1
  */
 public class LinkedIterList<E> {
 
@@ -175,6 +174,13 @@ public class LinkedIterList<E> {
 			this.current = current;
 		}
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * Override super method
+		 * @see org.apache.niolex.commons.collection.LinkedIterList.Iter#hasNext()
+		 */
+		@Override
 		public boolean hasNext() {
 			return current.next != null;
 		}
@@ -186,6 +192,7 @@ public class LinkedIterList<E> {
 		 * Override super method
 		 * @see org.apache.niolex.commons.collection.LinkedIterList.Iter#next()
 		 */
+		@Override
 		public E next() {
 			if (current.next == null) {
 				if (current != tail) {

@@ -32,15 +32,11 @@ import org.apache.niolex.commons.codec.Base64Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
  * DES encoding utility class.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2010-8-31$
- *
  */
 public class DESCoder extends BaseCoder {
     private static final Logger LOG = LoggerFactory.getLogger(DESCoder.class);

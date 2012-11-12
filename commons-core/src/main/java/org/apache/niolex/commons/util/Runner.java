@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
  * This is the utility class to run a method in a different thread.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-7-12
+ * @version 1.0.0, Date: 2012-7-12
  */
 public class Runner {
 	private static final Logger LOG = LoggerFactory.getLogger(Runner.class);

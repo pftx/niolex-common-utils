@@ -32,9 +32,7 @@ import org.apache.niolex.commons.codec.Base64Util;
  * AES encoding utility class.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2010-8-31$
- *
  */
 public class AESCoder extends BaseCoder {
 

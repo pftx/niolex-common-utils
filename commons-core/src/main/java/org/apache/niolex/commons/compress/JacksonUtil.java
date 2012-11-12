@@ -31,10 +31,10 @@ import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.type.JavaType;
 
 /**
+ * 利用JSON进行数据压缩的工具类。内部采用了Jackson的Json序列化实现。
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2011-3-18$
- *
  */
 public abstract class JacksonUtil {
     // can reuse, share globally

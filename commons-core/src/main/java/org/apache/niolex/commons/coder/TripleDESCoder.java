@@ -39,9 +39,7 @@ import org.slf4j.LoggerFactory;
  * TripleDESCoder is a TripleDES Encode utility class
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2011-4-21$
- *
  */
 public class TripleDESCoder extends BaseCoder {
     private static final Logger LOG = LoggerFactory.getLogger(TripleDESCoder.class);

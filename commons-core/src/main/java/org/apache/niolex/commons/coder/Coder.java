@@ -18,10 +18,10 @@
 package org.apache.niolex.commons.coder;
 
 /**
+ * 加密解密框架的基础接口。定义了操作二进制和操作字符串的方法。
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2011-7-13$
- *
  */
 public interface Coder {
 

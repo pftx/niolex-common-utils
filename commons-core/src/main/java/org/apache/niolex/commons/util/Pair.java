@@ -21,8 +21,7 @@ package org.apache.niolex.commons.util;
  * A common utility class to store two variables into one object.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-7-12
+ * @version 1.0.0, Date: 2012-7-12
  */
 public class Pair<A, B> {
 

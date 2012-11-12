@@ -23,8 +23,7 @@ import java.util.AbstractList;
  * The round robin array list.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-6-13
+ * @version 1.0.0, Date: 2012-6-13
  */
 public class RRList<E> extends AbstractList<E> {
 

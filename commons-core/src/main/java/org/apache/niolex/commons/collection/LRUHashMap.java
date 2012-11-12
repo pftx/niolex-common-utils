@@ -24,8 +24,7 @@ import java.util.LinkedHashMap;
  * If there are more put than that, the eldest item will be removed.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-5-31
+ * @version 1.0.0, Date: 2012-5-31
  */
 public class LRUHashMap<K, V> extends LinkedHashMap<K, V> {
 
@@ -36,6 +35,10 @@ public class LRUHashMap<K, V> extends LinkedHashMap<K, V> {
 	// The max map size.
 	private int maxSize;
 
+	/**
+	 * Create a LRUHashMap with this max size.
+	 * @param maxSize the max map size
+	 */
 	public LRUHashMap(int maxSize) {
 		super((int)(maxSize * 1.4));
 		this.maxSize = maxSize;

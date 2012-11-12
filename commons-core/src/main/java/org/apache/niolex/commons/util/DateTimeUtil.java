@@ -27,9 +27,7 @@ import java.util.GregorianCalendar;
  * Tanslate bewteen string and Date.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2010-11-18$
- *
  */
 public abstract class DateTimeUtil {
 

@@ -70,10 +70,11 @@ public class RSAUtilTest {
     public void testPublicEncription_2() throws Exception {
     	String in = "问天下苍穹，谁敢不从！";
     	byte[] data = in.getBytes();
-    	byte[] encr = RSAUtil.encryptByPublicKey(data, publicKey);
+    	Key pubkey = RSAUtil.getPublicKey(publicKey);
+    	byte[] encr = RSAUtil.encryptByPublicKey(data, pubkey);
     	System.out.println("encr => " + Base64Util.byteToBase64(encr));
-    	Key key = RSAUtil.getPrivateKey(privateKey);
-    	byte[] outp = RSAUtil.decryptByPrivateKey(encr, key);
+    	Key prikey = RSAUtil.getPrivateKey(privateKey);
+    	byte[] outp = RSAUtil.decryptByPrivateKey(encr, prikey);
     	String out = new String(outp);
     	System.out.println("out => " + out);
     	Assert.assertEquals(in, out);

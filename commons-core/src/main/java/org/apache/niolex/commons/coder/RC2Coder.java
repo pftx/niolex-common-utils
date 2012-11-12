@@ -30,10 +30,10 @@ import org.apache.niolex.commons.codec.Base64Util;
 
 
 /**
+ * RC2算法的加密解密实现工具类。
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2011-7-12$
- *
  */
 public class RC2Coder extends BaseCoder {
 
@@ -84,6 +84,12 @@ public class RC2Coder extends BaseCoder {
         secretKey = toKey(ArrayUtils.subarray(keyData, 17, 33));
     }
 
+    /**
+     * 更安全的初始化密钥和IV参数
+     *
+     * @param key
+     * @throws Exception
+     */
     public void secureInitKey(String key) throws Exception {
         byte[] keyData = Base64Util.base64toByte(key);
         byte[] ivData = new byte[8];

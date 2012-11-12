@@ -24,8 +24,7 @@ import java.util.Random;
  * If you want to run only once, do not use it.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-6-28
+ * @version 1.0.0, Date: 2012-6-28
  */
 public abstract class Runme extends Thread {
 

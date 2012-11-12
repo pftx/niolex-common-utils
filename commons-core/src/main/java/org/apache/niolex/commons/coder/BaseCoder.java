@@ -20,10 +20,10 @@ package org.apache.niolex.commons.coder;
 import org.apache.niolex.commons.codec.Base64Util;
 
 /**
+ * 实现加密解密的核心基类，通过操作二进制的加密和解密方法包装出操作字符串的加密和解密方法。
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * 
  * @version 1.0.0, $Date: 2011-7-14$
- * 
  */
 public abstract class BaseCoder implements Coder {
 

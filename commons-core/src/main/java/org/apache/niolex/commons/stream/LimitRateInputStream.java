@@ -27,9 +27,7 @@ import org.slf4j.LoggerFactory;
  * Restrict the input rate.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2011-6-2$
- *
  */
 public class LimitRateInputStream extends InputStream {
 

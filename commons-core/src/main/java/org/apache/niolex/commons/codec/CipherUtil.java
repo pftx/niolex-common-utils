@@ -25,10 +25,11 @@ import javax.crypto.ShortBufferException;
 import org.apache.commons.lang.ArrayUtils;
 
 /**
+ * 有些Cipher无法处理大数据，只能处理固定的块大小。使用本工具可以解决这个问题。
+ *
+ * @used RSAUtil
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2012-4-9$
- *
  */
 public abstract class CipherUtil {
     private static final int OUTPUT_SIZE = 8 * 1024;

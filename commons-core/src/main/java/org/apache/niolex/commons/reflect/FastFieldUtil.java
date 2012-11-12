@@ -39,8 +39,7 @@ import com.esotericsoftware.reflectasm.FieldAccess;
  * @used 暂无项目使用
  * @category niolex-common-utils -> 公共库 -> 反射处理
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-7-20
+ * @version 1.0.0, Date: 2012-7-20
  */
 public abstract class FastFieldUtil {
 

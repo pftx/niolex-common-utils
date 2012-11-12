@@ -20,9 +20,10 @@ package org.apache.niolex.commons.event;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
+ * 支持并发的事件分发器实现。
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-6-26
+ * @version 1.0.0, Date: 2012-6-26
  */
 public class ConcurrentEventDispatcher<E> implements IEventDispatcher<E> {
 

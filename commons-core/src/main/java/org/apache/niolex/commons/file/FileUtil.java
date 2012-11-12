@@ -29,12 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Get file content from local disk.
+ * Get(Set) file contents from(to) local disk.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
  * @version 1.0.0, $Date: 2011-9-13$
- *
  */
 public abstract class FileUtil {
     private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);

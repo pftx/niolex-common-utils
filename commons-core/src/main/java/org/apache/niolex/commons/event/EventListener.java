@@ -21,8 +21,7 @@ package org.apache.niolex.commons.event;
  * The public interface to listen event.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-6-26
+ * @version 1.0.0, Date: 2012-6-26
  */
 public interface EventListener<E> {
 
