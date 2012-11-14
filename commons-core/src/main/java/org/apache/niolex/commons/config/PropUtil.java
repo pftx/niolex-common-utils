@@ -25,10 +25,10 @@ import java.util.Properties;
  * PropUtil是一个用来管理properties配置文件的工具类
  *
  * 目前提供的功能如下：
- * 1-1. public static final void loadConfigFromClassPath(String fileName)
+ * 1-1. public static final void loadConfig(String resource, Class<T> cls)
  * 从class path中加载指定名字的配置文件
  *
- * 1-2. public static final void loadConfigFromFileSystem(String fileName)
+ * 1-2. public static final void loadConfig(String fileName)
  * 从文件系统中加载指定名字的配置文件
  *
  * 2-1. public static final String getProperty(String key)
