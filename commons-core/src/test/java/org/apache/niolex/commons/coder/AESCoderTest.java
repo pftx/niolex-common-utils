@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.coder;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.coder.AESCoder;
 import org.junit.BeforeClass;
@@ -26,13 +26,13 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * 
+ *
  * @version 1.0.0, $Date: 2011-7-11$
- * 
+ *
  */
 public class AESCoderTest {
     private static AESCoder coder = new AESCoder();
-    
+
     @BeforeClass
     public static void init() {
         try {
@@ -51,7 +51,7 @@ public class AESCoderTest {
         System.out.println("r => " + r);
         Assert.assertEquals(s, r);
     }
-    
+
     @Test
     public void codeTest2() throws Exception {
         String s = "上面是QA从测试角度列出的一些检查点，欢迎各位RDs&FEs多多拍砖";

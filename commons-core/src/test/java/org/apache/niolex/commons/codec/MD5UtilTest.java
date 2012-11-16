@@ -20,7 +20,7 @@ package org.apache.niolex.commons.codec;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.codec.MD5Util;
 import org.junit.Test;

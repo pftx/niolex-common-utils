@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.test.MockUtil;
 import org.junit.Test;

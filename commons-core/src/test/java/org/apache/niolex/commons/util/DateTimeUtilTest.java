@@ -19,7 +19,7 @@ package org.apache.niolex.commons.util;
 
 import java.util.Date;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.util.DateTimeUtil;
 import org.junit.Test;

@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.file.FileUtil;
 import org.junit.Test;

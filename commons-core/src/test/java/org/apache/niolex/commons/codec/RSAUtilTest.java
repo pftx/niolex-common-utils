@@ -20,7 +20,7 @@ package org.apache.niolex.commons.codec;
 import java.security.Key;
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.codec.Base64Util;
 import org.apache.niolex.commons.codec.RSAUtil;

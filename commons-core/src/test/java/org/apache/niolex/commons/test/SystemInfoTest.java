@@ -22,12 +22,14 @@ import static org.junit.Assert.*;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @Date: 2012-7-26
  */
+@RunWith(OrderedRunner.class)
 public class SystemInfoTest {
 	SystemInfo info = SystemInfo.getInstance();
 	String osName = System.getProperties().getProperty("os.name");
@@ -37,7 +39,7 @@ public class SystemInfoTest {
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testRefreshSystemInfo() throws InterruptedException {
+	public void testARefreshSystemInfo() throws InterruptedException {
 		info.autoRefresh(10);
 		info.refreshSystemInfo();
 		int num = info.getTotalThreadCount();

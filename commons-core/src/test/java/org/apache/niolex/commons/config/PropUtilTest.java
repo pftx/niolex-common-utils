@@ -19,7 +19,7 @@ package org.apache.niolex.commons.config;
 
 import java.io.IOException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.config.PropUtil;
 import org.junit.BeforeClass;

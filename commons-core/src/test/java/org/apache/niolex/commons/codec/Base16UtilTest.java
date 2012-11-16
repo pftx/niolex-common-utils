@@ -18,7 +18,7 @@
 package org.apache.niolex.commons.codec;
 
 import static org.junit.Assert.assertArrayEquals;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.codec.Base16Util;
 import org.junit.Test;

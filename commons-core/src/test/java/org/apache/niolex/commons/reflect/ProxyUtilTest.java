@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.reflect.ProxyUtil;
 import org.apache.niolex.commons.reflect.ProxyUtil.ProxyHandler;
@@ -30,24 +30,24 @@ import org.junit.Test;
 
 
 public class ProxyUtilTest {
-    
+
     @Test
     public void testProxy() {
         Map<String, String> mapTest = new HashMap<String, String>();
         ProxyTestHandler h = new ProxyTestHandler();
         mapTest = ProxyUtil.newProxyInstance(mapTest, h);
-        
+
         mapTest.put("gmail", "Xie, Jiyun");
         String strValue = mapTest.get("gmail");
         Assert.assertEquals(strValue, "Xie, Jiyun");
         Assert.assertEquals(h.getInvokeNum(), 2);
     }
-    
+
 }
 
 /**
  * 用来统计对代理对象的调用次数，以及每次调用消耗的时间
- * 
+ *
  * @used 暂无项目使用
  * @category niolex-common-utils -> 公共库 -> 反射处理
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
@@ -76,9 +76,9 @@ class ProxyTestHandler implements ProxyHandler {
         start = System.currentTimeMillis();
         ++invokeNum;
     }
-    
+
     public int getInvokeNum() {
         return invokeNum;
     }
-    
+
 }

@@ -20,7 +20,7 @@ package org.apache.niolex.commons.reflect;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.reflect.FieldUtil;
 import org.junit.Test;

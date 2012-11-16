@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.coder;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.niolex.commons.codec.Base64Util;
 import org.apache.niolex.commons.coder.Blowfish2Coder;
