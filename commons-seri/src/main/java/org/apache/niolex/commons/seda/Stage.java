@@ -158,6 +158,9 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * Create a Stage with these parameters you passed in.
 	 *
+	 * When the queue exceeds 5 times adjustFactor, we will start to reject messages.
+	 * User can change this behavior by override the method {@link #dropMessage()}
+	 *
 	 * @param stageName the name of this stage.
 	 * @param inputQueue the input queue user want to use.
 	 * @param dispatcher the dispatcher used to dispatch output.
@@ -275,6 +278,38 @@ public abstract class Stage<Input extends Message> {
 	}
 
 	/**
+	 * Construct the stage map in this method. We do nothing here, just a hook for subclass.
+	 *
+	 * Any subclass can override this method to get their output stage from the dispatcher and
+	 * save it to local fields for faster dispatch speed.
+	 * User can also use this method to check whether or not all the mandatory stages are
+	 * registered and do appropriate action about it.
+	 */
+	public void construct() {
+		// We do nothing here.
+	}
+
+	/**
+	 * We will call this method when the input queue size is greater than 5 times adjustFactor.
+	 * User can override this method to change the default behavior.
+	 *
+	 * @return the number of messages dropped.
+	 */
+	protected int dropMessage() {
+		int size = inputQueue.size() - 4 * adjustFactor;
+		Input in;
+		for (int i = 0; i < size; ++i) {
+			in = inputQueue.poll();
+			if (in != null) {
+				in.reject(Message.RejectType.STAGE_BUSY, this);
+			} else {
+				return i;
+			}
+		}
+		return size;
+	}
+
+	/**
 	 * Start the internal thread pool and initialize parameters, make this
 	 * stage ready for process inputs.
 	 */
@@ -298,6 +333,7 @@ public abstract class Stage<Input extends Message> {
 
 	/**
 	 * Adjust the thread pool from time to time.
+	 * The {@link Adjuster} will use this method to dynamically adjust thread poll size.
 	 *
 	 * @return current thread pool size.
 	 */
@@ -317,10 +353,16 @@ public abstract class Stage<Input extends Message> {
 		lastAdjustTime = System.currentTimeMillis();
 		// The current input queue size.
 		int currentQueueSize = inputQueue.size();
+		int dropSize = 0;
+		if (currentQueueSize > 5 * adjustFactor) {
+			// Too many messages, we will drop some of them.
+			dropSize = dropMessage();
+			LOG.info("Too many messages in stage [{}], we droped {} messages.", stageName, dropSize);
+		}
 		// Now compute the input rate.
 		double inputRate = (currentQueueSize + intervalCnt - lastAdjustQueueSize) / intervalTime;
 		// Reset the last queue size.
-		lastAdjustQueueSize = currentQueueSize;
+		lastAdjustQueueSize = currentQueueSize - dropSize;
 		if (currentQueueSize > 256) {
 			stableRate = consumeRate / currentPoolSize;
 		}
@@ -343,7 +385,7 @@ public abstract class Stage<Input extends Message> {
 	 * @param queueSize the current input queue size.
 	 */
 	protected void adjustThreadPool(double consumeRate, double inputRate, int queueSize) {
-		// The rate: CNT/millisecond Per thread
+		// The rate: CNT/millisecond
 		if (LOG.isDebugEnabled()) {
 			// The total rate.
 			String crate = new DecimalFormat("#,##0.0000").format(consumeRate);
@@ -415,6 +457,9 @@ public abstract class Stage<Input extends Message> {
 					lastAdjustStatus = SUB_1;
 				}
 			}
+		} else {
+			// We do not adjust the pool size.
+			lastAdjustStatus = NO_OP;
 		}
 	}
 
@@ -427,7 +472,6 @@ public abstract class Stage<Input extends Message> {
 			wo.setWorking(false);
 			// This worker is now end of service, we clear it from worker list.
 			--currentPoolSize;
-			workerList.remove(this);
 		} else {
 			LOG.warn("There is no more thread to subtract in stage: {}.", stageName);
 		}
@@ -485,6 +529,15 @@ public abstract class Stage<Input extends Message> {
 	 */
 	public String getStageName() {
 		return stageName;
+	}
+
+	/**
+	 * Get the current stage status.
+	 *
+	 * @return the current stage status.
+	 */
+	public int getStageStatus() {
+		return stageStatus;
 	}
 
 	/**

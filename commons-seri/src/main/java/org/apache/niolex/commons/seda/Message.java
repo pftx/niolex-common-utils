@@ -42,6 +42,9 @@ public interface Message {
 	 * Reject this message from a stage. This means this message will not get
 	 * processed correctly. User need to deal with it.
 	 *
+	 * Dealing this method need to be fast and effective, do not take too much
+	 * time from the rejection thread.
+	 *
 	 * @param type the reject type
 	 * @param info the related rejection information
 	 */

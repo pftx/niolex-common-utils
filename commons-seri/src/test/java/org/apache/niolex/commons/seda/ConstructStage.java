@@ -1,5 +1,5 @@
 /**
- * TInput.java
+ * ConstructStage.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -17,38 +17,36 @@
  */
 package org.apache.niolex.commons.seda;
 
+import java.util.Map;
+
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.5, $Date: 2012-11-16$
+ * @version 1.0.0, $Date: 2012-11-17$
  */
-public class TInput implements Message {
+public class ConstructStage extends Stage<TInput> {
 
-	private String tag;
+	private Map<String, String> consMap;
 
-	public TInput() {
-		super();
-	}
-
-	public TInput(String tag) {
-		super();
-		this.tag = tag;
+	/**
+	 * Constructor
+	 * @param stageName
+	 */
+	public ConstructStage(String stageName, Map<String, String> consMap) {
+		super(stageName);
+		this.consMap = consMap;
 	}
 
 	/**
-	 * Override super method
-	 * @see org.apache.niolex.commons.seda.Message#reject(org.apache.niolex.commons.seda.Message.RejectType, java.lang.Object)
+	 * This is the override of super method.
+	 * @see org.apache.niolex.commons.seda.Stage#process(org.apache.niolex.commons.seda.Message, org.apache.niolex.commons.seda.Dispatcher)
 	 */
 	@Override
-	public void reject(RejectType type, Object info) {
-		System.out.println("x get rejected by " + type);
-	}
-
-	public String getTag() {
-		return tag;
-	}
-
-	public void setTag(String tag) {
-		this.tag = tag;
+	protected void process(TInput in, Dispatcher dispatcher) {
+		String tag = consMap.get(in.getTag());
+		if (tag == null) {
+			in.reject(Message.RejectType.USER_REJECT, "No way to dispatch.");
+		}
+		dispatcher.dispatch(tag, in);
 	}
 
 }

@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.seda;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ public class Dispatcher {
 
 	/**
 	 * Get the global instance.
+	 *
 	 * @return the global instance.
 	 */
 	public static final Dispatcher getInstance() {
@@ -50,11 +52,34 @@ public class Dispatcher {
 	 * Register a stage with it's stage name.
 	 *
 	 * @param stage the stage to register.
-	 * @return the previous value associated with stage name, or null if there was no mapping
+	 * @return the previous value associated with this stage name, or null if there was no mapping
 	 * for this stage name.
 	 */
 	public Stage<?> register(Stage<?> stage) {
 		return stageMap.put(stage.getStageName(), stage);
+	}
+
+	/**
+	 * Get the stage with this stage name.
+	 *
+	 * @param stageName the stage name of the stage you want to get.
+	 * @return the stage instance, null if stage not found.
+	 * @throws ClassCastException If the type of the corresponding stage is not the same
+	 * as your parameter class.
+	 */
+	@SuppressWarnings("unchecked")
+	public <K extends Stage<?>> K getStage(String stageName) {
+		return (K) stageMap.get(stageName);
+	}
+
+	/**
+	 * When all the stages are set, user need to call this method to construct
+	 * the stage network.
+	 */
+	public void construction() {
+		for (Stage<?> s : this.getAllStages()) {
+			s.construct();
+		}
 	}
 
 	/**
@@ -86,6 +111,15 @@ public class Dispatcher {
 	 */
 	public <T extends Message> boolean dispatch(T msg) {
 		return dispatch(msg.getClass().toString(), msg);
+	}
+
+	/**
+	 * Get all the stages in this dispatcher.
+	 *
+	 * @return the stages collection
+	 */
+	public Collection<Stage<?>> getAllStages() {
+		return stageMap.values();
 	}
 
 }

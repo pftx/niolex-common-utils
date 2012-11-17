@@ -53,7 +53,7 @@ public class Adjuster implements Runnable {
 	 *
 	 * @param s the stage need to be adjusted.
 	 */
-	public void addStage(Stage<?> s) {
+	public synchronized void addStage(Stage<?> s) {
 		stageList.add(s);
 	}
 
@@ -90,14 +90,34 @@ public class Adjuster implements Runnable {
 		long in;
 		while (isWorking) {
 			in = System.currentTimeMillis();
-			ListIterator<Stage<?>> it = stageList.listIterator();
-			while (it.hasNext()) {
-				it.next().adjustThreadPool();
+			synchronized (this) {
+				ListIterator<Stage<?>> it = stageList.listIterator();
+				while (it.hasNext()) {
+					it.next().adjustThreadPool();
+				}
 			}
 			try {
 				Thread.sleep(adjustInterval - in + System.currentTimeMillis());
 			} catch (Exception e) {}
 		}
+	}
+
+	/**
+	 * Get adjust interval
+	 *
+	 * @return current adjust interval
+	 */
+	public int getAdjustInterval() {
+		return adjustInterval;
+	}
+
+	/**
+	 * Set adjust interval
+	 *
+	 * @param adjustInterval the new internal to set
+	 */
+	public void setAdjustInterval(int adjustInterval) {
+		this.adjustInterval = adjustInterval;
 	}
 
 }
