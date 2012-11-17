@@ -23,13 +23,13 @@ package org.apache.niolex.commons.seda;
  */
 public class TInput implements Message {
 
-	private String tag;
+	private int tag;
 
 	public TInput() {
 		super();
 	}
 
-	public TInput(String tag) {
+	public TInput(int tag) {
 		super();
 		this.tag = tag;
 	}
@@ -40,14 +40,15 @@ public class TInput implements Message {
 	 */
 	@Override
 	public void reject(RejectType type, Object info) {
-		//System.out.println("x get rejected by " + type);
+		if (type != RejectType.STAGE_BUSY)
+			System.out.println("x get rejected by " + type);
 	}
 
-	public String getTag() {
+	public int getTag() {
 		return tag;
 	}
 
-	public void setTag(String tag) {
+	public void setTag(int tag) {
 		this.tag = tag;
 	}
 

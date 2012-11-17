@@ -35,48 +35,48 @@ import org.slf4j.LoggerFactory;
  * @version 1.0.5, $Date: 2012-11-16$
  */
 public abstract class Stage<Input extends Message> {
-	private static final Logger LOG = LoggerFactory.getLogger(Stage.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(Stage.class);
 
 	/**
 	 * The minimum adjust interval in milliseconds.
 	 */
-	private static final int MIN_ADJUST_INTERVAL = 1000;
+	protected static final int MIN_ADJUST_INTERVAL = 1000;
 
 	/**
 	 * The name of this stage.
 	 */
-	private final String stageName;
+	protected final String stageName;
 
 	/**
 	 * The input queue used to store all the input messages.
 	 */
-	private final BlockingQueue<Input> inputQueue;
+	protected final BlockingQueue<Input> inputQueue;
 
 	/**
 	 * The dispatcher used to dispatch all the output messages.
 	 */
-	private final Dispatcher dispatcher;
+	protected final Dispatcher dispatcher;
 
 	/**
 	 * The minimum thread pool size.
 	 */
-	private final int minPoolSize;
+	protected final int minPoolSize;
 
 	/**
 	 * The maximum thread pool size.
 	 */
-	private final int maxPoolSize;
+	protected final int maxPoolSize;
 
 	/**
 	 * The maximum input queue size. If the current queue size exceeds this number, we will add
 	 * more threads into the thread pool.
 	 */
-	private final int adjustFactor;
+	protected final int adjustFactor;
 
 	/**
 	 * The execution count, used to calculate thread pool efficiency.
 	 */
-	private final AtomicInteger exeCnt = new AtomicInteger(0);
+	protected final AtomicInteger exeCnt = new AtomicInteger(0);
 
 	/**
 	 * The list to save all the workers.
@@ -121,7 +121,7 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * The recent stable consume rate.
 	 */
-	private double stableRate;
+    protected double stableRate;
 
     /**
      * The last adjust status.
@@ -366,7 +366,7 @@ public abstract class Stage<Input extends Message> {
 		if (currentQueueSize > 256) {
 			stableRate = consumeRate / currentPoolSize;
 		}
-		if (inputRate - consumeRate <= 0.01) {
+		if (inputRate - consumeRate <= 0.01 && stableRate > 0.001) {
 			// When the two rates are very close, we need to compute the consumeRate
 			// By another method.
 			consumeRate = stableRate * currentPoolSize;
@@ -390,7 +390,7 @@ public abstract class Stage<Input extends Message> {
 			// The total rate.
 			String crate = new DecimalFormat("#,##0.0000").format(consumeRate);
 			String irate = new DecimalFormat("#,##0.0000").format(inputRate);
-			LOG.debug("Current crate: {}, irate: {}, psize: {}, qsize: {}.", crate,
+			LOG.debug("Stage [{}] crate: {}, irate: {}, psize: {}, qsize: {}.", stageName, crate,
 					irate, currentPoolSize, queueSize);
 		}
 
@@ -488,9 +488,9 @@ public abstract class Stage<Input extends Message> {
 			int i = 500;
 			while (i-- > 0) {
 				try {
+					Thread.sleep(10);
 					if (inputQueue.size() == 0)
 						break;
-					Thread.sleep(10);
 				} catch (InterruptedException e) {}
 			}
 			ListIterator<Worker> it = workerList.listIterator();

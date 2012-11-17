@@ -17,11 +17,18 @@
  */
 package org.apache.niolex.commons.seda;
 
+import org.junit.Test;
+
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-16$
  */
 public class SedaTest {
+
+	@Test
+	public void description() {
+		System.out.println("This class need run main, and a long time, for human watch.");
+	}
 
 	/**
 	 * @param args
@@ -48,7 +55,7 @@ public class SedaTest {
 			}
 			Thread.sleep(10);
 		}
-		it = 30000;
+		it = 20000;
 		//
 		System.out.println("stage 3. send 20 request and sleep 10.");
 		while (it-- > 0) {
@@ -56,9 +63,16 @@ public class SedaTest {
 			s.addInput(new TInput());
 			Thread.sleep(1);
 		}
-		Thread.sleep(100);
 		//
-		System.out.println("stage 4. shutdown now.");
+		it = 10000;
+		System.out.println("stage 4. send 10 request and sleep 10.");
+		while (it-- > 0) {
+			s.addInput(new TInput());
+			Thread.sleep(1);
+		}
+		//
+		System.out.println("stage 5. shutdown now.");
+		Thread.sleep(100);
 		s.shutdown();
 		adj.stopAdjust();
 	}

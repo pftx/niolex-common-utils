@@ -1,5 +1,5 @@
 /**
- * ConstructStage.java
+ * MessageTest.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -17,36 +17,40 @@
  */
 package org.apache.niolex.commons.seda;
 
-import java.util.Map;
+import org.apache.niolex.commons.seda.Message.RejectType;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2012-11-17$
  */
-public class ConstructStage extends SleepStage {
-
-	private Map<String, String> consMap;
+public class MessageTest {
 
 	/**
-	 * Constructor
-	 * @param stageName
+	 * Test method for {@link org.apache.niolex.commons.seda.Message#reject(org.apache.niolex.commons.seda.Message.RejectType, java.lang.Object)}.
 	 */
-	public ConstructStage(String stageName, Map<String, String> consMap) {
-		super(stageName, 1);
-		this.consMap = consMap;
+	@Test
+	public final void testReject1() {
+		TInput in = new TInput();
+		in.reject(RejectType.PROCESS_ERROR, in);
 	}
 
-	/**
-	 * This is the override of super method.
-	 * @see org.apache.niolex.commons.seda.Stage#process(org.apache.niolex.commons.seda.Message, org.apache.niolex.commons.seda.Dispatcher)
-	 */
-	@Override
-	protected void process(TInput in, Dispatcher dispatcher) {
-		String tag = consMap.get(in.getTag());
-		if (tag == null) {
-			in.reject(Message.RejectType.USER_REJECT, "No way to dispatch.");
-		}
-		dispatcher.dispatch(tag, in);
+	@Test
+	public final void testReject2() {
+		TInput in = new TInput();
+		in.reject(RejectType.STAGE_BUSY, in);
+	}
+
+	@Test
+	public final void testReject3() {
+		TInput in = new TInput();
+		in.reject(RejectType.STAGE_SHUTDOWN, in);
+	}
+
+	@Test
+	public final void testReject4() {
+		TInput in = new TInput();
+		in.reject(RejectType.USER_REJECT, in);
 	}
 
 }

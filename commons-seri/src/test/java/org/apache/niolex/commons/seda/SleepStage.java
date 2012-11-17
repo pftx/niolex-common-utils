@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.seda;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-16$
@@ -24,6 +26,7 @@ package org.apache.niolex.commons.seda;
 public class SleepStage extends Stage<TInput> {
 
 	private final long sleepTime;
+	private final AtomicInteger cnt = new AtomicInteger(0);
 
 	public SleepStage(String stageName, long sleepTime) {
 		super(stageName);
@@ -36,11 +39,14 @@ public class SleepStage extends Stage<TInput> {
 	 */
 	@Override
 	protected void process(TInput in, Dispatcher dispatcher) {
+		cnt.incrementAndGet();
 		try {
 			Thread.sleep(sleepTime);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		} catch (InterruptedException e) {}
+	}
+
+	public int getProcessedCount() {
+		return cnt.get();
 	}
 
 }

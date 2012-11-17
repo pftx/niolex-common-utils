@@ -40,6 +40,11 @@ public class Dispatcher {
 	private final Map<String, Stage<?>> stageMap = new HashMap<String, Stage<?>>();
 
 	/**
+	 * The adjuster used to adjust all the stages in this dispatcher.
+	 */
+	private Adjuster adjuster;
+
+	/**
 	 * Get the global instance.
 	 *
 	 * @return the global instance.
@@ -79,6 +84,35 @@ public class Dispatcher {
 	public void construction() {
 		for (Stage<?> s : this.getAllStages()) {
 			s.construct();
+		}
+	}
+
+	/**
+	 * Start to adjust all the stages in this dispatcher.
+	 *
+	 * @param adjustInterval the adjust interval.
+	 */
+	public void startAdjust(int adjustInterval) {
+		if (adjuster == null) {
+			adjuster = new Adjuster();
+			for (Stage<?> s : this.getAllStages()) {
+				adjuster.addStage(s);
+			}
+		}
+		adjuster.setAdjustInterval(adjustInterval);
+		adjuster.startAdjust();
+	}
+
+	/**
+	 * Shutdown all the stages in this dispatcher.
+	 */
+	public void shutdown() {
+		for (Stage<?> s : this.getAllStages()) {
+			s.shutdown();
+		}
+		if (adjuster != null) {
+			adjuster.stopAdjust();
+			adjuster = null;
 		}
 	}
 
