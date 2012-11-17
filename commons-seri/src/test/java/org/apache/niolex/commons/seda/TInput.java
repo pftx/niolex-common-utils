@@ -40,7 +40,7 @@ public class TInput implements Message {
 	 */
 	@Override
 	public void reject(RejectType type, Object info) {
-		System.out.println("x get rejected by " + type);
+		//System.out.println("x get rejected by " + type);
 	}
 
 	public String getTag() {

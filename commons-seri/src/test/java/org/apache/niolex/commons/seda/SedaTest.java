@@ -28,7 +28,7 @@ public class SedaTest {
 	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws InterruptedException {
-		SleepStage s = new SleepStage("S1", 10);
+		SleepStage s = new SleepStage("S1", 6);
 		Adjuster adj = new Adjuster();
 		adj.addStage(s);
 		adj.startAdjust();
@@ -40,15 +40,15 @@ public class SedaTest {
 			Thread.sleep(1);
 		}
 		//
-		System.out.println("stage 2. send 50 request and sleep 10.");
+		System.out.println("stage 2. send 60 request and sleep 10.");
 		it = 5000;
 		while (it-- > 0) {
-			for (int i = 0; i < 50; ++i) {
+			for (int i = 0; i < 60; ++i) {
 				s.addInput(new TInput());
 			}
 			Thread.sleep(10);
 		}
-		it = 50000;
+		it = 30000;
 		//
 		System.out.println("stage 3. send 20 request and sleep 10.");
 		while (it-- > 0) {
@@ -56,6 +56,11 @@ public class SedaTest {
 			s.addInput(new TInput());
 			Thread.sleep(1);
 		}
+		Thread.sleep(100);
+		//
+		System.out.println("stage 4. shutdown now.");
+		s.shutdown();
+		adj.stopAdjust();
 	}
 
 }

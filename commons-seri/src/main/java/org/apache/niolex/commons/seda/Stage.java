@@ -158,7 +158,7 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * Create a Stage with these parameters you passed in.
 	 *
-	 * When the queue exceeds 5 times adjustFactor, we will start to reject messages.
+	 * When the queue exceeds 4 times adjustFactor, we will start to reject messages.
 	 * User can change this behavior by override the method {@link #dropMessage()}
 	 *
 	 * @param stageName the name of this stage.
@@ -234,9 +234,9 @@ public abstract class Stage<Input extends Message> {
 					}
 					process(in, dispatcher);
 				} catch (Throwable t) {
-					LOG.error("Error occured when process message in stage[{}].", stageName, t);
 					// Reject the message if it's not null.
 					if (in != null) {
+						LOG.error("Error occured when process message in stage[{}]:", stageName, t);
 						in.reject(Message.RejectType.PROCESS_ERROR, t);
 					}
 				} finally {
@@ -290,13 +290,13 @@ public abstract class Stage<Input extends Message> {
 	}
 
 	/**
-	 * We will call this method when the input queue size is greater than 5 times adjustFactor.
+	 * We will call this method when the input queue size is greater than 4 times adjustFactor.
 	 * User can override this method to change the default behavior.
 	 *
 	 * @return the number of messages dropped.
 	 */
 	protected int dropMessage() {
-		int size = inputQueue.size() - 4 * adjustFactor;
+		int size = inputQueue.size() - 2 * adjustFactor;
 		Input in;
 		for (int i = 0; i < size; ++i) {
 			in = inputQueue.poll();
@@ -324,7 +324,7 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * Add a new thread to this thread pool.
 	 */
-	protected void addThread() {
+	protected synchronized void addThread() {
 		Worker worker = new Worker();
 		// A new thread ready, so we update status.
 		++currentPoolSize;
@@ -354,7 +354,7 @@ public abstract class Stage<Input extends Message> {
 		// The current input queue size.
 		int currentQueueSize = inputQueue.size();
 		int dropSize = 0;
-		if (currentQueueSize > 5 * adjustFactor) {
+		if (currentQueueSize > 4 * adjustFactor) {
 			// Too many messages, we will drop some of them.
 			dropSize = dropMessage();
 			LOG.info("Too many messages in stage [{}], we droped {} messages.", stageName, dropSize);
@@ -466,7 +466,7 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * Subtract a thread from the thread pool.
 	 */
-	protected void subtractThread() {
+	protected synchronized void subtractThread() {
 		Worker wo = workerList.poll();
 		if (wo != null) {
 			wo.setWorking(false);
@@ -480,19 +480,31 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * Shutdown this stage and the internal pool.
 	 */
-	public void shutdown() {
+	public synchronized void shutdown() {
 		stageStatus = SHUTDOWN;
-		ListIterator<Worker> it = workerList.listIterator();
-		// Signal all threads try to terminate.
-		while (it.hasNext()) {
-			it.next().interrupt();
+		if (inputQueue.size() <= 2 * currentPoolSize) {
+			// We have only a small number of messages, we must wait until it's down.
+			// We sleep as most 5 seconds.
+			int i = 500;
+			while (i-- > 0) {
+				try {
+					if (inputQueue.size() == 0)
+						break;
+					Thread.sleep(10);
+				} catch (InterruptedException e) {}
+			}
+			ListIterator<Worker> it = workerList.listIterator();
+			// Signal all threads try to terminate.
+			while (it.hasNext()) {
+				it.next().interrupt();
+			}
 		}
 	}
 
 	/**
 	 * Try to terminate this stage.
 	 */
-	private void tryTerminate() {
+	private synchronized void tryTerminate() {
 		if (inputQueue.size() == 0) {
 			stageStatus = TERMINATED;
 			currentPoolSize = 0;

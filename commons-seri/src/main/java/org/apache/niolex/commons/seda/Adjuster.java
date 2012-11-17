@@ -63,6 +63,7 @@ public class Adjuster implements Runnable {
 	public void startAdjust() {
 		if (thread == null) {
 			thread = new Thread(this);
+			thread.setDaemon(true);
 			isWorking = true;
 			thread.start();
 		}
