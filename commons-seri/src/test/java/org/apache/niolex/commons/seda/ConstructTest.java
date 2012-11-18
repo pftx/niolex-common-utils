@@ -23,6 +23,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.niolex.commons.test.MockUtil;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -174,6 +175,11 @@ public class ConstructTest {
 		disp.register(new C1Stage("c1", 1));
 		disp.construction();
 		disp.startAdjust(1005);
+	}
+
+	@AfterClass
+	public static final void clear() {
+		disp.clear();
 	}
 
 	@Test

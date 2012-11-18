@@ -44,7 +44,7 @@ public class ConstructStage extends SleepStage {
 	protected void process(TInput in, Dispatcher dispatcher) {
 		String tag = consMap.get(in.getTag());
 		if (tag == null) {
-			in.reject(Message.RejectType.USER_REJECT, "No way to dispatch.");
+			in.reject(Message.RejectType.USER_REJECT, "No way to dispatch.", dispatcher);
 		}
 		dispatcher.dispatch(tag, in);
 	}

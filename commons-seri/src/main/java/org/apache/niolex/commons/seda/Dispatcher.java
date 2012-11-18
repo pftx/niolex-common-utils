@@ -117,6 +117,13 @@ public class Dispatcher {
 	}
 
 	/**
+	 * Clear all the stages in this dispatcher.
+	 */
+	public void clear() {
+		stageMap.clear();
+	}
+
+	/**
 	 * Dispatch the message to the stage with this stage name.
 	 *
 	 * @param stageName the stage name of the stage you want to dispatch.

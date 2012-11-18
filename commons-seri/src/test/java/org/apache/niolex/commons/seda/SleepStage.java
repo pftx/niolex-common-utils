@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.seda;
 
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -33,6 +34,13 @@ public class SleepStage extends Stage<TInput> {
 		this.sleepTime = sleepTime;
 	}
 
+	public SleepStage(String stageName, Dispatcher dispatcher) {
+		super(stageName, new LinkedBlockingQueue<TInput>(), dispatcher, 1, 6, 2560);
+		this.sleepTime = 6;
+	}
+
+
+
 	/**
 	 * Override super method
 	 * @see org.apache.niolex.commons.seda.Stage#process(org.apache.niolex.commons.seda.Message, org.apache.niolex.commons.seda.Dispatcher)
@@ -40,6 +48,9 @@ public class SleepStage extends Stage<TInput> {
 	@Override
 	protected void process(TInput in, Dispatcher dispatcher) {
 		cnt.incrementAndGet();
+		if (in.getTag() == 65432) {
+			throw new RuntimeException("We need it.");
+		}
 		try {
 			Thread.sleep(sleepTime);
 		} catch (InterruptedException e) {}
@@ -49,4 +60,7 @@ public class SleepStage extends Stage<TInput> {
 		return cnt.get();
 	}
 
+	public Worker getWorker() {
+		return new Worker();
+	}
 }

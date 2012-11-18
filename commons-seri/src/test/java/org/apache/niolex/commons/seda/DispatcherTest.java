@@ -52,6 +52,11 @@ public class DispatcherTest {
 		disp.register(new ConstructStage(TInput.class.toString(), consMap));
 	}
 
+	@Test
+	public final void testZ() {
+		disp.clear();
+	}
+
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seda.Dispatcher#getStage(java.lang.String)}.
 	 */

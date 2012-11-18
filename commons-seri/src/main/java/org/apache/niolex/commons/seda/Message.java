@@ -18,12 +18,12 @@
 package org.apache.niolex.commons.seda;
 
 /**
- * This is the basic interface for all the messages flow through the seda system.
+ * This is the basic class for all the messages flow through the seda system.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-15$
  */
-public interface Message {
+public abstract class Message {
 
 	/**
 	 * The message rejection event type.
@@ -42,12 +42,18 @@ public interface Message {
 	 * Reject this message from a stage. This means this message will not get
 	 * processed correctly. User need to deal with it.
 	 *
-	 * Dealing this method need to be fast and effective, do not take too much
-	 * time from the rejection thread.
+	 * The default implementation will dispatch this message to the reject handler with
+	 * in instance of {@link RejectMessage}
+	 *
+	 * User can override this method, but dealing this method need to be fast and
+	 * effective, do not take too much time from the rejection thread.
 	 *
 	 * @param type the reject type
 	 * @param info the related rejection information
+	 * @param dispatcher the dispatcher used to dispatch this message
 	 */
-	public void reject(RejectType type, Object info);
+	public void reject(RejectType type, Object info, Dispatcher dispatcher) {
+		dispatcher.dispatch(new RejectMessage(type, info, this));
+	}
 
 }

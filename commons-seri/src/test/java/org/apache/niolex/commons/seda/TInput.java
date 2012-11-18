@@ -17,11 +17,12 @@
  */
 package org.apache.niolex.commons.seda;
 
+
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-16$
  */
-public class TInput implements Message {
+public class TInput extends Message {
 
 	private int tag;
 
@@ -34,12 +35,8 @@ public class TInput implements Message {
 		this.tag = tag;
 	}
 
-	/**
-	 * Override super method
-	 * @see org.apache.niolex.commons.seda.Message#reject(org.apache.niolex.commons.seda.Message.RejectType, java.lang.Object)
-	 */
 	@Override
-	public void reject(RejectType type, Object info) {
+	public void reject(RejectType type, Object info, Dispatcher dispatcher) {
 		if (type != RejectType.STAGE_BUSY)
 			System.out.println("x get rejected by " + type);
 	}

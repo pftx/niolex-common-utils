@@ -121,7 +121,7 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * The recent stable consume rate.
 	 */
-    protected double stableRate;
+    protected double stableRate = 0.01;
 
     /**
      * The last adjust status.
@@ -197,7 +197,7 @@ public abstract class Stage<Input extends Message> {
 		/**
 		 * Create a new worker.
 		 */
-		private Worker() {
+		protected Worker() {
 			super();
 			this.thread = new Thread(group, this);
 			thread.start();
@@ -236,8 +236,8 @@ public abstract class Stage<Input extends Message> {
 				} catch (Throwable t) {
 					// Reject the message if it's not null.
 					if (in != null) {
-						LOG.error("Error occured when process message in stage[{}]:", stageName, t);
-						in.reject(Message.RejectType.PROCESS_ERROR, t);
+						LOG.error("Error occured when process message in stage [{}]:", stageName, t);
+						in.reject(Message.RejectType.PROCESS_ERROR, t, dispatcher);
 					}
 				} finally {
 					// Add the execution count.
@@ -301,7 +301,7 @@ public abstract class Stage<Input extends Message> {
 		for (int i = 0; i < size; ++i) {
 			in = inputQueue.poll();
 			if (in != null) {
-				in.reject(Message.RejectType.STAGE_BUSY, this);
+				in.reject(Message.RejectType.STAGE_BUSY, this, dispatcher);
 			} else {
 				return i;
 			}
@@ -521,7 +521,7 @@ public abstract class Stage<Input extends Message> {
 		if (stageStatus < SHUTDOWN) {
 			inputQueue.add(in);
 		} else {
-			in.reject(Message.RejectType.STAGE_SHUTDOWN, stageName);
+			in.reject(Message.RejectType.STAGE_SHUTDOWN, stageName, dispatcher);
 		}
 	}
 

@@ -17,7 +17,10 @@
  */
 package org.apache.niolex.commons.seda;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.niolex.commons.seda.Message.RejectType;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -26,31 +29,52 @@ import org.junit.Test;
  */
 public class MessageTest {
 
+	Dispatcher disp = new Dispatcher();
+	RejectMessage inp;
+	Stage<RejectMessage> stage = new Stage<RejectMessage>(RejectMessage.class.toString()) {
+
+		@Override
+		public void addInput(RejectMessage in) {
+			inp = in;
+		}
+
+		@Override
+		protected void process(RejectMessage in, Dispatcher dispatcher) {
+		}
+
+	};
+	Message in = new Message() {
+	};
+
+	@Before
+	public void add() {
+		disp.register(stage);
+	}
+
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seda.Message#reject(org.apache.niolex.commons.seda.Message.RejectType, java.lang.Object)}.
 	 */
 	@Test
 	public final void testReject1() {
-		TInput in = new TInput();
-		in.reject(RejectType.PROCESS_ERROR, in);
+		in.reject(RejectType.PROCESS_ERROR, in, disp);
+		assertEquals(RejectType.PROCESS_ERROR, inp.getType());
 	}
 
 	@Test
 	public final void testReject2() {
-		TInput in = new TInput();
-		in.reject(RejectType.STAGE_BUSY, in);
+		in.reject(RejectType.STAGE_BUSY, in, disp);
+		assertEquals(in, inp.getInfo());
 	}
 
 	@Test
 	public final void testReject3() {
-		TInput in = new TInput();
-		in.reject(RejectType.STAGE_SHUTDOWN, in);
+		in.reject(RejectType.STAGE_SHUTDOWN, in, disp);
+		assertEquals(in, inp.getRejected());
 	}
 
 	@Test
 	public final void testReject4() {
-		TInput in = new TInput();
-		in.reject(RejectType.USER_REJECT, in);
+		in.reject(RejectType.USER_REJECT, in, disp);
 	}
 
 }
