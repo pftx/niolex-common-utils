@@ -36,6 +36,17 @@ public class OSInfoTest {
 	public void testInvoke() throws IOException {
 		OSInfo os = new OSInfo();
 		os.invoke(System.out, null);
+		System.err.println("----------------");
+	}
+
+	@Test
+	public void testGetter() throws IOException {
+		OSInfo os = new OSInfo();
+		System.out.println(os.getOsName());
+		System.out.println(os.getOsmxb());
+		System.out.println(os.getSystemInfo());
+		System.out.println(os.getOsArch());
+		System.out.println(os.getOsVersion());
 	}
 
 }
