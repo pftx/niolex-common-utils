@@ -6,12 +6,13 @@ import static org.apache.niolex.commons.compress.JacksonUtil.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.type.TypeFactory;
+import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 
 public class JacksonUtilTest {
@@ -36,9 +37,16 @@ public class JacksonUtilTest {
 	@Test
 	public final void testStr2ObjStringJavaType() throws Exception {
 		CTBean t = new CTBean(3, "Qute", 12212, new Date(1338008328709L));
+		String st = "{\"likely\":3,\"name\":\"Qute\",\"id\":12212,\"birth\":1338008328709}";
+		CTBean m = str2Obj(st, TypeFactory.fromCanonical("org.apache.niolex.commons.compress.CTBean"));
+		assertEquals(t, m);
+	}
+
+	@Test
+	public final void testStr2ObjStringRef() throws Exception {
+		CTBean t = new CTBean(3, "Qute", 12212, new Date(1338008328709L));
 		String st = "[{\"likely\":3,\"name\":\"Qute\",\"id\":12212,\"birth\":1338008328709}]";
-		@SuppressWarnings("deprecation")
-		List<CTBean> m = str2Obj(st, TypeFactory.collectionType(ArrayList.class, CTBean.class));
+		List<CTBean> m = str2Obj(st, new TypeReference<List<CTBean>>(){});
 		assertEquals(t, m.get(0));
 		assertEquals(1, m.size());
 	}
@@ -66,12 +74,26 @@ public class JacksonUtilTest {
 	@Test
 	public final void testReadObjInputStreamJavaType() throws Exception {
 		CTBean t = new CTBean(3, "Qute", 12212, new Date(1338008328709L));
+		String st = "{\"likely\":3,\"name\":\"Qute\",\"id\":12212,\"birth\":1338008328709}";
+		ByteArrayInputStream in = new ByteArrayInputStream(st.getBytes("UTF-8"));
+		CTBean m = readObj(in, TypeFactory.fromCanonical("org.apache.niolex.commons.compress.CTBean"));
+		assertEquals(t, m);
+	}
+
+	@Test
+	public final void testReadObjInputStreamRef() throws Exception {
+		CTBean t = new CTBean(3, "Qute", 12212, new Date(1338008328709L));
 		String st = "[{\"likely\":3,\"name\":\"Qute\",\"id\":12212,\"birth\":1338008328709}]";
 		ByteArrayInputStream in = new ByteArrayInputStream(st.getBytes("UTF-8"));
-		@SuppressWarnings("deprecation")
-		List<CTBean> m = readObj(in, TypeFactory.collectionType(ArrayList.class, CTBean.class));
+		List<CTBean> m = readObj(in, new TypeReference<List<CTBean>>(){});
 		assertEquals(t, m.get(0));
 		assertEquals(1, m.size());
+	}
+
+	@Test
+	public final void testJacksonUtil() throws Exception {
+		JsonFactory fac = JacksonUtil.getJsonFactory();
+		System.out.println(new JacksonUtil(){} + ", " + fac.getCodec().toString());
 	}
 
 	@Test(expected=EOFException.class)

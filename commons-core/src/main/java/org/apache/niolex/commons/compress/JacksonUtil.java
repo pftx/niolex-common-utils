@@ -22,13 +22,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.type.JavaType;
+import org.codehaus.jackson.type.TypeReference;
 
 /**
  * 利用JSON进行数据压缩的工具类。内部采用了Jackson的Json序列化实现。
@@ -51,7 +49,7 @@ public abstract class JacksonUtil {
 
     /**
      * Get the internal Json Factory this Object Mapper is using.
-     * @return
+     * @return the internal factory
      */
     public static final JsonFactory getJsonFactory() {
     	return mapper.getJsonFactory();
@@ -61,11 +59,9 @@ public abstract class JacksonUtil {
      * Convert Object to String
      * @param o
      * @return the string represents the object
-     * @throws JsonGenerationException
-     * @throws JsonMappingException
      * @throws IOException
      */
-    public static final String obj2Str(Object o) throws JsonGenerationException, JsonMappingException, IOException {
+    public static final String obj2Str(Object o) throws IOException {
         return mapper.writeValueAsString(o);
     }
 
@@ -74,11 +70,9 @@ public abstract class JacksonUtil {
      * @param s
      * @param valueType
      * @return the object
-     * @throws JsonParseException
-     * @throws JsonMappingException
      * @throws IOException
      */
-    public static final <T> T str2Obj(String s, Class<T> valueType) throws JsonParseException, JsonMappingException, IOException {
+    public static final <T> T str2Obj(String s, Class<T> valueType) throws IOException {
         return mapper.readValue(s, valueType);
     }
 
@@ -87,12 +81,22 @@ public abstract class JacksonUtil {
      * @param s
      * @param valueType
      * @return the object
-     * @throws JsonParseException
-     * @throws JsonMappingException
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public static final <T> T str2Obj(String s, JavaType valueType) throws JsonParseException, JsonMappingException, IOException {
+    public static final <T> T str2Obj(String s, JavaType valueType) throws IOException {
+    	return (T)mapper.readValue(s, valueType);
+    }
+
+    /**
+     * Convert String to Object
+     * @param s
+     * @param valueType
+     * @return the object
+     * @throws IOException
+     */
+    @SuppressWarnings("unchecked")
+    public static final <T> T str2Obj(String s, TypeReference<T> valueType) throws IOException {
     	return (T)mapper.readValue(s, valueType);
     }
 
@@ -100,11 +104,9 @@ public abstract class JacksonUtil {
      * Write object json representation to the OutputStream
      * @param out
      * @param value
-     * @throws JsonGenerationException
-     * @throws JsonMappingException
      * @throws IOException
      */
-    public static final void writeObj(OutputStream out, Object value) throws JsonGenerationException, JsonMappingException, IOException {
+    public static final void writeObj(OutputStream out, Object value) throws IOException {
     	mapper.writeValue(out, value);
     }
 
@@ -113,11 +115,9 @@ public abstract class JacksonUtil {
      * @param in
      * @param valueType
      * @return the object
-     * @throws JsonParseException
-     * @throws JsonMappingException
      * @throws IOException
      */
-    public static final <T> T readObj(InputStream in, Class<T> valueType) throws JsonParseException, JsonMappingException, IOException {
+    public static final <T> T readObj(InputStream in, Class<T> valueType) throws IOException {
         return mapper.readValue(in, valueType);
     }
 
@@ -126,13 +126,23 @@ public abstract class JacksonUtil {
      * @param in
      * @param valueType
      * @return the object
-     * @throws JsonParseException
-     * @throws JsonMappingException
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public static final <T> T readObj(InputStream in, JavaType valueType) throws JsonParseException, JsonMappingException, IOException {
+    public static final <T> T readObj(InputStream in, JavaType valueType) throws IOException {
         return (T)mapper.readValue(in, valueType);
+    }
+
+    /**
+     * Read object from the InputStream
+     * @param in
+     * @param valueType
+     * @return the object
+     * @throws IOException
+     */
+    @SuppressWarnings("unchecked")
+    public static final <T> T readObj(InputStream in, TypeReference<T> valueType) throws IOException {
+    	return (T)mapper.readValue(in, valueType);
     }
 
 }
