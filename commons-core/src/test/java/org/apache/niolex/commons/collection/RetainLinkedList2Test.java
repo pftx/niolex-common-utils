@@ -32,14 +32,14 @@ import org.junit.Test;
  * @version 1.0.0
  * @Date: 2012-6-19
  */
-public class RetainLinkedListTest {
+public class RetainLinkedList2Test {
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#RetainLinkedList(int)}.
 	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void testRetainLinkedList() {
-		new RetainLinkedList<String>(0);
+		new RetainLinkedList<String>(-1);
 	}
 
 	/**

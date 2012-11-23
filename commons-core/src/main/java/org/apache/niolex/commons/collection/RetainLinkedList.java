@@ -24,9 +24,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
- * Retain a number of items before the current head pointer, keep them moving
- * as the head pointer is moving. Finally you will get the latest retainSize
- * number of items left.
+ * Retain a number of items in this list after all data has been consumed.
+ * This list can be used when someone want to remember the last K elements
+ * consumed latest.
+ *
+ * There are two pointers maintained in this list, one for the retain header,
+ * which is before the current head pointer, keep them moving as the head
+ * pointer is moving; the other is head pointer. Finally you will get the
+ * latest retainSize number of items left in the list.
  *
  * This list is thread safe.
  *
@@ -35,6 +40,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class RetainLinkedList<E> {
 
+	/**
+	 * The number of items need to be retained.
+	 */
 	private final int retainSize;
 
 	/**
@@ -75,6 +83,7 @@ public class RetainLinkedList<E> {
 
 	/**
 	 * The only constructor of RetainLinkedList
+	 *
 	 * @param retainSize must greater than 0
 	 */
 	public RetainLinkedList(int retainSize) {
@@ -87,7 +96,8 @@ public class RetainLinkedList<E> {
 
 	/**
 	 * Add an element into this list.
-	 * @param e
+	 *
+	 * @param e the element to add
 	 */
 	public void add(E e) {
 		tailLock.lock();
@@ -105,8 +115,11 @@ public class RetainLinkedList<E> {
 	 * available item, this method will return null.
 	 *
 	 * Old item will be removed automatically if the current
-	 * size if greater than the retainSize
-	 * @return
+	 * size if greater than the retainSize, otherwise the
+	 * item will be retained in the retain buffer of this
+	 * list.
+	 *
+	 * @return the next available item
 	 */
 	public E handleNext() {
 		headLock.lock();
@@ -116,12 +129,14 @@ public class RetainLinkedList<E> {
 			} else {
 				Link<E> tmp = pointer.next;
 				pointer = tmp;
-				++headPointerSize;
-				if (headPointerSize > retainSize) {
+
+				if (headPointerSize >= retainSize) {
 					Link<E> t = head.next;
 					head.next = t.next;
 					t.next = null; // Help GC
 					size.decrementAndGet();
+				} else {
+					++headPointerSize;
 				}
 				return tmp.e;
 			}
@@ -131,10 +146,39 @@ public class RetainLinkedList<E> {
 	}
 
 	/**
-	 * Add all the items in the other RetainLinkedList into this list
-	 * This method will remove items from other RetainLinkedList
+	 * Handle the next retain item in the retain area. If there is no more
+	 * item in the retain area, this method will return null.
 	 *
-	 * @param other
+	 * Note that there is no item in the retain area do not mean there is
+	 * no item in this list.
+	 *
+	 * Item will be removed automatically in this method.
+	 *
+	 * @return the next retain item.
+	 */
+	public E handleRetain() {
+		headLock.lock();
+		try {
+			if (headPointerSize == 0) {
+				return null;
+			} else {
+				Link<E> tmp = head.next;
+				--headPointerSize;
+				head.next = tmp.next;
+				size.decrementAndGet();
+				return tmp.e;
+			}
+		} finally {
+			headLock.unlock();
+		}
+	}
+
+	/**
+	 * Add all the items in the other RetainLinkedList into this list
+	 * This method automatically will remove items from the other RetainLinkedList
+	 * until it's empty.
+	 *
+	 * @param other the other retain linked list
 	 */
 	public void addAll(RetainLinkedList<E> other) {
 		E e;
@@ -145,7 +189,8 @@ public class RetainLinkedList<E> {
 
 	/**
 	 * Add all the items in the other Collection into this list
-	 * @param other
+	 *
+	 * @param other the other collection
 	 */
 	public void addAll(Collection<E> other) {
 		Iterator<E> it = other.iterator();
@@ -155,7 +200,7 @@ public class RetainLinkedList<E> {
 	}
 
 	/**
-	 * Dump all the items into the specified array.
+	 * Dump all the items in this list including the retained area into the specified array.
 	 *
 	 * If the array size is small than this list size, the first K items will be filled
 	 * into the array until the array is full.
@@ -166,8 +211,8 @@ public class RetainLinkedList<E> {
 	 * This method is thread safe, but if there are any concurrent add at the tail, this
 	 * method will only reflect a snapshot of the time stamp this method is called.
 	 *
-	 * @param a
-	 * @return
+	 * @param a the array need to be filled
+	 * @return the filled array
 	 */
 	public E[] toArray(E[] a) {
 		headLock.lock();
@@ -188,27 +233,47 @@ public class RetainLinkedList<E> {
 	}
 
 	/**
-	 * Return whether this list is empty
-	 * @return
+	 * Return whether this list is empty including the retain area.
+	 *
+	 * @return true if it's empty
 	 */
 	public boolean isEmpty() {
 		return size.intValue() == 0;
 	}
 
 	/**
-	 * Return the size of this list
-	 * @return
+	 * Return whether there is any data to handle.
+	 *
+	 * @return true if all data is handled
+	 */
+	public boolean handleEmpty() {
+		return pointer.next == null;
+	}
+
+	/**
+	 * Return the size of this list including the retain area.
+	 *
+	 * @return the size
 	 */
 	public int size() {
 		return size.intValue();
 	}
 
 	/**
+	 * Return the number of items need to be handled.
+	 *
+	 * @return the size
+	 */
+	public int handleSize() {
+		return size.intValue() - headPointerSize;
+	}
+
+	/**
 	 * The internal data structure, please keep away.
+	 * The Link List data structure.
 	 *
 	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
-	 * @version 1.0.0
-	 * @Date: 2012-6-1
+	 * @version 1.0.0, Date: 2012-6-1
 	 */
 	private static class Link<E> {
 		private E e;

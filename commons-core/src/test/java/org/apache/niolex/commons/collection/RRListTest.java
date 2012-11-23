@@ -1,5 +1,5 @@
 /**
- * RRListTest.java
+ * CircularListTest.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -19,7 +19,7 @@ package org.apache.niolex.commons.collection;
 
 import static org.junit.Assert.*;
 
-import org.apache.niolex.commons.collection.RRList;
+import org.apache.niolex.commons.collection.CircularList;
 import org.junit.Test;
 
 /**
@@ -30,23 +30,22 @@ import org.junit.Test;
 public class RRListTest {
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.collection.RRList#size()}.
+	 * Test method for {@link org.apache.niolex.commons.collection.CircularList#size()}.
 	 */
 	@Test
 	public void testSize() {
-		RRList<Integer> rr = new RRList<Integer>(9);
+		CircularList<Integer> rr = new CircularList<Integer>(9);
 		assertEquals(0, rr.size());
 		rr.add(123);
 		assertEquals(1, rr.size());
-		assertEquals(9, rr.capacity());
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.collection.RRList#add(int, java.lang.Object)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.CircularList#add(int, java.lang.Object)}.
 	 */
 	@Test
 	public void testAddIntE() {
-		RRList<Integer> rr = new RRList<Integer>(9);
+		CircularList<Integer> rr = new CircularList<Integer>(9);
 		assertEquals(0, rr.size());
 		rr.add(123);
 		rr.add(345);
@@ -63,11 +62,11 @@ public class RRListTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.collection.RRList#get(int)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.CircularList#get(int)}.
 	 */
 	@Test
 	public void testGetInt() {
-		RRList<Integer> rr = new RRList<Integer>(5);
+		CircularList<Integer> rr = new CircularList<Integer>(5);
 		assertEquals(0, rr.size());
 		rr.add(123);
 		rr.add(345);
@@ -78,29 +77,29 @@ public class RRListTest {
 		rr.add(1235623);
 		rr.add(67213);
 		rr.add(1534);
-		assertEquals(9, rr.size());
-		assertEquals(6453, rr.get(0).intValue());
-		assertEquals(1534, rr.get(3).intValue());
-		assertEquals(5, rr.capacity());
+		assertEquals(5, rr.size());
+		assertEquals(134, rr.get(0).intValue());
+		assertEquals(67213, rr.get(3).intValue());
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.collection.RRList#get(int)}.
+	 * Test method for {@link org.apache.niolex.commons.collection.CircularList#get(int)}.
 	 */
 	@Test(expected=IndexOutOfBoundsException.class)
 	public void testGetIntExc() {
-		RRList<Integer> rr = new RRList<Integer>(5);
+		CircularList<Integer> rr = new CircularList<Integer>(5);
 		assertEquals(0, rr.size());
 		rr.add(123);
 		rr.add(345);
 		rr.add(1234);
+		assertEquals(3, rr.size());
 		rr.add(4);
 		rr.add(134);
 		rr.add(6453);
 		rr.add(1235623);
 		rr.add(67213);
 		rr.add(1534);
-		assertEquals(9, rr.size());
+		assertEquals(5, rr.size());
 		assertEquals(6453, rr.get(5).intValue());
 	}
 }
