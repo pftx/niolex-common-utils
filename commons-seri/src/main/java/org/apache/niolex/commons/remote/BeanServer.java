@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
  */
 public class BeanServer implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(BeanServer.class);
+
+	// The bean map.
 	private final ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<String, Object>();
 
 	// As the name indicates.

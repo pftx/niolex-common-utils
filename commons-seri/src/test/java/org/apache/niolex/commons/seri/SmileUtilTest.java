@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.apache.niolex.commons.test.Benchmark.Bean;
 import org.codehaus.jackson.map.type.TypeFactory;
+import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 
 public class SmileUtilTest {
@@ -32,6 +33,14 @@ public class SmileUtilTest {
 		byte[] bin = obj2bin(t);
 		@SuppressWarnings("deprecation")
 		Bean st = bin2Obj(bin, TypeFactory.fastSimpleType(Bean.class));
+		assertEquals(st, t);
+	}
+
+	@Test
+	public void testBin2Obj() throws Exception {
+		Bean t = new Bean(3, "Qute", 12212, new Date(1338008328709L));
+		byte[] bin = obj2bin(t);
+		Bean st = bin2Obj(bin, new TypeReference<Bean>(){});
 		assertEquals(st, t);
 	}
 
@@ -64,6 +73,21 @@ public class SmileUtilTest {
 		Bean[] m2 = readObj(in, Bean[].class);
 		assertEquals(2, m2.length);
 		assertEquals(t, m2[0]);
+	}
+
+	@Test
+	public void testReadObj() throws Exception {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		Bean t = new Bean(3, "Qute", 12212, new Date(1338008328709L));
+		List<Bean> m = new ArrayList<Bean>();
+		m.add(t);
+		m.add(t);
+		writeObj(out, m);
+		out.close();
+		ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+		List<Bean> m2 = readObj(in, new TypeReference<List<Bean>>(){});
+		assertEquals(2, m2.size());
+		assertEquals(t, m2.get(0));
 	}
 
 }

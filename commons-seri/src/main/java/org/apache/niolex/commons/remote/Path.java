@@ -26,12 +26,37 @@ package org.apache.niolex.commons.remote;
  */
 public class Path {
 
+	/**
+	 * The Path Type enumeration.
+	 *
+	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+	 * @version 1.0.5, $Date: 2012-11-23$
+	 */
+	public static enum Type {
+		FIELD, MAP, ARRAY, INVALID
+	}
+
+	// Path Type, default to Field.
 	private Type type = Type.FIELD;
+
+	// Path Name, the fields name.
 	private String name;
+
+	// This is for Map Type.
 	private String key;
+
+	// This is for Array Type.
 	private int idx;
+
+	// The Path chain.
 	private Path next;
 
+	/**
+	 * The static method to parse a Path chain from the string representation.
+	 *
+	 * @param strPath the string path.
+	 * @return the parsed Path chain.
+	 */
 	public static Path parsePath(String strPath) {
 		strPath += '.';
 		int start = 0;
@@ -150,11 +175,13 @@ public class Path {
 	}
 
 	/**
+	 * Make path for map section.
+	 *
 	 * @param strPath
 	 * @param start
 	 * @param end
-	 * @param substring
-	 * @return
+	 * @param substring the map key
+	 * @return the path
 	 */
 	private static Path makePath(String strPath, int start, int end, String substring) {
 		Path p = makePath(strPath, start, end);
@@ -164,11 +191,13 @@ public class Path {
 	}
 
 	/**
+	 * Make path for array section.
+	 *
 	 * @param strPath
 	 * @param start
 	 * @param end
-	 * @param idx2
-	 * @return
+	 * @param idx2 the array index
+	 * @return the path
 	 */
 	private static Path makePath(String strPath, int start, int end, int idx2) {
 		Path p = makePath(strPath, start, end);
@@ -178,19 +207,17 @@ public class Path {
 	}
 
 	/**
+	 * Make path for field section.
+	 *
 	 * @param strPath
-	 * @param start
-	 * @param end
-	 * @return
+	 * @param start the field start index
+	 * @param end the field end index
+	 * @return the path
 	 */
 	private static Path makePath(String strPath, int start, int end) {
 		Path p = new Path();
 		p.name = strPath.substring(start, end);
 		return p;
-	}
-
-	public static enum Type {
-		FIELD, MAP, ARRAY, INVALID
 	}
 
 	public Type getType() {

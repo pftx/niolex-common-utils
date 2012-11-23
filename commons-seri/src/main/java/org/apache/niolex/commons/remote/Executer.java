@@ -54,7 +54,13 @@ public abstract class Executer {
 	 * Execute the command on the object.
 	 * @param o
 	 * @param out
-	 * @param args
+	 * @param args The command line parsed from client input.
+	 * It's of the following format:
+	 * Index	Explain
+	 * 0		Command Name
+	 * 1		Object Path
+	 * 2		Extension Argument 1 (Optional)
+	 * 3		Extension Argument 2 (Optional)
 	 */
 	public abstract void execute(Object o, OutputStream out, String[] args) throws IOException;
 
@@ -218,6 +224,36 @@ public abstract class Executer {
 			}
 			sb.append("---Invoke Success---").append(END_LINE);
 			out.write(StringUtil.strToUtf8Byte(sb.toString()));
+		}
+
+	}
+
+	/**
+	 * Invoke the methods on instance of {@link org.apache.niolex.commons.remote.Monitor}
+	 *
+	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+	 * @version 1.0.5, $Date: 2012-11-23$
+	 */
+	public static class InvoMonitor extends Executer {
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * Override super method
+		 * @see org.apache.niolex.commons.remote.Executer#execute(java.lang.Object, java.io.OutputStream, java.lang.String[])
+		 */
+		@Override
+		public void execute(Object o, OutputStream out, String[] args) throws IOException {
+			if (o instanceof Monitor) {
+				if (args.length < 3) {
+					out.write(StringUtil.strToUtf8Byte("Please specify the Key to Monitor." + END_LINE));
+					return;
+				}
+				String parameter = args.length > 3 ? args[3] : "watch";
+				((Monitor) o).doMonitor(out, args[2], parameter);
+			} else {
+				out.write(StringUtil.strToUtf8Byte("Object not Monitor." + END_LINE));
+			}
 		}
 
 	}

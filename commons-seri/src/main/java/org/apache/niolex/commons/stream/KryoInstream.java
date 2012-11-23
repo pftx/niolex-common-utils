@@ -58,7 +58,7 @@ public class KryoInstream {
 	 * You can call it repeatedly.
 	 *
 	 * @param clazz
-	 * @return
+	 * @return the object
 	 */
 	public <T> T readObject(Class<T> clazz) {
 		return kryo.readObject(inp, clazz);

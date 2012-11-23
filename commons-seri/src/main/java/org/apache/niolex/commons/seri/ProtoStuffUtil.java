@@ -39,7 +39,7 @@ public class ProtoStuffUtil {
 	 * Serialize one object using protocol stuff.
 	 *
 	 * @param o
-	 * @return
+	 * @return the byte array
 	 */
 	@SuppressWarnings("unchecked")
     public static final <T> byte[] seriOne(T o) {
@@ -53,7 +53,7 @@ public class ProtoStuffUtil {
 	 *
 	 * @param data
 	 * @param type
-	 * @return
+	 * @return the object
 	 */
 	@SuppressWarnings("unchecked")
     public static final <T> T parseOne(byte[] data, Type type) {
@@ -70,7 +70,7 @@ public class ProtoStuffUtil {
 	 * Serialize multiple objects using protocol stuff into byte array.
 	 *
 	 * @param params
-	 * @return
+	 * @return the byte array
 	 */
 	@SuppressWarnings("unchecked")
     public static final byte[] seriMulti(Object[] params) {
@@ -94,7 +94,7 @@ public class ProtoStuffUtil {
 	 *
 	 * @param data
 	 * @param generic
-	 * @return
+	 * @return the object array
 	 */
 	@SuppressWarnings("unchecked")
     public static final Object[] parseMulti(byte[] data, Type[] generic) {

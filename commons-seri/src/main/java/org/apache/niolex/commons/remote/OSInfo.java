@@ -37,6 +37,10 @@ import org.slf4j.LoggerFactory;
 
 
 /**
+ * Print the OS information into the command console for anyone who need it.
+ * User application need to add an instance of this class into BeanServer
+ * in order to have this functionality.
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @Date: 2012-7-28
@@ -144,7 +148,7 @@ public class OSInfo implements Invokable {
 	 * Format integer into percent format.
 	 *
 	 * @param k
-	 * @return
+	 * @return the percent in string format
 	 */
 	public String formatPercent(int k) {
 		return k / 100 + "." + k % 100 + "%";
@@ -175,7 +179,7 @@ public class OSInfo implements Invokable {
 	 * 获取CPU使用时间分配情况
 	 *
 	 * @param proc
-	 * @return
+	 * @return CPU status
 	 */
 	public long[] getWindowsCPUTime(final Process proc) {
 		long[] retn = new long[2];
@@ -219,7 +223,7 @@ public class OSInfo implements Invokable {
 
 	/**
 	 * Get Linux CPU Info, Memory Info, and Swap Info all at the same time.
-	 * @return
+	 * @return the information from top result
 	 */
 	public String[] getCpuMemSwapForLinux() {
 		Scanner scan = null;
@@ -254,7 +258,7 @@ public class OSInfo implements Invokable {
 
 	/**
 	 * Get the Linux disk free information.
-	 * @return
+	 * @return the result from "df -h"
 	 */
 	public List<String> getDiskFreeForLinux() {
 		Scanner scan = null;

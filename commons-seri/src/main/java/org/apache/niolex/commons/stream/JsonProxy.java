@@ -50,10 +50,24 @@ public class JsonProxy {
 		jp = FACTORY.createJsonParser(in);
 	}
 
+	/**
+	 * Read an object from the input stream
+	 *
+	 * @param clazz
+	 * @return the object
+	 * @throws IOException
+	 */
 	public <T> T readObject(Class<T> clazz) throws IOException {
 		return (T)jp.readValueAs(clazz);
 	}
 
+	/**
+	 * Read an object from the input stream
+	 *
+	 * @param valueTypeRef
+	 * @return the object
+	 * @throws IOException
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> T readObject(TypeReference<?> valueTypeRef) throws IOException {
 		return (T)jp.readValueAs(valueTypeRef);

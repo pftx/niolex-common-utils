@@ -47,7 +47,7 @@ public class ProtoUtil {
 	 *
 	 * @param ret
 	 * @param type
-	 * @return
+	 * @return the object
 	 */
 	public static final Object parseOne(byte[] ret, Type type) {
 		if (type instanceof Class<?>) {
@@ -70,7 +70,7 @@ public class ProtoUtil {
 	 *
 	 * @param data
 	 * @param generic
-	 * @return
+	 * @return the object array
 	 */
 	public static final Object[] parseMulti(byte[] data, Type[] generic) {
 		int idx = 0;
@@ -88,7 +88,7 @@ public class ProtoUtil {
 	 * Serialize one object using protocol buffer.
 	 *
 	 * @param o
-	 * @return
+	 * @return the byte array
 	 */
 	public static final byte[] seriOne(Object o) {
 		if (o instanceof GeneratedMessage) {
@@ -103,7 +103,7 @@ public class ProtoUtil {
 	 * Serialize multiple protocol buffer objects into byte array.
 	 *
 	 * @param params
-	 * @return
+	 * @return the byte array
 	 */
 	public static final byte[] seriMulti(Object[] params) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

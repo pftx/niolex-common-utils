@@ -54,6 +54,7 @@ public class ConnectionWorker implements Runnable {
 		COMMAND_MAP.put("list", new Executer.Lister());
 		COMMAND_MAP.put("set", new Executer.Setter());
 		COMMAND_MAP.put("invoke", new Executer.Invoker());
+		COMMAND_MAP.put("mon", new Executer.InvoMonitor());
 	}
 
 	// Scan input stream.
@@ -69,7 +70,7 @@ public class ConnectionWorker implements Runnable {
 	 *
 	 * @param key
 	 * @param value
-	 * @return
+	 * @return the previous value associated with key, or null if there was no mapping for key.
 	 */
 	public static final Object addCommand(String key, Executer value) {
 		return COMMAND_MAP.put(key, value);

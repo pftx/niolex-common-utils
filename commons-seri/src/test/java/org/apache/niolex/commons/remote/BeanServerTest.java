@@ -29,9 +29,11 @@ import java.util.Set;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.test.Benchmark;
+import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.test.SystemInfo;
 import org.apache.niolex.commons.test.Benchmark.Bean;
 import org.apache.niolex.commons.test.Benchmark.Group;
+import org.apache.niolex.commons.util.Runme;
 import org.junit.Test;
 
 /**
@@ -126,6 +128,18 @@ public class BeanServerTest {
 		test.beanS.putIfAbsent("bench", Benchmark.makeBenchmark());
 		test.beanS.putIfAbsent("group", test.new A());
 		test.beanS.putIfAbsent("system", SystemInfo.getInstance());
+		final Monitor m = new Monitor(10);
+		test.beanS.putIfAbsent("cdc", m);
+		Runme rme = new Runme() {
+
+			@Override
+			public void runMe() {
+				m.addValue("test.me", MockUtil.ranInt(200));
+			}
+
+		};
+		rme.setSleepInterval(1000);
+		rme.start();
 		test.beanS.start();
 		Thread.sleep(3000000);
 		test.beanS.stop();
