@@ -23,6 +23,11 @@
 			<version>1.2</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-email</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.niolex</groupId>
 			<artifactId>commons-seri</artifactId>
 			<version>1.0.5</version>

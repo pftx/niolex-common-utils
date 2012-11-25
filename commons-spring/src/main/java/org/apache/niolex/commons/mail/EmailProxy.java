@@ -41,6 +41,13 @@ public class EmailProxy {
     private String title;
     private String encoding;
 
+    /**
+     * Send an ordinary email with no attachment.
+     *
+     * @param text the email body
+     * @param isHtml whether the body is email or not
+     * @return true if success, false otherwise
+     */
     public boolean sendEmail(String text, boolean isHtml) {
         try {
             EmailUtil.sendMail(from, to, title, text, null, "1", isHtml, encoding);
