@@ -249,7 +249,7 @@ public abstract class Executer {
 					out.write(StringUtil.strToUtf8Byte("Please specify the Key to Monitor." + END_LINE));
 					return;
 				}
-				String parameter = args.length > 3 ? args[3] : "watch";
+				String parameter = args.length > 3 ? args[3] : "default";
 				((Monitor) o).doMonitor(out, args[2], parameter);
 			} else {
 				out.write(StringUtil.strToUtf8Byte("Object not Monitor." + END_LINE));

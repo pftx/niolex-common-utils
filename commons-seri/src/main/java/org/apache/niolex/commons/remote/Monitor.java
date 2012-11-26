@@ -108,20 +108,20 @@ public class Monitor {
 	 * @param key the key to monitor
 	 * @param parameter the parameter, with the following options:
 	 * Option	Meaning
-	 * Watch	(Default)Watch the historical and real time statistics.
+	 * Watch	Watch the historical and real time statistics.
 	 * Real		Only need the real time statistics.
-	 * History	Only need the history statistics.
+	 * History	(Default)Only need the history statistics.
 	 */
 	public void doMonitor(OutputStream out, String key, String parameter) throws IOException {
-		if (parameter.charAt(0) == 'h' || parameter.charAt(0) == 'H') {
+		if (parameter.charAt(0) == 'w' || parameter.charAt(0) == 'W') {
 			printHistorical(out, key);
+			attachReadTime(out, key);
 			return;
 		} else if (parameter.charAt(0) == 'r' || parameter.charAt(0) == 'R') {
 			attachReadTime(out, key);
 			return;
 		}
 		printHistorical(out, key);
-		attachReadTime(out, key);
 	}
 
 	/**
