@@ -28,6 +28,11 @@
 			<version>1.2</version>
 		</dependency>
 		<dependency>
+			<groupId>commons-primitives</groupId>
+			<artifactId>commons-primitives</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.niolex</groupId>
 			<artifactId>commons-seri</artifactId>
 			<version>1.0.5</version>
