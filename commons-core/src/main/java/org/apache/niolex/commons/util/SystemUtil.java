@@ -59,4 +59,15 @@ public class SystemUtil {
         } catch (SocketException e) {/*We Don't Care*/}
         return set;
 	}
+
+	/**
+	 * Make the current thread sleep, do not care about the exception.
+	 *
+	 * @param milliseconds the time to sleep in milliseconds
+	 */
+	public static final void sleep(long milliseconds) {
+		try {
+			Thread.sleep(milliseconds);
+		} catch (Exception e) {/*We Don't Care*/}
+	}
 }

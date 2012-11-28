@@ -43,4 +43,15 @@ public class SystemUtilTest {
 		assertTrue(set.contains(test));
 	}
 
+	@Test
+	public void testSleep() throws Exception {
+		SystemUtil.sleep(4);
+	}
+
+	@Test
+	public void testSleepErr() throws Exception {
+		new SystemUtil() {};
+		SystemUtil.sleep(-1);
+	}
+
 }
