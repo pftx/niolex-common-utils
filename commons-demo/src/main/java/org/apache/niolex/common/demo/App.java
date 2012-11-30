@@ -14,6 +14,6 @@ public class App
 		} else {
 			System.out.println("N");
 		}
-        System.out.println( "Hello World!" );
+        System.out.println( "Hello World! "  + App.class.getCanonicalName());
     }
 }

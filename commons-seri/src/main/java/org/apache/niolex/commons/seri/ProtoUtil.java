@@ -17,13 +17,15 @@
  */
 package org.apache.niolex.commons.seri;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.niolex.commons.codec.IntegerUtil;
 import org.apache.niolex.commons.reflect.MethodUtil;
 
 import com.google.protobuf.GeneratedMessage;
@@ -40,7 +42,8 @@ public class ProtoUtil {
 	/**
 	 * Store all the class been parsed with fast method utility, for faster speed.
 	 */
-	private static final ConcurrentHashMap<Type, Method> MAP = new ConcurrentHashMap<Type, Method>();
+	private static final ConcurrentHashMap<Type, Method> ONE_MAP = new ConcurrentHashMap<Type, Method>();
+	private static final ConcurrentHashMap<Type, Method> MUL_MAP = new ConcurrentHashMap<Type, Method>();
 
 	/**
 	 * Parse one object of type <code>type</code> from the byte array.
@@ -52,12 +55,34 @@ public class ProtoUtil {
 	public static final Object parseOne(byte[] ret, Type type) {
 		if (type instanceof Class<?>) {
 			try {
-				Method method = MAP.get(type);
+				Method method = ONE_MAP.get(type);
 				if (method == null) {
 					method = MethodUtil.getMethod((Class<?>) type, "parseFrom", byte[].class);
-					MAP.putIfAbsent(type, method);
+					ONE_MAP.putIfAbsent(type, method);
 				}
 				return method.invoke(null, ret);
+			} catch (Exception e) {
+				throw new SeriException("Return type is not protobuf type.", e);
+			}
+		}
+		throw new SeriException("Return type is not protobuf type.");
+	}
+
+	/**
+	 * Parse delimited one object of type <code>type</code> from the input stream.
+	 * @param input
+	 * @param type
+	 * @return the object
+	 */
+	public static final Object parseDelimitedOne(InputStream input, Type type) {
+		if (type instanceof Class<?>) {
+			try {
+				Method method = MUL_MAP.get(type);
+				if (method == null) {
+					method = MethodUtil.getMethod((Class<?>) type, "parseDelimitedFrom", InputStream.class);
+					MUL_MAP.putIfAbsent(type, method);
+				}
+				return method.invoke(null, input);
 			} catch (Exception e) {
 				throw new SeriException("Return type is not protobuf type.", e);
 			}
@@ -73,13 +98,10 @@ public class ProtoUtil {
 	 * @return the object array
 	 */
 	public static final Object[] parseMulti(byte[] data, Type[] generic) {
-		int idx = 0;
 		Object[] r = new Object[generic.length];
+		ByteArrayInputStream binput = new ByteArrayInputStream(data);
 		for (int i = 0; i < generic.length; ++i) {
-			int size = IntegerUtil.threeBytes(data[idx++], data[idx++], data[idx++]);
-			byte[] ret = Arrays.copyOfRange(data, idx, size + idx);
-			idx += size;
-			r[i] = parseOne(ret, generic[i]);
+			r[i] = parseDelimitedOne(binput, generic[i]);
 		}
 		return r;
 	}
@@ -100,23 +122,34 @@ public class ProtoUtil {
 	}
 
 	/**
+	 * Serialize one object delimited using protocol buffer.
+	 *
+	 * @param o the object to serialize
+	 * @param output where to write output
+	 */
+	public static final void seriDelimitedOne(Object o, OutputStream output) {
+		if (o instanceof GeneratedMessage) {
+			GeneratedMessage gen = (GeneratedMessage)o;
+			try {
+				gen.writeDelimitedTo(output);
+			} catch (IOException e) {
+				throw new SeriException("Message is not protobuf type: " + o.getClass(), e);
+			}
+		} else {
+			throw new SeriException("Message is not protobuf type: " + o.getClass());
+		}
+	}
+
+	/**
 	 * Serialize multiple protocol buffer objects into byte array.
 	 *
 	 * @param params
 	 * @return the byte array
 	 */
 	public static final byte[] seriMulti(Object[] params) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream(4096);
 		for (int i = 0; i < params.length; ++i) {
-			byte[] ret = seriOne(params[i]);
-			int size = ret.length;
-			if (size > 0xffffff) {
-				throw new SeriException("We can not support object larger than 0xffffff.");
-			}
-			out.write(size >> 16);
-			out.write(size >> 8);
-			out.write(size);
-			out.write(ret, 0, size);
+			seriDelimitedOne(params[i], out);
 		}
 		return out.toByteArray();
 	}
