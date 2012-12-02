@@ -4,7 +4,7 @@
     <!-- commons-core log configuration file. upgrade to logback        -->
     <!--                                                                -->
     <!-- For professional support please see                            -->
-    <!--    http://www.qos.ch/shop/products/professionalSupport         -->
+    <!--    http://logback.qos.ch/manual/configuration.html             -->
     <!--                                                                -->
 
 <configuration debug="false">
@@ -25,6 +25,10 @@
             <level>DEBUG</level>
         </filter>
     </appender>
+
+    <logger name="org.apache.niolex.commons.download" level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</logger>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />

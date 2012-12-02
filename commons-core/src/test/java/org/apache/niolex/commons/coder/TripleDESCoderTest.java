@@ -57,7 +57,7 @@ public class TripleDESCoderTest {
         System.out.println("中间结果：" + Arrays.toString(a));
         assertEquals(b, new String(o));
         assertTrue(Arrays.equals(b.getBytes(), o));
-        assertNotSame(TripleDESCoder.genKey(null), TripleDESCoder.genKey());
+        assertNotEquals(TripleDESCoder.genKey(null), TripleDESCoder.genKey());
     }
 
     @Test

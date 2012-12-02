@@ -18,7 +18,7 @@
 package org.apache.niolex.commons.codec;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNotEquals;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class StringUtilTest {
 		byte[] b = StringUtil.strToAsciiByte(s);
 		String c = StringUtil.utf8ByteToStr(b);
 		System.out.println(c);
-		assertNotSame(c, s);
+		assertNotEquals(c, s);
 	}
 
 	/**

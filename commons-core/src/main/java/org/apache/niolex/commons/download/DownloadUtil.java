@@ -164,8 +164,4 @@ public abstract class DownloadUtil {
 		return false;
 	}
 
-
-	private DownloadUtil() {
-		// Utility类，禁止实例化
-	}
 }

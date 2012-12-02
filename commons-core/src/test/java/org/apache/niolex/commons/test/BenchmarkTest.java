@@ -17,8 +17,7 @@
  */
 package org.apache.niolex.commons.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 import java.util.Date;
 
@@ -40,6 +39,7 @@ public class BenchmarkTest {
 	 */
 	@Test
 	public void testGetClassId() {
+	    ben.setClassId(908123);
 		assertEquals("Not yet implemented", ben.getClassId(), 908123);
 	}
 
@@ -75,6 +75,7 @@ public class BenchmarkTest {
 	 */
 	@Test
 	public void testGetStatus() {
+	    ben.setStatus(-1293);
 		assertEquals("Not yet implemented", ben.getStatus(), -1293);
 	}
 
@@ -92,6 +93,7 @@ public class BenchmarkTest {
 	 */
 	@Test
 	public void testGetPriv() {
+	    ben.setPriv(9128);
 		assertEquals("Not yet implemented", ben.getPriv(), 9128);
 	}
 
@@ -126,7 +128,8 @@ public class BenchmarkTest {
 	 */
 	@Test
 	public void testGetClassName() {
-		assertEquals("Not yet implemented", ben.getClassName(), "93209i;lads93209adfo0932awd");
+	    ben.setClassName("isadifeijfdiadd");
+		assertEquals("Not yet implemented", ben.getClassName(), "isadifeijfdiadd");
 	}
 
 	/**
@@ -185,34 +188,102 @@ public class BenchmarkTest {
 	 * Test method for {@link org.apache.niolex.commons.test.Benchmark#equals(java.lang.Object)}.
 	 */
 	@Test
-	public void testEqualsObject() {
+	public void testEqualsObjectSimple() {
 		assertEquals("Not yet implemented", ben, ben);
-		assertNotSame("Not yet implemented", ben, null);
-		assertNotSame("Not yet implemented", ben, "dasf");
+		assertFalse("Not yet implemented", ben.equals(null));
+		assertFalse("Not yet implemented", ben.equals("dasf, string"));
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.test.Benchmark#equals(java.lang.Object)}.
+	 */
+	@Test
+	public void testEqualsObject() {
 		Benchmark other = new Benchmark();
 		other.setCurKick(ben.getCurKick());
-		assertNotSame("Not yet implemented", ben, other);
+		assertNotEquals("Not yet implemented", ben, other);
 		other.setPersonId(ben.getPersonId());
+		assertNotEquals("Not yet implemented", ben, other);
+		other.setCrDate(ben.getCrDate());
+		assertNotEquals("Not yet implemented", ben, other);
+		other.setList(ben.getList());
 		assertEquals("Not yet implemented", ben, other);
+		System.out.println(other);
 	}
 
 	@Test
 	public void testGroup() {
 		Group gr = Group.makeGroup();
-		gr.setGroupName("");
-		assertEquals("Not yet implemented", gr.getGroupName(), "");
+		gr.setGroupName("QQA");
+		assertEquals("Not yet implemented", gr.getGroupName(), "QQA");
+		gr.setGroupStatus(1280934);
 		assertEquals("Not yet implemented", gr.getGroupStatus(), 1280934);
 		gr.setGroupId(-1l);
 		assertEquals("Not yet implemented", gr.getGroupId().longValue(), -1l);
-		assertEquals("Not yet implemented", gr.getList().size(), 3);
+		assertEquals("Not yet implemented", gr.getBeanMap().size(), 4);
+		gr.setPrice(393);
+		assertEquals("Not yet implemented", gr.getPrice(), 393);
 	}
 
 	@Test
+    public void testGroupEqualSimple() {
+	    Group ben = Group.makeGroup();
+	    assertEquals("Not yet implemented", ben, ben);
+        assertFalse("Not yet implemented", ben.equals(null));
+        assertFalse("Not yet implemented", ben.equals("dasf, string"));
+	}
+
+    @Test
+    public void testGroupEqual() {
+        Group gr = Group.makeGroup();
+        Group other = new Group();
+        assertNotEquals("Not yet implemented", other, gr);
+        assertNotEquals("Not yet implemented", gr, other);
+        other.setBeanMap(gr.getBeanMap());
+        assertNotEquals("Not yet implemented", other, gr);
+        assertNotEquals("Not yet implemented", gr, other);
+        other.setGroupId(gr.getGroupId());
+        assertNotEquals("Not yet implemented", other, gr);
+        assertNotEquals("Not yet implemented", gr, other);
+        other.setGroupName(gr.getGroupName());
+        assertNotEquals("Not yet implemented", other, gr);
+        assertNotEquals("Not yet implemented", gr, other);
+        other.setGroupStatus(gr.getGroupStatus());
+        assertNotEquals("Not yet implemented", other, gr);
+        assertNotEquals("Not yet implemented", gr, other);
+        other.setPrice(gr.getPrice());
+        assertEquals("Not yet implemented", other, gr);
+        System.out.println(other);
+    }
+
+	@Test
 	public void testBean() {
-		Bean bean = new Bean(5, "G", 3, new Date(12345));
+		Bean bean = new Bean();
+		bean.setId(3);
 		assertEquals("Not yet implemented", bean.getId(), 3);
+		bean.setLikely(5);
 		assertEquals("Not yet implemented", bean.getLikely(), 5);
+		bean.setName("G");
 		assertEquals("Not yet implemented", bean.getName(), "G");
+		bean.setBirth(new Date(12345));
 		assertEquals("Not yet implemented", bean.getBirth().getTime(), 12345);
+	}
+
+	@Test
+    public void testBeanEqual() {
+	    Bean other = new Bean();
+	    Bean ben = Bean.makeBean();
+	    assertEquals("Not yet implemented", ben, ben);
+	    assertNotEquals("Not yet implemented", ben, "String");
+	    assertNotEquals("Not yet implemented", ben, other);
+	    other.setBirth(ben.getBirth());
+	    assertNotEquals("Not yet implemented", ben, other);
+	    other.setName(ben.getName());
+	    assertNotEquals("Not yet implemented", ben, other);
+	    other.setId(ben.getId());
+	    assertNotEquals("Not yet implemented", ben, other);
+	    other.setLikely(ben.getLikely());
+	    assertEquals("Not yet implemented", other, ben);
+        System.out.println(other);
 	}
 }
