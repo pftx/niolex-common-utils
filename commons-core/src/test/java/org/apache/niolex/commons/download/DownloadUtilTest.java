@@ -62,7 +62,7 @@ public class DownloadUtilTest {
 	public final void testDownloadFileTooFast() throws Exception, Throwable {
 		try {
 			byte[] con = DownloadUtil
-					.downloadFile("http://apache.etoak.com/tomcat/tomcat-6/v6.0.36/bin/apache-tomcat-6.0.36.zip",
+					.downloadFile("http://search.maven.org/#search%7Cga%7C1%7Cprotobuf-java",
 							1000, 50, 7990180);
 			System.out.println("SL " + con.length);
 			Assert.assertEquals(136013, con.length);

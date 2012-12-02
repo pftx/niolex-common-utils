@@ -71,7 +71,7 @@ public class ProtoStuffUtilTest {
 		assertEquals(r[0], t);
 		assertEquals(r[1], ben);
 		assertEquals(r[2], q);
-		assertEquals(((Benchmark)r[1]).getClassId(), 908123);
+		assertEquals(((Benchmark)r[1]).getName(), "This is the compress test benchmark.");
 	}
 
 	/**
