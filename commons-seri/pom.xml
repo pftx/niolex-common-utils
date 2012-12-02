@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commons-seri</artifactId>
-	<version>1.1.1</version>
+	<version>1.1.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>commons-seri</name>
@@ -25,12 +25,12 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-smile</artifactId>
-			<version>1.9.9</version>
+			<version>[1.9.0,2.0.0)</version>
 		</dependency>
 		<dependency>
 			<groupId>com.esotericsoftware.kryo</groupId>
 			<artifactId>kryo</artifactId>
-			<version>2.17</version>
+			<version>[2.17,3.0.0)</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>reflectasm</artifactId>
@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
