@@ -27,6 +27,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.smile.SmileFactory;
 import org.codehaus.jackson.smile.SmileGenerator;
+import org.codehaus.jackson.smile.SmileParser;
 import org.codehaus.jackson.type.JavaType;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -45,9 +46,8 @@ public abstract class SmileUtil {
     	 * Init the Object Mapper as follows.
     	 */
     	SmileFactory factory = new SmileFactory();
-    	factory.configure(SmileGenerator.Feature.WRITE_END_MARKER, false);
-    	factory.configure(SmileGenerator.Feature.ENCODE_BINARY_AS_7BIT, false);
-    	factory.configure(SmileGenerator.Feature.CHECK_SHARED_STRING_VALUES, true);
+    	factory.configure(SmileGenerator.Feature.WRITE_HEADER, false);
+    	factory.configure(SmileParser.Feature.REQUIRE_HEADER, false);
         mapper = new ObjectMapper(factory);
         mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
