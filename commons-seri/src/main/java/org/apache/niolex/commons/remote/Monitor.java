@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CircularList;
@@ -37,7 +38,7 @@ import org.apache.niolex.commons.util.DateTimeUtil;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-22$
  */
-public class Monitor {
+public class Monitor implements Runnable {
 
 	/**
 	 * Store all the monitor informations.
@@ -51,10 +52,22 @@ public class Monitor {
 	private final ConcurrentHashMap<String, ConcurrentLinkedQueue<OutputStream>> realtimeMap =
 			new ConcurrentHashMap<String, ConcurrentLinkedQueue<OutputStream>>();
 
+	private final LinkedBlockingQueue<QueItem> realtimeQueue = new LinkedBlockingQueue<QueItem>();
+
 	/**
 	 * The max number of old items need to be stored.
 	 */
 	private final int maxOldItems;
+
+	/**
+	 * The internal thread to send real time data.
+	 */
+	private final Thread thread;
+
+	/**
+	 * The internal working status.
+	 */
+	private boolean isWorking;
 
 	/**
 	 * Constructs a new monitor with the specified max old items.
@@ -64,6 +77,10 @@ public class Monitor {
 	public Monitor(int maxOldItems) {
 		super();
 		this.maxOldItems = maxOldItems;
+		this.isWorking = true;
+		this.thread = new Thread(this);
+		this.thread.setDaemon(true);
+		this.thread.start();
 	}
 
 	/**
@@ -81,25 +98,46 @@ public class Monitor {
 				set = newset;
 			}
 		}
-		set.add(new MonItem(value));
+		MonItem e = new MonItem(value);
+		set.add(e);
 		// Process all the real time connections.
 		ConcurrentLinkedQueue<OutputStream> que = realtimeMap.get(key);
-		if (que != null) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(key).append(',').append(System.currentTimeMillis()).append(',').append(value);
-			sb.append(Executer.END_LINE);
-			byte[] arr = StringUtil.strToUtf8Byte(sb.toString());
-			Iterator<OutputStream> iter = que.iterator();
-			while (iter.hasNext()) {
-				try {
-					OutputStream o = iter.next();
-					o.write(arr);
-				} catch (IOException e) {
-					iter.remove();
-				}
-			}
+		if (que != null && !que.isEmpty()) {
+		    realtimeQueue.add(new QueItem(key, e));
 		}
 	}
+
+    /**
+     * Override super method
+     * @see java.lang.Runnable#run()
+     */
+    @Override
+    public void run() {
+        while (isWorking) {
+            // Wait on the queue for an item.
+            try {
+                QueItem q = realtimeQueue.take();
+                // Process all the real time connections.
+                ConcurrentLinkedQueue<OutputStream> que = realtimeMap.get(q.key);
+                if (que != null && !que.isEmpty()) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(q.key).append(',').append(q.time).append(',').append(q.value);
+                    sb.append(Executer.END_LINE);
+                    byte[] arr = StringUtil.strToUtf8Byte(sb.toString());
+                    Iterator<OutputStream> iter = que.iterator();
+                    while (iter.hasNext()) {
+                        try {
+                            OutputStream o = iter.next();
+                            o.write(arr);
+                        } catch (IOException e) {
+                            iter.remove();
+                        }
+                    }
+                }
+            } catch (Exception e) {}
+        }
+
+    }
 
 	/**
 	 * A connection wait to monitor the status of the specified key.
@@ -164,14 +202,25 @@ public class Monitor {
 	}
 
 	/**
+	 * Stop the internal thread.
+	 */
+	public void stop() {
+	    this.isWorking = false;
+	    try {
+	        this.thread.interrupt();
+            this.thread.join();
+        } catch (InterruptedException e) { }
+	}
+
+	/**
 	 * The internal monitor item structure.
 	 *
 	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
 	 * @version 1.0.5, $Date: 2012-11-23$
 	 */
 	public static class MonItem {
-		long time;
-		int value;
+	    final long time;
+	    final int value;
 
 		public MonItem(int value) {
 			super();
@@ -179,4 +228,24 @@ public class Monitor {
 			this.value = value;
 		}
 	}
+
+	/**
+	 * The internal queue item structure.
+	 *
+	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+	 * @version 1.0.5, $Date: 2012-12-3$
+	 */
+	public static class QueItem {
+	    final String key;
+	    final long time;
+	    final int value;
+
+        public QueItem(String key, MonItem e) {
+            super();
+            this.key = key;
+            this.time = e.time;
+            this.value = e.value;
+        }
+	}
+
 }

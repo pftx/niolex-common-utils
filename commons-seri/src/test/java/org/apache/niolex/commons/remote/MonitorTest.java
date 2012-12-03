@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 /**
@@ -51,7 +52,9 @@ public class MonitorTest {
 		m.addValue("tes", 1);
 		m.addValue("tes", 2);
 		m.addValue("test", 0);
+		SystemUtil.sleep(10);
 		verify(o, times(2)).write(any(byte[].class));
+		m.stop();
 	}
 
 	/**
@@ -76,6 +79,7 @@ public class MonitorTest {
 		m.addValue("tes", 2);
 		m.addValue("test", 0);
 		verify(o, times(1)).write(any(byte[].class));
+		m.stop();
 	}
 
 	@Test
@@ -97,11 +101,14 @@ public class MonitorTest {
 		m.addValue("tes", 1);
 		m.addValue("tes", 2);
 		m.addValue("qwt", 0);
+		Thread.sleep(10);
 		verify(o, times(3)).write(any(byte[].class));
 		m.doMonitor(o, "test", "h");
 		m.addValue("test", 0);
 		m.addValue("test", 1);
+		Thread.sleep(10);
 		verify(o, times(4)).write(any(byte[].class));
+		m.stop();
 	}
 
 }
