@@ -17,13 +17,18 @@
  */
 package org.apache.niolex.commons.seri;
 
+import static org.apache.niolex.commons.seri.ProtoUtil.parseDelimitedOne;
 import static org.apache.niolex.commons.seri.ProtoUtil.parseMulti;
 import static org.apache.niolex.commons.seri.ProtoUtil.parseOne;
+import static org.apache.niolex.commons.seri.ProtoUtil.seriDelimitedOne;
 import static org.apache.niolex.commons.seri.ProtoUtil.seriMulti;
 import static org.apache.niolex.commons.seri.ProtoUtil.seriOne;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PipedOutputStream;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
@@ -59,6 +64,8 @@ public class ProtoUtilTest {
 		assertEquals(p2.getEmail(), "kjdfjkdf" + i + "@xxx.com");
 		assertEquals(p2.getId(), 45 + i);
 		System.out.println("Tar.size " + tar.length);
+		Person p3 = (Person)parseOne(tar, Person.class);
+		assertEquals(p, p3);
 	}
 
 	/**
@@ -123,6 +130,48 @@ public class ProtoUtilTest {
 		byte[] ret = p.toByteArray();
 		Set<String> set = new HashSet<String>();
 		parseOne(ret, set.getClass());
+	}
+
+	@Test(expected=SeriException.class)
+	public void testParseDelimitedOne() throws Exception {
+		int i = 2345;
+		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
+				.setName("Niolex [" + i + "]")
+				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
+				.build();
+		byte[] ret = p.toByteArray();
+		ByteArrayInputStream binput = new ByteArrayInputStream(ret);
+		Set<String> set = new HashSet<String>();
+		parseDelimitedOne(binput, set.getClass().getGenericSuperclass());
+	}
+
+	@Test(expected=SeriException.class)
+	public void testParseDelimitedOne2() throws Exception {
+		int i = 2345;
+		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
+				.setName("Niolex [" + i + "]")
+				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
+				.build();
+		byte[] ret = p.toByteArray();
+		ByteArrayInputStream binput = new ByteArrayInputStream(ret);
+		parseDelimitedOne(binput, Person.class);
+	}
+
+	@Test(expected=SeriException.class)
+	public void testSeriDelimitedOne() throws Exception {
+	    ByteArrayOutputStream out = new ByteArrayOutputStream(4096);
+		seriDelimitedOne("This is good.", out);
+	}
+
+	@Test(expected=SeriException.class)
+	public void testSeriDelimitedOne2() throws Exception {
+		int i = 2345;
+		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
+				.setName("Niolex [" + i + "]")
+				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
+				.build();
+		PipedOutputStream oo = new PipedOutputStream();
+		seriDelimitedOne(p, oo);
 	}
 
 }

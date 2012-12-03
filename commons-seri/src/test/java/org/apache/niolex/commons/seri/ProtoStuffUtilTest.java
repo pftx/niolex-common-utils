@@ -23,16 +23,24 @@ import static org.apache.niolex.commons.seri.ProtoStuffUtil.seriMulti;
 import static org.apache.niolex.commons.seri.ProtoStuffUtil.seriOne;
 import static org.junit.Assert.assertEquals;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.niolex.commons.reflect.MethodUtil;
 import org.apache.niolex.commons.seri.PersonProtos.Person;
 import org.apache.niolex.commons.seri.PersonProtos.Person.PhoneNumber;
 import org.apache.niolex.commons.seri.PersonProtos.Person.PhoneType;
 import org.apache.niolex.commons.test.Benchmark;
 import org.apache.niolex.commons.test.Benchmark.Bean;
+import org.apache.niolex.commons.util.Pair;
 import org.junit.Test;
 
 /**
@@ -74,15 +82,82 @@ public class ProtoStuffUtilTest {
 		assertEquals(((Benchmark)r[1]).getName(), "This is the compress test benchmark.");
 	}
 
+	public void method1(Pair<String, Set<String>> set) {}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.seri.ProtoStuffUtil#seriOne(java.lang.Object)}.
+	 */
+	@Test
+	public void testSeriOneSet() {
+		Set<String> set = new HashSet<String>();
+		set.add("abc");
+		set.add("cba");
+		Pair<String, Set<String>> p1 = new Pair<String, Set<String>>("abc", set);
+		byte[] tar = seriOne(p1);
+		Method m = MethodUtil.getMethods(getClass(), "method1")[0];
+		Pair<String, Set<String>> p2 = parseOne(tar, m.getGenericParameterTypes()[0]);
+		assertEquals(p1.a, p2.a);
+		System.out.println(p2.b);
+	}
+
+	public void method2(Pair<String, List<String>> set) {}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.seri.ProtoStuffUtil#seriOne(java.lang.Object)}.
+	 */
+	@Test
+	public void testSeriOneList() {
+		List<String> set = new ArrayList<String>();
+		set.add("abc");
+		set.add("cba");
+		Pair<String, List<String>> p1 = new Pair<String, List<String>>("abc", set);
+		byte[] tar = seriOne(p1);
+		Method m = MethodUtil.getMethods(getClass(), "method2")[0];
+		Pair<String, List<String>> p2 = parseOne(tar, m.getGenericParameterTypes()[0]);
+		assertEquals(p1.a, p2.a);
+		System.out.println(p2.b);
+	}
+
+	public void method3(Pair<String, Map<String, Integer>> set) {}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.seri.ProtoStuffUtil#seriOne(java.lang.Object)}.
+	 */
+	@Test
+	public void testSeriOneMap() {
+		Map<String, Integer> set = new HashMap<String, Integer>();
+		set.put("abc", 3);
+		set.put("cba", 5);
+		Pair<String, Map<String, Integer>> p1 = new Pair<String, Map<String, Integer>>("abc", set);
+		byte[] tar = seriOne(p1);
+		Method m = MethodUtil.getMethods(getClass(), "method3")[0];
+		Pair<String, Map<String, Integer>> p2 = parseOne(tar, m.getGenericParameterTypes()[0]);
+		assertEquals(p1.a, p2.a);
+		System.out.println(p2.b);
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.seri.ProtoStuffUtil#seriOne(java.lang.Object)}.
+	 */
+	@Test
+	public void testSeriOneInt() {
+		Integer p1 = 3344;
+		byte[] tar = seriOne(p1);
+		Integer p2 = parseOne(tar, Integer.class);
+		assertEquals(p1, p2);
+	}
+
+	public void method4(Pair<?, Map<String, Integer>> set) {}
+
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seri.ProtoStuffUtil#seriOne(java.lang.Object)}.
 	 */
 	@Test(expected=SeriException.class)
-	public void testSeriOne() {
+	public void testSeriOneErr() {
 		String s = "Not yet implemented";
 		byte[] tar = seriOne(s);
-		Set<String> set = new HashSet<String>();
-		parseOne(tar, set.getClass().getGenericSuperclass());
+		Method m = MethodUtil.getMethods(getClass(), "method4")[0];
+		parseOne(tar, ((ParameterizedType)(m.getGenericParameterTypes()[0])).getActualTypeArguments()[0]);
 	}
 
 	@Test(expected=SeriException.class)

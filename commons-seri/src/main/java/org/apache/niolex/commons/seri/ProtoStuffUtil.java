@@ -19,6 +19,7 @@ package org.apache.niolex.commons.seri;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import com.dyuproject.protostuff.LinkedBuffer;
@@ -57,6 +58,11 @@ public class ProtoStuffUtil {
 	 */
 	@SuppressWarnings("unchecked")
     public static final <T> T parseOne(byte[] data, Type type) {
+		// Case 1. Generic Type, We get the Raw Type.
+		if (type instanceof ParameterizedType) {
+			type = ((ParameterizedType)(type)).getRawType();
+		}
+		// Case 2. Let's deal with it.
 		if (type instanceof Class<?>) {
 		    Schema<T> schema = RuntimeSchema.getSchema((Class<T>) type);
 		    T ret = schema.newMessage();
@@ -102,7 +108,13 @@ public class ProtoStuffUtil {
 		ByteArrayInputStream in = new ByteArrayInputStream(data);
 		try {
 			for (int i = 0; i < generic.length; ++i) {
-			    Schema<Object> schema = RuntimeSchema.getSchema((Class<Object>) generic[i]);
+				Type type = generic[i];
+				// Case 1. Generic Type, We get the Raw Type.
+				if (type instanceof ParameterizedType) {
+					type = ((ParameterizedType)(type)).getRawType();
+				}
+				// Case 2. Let's deal with it.
+			    Schema<Object> schema = RuntimeSchema.getSchema((Class<Object>) type);
 			    Object ret = schema.newMessage();
 			    ProtostuffIOUtil.mergeDelimitedFrom(in, ret, schema);
 			    r[i] = ret;
