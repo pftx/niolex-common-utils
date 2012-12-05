@@ -18,6 +18,7 @@
 package org.apache.niolex.commons.test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.junit.Test;
  */
 @SuppressWarnings("unused")
 class ObjToStringUtilTestBean {
+    private static final int IXI = 393;
     private String strName = "Xie, Jiyun";
     private int intId = 8575;
     private int intLevel = 60903;
@@ -38,6 +40,7 @@ class ObjToStringUtilTestBean {
     private ObjToStringUtilTestBean next = null;
     private String[] tag = {"But", "As", "Main"};
     private Object qq = new Object();
+    private List<String> list = Collections.emptyList();
 
     public void setNext(ObjToStringUtilTestBean next) {
         this.next = next;
@@ -58,6 +61,11 @@ class ObjToStringUtilTestBean {
 }
 
 public class ObjToStringUtilTest {
+
+    @Test
+    public void testInit() {
+        new ObjToStringUtil() {};
+    }
 
     @Test
     public void testArray() {

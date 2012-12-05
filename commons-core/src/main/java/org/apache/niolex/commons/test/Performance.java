@@ -44,6 +44,9 @@ public abstract class Performance {
 		this.outerIteration = outerIteration;
 	}
 
+	/**
+	 * Implements this method to do your work.
+	 */
 	protected abstract void run();
 
 	/**
@@ -74,6 +77,7 @@ public abstract class Performance {
 			if (cu < min) min = cu;
 			total += cu;
 		}
+		// Done.
 		cu = total / outerIteration;
 		System.out.println("Performance Done, Total Time - " + (System.currentTimeMillis() - ein));
 		System.out.println("Iter " + outerIteration + ", Avg " + cu + ", Max "

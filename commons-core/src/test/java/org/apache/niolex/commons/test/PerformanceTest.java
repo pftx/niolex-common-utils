@@ -210,7 +210,7 @@ public class PerformanceTest {
 
 	}
 
-	class ReflectField extends Performance {
+	class ReflectField extends MultiPerformance {
 		KTestBean bean = new KTestBean();
 		Field f;
 
@@ -219,7 +219,7 @@ public class PerformanceTest {
 		 * @param outerIteration
 		 */
 		public ReflectField() {
-			super(innerIteration, outerIteration);
+			super(2, innerIteration, outerIteration / 3);
 			bean.setB(8475);
 			try {
 				f = FieldUtil.getField(KTestBean.class, "b");
@@ -236,7 +236,7 @@ public class PerformanceTest {
 		@Override
 		protected void run() {
 			try {
-				if (((Integer) f.get(bean)) != 8475) {
+				if (((Integer) f.get(bean)).intValue() != 8475) {
 					throw new RuntimeException("This is so bad!");
 				}
 			} catch (Exception e) {
@@ -250,26 +250,46 @@ public class PerformanceTest {
 	 * Test method for {@link org.apache.niolex.commons.test.Performance#run()}.
 	 */
 	@Test
-	public void testRun() {
+	public void testDirM() {
 		new DirectMethod().start();
-		new DirectField().start();
-		new FastMethod().start();
-		new FastField().start();
-		new ReflectMethod().start();
-		new ReflectField().start();
 	}
 
-	class Direct2Field extends Performance {
+	@Test
+	public void testDirF() {
+	    new DirectField().start();
+	}
+
+	@Test
+	public void testFastM() {
+	    new FastMethod().start();
+	}
+
+	@Test
+	public void testFastF() {
+	    new FastField().start();
+	}
+
+	@Test
+	public void testRefM() {
+	    new ReflectMethod().start();
+	}
+
+	@Test
+	public void testRefF() {
+	    new ReflectField().start();
+	}
+
+	class PrimitiveField extends Performance {
 		KTestBean bean = new KTestBean();
 
 		/**
 		 * @param innerIteration
 		 * @param outerIteration
 		 */
-		public Direct2Field() {
+		public PrimitiveField() {
 			super(innerIteration, outerIteration);
 			bean.setI(8475);
-			System.out.print("Direct2Field\t");
+			System.out.print("PrimitiveField\t");
 		}
 
 		/**
@@ -285,7 +305,7 @@ public class PerformanceTest {
 
 	}
 
-	class Fast2Field extends Performance {
+	class FastPrimitiveField extends Performance {
 		KTestBean bean = new KTestBean();
 		FieldAccess acc = FastFieldUtil.getFieldAccess(KTestBean.class);
 		int idx = acc.getIndex("i");
@@ -294,10 +314,10 @@ public class PerformanceTest {
 		 * @param innerIteration
 		 * @param outerIteration
 		 */
-		public Fast2Field() {
+		public FastPrimitiveField() {
 			super(innerIteration, outerIteration);
 			bean.setI(8475);
-			System.out.print("Fast2Field\t");
+			System.out.print("FastPrimitiveField\t");
 		}
 
 		/**
@@ -314,10 +334,13 @@ public class PerformanceTest {
 	}
 
 	@Test
-	public void testStart()
-	 throws Exception {
-		new Direct2Field().start();
-		new Fast2Field().start();
+	public void testPrimitiveField() throws Exception {
+		new PrimitiveField().start();
+	}
+
+	@Test
+	public void testFastPrimitiveField() throws Exception {
+	    new FastPrimitiveField().start();
 	}
 
 }

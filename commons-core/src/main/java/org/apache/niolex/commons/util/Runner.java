@@ -44,7 +44,11 @@ public class Runner {
 		Thread t = new Thread(){
 			public void run() {
 				try {
-					Method m = MethodUtil.getMethods(host.getClass(), methodName)[0];
+				    Method[] ms = MethodUtil.getMethods(host.getClass(), methodName);
+				    if (ms.length == 0) {
+				        ms = MethodUtil.getMethods(host.getClass().getSuperclass(), methodName);
+				    }
+					Method m = ms[0];
 					m.invoke(host, args);
 				} catch (Exception e) {
 					LOG.warn("Error occured in Runner#run method.", e);

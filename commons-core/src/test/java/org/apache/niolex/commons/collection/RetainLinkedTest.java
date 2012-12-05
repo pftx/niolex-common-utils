@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.niolex.commons.collection.RetainLinkedList;
 import org.junit.Test;
@@ -35,6 +36,7 @@ public class RetainLinkedTest {
 	private int runSize = 100000;
 	private RetainLinkedList<Integer> linked = new RetainLinkedList<Integer>(5);
 	private Map<Integer, Integer> check = new ConcurrentHashMap<Integer, Integer>();
+	private AtomicInteger inger = new AtomicInteger();
 
 	private class LetsRun implements Runnable {
 
@@ -50,6 +52,7 @@ public class RetainLinkedTest {
 				linked.add(k + i);
 			}
 			System.out.println(k + " stop at " + System.currentTimeMillis());
+			inger.decrementAndGet();
 		}
 
 	}
@@ -66,7 +69,7 @@ public class RetainLinkedTest {
 			System.out.println(k + " Take start at " + System.currentTimeMillis());
 			while (true) {
 				Integer r = linked.handleNext();
-				if (r == null) {
+				if (r == null && inger.get() == 0) {
 					break;
 				}
 				if (check.containsKey(r)) {
@@ -85,6 +88,7 @@ public class RetainLinkedTest {
 	public void test() throws InterruptedException {
 		Thread[] ts = new Thread[20];
 		int i = 0;
+		inger.set(10);
 		for (i = 0; i < 10; ++i) {
 			Thread r = new Thread(new LetsRun());
 			ts[i] = r;
