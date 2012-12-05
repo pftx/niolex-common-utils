@@ -44,7 +44,7 @@ public abstract class RsaHelper {
 	/**
 	 * Encode public key into xml string.
 	 * @param key
-	 * @return
+	 * @return the encoded key
 	 * @throws UnsupportedEncodingException
 	 */
     public static String encodePublicKeyToXml(PublicKey key) throws UnsupportedEncodingException {
@@ -69,7 +69,7 @@ public abstract class RsaHelper {
     /**
      * Encode private key to xml string.
      * @param key
-     * @return
+     * @return the encoded key
      * @throws UnsupportedEncodingException
      */
     public static String encodePrivateKeyToXml(PrivateKey key) throws UnsupportedEncodingException {
@@ -97,7 +97,7 @@ public abstract class RsaHelper {
     /**
      * Decode public key from XML string.
      * @param xml
-     * @return
+     * @return the decoded key
      * @throws UnsupportedEncodingException
      */
     public static PublicKey decodePublicKeyFromXml(String xml) throws UnsupportedEncodingException {
@@ -120,7 +120,7 @@ public abstract class RsaHelper {
     /**
      * Decode private key from XML string.
      * @param xml
-     * @return
+     * @return the decoded key
      * @throws UnsupportedEncodingException
      */
     public static PrivateKey decodePrivateKeyFromXml(String xml) throws UnsupportedEncodingException {
@@ -153,7 +153,7 @@ public abstract class RsaHelper {
      * @param xml
      * @param start
      * @param end
-     * @return
+     * @return the middle string
      */
     public static String getMiddleString(String xml, String start, String end) {
         int s = xml.indexOf(start) + start.length();

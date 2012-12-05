@@ -41,7 +41,7 @@ public abstract class CipherUtil {
      * @param cipher
      * @param blockSize
      * @param input
-     * @return
+     * @return the processed bytes
      * @throws IllegalBlockSizeException
      * @throws BadPaddingException
      * @throws ShortBufferException

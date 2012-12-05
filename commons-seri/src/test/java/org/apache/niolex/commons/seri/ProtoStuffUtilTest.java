@@ -40,7 +40,7 @@ import org.apache.niolex.commons.seri.PersonProtos.Person.PhoneNumber;
 import org.apache.niolex.commons.seri.PersonProtos.Person.PhoneType;
 import org.apache.niolex.commons.test.Benchmark;
 import org.apache.niolex.commons.test.Benchmark.Bean;
-import org.apache.niolex.commons.util.Pair;
+import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
 
 /**

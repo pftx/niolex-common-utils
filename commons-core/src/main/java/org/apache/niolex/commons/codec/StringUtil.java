@@ -35,7 +35,7 @@ public abstract class StringUtil {
 	 * Translate UTF8 encoded byte array to String.
 	 *
 	 * @param data
-	 * @return
+	 * @return the result string
 	 */
 	public static final String utf8ByteToStr(byte[] data) {
 		try {
@@ -48,7 +48,7 @@ public abstract class StringUtil {
 	/**
 	 * Translate String to UTF8 encoded byte array.
 	 * @param str
-	 * @return
+	 * @return the encoded byte array
 	 */
 	public static final byte[] strToUtf8Byte(String str) {
 		try {
@@ -62,7 +62,7 @@ public abstract class StringUtil {
 	 * Translate US-ASCII encoded byte array to String.
 	 *
 	 * @param data
-	 * @return
+	 * @return the string
 	 */
 	public static final String asciiByteToStr(byte[] data) {
 		try {
@@ -75,7 +75,7 @@ public abstract class StringUtil {
 	/**
 	 * Translate String to US-ASCII encoded byte array.
 	 * @param str
-	 * @return
+	 * @return the encoded byte array
 	 */
 	public static final byte[] strToAsciiByte(String str) {
 		try {
@@ -90,7 +90,7 @@ public abstract class StringUtil {
 	 *
 	 * @param strs
 	 * @param sep
-	 * @return
+	 * @return the result string
 	 */
 	public static final String join(String[] strs, String sep) {
 		StringBuilder sb = new StringBuilder();
@@ -109,7 +109,7 @@ public abstract class StringUtil {
 	 *
 	 * @param strs
 	 * @param sep
-	 * @return
+	 * @return the result string
 	 */
 	public static final String join(Collection<String> strs, String sep) {
 		StringBuilder sb = new StringBuilder();
@@ -129,7 +129,7 @@ public abstract class StringUtil {
 	 *
 	 * @param sep
 	 * @param arr
-	 * @return
+	 * @return the result string
 	 */
 	public static final String concat(String sep, String ...arr) {
 		return join(arr, sep);

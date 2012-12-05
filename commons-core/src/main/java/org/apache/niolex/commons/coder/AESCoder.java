@@ -63,7 +63,7 @@ public class AESCoder extends BaseCoder {
      * 转换密钥<br>
      *
      * @param key
-     * @return
+     * @return the key
      * @throws Exception
      */
     private static Key toKey(byte[] key) throws Exception {
@@ -95,7 +95,7 @@ public class AESCoder extends BaseCoder {
      * 加密
      *
      * @param data
-     * @return
+     * @return the encrypted data
      * @throws Exception
      */
     public byte[] encrypt(byte[] data) throws Exception {
@@ -110,7 +110,7 @@ public class AESCoder extends BaseCoder {
      * 解密
      *
      * @param data
-     * @return
+     * @return the decrypted data
      * @throws Exception
      */
     public byte[] decrypt(byte[] data) throws Exception {
