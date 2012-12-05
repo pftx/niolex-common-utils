@@ -26,6 +26,7 @@ public abstract class TidyUtil {
 
 	/**
 	 * Remove the prefix at every line, from the input string.
+	 *
 	 * @param str
 	 * @param prefix
 	 * @return the result

@@ -22,7 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.niolex.commons.test.Counter;
-import org.apache.niolex.commons.util.Pair;
+import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
 
 /**

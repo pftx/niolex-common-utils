@@ -45,7 +45,8 @@ public class CounterTest {
 	@Test
 	public void testCnt() {
 		Counter c = new Counter();
-		assertEquals(0, c.cnt());
+		c.set(1123);
+		assertEquals(1123, c.cnt());
 	}
 
 }

@@ -103,4 +103,10 @@ public class MockUtilTest {
     	}
     }
 
+    @Test
+    public void testRanLong() throws Exception {
+        new MockUtil() {};
+        Assert.assertNotEquals(MockUtil.ranLong(), MockUtil.ranLong());
+    }
+
 }

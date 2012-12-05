@@ -17,9 +17,15 @@
  */
 package org.apache.niolex.commons.util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Set;
 
 import org.junit.Test;
@@ -53,5 +59,33 @@ public class SystemUtilTest {
 		new SystemUtil() {};
 		SystemUtil.sleep(-1);
 	}
+
+    @Test
+    public void testCloseOk() throws Exception {
+        SystemUtil.close(mock(Closeable.class));
+        Closeable ab = null;
+        SystemUtil.close(ab);
+    }
+
+    @Test
+    public void testCloseSo() throws Exception {
+        SystemUtil.close(mock(Socket.class));
+        Socket ab = null;
+        SystemUtil.close(ab);
+    }
+
+    @Test
+    public void testCloseErr() throws Exception {
+        Closeable ab = mock(Closeable.class);
+        doThrow(new IOException("This is from x.j.y")).when(ab).close();
+        assertEquals("This is from x.j.y", SystemUtil.close(ab).getMessage());
+    }
+
+    @Test
+    public void testCloseSoErr() throws Exception {
+        Socket ab = mock(Socket.class);
+        doThrow(new IOException("This is from x.j.y")).when(ab).close();
+        assertEquals("This is from x.j.y", SystemUtil.close(ab).getMessage());
+    }
 
 }

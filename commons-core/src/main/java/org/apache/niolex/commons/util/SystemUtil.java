@@ -17,8 +17,11 @@
  */
 package org.apache.niolex.commons.util;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -70,4 +73,35 @@ public class SystemUtil {
 			Thread.sleep(milliseconds);
 		} catch (Exception e) {/*We Don't Care*/}
 	}
+
+	/**
+	 * Safely close the Closeable, without throwing the exception.
+	 *
+	 * @param cl the object you want to close.
+	 * @return null if success, the exception if exception occurred.
+	 */
+	public static final IOException close(Closeable cl) {
+	    try {
+	        if (cl != null) cl.close();
+	        return null;
+	    } catch (IOException e) {
+	        return e;
+	    }
+	}
+
+	/**
+	 * Safely close the Socket, without throwing the exception.
+	 *
+	 * @param cl the socket you want to close.
+	 * @return null if success, the exception if exception occurred.
+	 */
+	public static final IOException close(Socket cl) {
+	    try {
+	        if (cl != null) cl.close();
+	        return null;
+	    } catch (IOException e) {
+	        return e;
+	    }
+	}
+
 }

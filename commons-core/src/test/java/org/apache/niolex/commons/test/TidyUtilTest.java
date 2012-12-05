@@ -34,10 +34,11 @@ public class TidyUtilTest {
 	 */
 	@Test
 	public final void testRemovePrefix() {
+	    new TidyUtil() {};
 		String str = FileUtil.getCharacterFileContentFromClassPath("Data.txt", TidyUtilTest.class, "utf-8");
 		str = TidyUtil.removePrefix(str, 2);
         System.out.println("SL " + str.length());
-        assertEquals(652, str.length());
+        assertEquals(654, str.length());
 	}
 
 }
