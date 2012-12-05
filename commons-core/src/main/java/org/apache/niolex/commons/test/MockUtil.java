@@ -23,9 +23,8 @@ import java.util.Random;
  * Generate mock datas, for unit test like things.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
- * @version 1.0.0, $Date: 2011-9-2$
- *
+ * @version 1.0.0
+ * @since 2011-9-2
  */
 public abstract class MockUtil {
 
@@ -34,11 +33,22 @@ public abstract class MockUtil {
     /**
      * Generate a random int uniformly distributed int value between 0 (inclusive) and the specified value
      * (exclusive), drawn from this random number generator's sequence.
+     *
      * @param max
      * @return the result
      */
     public static final int ranInt(int max) {
     	return generator.nextInt(max);
+    }
+
+    /**
+     * Returns the next pseudo random, uniformly distributed long value. Because of the restriction of
+     * JDK Random utility, not all long value are possible to be returned.
+     *
+     * @return the result
+     */
+    public static final long ranLong() {
+        return generator.nextLong();
     }
 
     /**
@@ -75,6 +85,7 @@ public abstract class MockUtil {
 
     /**
      * Generate a random array.
+     *
      * @param length
      * @return the result
      */
@@ -88,6 +99,7 @@ public abstract class MockUtil {
 
     /**
      * Generates random bytes and places them into a byte array.
+     *
      * @param length
      * @return the result
      */

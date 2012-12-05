@@ -27,7 +27,7 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-6-20
+ * @since 2012-6-20
  */
 public abstract class StringUtil {
 

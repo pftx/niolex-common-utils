@@ -19,6 +19,7 @@ package org.apache.niolex.commons.test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -30,7 +31,7 @@ import org.junit.runners.model.InitializationError;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-8-14
+ * @since 2012-8-14
  */
 public class OrderedRunner extends BlockJUnit4ClassRunner {
 
@@ -55,6 +56,27 @@ public class OrderedRunner extends BlockJUnit4ClassRunner {
 		Collections.sort(cpy, new AlphabeticalOrder());
 
 		return cpy;
+	}
+
+	/**
+	 * For sort FrameworkMethod in Alphabetical Order.
+	 * This class is used by {@link OrderedRunner#computeTestMethods()}
+	 *
+	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+	 * @version 1.0.0
+	 * @since 2012-8-14
+	 */
+	public static class AlphabeticalOrder implements Comparator<FrameworkMethod> {
+
+	    /**
+	     * Override super method
+	     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	     */
+	    @Override
+	    public int compare(FrameworkMethod o1, FrameworkMethod o2) {
+	        return o1.getName().compareTo(o2.getName());
+	    }
+
 	}
 
 }

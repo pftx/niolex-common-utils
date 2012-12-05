@@ -1,5 +1,5 @@
 /**
- * AlphabeticalOrder.java
+ * Pair.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -15,29 +15,37 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.test;
-
-import java.util.Comparator;
-
-import org.junit.runners.model.FrameworkMethod;
+package org.apache.niolex.commons.bean;
 
 /**
- * For sort FrameworkMethod in Alphabetical Order.
- * This class is used by #OrderedRunner
+ * A common utility class to store two variables into one object.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @Date: 2012-8-14
+ * @version 1.0.0, Date: 2012-7-12
  */
-public class AlphabeticalOrder implements Comparator<FrameworkMethod> {
+public class Pair<A, B> {
+
+	public A a;
+
+	public B b;
 
 	/**
-	 * Override super method
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 * Create an empty Pair.
 	 */
-	@Override
-	public int compare(FrameworkMethod o1, FrameworkMethod o2) {
-		return o1.getName().compareTo(o2.getName());
+	public Pair() {
+		super();
+	}
+
+	/**
+	 * Create a Pair with the specified value.
+	 *
+	 * @param a
+	 * @param b
+	 */
+	public Pair(A a, B b) {
+		super();
+		this.a = a;
+		this.b = b;
 	}
 
 }

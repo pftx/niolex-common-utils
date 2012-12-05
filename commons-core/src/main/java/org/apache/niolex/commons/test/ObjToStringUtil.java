@@ -37,10 +37,12 @@ import java.util.Collection;
  *   ...
  * ]
  *
+ * This class is for test-using only, not all cases are covered.
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  *
- * @version 1.0.0, $Date: 2011-1-24$
- *
+ * @version 1.0.0
+ * @since 2011-1-24
  */
 public abstract class ObjToStringUtil {
 

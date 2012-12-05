@@ -1,5 +1,5 @@
 /**
- * TidyUtilTest.java
+ * Triple.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -15,29 +15,40 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.test;
-
-import static org.junit.Assert.*;
-
-import org.apache.niolex.commons.file.FileUtil;
-import org.junit.Test;
+package org.apache.niolex.commons.bean;
 
 /**
+ * A common utility class to store three variables into one object.
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
- * @since 2012-5-27
+ * @version 1.0.5, $Date: 2012-12-5$
  */
-public class TidyUtilTest {
+public class Triple<X, Y, Z> {
+    public X x;
 
-	/**
-	 * Test method for {@link org.apache.niolex.commons.test.TidyUtil#removePrefix(java.lang.String, int)}.
-	 */
-	@Test
-	public final void testRemovePrefix() {
-		String str = FileUtil.getCharacterFileContentFromClassPath("Data.txt", TidyUtilTest.class, "utf-8");
-		str = TidyUtil.removePrefix(str, 2);
-        System.out.println("SL " + str.length());
-        assertEquals(652, str.length());
-	}
+    public Y y;
+
+    public Z z;
+
+    /**
+     * Create an empty Triple.
+     */
+    public Triple() {
+        super();
+    }
+
+    /**
+     * Create a Triple with the specified value.
+     *
+     * @param x
+     * @param y
+     * @param z
+     */
+    public Triple(X x, Y y, Z z) {
+        super();
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 
 }

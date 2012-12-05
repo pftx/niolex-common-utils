@@ -22,7 +22,7 @@ package org.apache.niolex.commons.test;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-7-23
+ * @since 2012-7-23
  */
 public abstract class Performance {
 
@@ -63,6 +63,7 @@ public abstract class Performance {
 		max = Integer.MIN_VALUE;
 		min = Integer.MAX_VALUE;
 		total = 0;
+		long ein = System.currentTimeMillis();
 		for (int i = 0; i < outerIteration; ++i) {
 			in = System.currentTimeMillis();
 			for (int j = 0; j < innerIteration; ++j) {
@@ -74,6 +75,7 @@ public abstract class Performance {
 			total += cu;
 		}
 		cu = total / outerIteration;
+		System.out.println("Performance Done, Total Time - " + (System.currentTimeMillis() - ein));
 		System.out.println("Iter " + outerIteration + ", Avg " + cu + ", Max "
 				+ max + ", Min " + min);
 	}

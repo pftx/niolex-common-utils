@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-7-19
+ * @since 2012-7-19
  */
 public class Benchmark {
 
@@ -209,7 +209,7 @@ public class Benchmark {
 	 *
 	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
 	 * @version 1.0.0
-	 * @Date: 2012-7-23
+	 * @since 2012-7-23
 	 */
 	public static class Group {
 
@@ -319,7 +319,7 @@ public class Benchmark {
 	 *
 	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
 	 * @version 1.0.0
-	 * @Date: 2012-7-23
+	 * @since 2012-7-23
 	 */
 	public static class Bean {
 		private int likely;

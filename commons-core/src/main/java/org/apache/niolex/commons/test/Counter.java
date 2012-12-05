@@ -22,7 +22,7 @@ package org.apache.niolex.commons.test;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-7-12
+ * @since 2012-7-12
  */
 public class Counter {
 
@@ -39,10 +39,20 @@ public class Counter {
 
 	/**
 	 * Get the current count.
+	 *
 	 * @return the result
 	 */
 	public int cnt() {
 		return cnt;
+	}
+
+	/**
+	 * Set the current count.
+	 *
+	 * @param cnt the new count you want to set.
+	 */
+	public void set(int cnt) {
+	    this.cnt = cnt;
 	}
 
 }

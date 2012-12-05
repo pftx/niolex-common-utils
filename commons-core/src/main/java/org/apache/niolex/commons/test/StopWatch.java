@@ -31,7 +31,7 @@ import org.apache.niolex.commons.util.Runme;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-8-14
+ * @since 2012-8-14
  */
 public class StopWatch {
 
@@ -199,7 +199,7 @@ public class StopWatch {
 	 *
 	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
 	 * @version 1.0.0
-	 * @Date: 2012-8-14
+	 * @since 2012-8-14
 	 */
 	public class Stop {
 		private long startTime;

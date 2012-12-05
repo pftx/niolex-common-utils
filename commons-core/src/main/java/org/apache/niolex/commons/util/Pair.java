@@ -20,12 +20,17 @@ package org.apache.niolex.commons.util;
 /**
  * A common utility class to store two variables into one object.
  *
+ * This class is Deprecated, please use
+ * {@link org.apache.niolex.commons.bean.Pair}
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-7-12
  */
+@Deprecated
 public class Pair<A, B> {
 
 	public A a;
+
 	public B b;
 
 	/**

@@ -21,13 +21,14 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.niolex.commons.util.Pair;
+import org.apache.niolex.commons.bean.Pair;
 
 /**
  * This is a waiting utility for clients to wait for the response and in the mean time hold the thread.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0, Date: 2012-7-12
+ * @version 1.0.0
+ * @since 2012-7-12
  */
 public class Blocker<E> {
 
