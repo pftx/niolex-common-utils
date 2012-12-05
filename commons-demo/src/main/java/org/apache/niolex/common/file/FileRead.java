@@ -31,7 +31,7 @@ import org.apache.niolex.commons.test.StopWatch.Stop;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-10-9
+ * @since 2012-10-9
  */
 public class FileRead {
 

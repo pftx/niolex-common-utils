@@ -27,7 +27,7 @@ import com.esotericsoftware.kryo.io.Input;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-7-23
+ * @since 2012-7-23
  */
 public class KryoInstream {
 

@@ -20,7 +20,7 @@ package org.apache.niolex.common.text;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-10-19
+ * @since 2012-10-19
  */
 public class WordReverse {
 

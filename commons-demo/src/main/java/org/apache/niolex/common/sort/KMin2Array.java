@@ -20,7 +20,7 @@ package org.apache.niolex.common.sort;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-10-25
+ * @since 2012-10-25
  */
 public class KMin2Array {
 

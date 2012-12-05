@@ -32,7 +32,7 @@ import com.dyuproject.protostuff.runtime.RuntimeSchema;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-9-4
+ * @since 2012-9-4
  */
 public class ProtoStuffUtil {
 

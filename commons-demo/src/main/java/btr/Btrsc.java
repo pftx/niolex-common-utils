@@ -27,7 +27,7 @@ import com.sun.btrace.annotations.*;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-8-28
+ * @since 2012-8-28
  */
 @BTrace
 public class Btrsc {

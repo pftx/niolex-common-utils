@@ -22,7 +22,7 @@ package org.apache.niolex.commons.seri;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-8-7
+ * @since 2012-8-7
  */
 public class SeriException extends RuntimeException {
 

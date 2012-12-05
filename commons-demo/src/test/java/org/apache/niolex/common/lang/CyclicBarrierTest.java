@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-6-15
+ * @since 2012-6-15
  */
 public class CyclicBarrierTest {
 	private boolean isFin = false;

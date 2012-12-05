@@ -22,7 +22,7 @@ package org.apache.niolex.commons.remote;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-7-26
+ * @since 2012-7-26
  */
 public class Path {
 

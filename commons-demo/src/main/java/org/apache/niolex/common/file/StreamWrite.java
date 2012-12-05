@@ -34,7 +34,7 @@ import org.apache.niolex.commons.test.StopWatch.Stop;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-9-12
+ * @since 2012-9-12
  */
 public class StreamWrite {
 	static final int WRITE_BATCH = 10000;

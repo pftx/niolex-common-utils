@@ -30,7 +30,7 @@ import com.sun.btrace.annotations.TargetMethodOrField;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-8-28
+ * @since 2012-8-28
  */
 public class BtrDemo {
 

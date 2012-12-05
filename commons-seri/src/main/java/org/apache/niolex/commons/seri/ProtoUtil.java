@@ -35,7 +35,7 @@ import com.google.protobuf.GeneratedMessage;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-8-7
+ * @since 2012-8-7
  */
 public class ProtoUtil {
 

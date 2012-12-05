@@ -27,7 +27,7 @@ import com.sun.btrace.annotations.TLS;
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @Date: 2012-8-29
+ * @since 2012-8-29
  */
 public class TraceMethodExecuteTime {
 
