@@ -49,6 +49,7 @@ public class Runner {
 				        ms = MethodUtil.getMethods(host.getClass().getSuperclass(), methodName);
 				    }
 					Method m = ms[0];
+					m.setAccessible(true);
 					m.invoke(host, args);
 				} catch (Exception e) {
 					LOG.warn("Error occured in Runner#run method.", e);
