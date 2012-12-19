@@ -40,15 +40,16 @@ public class MultiPartMail {
 		  MultiPartEmail email = new MultiPartEmail();
 		  email.setDebug(true);
 		  // Set email host
-		  email.setHostName("smtp.163.com");
-		  email.setAuthentication("nice_to_meet", "asf_logo_me");
-		  email.setSSL(true);
+		  email.setHostName("10.7.2.18");
+//		  email.setAuthentication("nice_to_meet", "asf_logo_me");
+//		  email.setSSL(true);
 		  // Set email from
-		  email.setFrom("me@apache.org", "Commons Email");
-		  email.setBounceAddress("pftx@163.com");
+		  email.setFrom("lei.gao@renren-inc.com", "Commons Email");
+		  email.setBounceAddress("lei.gao@renren-inc.com");
 		  // Set email content
-		  email.addTo("pftxie@qq.com", "Jiyun Xie");
-		  email.setSubject("The logo");
+		  email.addTo("jiyun.xie@renren-inc.com", "Jiyun Xie");
+		  email.addTo("lei.gao@renren-inc.com", "Lei Gao");
+		  email.setSubject("Foll Alert The Git test");
 		  email.setMsg("Here is Apache's logo, please enjoy it!");
 
 		  // add the attachment
