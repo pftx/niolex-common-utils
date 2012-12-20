@@ -36,6 +36,7 @@ public class ConcurrentUtilTest {
      */
     @Test
     public void testInitMap() {
+        new ConcurrentUtil() {};
         ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
         map.put("a", "bc");
         String v = ConcurrentUtil.initMap(map, "a", "de");
