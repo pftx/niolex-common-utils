@@ -30,54 +30,99 @@ import org.junit.Test;
  */
 public class ConcurrentEventDispatcherTest {
 
-	/**
-	 * Test method for {@link org.apache.niolex.commons.event.ConcurrentEventDispatcher#addListener(org.apache.niolex.commons.event.EventListener)}.
-	 */
-	@Test
-	public void testAddListener() {
-		ConcurrentEventDispatcher<String> dis = new ConcurrentEventDispatcher<String>();
-		final AtomicInteger au = new AtomicInteger(1);
-		EventListener<String> el = new EventListener<String>() {
+    /**
+     * Test method for
+     * {@link org.apache.niolex.commons.event.ConcurrentEventDispatcher#addListener(org.apache.niolex.commons.event.EventListener)}
+     * .
+     */
+    @Test
+    public void testAddListener() {
+        IEventDispatcher dis = new ConcurrentEventDispatcher();
+        final AtomicInteger au = new AtomicInteger(1);
+        EventListener<StringEvent> el = new EventListener<StringEvent>() {
 
-			@Override
-			public void eventHappened(String e) {
-				System.out.println(au.getAndIncrement() + ": " + e);
-			}};
-		dis.addListener(el);
-		dis.fireEvent("Not yet implemented");
-		assertEquals(2, au.intValue());
-		dis.fireEvent("Event Fired.");
-		assertEquals(3, au.intValue());
-	}
+            @Override
+            public void eventHappened(StringEvent e) {
+                System.out.println(au.getAndIncrement() + ": " + e);
+            }
+        };
+        dis.addListener("A", el);
+        dis.fireEvent(new Event<String>("B", "Event Fired."));
+        dis.fireEvent(new StringEvent("A", "Not yet implemented"));
+        assertEquals(2, au.intValue());
+        dis.fireEvent(new StringEvent("A", "Event Fired."));
+        dis.fireEvent(new Event<String>("A", "Event Fired."));
+        assertEquals(3, au.intValue());
+    }
 
-	/**
-	 * Test method for {@link org.apache.niolex.commons.event.ConcurrentEventDispatcher#removeListener(org.apache.niolex.commons.event.EventListener)}.
-	 */
-	@Test
-	public void testRemoveListener() {
-		ConcurrentEventDispatcher<String> dis = new ConcurrentEventDispatcher<String>();
-		final AtomicInteger au = new AtomicInteger(1);
-		EventListener<String> el = new EventListener<String>() {
+    /**
+     * Test method for {@link org.apache.niolex.commons.event.EventListener#onClassCastException(org.apache.niolex.commons.event.Event, java.lang.ClassCastException)}.
+     */
+    @Test
+    public void testOnClassCastException() {
+        IEventDispatcher dis = new ConcurrentEventDispatcher();
+        final AtomicInteger au = new AtomicInteger(1);
+        EventListener<Event<String>> el = new EventListener<Event<String>>() {
 
-			@Override
-			public void eventHappened(String e) {
-				System.out.println(au.getAndIncrement() + ": " + e);
-			}};
-		dis.addListener(el);
-		dis.fireEvent("Not yet implemented");
-		assertEquals(2, au.intValue());
-		dis.removeListener(el);
-		dis.fireEvent("Event Fired.");
-		assertEquals(2, au.intValue());
-	}
+            @Override
+            public void eventHappened(Event<String> e) {
+                System.out.println(au.getAndIncrement() + ": " + e);
+            }
+        };
+        dis.addListener("A", el);
+        dis.addListener("A", new PrintEventListener());
+        dis.fireEvent(new StringEvent("A", "Not yet implemented"));
+        assertEquals(2, au.intValue());
+        dis.fireEvent(new StringEvent("A", "Event Fired."));
+        assertEquals(3, au.intValue());
+        dis.removeListener("A", el);
+        dis.fireEvent(new StringEvent("A", "Event Fired After."));
+        assertEquals(3, au.intValue());
+    }
 
-	/**
-	 * Test method for {@link org.apache.niolex.commons.event.ConcurrentEventDispatcher#fireEvent(java.lang.Object)}.
-	 */
-	@Test
-	public void testFireEvent() {
-		ConcurrentEventDispatcher<String> dis = new ConcurrentEventDispatcher<String>();
-		dis.fireEvent("Event Fired.");
-	}
+    /**
+     * Test method for
+     * {@link org.apache.niolex.commons.event.ConcurrentEventDispatcher#addListener(org.apache.niolex.commons.event.EventListener)}
+     * .
+     */
+    @Test
+    public void testAddGood() {
+        IEventDispatcher dis = new ConcurrentEventDispatcher();
+        dis.removeListener("A", new PrintEventListener());
+        dis.fireEvent(new StringEvent("A", "Event Fired."));
+    }
+
+    /**
+     * Test method for
+     * {@link org.apache.niolex.commons.event.ConcurrentEventDispatcher#removeListener(org.apache.niolex.commons.event.EventListener)}
+     * .
+     */
+    @Test
+    public void testRemoveListener() {
+        ConcurrentEventDispatcher dis = new ConcurrentEventDispatcher();
+        final AtomicInteger au = new AtomicInteger(1);
+        EventListener<Event<String>> el = new EventListener<Event<String>>() {
+
+            @Override
+            public void eventHappened(Event<String> e) {
+                System.out.println(au.getAndIncrement() + ": " + e);
+            }
+        };
+        dis.addListener("A",el);
+        dis.fireEvent(new StringEvent("A", "Not yet implemented"));
+        assertEquals(2, au.intValue());
+        dis.removeListener("A",el);
+        dis.fireEvent(new StringEvent("A", "Event Fired."));
+        assertEquals(2, au.intValue());
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.event.ConcurrentEventDispatcher#fireEvent(java.lang.Object)}.
+     */
+    @Test
+    public void testFireEvent() {
+        ConcurrentEventDispatcher dis = new ConcurrentEventDispatcher();
+        dis.fireEvent(new Event<String>("B", "Event Fired."));
+    }
 
 }

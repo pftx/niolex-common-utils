@@ -23,24 +23,24 @@ package org.apache.niolex.commons.event;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-6-26
  */
-public interface IEventDispatcher<E> {
+public interface IEventDispatcher {
 
 	/**
 	 * Add an event listener who care this event.
 	 * @param eListener
 	 */
-	public void addListener(EventListener<E> eListener);
+	public void addListener(String eventType, EventListener<? extends Event<?>> eListener);
 
 	/**
 	 * Remove the specified event listener.
 	 * @param eListener
 	 */
-	public void removeListener(EventListener<E> eListener);
+	public void removeListener(String eventType, EventListener<? extends Event<?>> eListener);
 
 	/**
 	 * Fire the specified event to all the listeners registered to this dispatcher.
 	 * @param e
 	 */
-	public void fireEvent(E e);
+	public void fireEvent(Event<?> e);
 
 }

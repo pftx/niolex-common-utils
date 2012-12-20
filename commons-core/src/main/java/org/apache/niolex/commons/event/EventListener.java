@@ -17,18 +17,50 @@
  */
 package org.apache.niolex.commons.event;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * The public interface to listen event.
+ * The public abstract class to listen event.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-6-26
  */
-public interface EventListener<E> {
+public abstract class EventListener<E extends Event<?>> {
+
+    protected static final Logger LOG = LoggerFactory.getLogger(EventListener.class);
 
 	/**
-	 * The event happened.
+	 * The event happened. User need to implement this method to handle the event.
+	 *
 	 * @param e
 	 */
-	public void eventHappened(E e);
+	public abstract void eventHappened(E e);
+
+	/**
+	 * The internal method, handle the class cast problem.
+	 * We mark this method as final, to prevent subclass from change this method.
+	 *
+	 * @param e
+	 */
+	@SuppressWarnings("unchecked")
+    protected final void internalEventHappened(Event<?> e) {
+	    try {
+	        eventHappened((E) e);
+	    } catch (ClassCastException ex) {
+	        onClassCastException(e, ex);
+	    }
+	}
+
+	/**
+	 * We just log the ClassCastException.
+	 * Subclass can override this method to take care of this exception.
+	 *
+	 * @param e
+	 * @param ex
+	 */
+	protected void onClassCastException(Event<?> e, ClassCastException ex) {
+	    LOG.warn("ClassCastException occured for event type [{}] class: {}.", e.getEventType(), e.getClass(), ex);
+	}
 
 }

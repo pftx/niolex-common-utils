@@ -17,46 +17,59 @@
  */
 package org.apache.niolex.commons.event;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.niolex.commons.concurrent.ConcurrentUtil;
+
 /**
- * 支持并发的事件分发器实现。
+ * 支持并发的事件分发器实现。此实现是完全高并发的，不需要任何的外部锁机制。
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-6-26
  */
-public class ConcurrentEventDispatcher<E> implements IEventDispatcher<E> {
+public class ConcurrentEventDispatcher implements IEventDispatcher {
 
-	private final ConcurrentLinkedQueue<EventListener<E>> queue = new ConcurrentLinkedQueue<EventListener<E>>();
+    private final ConcurrentHashMap<String, ConcurrentLinkedQueue<EventListener<? extends Event<?>>>> handlerMap =
+            new ConcurrentHashMap<String, ConcurrentLinkedQueue<EventListener<? extends Event<?>>>>();
 
+    /**
+     * Override super method
+     * @see org.apache.niolex.commons.event.IEventDispatcher#addListener(java.lang.String, org.apache.niolex.commons.event.EventListener)
+     */
+    @Override
+    public void addListener(String eventType, EventListener<? extends Event<?>> eListener) {
+        ConcurrentLinkedQueue<EventListener<? extends Event<?>>> queue = handlerMap.get(eventType);
+        if (queue == null) {
+            queue = ConcurrentUtil.initMap(handlerMap, eventType, new ConcurrentLinkedQueue<EventListener<? extends Event<?>>>());
+        }
+        queue.add(eListener);
+    }
 
-	/**
-	 * Override super method
-	 * @see org.apache.niolex.commons.event.IEventDispatcher#addListener(org.apache.niolex.commons.event.EventListener)
-	 */
-	@Override
-	public void addListener(EventListener<E> eListener) {
-		queue.add(eListener);
-	}
+    /**
+     * Override super method
+     * @see org.apache.niolex.commons.event.IEventDispatcher#removeListener(java.lang.String, org.apache.niolex.commons.event.EventListener)
+     */
+    @Override
+    public void removeListener(String eventType, EventListener<? extends Event<?>> eListener) {
+        ConcurrentLinkedQueue<EventListener<? extends Event<?>>> queue = handlerMap.get(eventType);
+        if (queue != null) {
+            queue.remove(eListener);
+        }
+    }
 
-	/**
-	 * Override super method
-	 * @see org.apache.niolex.commons.event.IEventDispatcher#removeListener(org.apache.niolex.commons.event.EventListener)
-	 */
-	@Override
-	public void removeListener(EventListener<E> eListener) {
-		queue.remove(eListener);
-	}
-
-	/**
-	 * Override super method
-	 * @see org.apache.niolex.commons.event.IEventDispatcher#fireEvent(java.lang.Object)
-	 */
-	@Override
-	public void fireEvent(E e) {
-		for (EventListener<E> eLi : queue) {
-			eLi.eventHappened(e);
-		}
-	}
+    /**
+     * Override super method
+     * @see org.apache.niolex.commons.event.IEventDispatcher#fireEvent(org.apache.niolex.commons.event.Event)
+     */
+    @Override
+    public void fireEvent(Event<?> e) {
+        ConcurrentLinkedQueue<EventListener<? extends Event<?>>> queue = handlerMap.get(e.getEventType());
+        if (queue != null) {
+            for (EventListener<? extends Event<?>> eLi : queue) {
+                eLi.internalEventHappened(e);
+            }
+        }
+    }
 
 }

@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.niolex.commons.collection.RetainLinkedList;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 /**
@@ -69,8 +70,13 @@ public class RetainLinkedTest {
 			System.out.println(k + " Take start at " + System.currentTimeMillis());
 			while (true) {
 				Integer r = linked.handleNext();
-				if (r == null && inger.get() == 0) {
-					break;
+				if (r == null) {
+				    if (inger.get() == 0)
+				        break;
+				    else {
+				        SystemUtil.sleep(1);
+				        continue;
+				    }
 				}
 				if (check.containsKey(r)) {
 					System.out.println(k + " --------------------- Take duplicate at " + r);
