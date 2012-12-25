@@ -1,5 +1,5 @@
 /**
- * CollectionUtils.java
+ * CollectionUtil.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -27,7 +27,7 @@ import java.util.List;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-5-31
  */
-public abstract class CollectionUtils {
+public abstract class CollectionUtil {
 
 	/**
 	 * Concatenating all the parameters into one list.

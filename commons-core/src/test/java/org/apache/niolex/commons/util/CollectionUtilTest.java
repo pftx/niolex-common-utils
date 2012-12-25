@@ -29,10 +29,10 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-5-31
  */
-public class CollectionUtilsTest {
+public class CollectionUtilTest {
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.CollectionUtils#concat(java.util.Collection, E[])}.
+	 * Test method for {@link org.apache.niolex.commons.util.CollectionUtil#concat(java.util.Collection, E[])}.
 	 */
 	@Test
 	public void testConcatCollectionOfEEArray() {
@@ -40,17 +40,17 @@ public class CollectionUtilsTest {
 		dest.add("methods1");
 		dest.add("methods2");
 		dest.add("methods3");
-		dest = CollectionUtils.concat(dest, "Nice", "Meet");
+		dest = CollectionUtil.concat(dest, "Nice", "Meet");
 		assertEquals(5, dest.size());
 		assertEquals("Nice", dest.get(3));
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.CollectionUtils#concat(E[])}.
+	 * Test method for {@link org.apache.niolex.commons.util.CollectionUtil#concat(E[])}.
 	 */
 	@Test
 	public void testConcatEArray() {
-		List<String> dest = CollectionUtils.concat("You", "Nice", "Meet");
+		List<String> dest = CollectionUtil.concat("You", "Nice", "Meet");
 		assertEquals(3, dest.size());
 		assertEquals("Nice", dest.get(1));
 	}
@@ -65,7 +65,7 @@ public class CollectionUtilsTest {
 		dest2.add("methods21");
 		dest2.add("methods22");
 		dest2.add("methods23");
-		dest = CollectionUtils.concat(dest, dest2);
+		dest = CollectionUtil.concat(dest, dest2);
 		assertEquals(6, dest.size());
 		assertEquals("methods22", dest.get(4));
 	}
@@ -76,7 +76,7 @@ public class CollectionUtilsTest {
 		dest.add("methods1");
 		dest.add("methods2");
 		dest.add("methods3");
-		dest = CollectionUtils.concat("Nice", dest);
+		dest = CollectionUtil.concat("Nice", dest);
 		assertEquals(4, dest.size());
 		assertEquals("Nice", dest.get(0));
 	}
@@ -87,7 +87,7 @@ public class CollectionUtilsTest {
 		dest.add("methods1");
 		dest.add("methods2");
 		dest.add("methods3");
-		List<String> ddest = CollectionUtils.copy(dest);
+		List<String> ddest = CollectionUtil.copy(dest);
 		assertEquals(3, ddest.size());
 		assertEquals("methods1", dest.get(0));
 		assertEquals("methods2", dest.get(1));
@@ -97,7 +97,7 @@ public class CollectionUtilsTest {
 	@Test
 	public void testColec0() {
 		List<String> dest = new ArrayList<String>(3);
-		List<String> ddest = CollectionUtils.copy(dest);
+		List<String> ddest = CollectionUtil.copy(dest);
 		assertEquals(0, ddest.size());
 	}
 
