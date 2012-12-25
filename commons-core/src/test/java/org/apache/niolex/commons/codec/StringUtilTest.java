@@ -122,4 +122,158 @@ public class StringUtilTest {
 		String b = StringUtil.concat(" ", "good", "morning");
 		assertEquals(b, "good morning");
 	}
+
+    @Test
+    public void testSplitLinesOkOff() throws Exception {
+        String[] arr = StringUtil.splitLines("a\n\nbcd\r\nedf\rg", false);
+        assertEquals(arr.length, 4);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "a bcd edf g");
+    }
+
+    @Test
+    public void testSplitLinesOkOn() throws Exception {
+        String[] arr = StringUtil.splitLines("a\n\nbcd\r\nedf\rg\r\n", true);
+        assertEquals(arr.length, 5);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "a  bcd edf g");
+    }
+
+    @Test
+    public void testSplitLinesNullOn() throws Exception {
+        String[] arr = StringUtil.splitLines(null, true);
+        assertEquals(arr.length, 1);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "null");
+    }
+
+    @Test
+    public void testSplitLinesEmptyOn() throws Exception {
+        String[] arr = StringUtil.splitLines("", true);
+        assertEquals(arr.length, 1);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "");
+    }
+
+    @Test
+    public void testSplitLinesBlankOn() throws Exception {
+        String[] arr = StringUtil.splitLines("  ", true);
+        assertEquals(arr.length, 1);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "  ");
+    }
+
+    @Test
+    public void testSplitLinesLastOKOn() throws Exception {
+        String[] arr = StringUtil.splitLines("This\nis\ngood\n", true);
+        assertEquals(arr.length, 3);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "This is good");
+    }
+
+    @Test
+    public void testSplitLinesLastOffOn() throws Exception {
+        String[] arr = StringUtil.splitLines("This\nis\ngood", true);
+        assertEquals(arr.length, 3);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "This is good");
+    }
+
+    @Test
+    public void testSplitLinesWindowsOff() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\r\nChecksum\r\n\r\n中的\r\ngetValue", false);
+        assertEquals(arr.length, 4);
+        String b = StringUtil.join(arr, "\r\n");
+        assertEquals(b, "接口\r\nChecksum\r\n中的\r\ngetValue");
+    }
+
+    @Test
+    public void testSplitLinesWindowsOn() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\r\nChecksum\r\n\r\n中的\r\ngetValue", true);
+        assertEquals(arr.length, 5);
+        String b = StringUtil.join(arr, "\r\n");
+        assertEquals(b, "接口\r\nChecksum\r\n\r\n中的\r\ngetValue");
+    }
+
+    @Test
+    public void testSplitLinesWindowsOffl() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\r\nChecksum\r\n\r\n中的\r\ngetValue\r\n", false);
+        assertEquals(arr.length, 4);
+        String b = StringUtil.join(arr, "\r\n");
+        assertEquals(b, "接口\r\nChecksum\r\n中的\r\ngetValue");
+    }
+
+    @Test
+    public void testSplitLinesWindowsOnl() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\r\nChecksum\r\n\r\n中的\r\ngetValue\r\n", true);
+        assertEquals(arr.length, 5);
+        String b = StringUtil.join(arr, "\r\n");
+        assertEquals(b, "接口\r\nChecksum\r\n\r\n中的\r\ngetValue");
+    }
+
+    @Test
+    public void testSplitLinesMacOnl() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\rChecksum\r\r中的\rgetValue\r", true);
+        assertEquals(arr.length, 5);
+        String b = StringUtil.join(arr, "\r");
+        assertEquals(b, "接口\rChecksum\r\r中的\rgetValue");
+    }
+
+    @Test
+    public void testSplitLinesMacOn() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\rChecksum\r\r中的\rgetValue", true);
+        assertEquals(arr.length, 5);
+        String b = StringUtil.join(arr, "\r");
+        assertEquals(b, "接口\rChecksum\r\r中的\rgetValue");
+    }
+
+    @Test
+    public void testSplitLinesMacOff() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\rChecksum\r\r中的\rgetValue", false);
+        assertEquals(arr.length, 4);
+        String b = StringUtil.join(arr, "\r");
+        assertEquals(b, "接口\rChecksum\r中的\rgetValue");
+    }
+
+    @Test
+    public void testSplitLinesMacOffl() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\rChecksum\r\r中的\rgetValue\r", false);
+        assertEquals(arr.length, 4);
+        String b = StringUtil.join(arr, "\r");
+        assertEquals(b, "接口\rChecksum\r中的\rgetValue");
+    }
+
+
+    @Test
+    public void testSplitLinesLinuxOn() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\nChecksum\n\n中的\ngetValue", true);
+        assertEquals(arr.length, 5);
+        String b = StringUtil.join(arr, "\n");
+        assertEquals(b, "接口\nChecksum\n\n中的\ngetValue");
+    }
+
+    @Test
+    public void testSplitLinesLinuxOff() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\nChecksum\n\n中的\ngetValue", false);
+        assertEquals(arr.length, 4);
+        String b = StringUtil.join(arr, "\n");
+        assertEquals(b, "接口\nChecksum\n中的\ngetValue");
+    }
+
+    @Test
+    public void testSplitLinesLinuxOnl() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\nChecksum\n\n中的\ngetValue\n", true);
+        assertEquals(arr.length, 5);
+        String b = StringUtil.join(arr, "\n");
+        assertEquals(b, "接口\nChecksum\n\n中的\ngetValue");
+    }
+
+    @Test
+    public void testSplitLinesLinuxOffl() throws Exception {
+        String[] arr = StringUtil.splitLines("接口\nChecksum\n\n中的\ngetValue\n", false);
+        assertEquals(arr.length, 4);
+        String b = StringUtil.join(arr, "\n");
+        assertEquals(b, "接口\nChecksum\n中的\ngetValue");
+    }
+
 }

@@ -18,8 +18,12 @@
 package org.apache.niolex.commons.codec;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -133,5 +137,45 @@ public abstract class StringUtil {
 	 */
 	public static final String concat(String sep, String ...arr) {
 		return join(arr, sep);
+	}
+
+	/**
+	 * This is a platform independent line split tool. We will split a line by
+	 * '\r', '\n', '\r\n', and preserve all empty lines is you need.
+	 *
+	 * A new line separator at the last line is not needed.
+	 *
+	 * @param str the string you want to split
+	 * @param preserveEmptyLines if set this to true, we will preserve all empty lines
+	 * @return the lines array
+	 */
+	public static final String[] splitLines(String str, boolean preserveEmptyLines) {
+	    if (StringUtils.isBlank(str)) {
+	        return new String[] {str};
+	    }
+	    int len = str.length(), start = 0;
+	    List<String> list = new ArrayList<String>();
+	    for (int i = 0; i < len; ++i) {
+	        char ch = str.charAt(i);
+	        if (ch == '\r') {
+	            if (start != i || preserveEmptyLines) {
+	                list.add(str.substring(start, i));
+	            }
+	            if (i + 1 < len && str.charAt(i + 1) == '\n') {
+	                ++i;
+	            }
+	            start = i + 1;
+	        } else if (ch == '\n') {
+	            if (start != i || preserveEmptyLines) {
+                    list.add(str.substring(start, i));
+                }
+	            start = i + 1;
+	        }
+	    }
+	    if (start != len) {
+	        // There is no new line for the last line. We add it here.
+	        list.add(str.substring(start, len));
+	    }
+	    return list.toArray(new String[list.size()]);
 	}
 }
