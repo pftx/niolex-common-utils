@@ -49,6 +49,7 @@ public class CyclicIntArrayTest {
         assertEquals(0, a.push(3));
         assertEquals(0, a.push(4));
         assertEquals(3, a.push(5));
+        assertEquals(1, a.getHead());
     }
 
     /**

@@ -42,6 +42,15 @@ public class FrequencyControlerTest {
         assertFalse(fc.check(10));
         assertFalse(fc.check(30));
         assertFalse(fc.check(50));
+        assertEquals(7, fc.getHead());
+    }
+
+    @Test
+    public void testCover() {
+        FrequencyControler fc = new FrequencyControler(10, 100);
+        assertTrue(fc.check(50));
+        assertEquals(1, fc.getHead());
+        fc.getArray();
     }
 
     /**

@@ -80,6 +80,15 @@ public class CyclicIntArray {
     }
 
     /**
+     * Get the current head position.
+     *
+     * @return the current head position.
+     */
+    public int getHead() {
+        return head;
+    }
+
+    /**
      * Get the size of the internal int array.
      *
      * @return the size of the internal int array.

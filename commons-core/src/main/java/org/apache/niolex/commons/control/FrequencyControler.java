@@ -42,7 +42,7 @@ public class FrequencyControler {
     /**
      * The total number.
      */
-    private final int totoalNum;
+    private final int totalNum;
 
     /**
      * The current number.
@@ -55,10 +55,10 @@ public class FrequencyControler {
      * @param splitCnt the total interval will be split by this count.
      * @param totoalNum the total number.
      */
-    public FrequencyControler(int splitCnt, int totoalNum) {
+    public FrequencyControler(int splitCnt, int totalNum) {
         super();
         this.cyclic = new CyclicIntArray(splitCnt);
-        this.totoalNum = totoalNum;
+        this.totalNum = totalNum;
         this.currentNum = 0;
     }
 
@@ -71,11 +71,29 @@ public class FrequencyControler {
     public boolean check(int splitNum) {
         currentNum += splitNum;
         currentNum -= cyclic.push(splitNum);
-        if (currentNum > totoalNum) {
+        if (currentNum > totalNum) {
             return false;
         } else {
             return true;
         }
+    }
+
+    /**
+     * Get the split slots data array.
+     *
+     * @return the split slots data array.
+     */
+    public int[] getArray() {
+        return cyclic.getArray();
+    }
+
+    /**
+     * Get the head pointer for the slots data array.
+     *
+     * @return the head pointer position.
+     */
+    public int getHead() {
+        return cyclic.getHead();
     }
 
 }
