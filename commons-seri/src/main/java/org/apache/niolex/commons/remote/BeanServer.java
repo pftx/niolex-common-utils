@@ -87,7 +87,7 @@ public class BeanServer implements Runnable {
 	 * @param key
 	 * @param oldValue
 	 * @param newValue
-	 * @return
+	 * @return true if the value is replaced
 	 */
 	public boolean replace(String key, Object oldValue, Object newValue) {
 		return map.replace(key, oldValue, newValue);
@@ -95,7 +95,8 @@ public class BeanServer implements Runnable {
 
 	/**
 	 * Start this bean server to listen to telnet request.
-	 * @return
+	 *
+	 * @return true if server started
 	 */
 	public boolean start() {
 		try {
