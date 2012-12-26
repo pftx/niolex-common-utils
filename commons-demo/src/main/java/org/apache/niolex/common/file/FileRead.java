@@ -21,7 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 
@@ -64,12 +64,19 @@ public class FileRead {
 	public static int mmapRead() throws IOException {
 		RandomAccessFile file = new RandomAccessFile("D:\\data\\miui\\MiFlash20120723.zip", "r");
 		FileChannel channel = file.getChannel();
-		channel.map(MapMode.READ_ONLY, 0, file.length());
-		ByteBuffer buf = ByteBuffer.allocate(BUF_SIZE);
-		int cnt = 0, tt;
-		while ((tt = channel.read(buf)) != -1) {
-			cnt += tt;
-			buf.clear();
+		MappedByteBuffer map = channel.map(MapMode.READ_ONLY, 0, file.length());
+		byte[] buf = new byte[BUF_SIZE];
+		int cnt = 0;
+		while (true) {
+		    int k = map.remaining();
+		    if (k > buf.length) {
+		        map.get(buf);
+		        cnt += buf.length;
+		    } else {
+		        map.get(buf, 0, k);
+		        cnt += k;
+		        break;
+		    }
 		}
 		channel.close();
 		file.close();

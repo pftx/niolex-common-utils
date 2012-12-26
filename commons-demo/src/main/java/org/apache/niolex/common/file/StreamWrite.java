@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 
@@ -39,7 +40,8 @@ import org.apache.niolex.commons.test.StopWatch.Stop;
 public class StreamWrite {
 	static final int WRITE_BATCH = 10000;
 	static final int WRITE_ONE = 1024;
-	static final int RUN_ITER = 200;
+	static final int RUN_ITER = 100;
+	static final int BUFFER_SIZE = 10240;
 
 	byte[][] data = new byte[WRITE_BATCH][];
 
@@ -52,7 +54,7 @@ public class StreamWrite {
 
 	public void bufferWrite() throws IOException {
 		FileOutputStream out = new FileOutputStream("D:\\data\\tmp\\" + System.nanoTime());
-		BufferedOutputStream outb = new BufferedOutputStream(out);
+		BufferedOutputStream outb = new BufferedOutputStream(out, BUFFER_SIZE);
 		for (int i = 0; i < data.length; i++)
 			outb.write(data[i]);
 		outb.close();
@@ -66,12 +68,24 @@ public class StreamWrite {
 		file.close();
 	}
 
+	public void channelWrite() throws IOException {
+	    RandomAccessFile file = new RandomAccessFile("D:\\data\\tmp\\" + System.nanoTime(), "rw");
+	    FileChannel channel = file.getChannel();
+	    for (int i = 0; i < data.length; i++)
+	        channel.write(ByteBuffer.wrap(data[i]));
+	    channel.close();
+	    file.close();
+	}
+
 	public void mmapWrite() throws IOException {
 		RandomAccessFile file = new RandomAccessFile("D:\\data\\tmp\\" + System.nanoTime(), "rw");
 		FileChannel channel = file.getChannel();
-		channel.map(MapMode.READ_WRITE, 0, WRITE_ONE);
-		for (int i = 0; i < data.length; i++)
-			channel.write(ByteBuffer.wrap(data[i]));
+		MappedByteBuffer buffer = null;
+		buffer = channel.map(MapMode.READ_WRITE, 0, WRITE_BATCH * WRITE_ONE);
+		for (int i = 0; i < data.length; i++) {
+		    buffer.put(data[i]);
+		}
+		buffer.force();
 		channel.close();
 		file.close();
 	}
