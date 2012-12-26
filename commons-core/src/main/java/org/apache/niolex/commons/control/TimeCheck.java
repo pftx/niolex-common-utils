@@ -63,7 +63,7 @@ public class TimeCheck {
      *
      * @param checkInterval
      * @param splitCnt
-     * @param totoalNum
+     * @param totalNum
      */
     public TimeCheck(int checkInterval, int splitCnt, int totalNum) {
         super();

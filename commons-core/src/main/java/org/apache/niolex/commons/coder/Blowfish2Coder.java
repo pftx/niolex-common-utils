@@ -60,7 +60,7 @@ public class Blowfish2Coder extends BaseCoder {
      * 加密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     public byte[] encrypt(byte[] data) throws Exception {
@@ -74,7 +74,7 @@ public class Blowfish2Coder extends BaseCoder {
      * 解密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     public byte[] decrypt(byte[] data) throws Exception {

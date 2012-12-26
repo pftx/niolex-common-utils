@@ -78,7 +78,7 @@ public class DESCoder extends BaseCoder {
      * 转换密钥<br>
      *
      * @param key
-     * @return
+     * @return the object
      * @throws Exception
      */
     private Key toKey(byte[] key) throws Exception {
@@ -111,7 +111,7 @@ public class DESCoder extends BaseCoder {
      * 生成密钥
      *
      * @param seed
-     * @return
+     * @return the object
      * @throws Exception
      */
     public static String genKey(String seed) throws UnsupportedEncodingException {
@@ -143,7 +143,7 @@ public class DESCoder extends BaseCoder {
      * 加密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     @Override
@@ -159,7 +159,7 @@ public class DESCoder extends BaseCoder {
      * 解密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     @Override
@@ -174,7 +174,7 @@ public class DESCoder extends BaseCoder {
     /**
      * Encode multiple string together into a Base64 string
      * @param args
-     * @return
+     * @return the object
      */
     public String encodes(String... args) {
         if (args == null || args.length == 0)

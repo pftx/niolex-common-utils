@@ -81,7 +81,7 @@ public class TripleDESCoder extends BaseCoder {
      * 转换密钥<br>
      *
      * @param key
-     * @return
+     * @return the object
      * @throws Exception
      */
     private Key toKey(byte[] key) throws Exception {
@@ -150,7 +150,7 @@ public class TripleDESCoder extends BaseCoder {
      * 加密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     public byte[] encrypt(byte[] data) throws Exception {
@@ -165,7 +165,7 @@ public class TripleDESCoder extends BaseCoder {
      * 解密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     public byte[] decrypt(byte[] data) throws Exception {

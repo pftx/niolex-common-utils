@@ -38,7 +38,7 @@ public interface Coder {
      * 加密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     public byte[] encrypt(byte[] data) throws Exception;
@@ -47,7 +47,7 @@ public interface Coder {
      * 解密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     public byte[] decrypt(byte[] data) throws Exception;
@@ -56,7 +56,7 @@ public interface Coder {
      * 加密字符串
      *
      * @param str
-     * @return
+     * @return the object
      * @throws Exception
      */
     public String encode(String str) throws Exception;
@@ -65,7 +65,7 @@ public interface Coder {
      * 解密字符串
      *
      * @param str
-     * @return
+     * @return the object
      * @throws Exception
      */
     public String decode(String str) throws Exception;

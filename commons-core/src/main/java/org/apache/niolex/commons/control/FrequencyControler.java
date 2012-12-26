@@ -53,7 +53,7 @@ public class FrequencyControler {
      * Create a FrequencyControler.
      *
      * @param splitCnt the total interval will be split by this count.
-     * @param totoalNum the total number.
+     * @param totalNum the total number.
      */
     public FrequencyControler(int splitCnt, int totalNum) {
         super();

@@ -63,7 +63,7 @@ public class RC2Coder extends BaseCoder {
      * 转换密钥<br>
      *
      * @param key
-     * @return
+     * @return the object
      * @throws Exception
      */
     private static Key toKey(byte[] key) throws Exception {
@@ -114,7 +114,7 @@ public class RC2Coder extends BaseCoder {
      * 加密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     public byte[] encrypt(byte[] data) throws Exception {
@@ -128,7 +128,7 @@ public class RC2Coder extends BaseCoder {
      * 解密
      *
      * @param data
-     * @return
+     * @return the object
      * @throws Exception
      */
     public byte[] decrypt(byte[] data) throws Exception {
