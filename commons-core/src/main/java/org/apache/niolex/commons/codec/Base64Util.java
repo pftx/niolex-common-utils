@@ -23,7 +23,7 @@ import org.apache.commons.codec.binary.Base64;
 /**
  * Base64Util是一个用来实现在byte数组和64进制字符串之间相互转换的工具类
  * Base64Util自己并不实现Base64的功能，而是封装了apache的commons库里的相关功能。
- * 本类依赖于commons-codec-1.3.jar
+ * 本类依赖于commons-codec-1.3.jar+
  *
  * 目前提供的功能如下：
  * 1. public static final String byteToBase64(byte[] bytes)
@@ -46,12 +46,12 @@ public abstract class Base64Util {
      *
      * @param data 待转换的byte数组
      * @return 转换后的64进制字符串
-     * @throws IllegalStateException 假如用户的环境不支持UTF-8编码
+     * @throws IllegalStateException 假如用户的环境不支持ASCII编码
      */
     public static String byteToBase64(byte[] data) {
         if (data == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return StringUtil.utf8ByteToStr(Base64.encodeBase64(data));
+        return StringUtil.asciiByteToStr(Base64.encodeBase64(data));
     }
 
     /**
@@ -60,11 +60,11 @@ public abstract class Base64Util {
      *
      * @param str 待转换的64进制字符串
      * @return 转换后的byte数组
-     * @throws IllegalStateException 假如用户的环境不支持UTF-8编码
+     * @throws IllegalStateException 假如用户的环境不支持ASCII编码
      */
     public static byte[] base64toByte(String str) {
         if (str == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return Base64.decodeBase64(StringUtil.strToUtf8Byte(str));
+        return Base64.decodeBase64(StringUtil.strToAsciiByte(str));
     }
 }
