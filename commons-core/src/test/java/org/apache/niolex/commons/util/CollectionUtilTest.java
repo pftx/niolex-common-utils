@@ -162,6 +162,7 @@ public class CollectionUtilTest {
 
     @Test
     public void testIntersectionEmpty() {
+        new CollectionUtil(){};
         List<String> l = new ArrayList<String>(3);
         l.add("a");
         l.add("b");
