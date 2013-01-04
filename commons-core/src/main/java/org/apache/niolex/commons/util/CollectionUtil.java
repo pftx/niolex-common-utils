@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.niolex.commons.bean.Pair;
+
 /**
  * A collect of utility methods operating on collections.
  *
@@ -102,6 +104,24 @@ public abstract class CollectionUtil {
 			dest.add(e);
 		}
 		return dest;
+	}
+
+	/**
+	 * Find the intersection of this two list, and remove them from each list, then get the result.
+	 * We will keep the input list unchanged, and create two new ArrayList for return.
+	 * Pair.a will be the left list minus the intersection
+	 * Pair.b will be the right list minus the intersection
+	 *
+	 * @param left
+	 * @param right
+	 * @return the Pair of left results.
+	 */
+	public static final <E> Pair<List<E>, List<E>> intersection(Collection<E> left, Collection<E> right) {
+	    List<E> a = new ArrayList<E>(left);
+	    a.removeAll(right);
+	    List<E> b = new ArrayList<E>(right);
+	    b.removeAll(left);
+	    return new Pair<List<E>, List<E>>(a, b);
 	}
 
 }

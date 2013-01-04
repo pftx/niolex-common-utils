@@ -82,7 +82,7 @@ public class KVBase64Util {
         first = first >> 2;
         byte key[] = new byte[first];
         first = data.length - first - start;
-        if (first < 1) {
+        if (first < 0) {
             throw new IllegalArgumentException("The parameter is not KV encoded!");
         }
         byte value[] = new byte[first];

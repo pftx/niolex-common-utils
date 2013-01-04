@@ -23,5 +23,10 @@ public class App
         byte[] arr = FileUtil.getBinaryFileContentFromFileSystem("D:\\data\\exchange\\1354175418000");
         System.out.println("Len " + arr.length);
         System.out.println(Base16Util.byteToBase16(Arrays.copyOfRange(arr, arr.length - 10, arr.length)));
+        ClassLoader loader = App.class.getClassLoader();
+        while (loader != null) {
+            System.out.println(loader.toString());
+            loader = loader.getParent();
+        }
     }
 }

@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
 
 /**
@@ -100,5 +101,74 @@ public class CollectionUtilTest {
 		List<String> ddest = CollectionUtil.copy(dest);
 		assertEquals(0, ddest.size());
 	}
+
+    @Test
+    public void testIntersection() {
+        List<String> l = new ArrayList<String>(3);
+        l.add("a");
+        l.add("b");
+        l.add("c");
+        List<String> r = new ArrayList<String>(3);
+        r.add("c");
+        r.add("d");
+        r.add("e");
+        Pair<List<String>,List<String>> pair = CollectionUtil.intersection(l, r);
+        assertEquals("a", pair.a.get(0));
+        assertEquals("b", pair.a.get(1));
+        assertEquals("d", pair.b.get(0));
+        assertEquals("e", pair.b.get(1));
+        assertEquals(2, pair.a.size());
+        assertEquals(2, pair.b.size());
+    }
+
+    @Test
+    public void testIntersection1() {
+        List<String> l = new ArrayList<String>(3);
+        l.add("a");
+        l.add("b");
+        l.add("c");
+        l.add("d");
+        List<String> r = new ArrayList<String>(3);
+        r.add("c");
+        r.add("d");
+        r.add("e");
+        r.add("b");
+        Pair<List<String>,List<String>> pair = CollectionUtil.intersection(l, r);
+        assertEquals("a", pair.a.get(0));
+        assertEquals("e", pair.b.get(0));
+        assertEquals(1, pair.a.size());
+        assertEquals(1, pair.b.size());
+    }
+
+    @Test
+    public void testIntersection2() {
+        List<String> l = new ArrayList<String>(3);
+        l.add("a");
+        l.add("b");
+        l.add("c");
+        l.add("d");
+        List<String> r = new ArrayList<String>(3);
+        r.add("e");
+        r.add("f");
+        Pair<List<String>,List<String>> pair = CollectionUtil.intersection(l, r);
+        assertEquals("a", pair.a.get(0));
+        assertEquals("b", pair.a.get(1));
+        assertEquals("c", pair.a.get(2));
+        assertEquals("e", pair.b.get(0));
+        assertEquals("f", pair.b.get(1));
+        assertEquals(4, pair.a.size());
+        assertEquals(2, pair.b.size());
+    }
+
+    @Test
+    public void testIntersectionEmpty() {
+        List<String> l = new ArrayList<String>(3);
+        l.add("a");
+        l.add("b");
+        l.add("c");
+        Pair<List<String>,List<String>> pair = CollectionUtil.intersection(l, l);
+        assertEquals(0, pair.a.size());
+        assertEquals(0, pair.b.size());
+    }
 
 }

@@ -48,6 +48,36 @@ public class KVBase64UtilTest {
      * Test method for {@link org.apache.niolex.commons.codec.KVBase64Util#kvToBase64(byte[], byte[])}.
      */
     @Test
+    public void testKvToBaseMin() {
+        byte[] key = "k".getBytes();
+        byte[] value = "v".getBytes();
+        String s = KVBase64Util.kvToBase64(key, value);
+        System.out.println("Min " + s);
+        assertEquals(4, s.length());
+        Pair<byte[], byte[]> p = KVBase64Util.base64toKV(s);
+        assertArrayEquals(key, p.a);
+        assertArrayEquals(value, p.b);
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.codec.KVBase64Util#kvToBase64(byte[], byte[])}.
+     */
+    @Test
+    public void testKvToBaseMini() {
+        byte[] key = "".getBytes();
+        byte[] value = "".getBytes();
+        String s = KVBase64Util.kvToBase64(key, value);
+        System.out.println("Mini " + s);
+        assertEquals(4, s.length());
+        Pair<byte[], byte[]> p = KVBase64Util.base64toKV(s);
+        assertArrayEquals(key, p.a);
+        assertArrayEquals(value, p.b);
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.codec.KVBase64Util#kvToBase64(byte[], byte[])}.
+     */
+    @Test
     public void testKvToBase64_CHS() {
         byte[] key = "末日已然玩蛋去,就让我们与其哭死,不如笑死吧".getBytes();
         byte[] value = "一个阳光2B青年,一个屌丝青年,一场床戏使@黄渤 感叹@王宝强 不愧是练过的!".getBytes();
