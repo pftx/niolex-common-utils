@@ -1,9 +1,5 @@
 package org.apache.niolex.common.demo;
 
-import java.util.Arrays;
-
-import org.apache.niolex.commons.codec.Base16Util;
-import org.apache.niolex.commons.file.FileUtil;
 
 /**
  * Hello world!
@@ -11,22 +7,33 @@ import org.apache.niolex.commons.file.FileUtil;
  */
 public class App
 {
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
+        System.out.println("\n**** Test system property");
         String fileName = System.getProperty("config.client.property.file");
         if (fileName != null) {
             System.out.println(fileName);
         } else {
-            System.out.println("N");
+            System.out.println("No property, it's NULL");
         }
-        System.out.println("Hello World! " + App.class.getCanonicalName());
-        byte[] arr = FileUtil.getBinaryFileContentFromFileSystem("D:\\data\\exchange\\1354175418000");
-        System.out.println("Len " + arr.length);
-        System.out.println(Base16Util.byteToBase16(Arrays.copyOfRange(arr, arr.length - 10, arr.length)));
+
+        System.out.println("\n**** Test class canonical name");
+        System.out.println("CanonicalName! " + App.class.getCanonicalName());
+
+        System.out.println("\n**** Test class loader");
         ClassLoader loader = App.class.getClassLoader();
         while (loader != null) {
             System.out.println(loader.toString());
             loader = loader.getParent();
         }
+
+        System.out.println("\n**** Test instanceof");
+        String god = null;
+        System.out.println("NULL instanceof! " + (god instanceof String));
+
+        System.out.println("\n**** Test operator priority");
+        System.out.println("7 & ~1 = " + (7 & ~1));
+
+        System.out.println("\n**** Test +null");
+        System.out.println("+null = " + null);
     }
 }
