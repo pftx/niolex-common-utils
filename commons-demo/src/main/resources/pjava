@@ -1,0 +1,2 @@
+#!/bin/sh
+ps auxf | grep java | grep follower | grep -v pjava

@@ -1,5 +1,8 @@
 package org.apache.niolex.common.demo;
 
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+
 
 /**
  * Hello world!
@@ -33,7 +36,13 @@ public class App
         System.out.println("\n**** Test operator priority");
         System.out.println("7 & ~1 = " + (7 & ~1));
 
-        System.out.println("\n**** Test +null");
+        System.out.println("\n**** Test String functions");
         System.out.println("+null = " + null);
+        System.out.println("//split = " + Arrays.toString("remote://1.2.3.4:808///abc/de".split("//")));
+        System.out.println("last index of a = " + "last index of ** = ".lastIndexOf('a'));
+
+        System.out.println("\n**** Test InetSocketAddress");
+        System.out.println("InetSocketAddress[1.2.3.4] = " + new InetSocketAddress("1.2.3.4", 808));
+        System.out.println("InetSocketAddress[www.baidu.com] = " + new InetSocketAddress("www.baidu.com", 808));
     }
 }

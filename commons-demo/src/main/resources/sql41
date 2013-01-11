@@ -1,0 +1,2 @@
+#!/bin/sh
+mysql -h 10.11.18.41 -u root -pMooseFS
