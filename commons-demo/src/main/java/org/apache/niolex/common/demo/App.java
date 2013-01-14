@@ -3,6 +3,8 @@ package org.apache.niolex.common.demo;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 
+import org.apache.niolex.commons.util.SystemUtil;
+
 
 /**
  * Hello world!
@@ -12,7 +14,8 @@ public class App
 {
     public static void main(String[] args) {
         System.out.println("\n**** Test system property");
-        String fileName = System.getProperty("config.client.property.file");
+        String fileName = SystemUtil.getSystemProperty("ConfigClient.configurationFile", "config-client-properties",
+                "config.client.property.file");
         if (fileName != null) {
             System.out.println(fileName);
         } else {
@@ -43,6 +46,6 @@ public class App
 
         System.out.println("\n**** Test InetSocketAddress");
         System.out.println("InetSocketAddress[1.2.3.4] = " + new InetSocketAddress("1.2.3.4", 808));
-        System.out.println("InetSocketAddress[www.baidu.com] = " + new InetSocketAddress("www.niolex.net", 808));
+        System.out.println("InetSocketAddress[www.baidu.com] = " + new InetSocketAddress("www.baidu.com", 808));
     }
 }
