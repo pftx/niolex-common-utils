@@ -20,6 +20,7 @@ package org.apache.niolex.commons.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
@@ -64,6 +65,18 @@ public class SystemUtil {
 	}
 
 	/**
+	 * Format the InetSocketAddress into IP:Port string.
+	 *
+	 * @param addr the InetSocketAddress to be formatted
+	 * @return the string
+	 */
+	public static final String inetSocketAddress2IpPort(InetSocketAddress addr) {
+	    String s = addr.toString();
+	    int idx = s.indexOf('/') + 1;
+	    return s.substring(idx);
+	}
+
+	/**
 	 * Make the current thread sleep, do not care about the exception.
 	 *
 	 * @param milliseconds the time to sleep in milliseconds
@@ -102,6 +115,23 @@ public class SystemUtil {
 	    } catch (IOException e) {
 	        return e;
 	    }
+	}
+
+	/**
+	 * Try to get system property according to the specified order of property
+	 * keys.
+	 *
+	 * @param args the specified property keys
+	 * @return the first found property, null if all keys not found
+	 */
+	public static final String getSystemProperty(String ...args) {
+	    for (String s : args) {
+	        String p = System.getProperty(s);
+	        if (p != null) {
+	            return p;
+	        }
+	    }
+	    return null;
 	}
 
 }

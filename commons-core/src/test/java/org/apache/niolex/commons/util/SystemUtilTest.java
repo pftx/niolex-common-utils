@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Set;
 
@@ -86,6 +87,24 @@ public class SystemUtilTest {
         Socket ab = mock(Socket.class);
         doThrow(new IOException("This is from x.j.y")).when(ab).close();
         assertEquals("This is from x.j.y", SystemUtil.close(ab).getMessage());
+    }
+
+    @Test
+    public void testInetSocketAddress2IpPort() throws Exception {
+        String s = SystemUtil.inetSocketAddress2IpPort(new InetSocketAddress("1.2.3.4", 808));
+        System.out.println("InetSocketAddress[1.2.3.4] = " + s);
+        assertEquals("1.2.3.4:808", s);
+        s = SystemUtil.inetSocketAddress2IpPort(new InetSocketAddress("localhost", 808));
+        System.out.println("InetSocketAddress[localhost] = " + s);
+        assertEquals("127.0.0.1:808", s);
+    }
+
+    @Test
+    public void testGetSystemProperty() throws Exception {
+        String s = SystemUtil.getSystemProperty("user.home", "usr.home");
+        System.out.println("home = " + s);
+        s = SystemUtil.getSystemProperty("usr.home", "java.CLASSPATH");
+        System.out.println("home = " + s);
     }
 
 }
