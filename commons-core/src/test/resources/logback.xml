@@ -4,7 +4,9 @@
     <!-- commons-core log configuration file. upgrade to logback        -->
     <!--                                                                -->
     <!-- For professional support please see                            -->
+    <!--    http://logback.qos.ch/documentation.html	                -->
     <!--    http://logback.qos.ch/manual/configuration.html             -->
+    <!--    http://logback.qos.ch/manual/appenders.html                 -->
     <!--                                                                -->
 
 <configuration debug="false">
