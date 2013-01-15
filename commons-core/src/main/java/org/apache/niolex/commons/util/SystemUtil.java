@@ -24,6 +24,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,6 +63,22 @@ public class SystemUtil {
             }
         } catch (SocketException e) {/*We Don't Care*/}
         return set;
+	}
+
+	/**
+	 * Returns the IP address string in textual presentation.
+	 * <p>
+	 * We will first get the local host name, and then get the IP
+	 * address by this host name.
+	 * If there are multiple addresses returned, we peek the first
+	 * one to return.
+	 * If local host name not found, we will use 127.0.0.1
+	 *
+	 * @return the IP address string
+	 * @throws UnknownHostException If the local host name is invalid
+	 */
+	public static final String getLocalIP() throws UnknownHostException {
+	    return InetAddress.getLocalHost().getHostAddress();
 	}
 
 	/**

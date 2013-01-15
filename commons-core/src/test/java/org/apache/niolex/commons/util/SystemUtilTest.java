@@ -45,7 +45,11 @@ public class SystemUtilTest {
 	@Test
 	public void testGetAllLocalAddresses() throws Exception {
 		Set<InetAddress> set = SystemUtil.getAllLocalAddresses();
-		System.out.println(set);
+		for (InetAddress i : set) {
+		    System.out.println(i + ", " + i.isSiteLocalAddress());
+		}
+		InetAddress i = InetAddress.getLocalHost();
+		System.out.println(i + ", " + i.isSiteLocalAddress());
 		InetAddress test = InetAddress.getByName("localhost");
 		assertTrue(set.contains(test));
 	}
@@ -105,6 +109,14 @@ public class SystemUtilTest {
         System.out.println("home = " + s);
         s = SystemUtil.getSystemProperty("usr.home", "java.CLASSPATH");
         System.out.println("home = " + s);
+    }
+
+    @Test
+    public void testGetLocalIP()
+     throws Exception {
+        InetAddress i = InetAddress.getByName("localhost");
+        String s = SystemUtil.getLocalIP();
+        System.out.println(i + ", " + s);
     }
 
 }
