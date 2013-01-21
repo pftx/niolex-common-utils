@@ -109,4 +109,10 @@ public class MockUtilTest {
         Assert.assertNotEquals(MockUtil.ranLong(), MockUtil.ranLong());
     }
 
+    @Test
+    public void testRandUUID() throws Exception {
+        Assert.assertNotEquals(MockUtil.randUUID(), MockUtil.randUUID());
+        System.out.println("UUID " + MockUtil.randUUID());
+    }
+
 }

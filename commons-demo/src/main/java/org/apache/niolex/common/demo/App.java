@@ -2,6 +2,7 @@ package org.apache.niolex.common.demo;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.apache.niolex.commons.util.SystemUtil;
 
@@ -43,6 +44,8 @@ public class App
         System.out.println("+null = " + god);
         System.out.println("//split = " + Arrays.toString("remote://1.2.3.4:808///abc/de".split("//")));
         System.out.println("last index of a = " + "last index of ** = ".lastIndexOf('a'));
+        String uuid = UUID.randomUUID().toString();
+        System.out.println("UUID = " + uuid);
 
         System.out.println("\n**** Test InetSocketAddress");
         System.out.println("InetSocketAddress[1.2.3.4] = " + new InetSocketAddress("1.2.3.4", 808));

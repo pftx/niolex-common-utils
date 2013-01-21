@@ -18,6 +18,7 @@
 package org.apache.niolex.commons.test;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Generate mock datas, for unit test like things.
@@ -107,6 +108,15 @@ public abstract class MockUtil {
     	byte[] ar = new byte[length];
     	generator.nextBytes(ar);
     	return ar;
+    }
+
+    /**
+     * Generates random UUID and format it into standard string.
+     *
+     * @return the result
+     */
+    public static final String randUUID() {
+        return UUID.randomUUID().toString();
     }
 
 }
