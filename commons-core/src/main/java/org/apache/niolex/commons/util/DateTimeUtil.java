@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- * Tanslate bewteen string and Date.
+ * Translate between string and Date.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2010-11-18$
@@ -37,12 +37,19 @@ public abstract class DateTimeUtil {
     // One minute specified in milliseconds.
     public static final long MINUTE = 60 * SECOND;
 
+    // One hour specified in milliseconds.
+    public static final long HOUR = 60 * MINUTE;
+
+    // One day specified in milliseconds.
+    public static final long DAY = 24 * HOUR;
+
     // /////////////////////////////////////////////////////////////////////////////////////
     // FORMART DATE TO STRING
     // /////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Format the current date time to "yyyy-MM-dd HH:mm:ss.SSS" format string.
+     * @return the result
      */
     public static final String formatDate2LongStr() {
         return formatDate2LongStr(new Date());
@@ -70,6 +77,7 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the current date time to "yyyy-MM-dd HH:mm:ss" format string.
+     * @return the result
      */
     public static final String formatDate2DateTimeStr() {
         return formatDate2DateTimeStr(new Date());
@@ -208,6 +216,10 @@ public abstract class DateTimeUtil {
         GregorianCalendar cal = getCalender(new Date());
         cal.add(Calendar.DAY_OF_MONTH, -1);
         return cal.getTime();
+    }
+
+    public static final Date getTodayMidnight() {
+        return getCalender(new Date()).getTime();
     }
 
     public static final Date getLastHour() {

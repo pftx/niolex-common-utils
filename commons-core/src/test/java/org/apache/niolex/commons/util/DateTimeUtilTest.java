@@ -203,4 +203,31 @@ public class DateTimeUtilTest {
         i = DateTimeUtil.getMonth(d);
         Assert.assertEquals(i, 8);
     }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetLastWeekDay() throws Exception {
+        new DateTimeUtil() {};
+        DateTimeUtil.getLastWeekDay(null);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetLastWeekDayEnd() throws Exception {
+        DateTimeUtil.getLastWeekDay(3, null);
+    }
+
+    @Test
+    public void testGetTodayMidnight() throws Exception {
+        Date d = DateTimeUtil.getTodayMidnight();
+        System.out.println("Midnight => " + d);
+        Date n = new Date();
+        long k = n.getTime() - d.getTime();
+        Assert.assertTrue(k > 0);
+        Assert.assertTrue(k < DateTimeUtil.DAY);
+        // ---
+        int i = DateTimeUtil.getHour(d);
+        Assert.assertEquals(i, 0);
+
+        i = DateTimeUtil.getMinute(d);
+        Assert.assertEquals(i, 0);
+    }
 }
