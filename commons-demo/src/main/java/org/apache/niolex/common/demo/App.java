@@ -1,6 +1,5 @@
 package org.apache.niolex.common.demo;
 
-import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -47,8 +46,8 @@ public class App
         String uuid = UUID.randomUUID().toString();
         System.out.println("UUID = " + uuid);
 
-        System.out.println("\n**** Test InetSocketAddress");
-        System.out.println("InetSocketAddress[1.2.3.4] = " + new InetSocketAddress("1.2.3.4", 808));
-        System.out.println("InetSocketAddress[www.baidu.com] = " + new InetSocketAddress("www.baidu.com", 808));
+        System.out.println("\n**** Test Java SecurityManager");
+        SecurityManager mgr = System.getSecurityManager();
+        System.out.println("Is Null ? " + (mgr == null));
     }
 }
