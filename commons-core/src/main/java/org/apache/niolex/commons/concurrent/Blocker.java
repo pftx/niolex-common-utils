@@ -40,7 +40,7 @@ public class Blocker<E> {
 	/**
 	 * Initialize an internal wait structure, and return it.
 	 * If there is already another one waiting on the same key, that old structure will be returned.
-	 * Use this method if for anyone want to wait on the same key concurrently.
+	 * Use this method if anyone want to wait on the same key concurrently.
 	 *
 	 * @param key
 	 * @return Pair.a true if the wait on object is newly created. Pair.b the wait on object.
