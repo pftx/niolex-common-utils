@@ -26,6 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CircularList;
+import org.apache.niolex.commons.concurrent.ConcurrentUtil;
 import org.apache.niolex.commons.util.DateTimeUtil;
 
 /**
@@ -52,6 +53,9 @@ public class Monitor implements Runnable {
 	private final ConcurrentHashMap<String, ConcurrentLinkedQueue<OutputStream>> realtimeMap =
 			new ConcurrentHashMap<String, ConcurrentLinkedQueue<OutputStream>>();
 
+	/**
+	 * Store all the messages pending to send to real time client.
+	 */
 	private final LinkedBlockingQueue<QueItem> realtimeQueue = new LinkedBlockingQueue<QueItem>();
 
 	/**
@@ -92,22 +96,21 @@ public class Monitor implements Runnable {
 	public void addValue(String key, int value) {
 		CircularList<MonItem> set = dataMap.get(key);
 		if (set == null) {
-			CircularList<MonItem> newset = new CircularList<MonItem>(maxOldItems);
-			set = dataMap.putIfAbsent(key, newset);
-			if (set == null) {
-				set = newset;
-			}
+		    CircularList<MonItem> newset = new CircularList<MonItem>(maxOldItems);
+		    set = ConcurrentUtil.initMap(dataMap, key, newset);
 		}
 		MonItem e = new MonItem(value);
 		set.add(e);
 		// Process all the real time connections.
 		ConcurrentLinkedQueue<OutputStream> que = realtimeMap.get(key);
 		if (que != null && !que.isEmpty()) {
-		    realtimeQueue.add(new QueItem(key, e));
+		    realtimeQueue.add(new QueItem(key, e, que));
 		}
 	}
 
     /**
+     * Process all the messages.
+     *
      * Override super method
      * @see java.lang.Runnable#run()
      */
@@ -118,18 +121,17 @@ public class Monitor implements Runnable {
             try {
                 QueItem q = realtimeQueue.take();
                 // Process all the real time connections.
-                ConcurrentLinkedQueue<OutputStream> que = realtimeMap.get(q.key);
-                if (que != null && !que.isEmpty()) {
+                if (!q.que.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append(q.key).append(',').append(q.time).append(',').append(q.value);
                     sb.append(Executer.END_LINE);
                     byte[] arr = StringUtil.strToUtf8Byte(sb.toString());
-                    Iterator<OutputStream> iter = que.iterator();
+                    Iterator<OutputStream> iter = q.que.iterator();
                     while (iter.hasNext()) {
                         try {
                             OutputStream o = iter.next();
                             o.write(arr);
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             iter.remove();
                         }
                     }
@@ -192,11 +194,7 @@ public class Monitor implements Runnable {
 	private void attachReadTime(OutputStream out, String key) {
 		ConcurrentLinkedQueue<OutputStream> que = realtimeMap.get(key);
 		if (que == null) {
-			ConcurrentLinkedQueue<OutputStream> newque = new ConcurrentLinkedQueue<OutputStream>();
-			que = realtimeMap.putIfAbsent(key, newque);
-			if (que == null) {
-				que = newque;
-			}
+			que = ConcurrentUtil.initMap(realtimeMap, key, new ConcurrentLinkedQueue<OutputStream>());
 		}
 		que.add(out);
 	}
@@ -237,14 +235,16 @@ public class Monitor implements Runnable {
 	 */
 	public static class QueItem {
 	    final String key;
+	    final ConcurrentLinkedQueue<OutputStream> que;
 	    final long time;
 	    final int value;
 
-        public QueItem(String key, MonItem e) {
+        public QueItem(String key, MonItem e, ConcurrentLinkedQueue<OutputStream> que) {
             super();
             this.key = key;
             this.time = e.time;
             this.value = e.value;
+            this.que = que;
         }
 	}
 
