@@ -56,6 +56,55 @@ public abstract class JacksonUtil {
     }
 
     /**
+     * Convert Object to binary
+     *
+     * @param o the object need to serialization
+     * @return the binary array
+     * @throws IOException
+     */
+    public static final byte[] obj2bin(Object o) throws IOException {
+        return mapper.writeValueAsBytes(o);
+    }
+
+    /**
+     * Convert binary to Object
+     *
+     * @param bin the binary array data
+     * @param valueType the Java class type
+     * @return the java bean
+     * @throws IOException
+     */
+    public static final <T> T bin2Obj(byte[] bin, Class<T> valueType) throws IOException {
+        return mapper.readValue(bin, valueType);
+    }
+
+    /**
+     * Convert binary to Object
+     *
+     * @param bin the binary array data
+     * @param valueType the Java class type
+     * @return the java bean
+     * @throws IOException
+     */
+    @SuppressWarnings("unchecked")
+    public static final <T> T bin2Obj(byte[] bin, JavaType valueType) throws IOException {
+        return (T)mapper.readValue(bin, valueType);
+    }
+
+    /**
+     * Convert binary to Object
+     *
+     * @param bin the binary array data
+     * @param valueType the Java class type
+     * @return the java bean
+     * @throws IOException
+     */
+    @SuppressWarnings("unchecked")
+    public static final <T> T bin2Obj(byte[] bin, TypeReference<T> valueType) throws IOException {
+        return (T)mapper.readValue(bin, valueType);
+    }
+
+    /**
      * Convert Object to String
      * @param o
      * @return the string represents the object
