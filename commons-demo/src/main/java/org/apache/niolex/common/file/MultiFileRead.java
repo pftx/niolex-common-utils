@@ -33,9 +33,9 @@ import org.apache.niolex.commons.test.StopWatch.Stop;
  * @version 1.0.0
  * @since 2012-10-9
  */
-public class FileRead {
+public class MultiFileRead {
 
-	static final int BUF_SIZE = 10240;
+	static final int BUF_SIZE = 1024;
 
 	public static int directRead() throws IOException {
 		FileInputStream in = new FileInputStream("D:\\data\\miui\\MiFlash20120723.zip");
@@ -61,13 +61,10 @@ public class FileRead {
 		return cnt;
 	}
 
-	public static int mmapRead() throws IOException {
-		RandomAccessFile file = new RandomAccessFile("D:\\data\\miui\\MiFlash20120723.zip", "r");
-		FileChannel channel = file.getChannel();
+	public static int mmapRead(MappedByteBuffer map, long tt) throws IOException {
 		int cnt = 0;
-		long tt = file.length();
-		MappedByteBuffer map = channel.map(MapMode.READ_ONLY, 0, tt);
 		byte[] buf = new byte[BUF_SIZE];
+		map.rewind();
 		while (cnt < tt) {
 		    long k = tt - cnt;
 		    if (k > buf.length) {
@@ -79,9 +76,6 @@ public class FileRead {
 		        break;
 		    }
 		}
-		map.clear();
-		channel.close();
-		file.close();
 		return cnt;
 	}
 
@@ -114,10 +108,14 @@ public class FileRead {
 		sw.done();
 		sw.print();
 
+		RandomAccessFile file = new RandomAccessFile("D:\\data\\miui\\MiFlash20120723.zip", "r");
+        FileChannel channel = file.getChannel();
+        long tt = file.length();
+        MappedByteBuffer map = channel.map(MapMode.READ_ONLY, 0, tt);
 		sw.begin(true);
 		for (int i = 0; i < 500; ++i) {
 			Stop s = sw.start();
-			int k = mmapRead();
+			int k = mmapRead(map, tt);
 			if (k != 9910842) {
 				System.out.println("ERR " + k);
 				break;
@@ -126,6 +124,9 @@ public class FileRead {
 		}
 		sw.done();
 		sw.print();
+		map.clear();
+        channel.close();
+        file.close();
 	}
 
 }

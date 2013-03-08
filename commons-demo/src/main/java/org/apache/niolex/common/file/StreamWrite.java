@@ -20,7 +20,6 @@ package org.apache.niolex.common.file;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -31,6 +30,7 @@ import java.nio.channels.FileChannel.MapMode;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.test.StopWatch;
 import org.apache.niolex.commons.test.StopWatch.Stop;
+import org.apache.niolex.commons.util.SystemUtil;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
@@ -38,9 +38,9 @@ import org.apache.niolex.commons.test.StopWatch.Stop;
  * @since 2012-9-12
  */
 public class StreamWrite {
-	static final int WRITE_BATCH = 10000;
-	static final int WRITE_ONE = 1024;
-	static final int RUN_ITER = 100;
+	static final int WRITE_BATCH = 100;
+	static final int WRITE_ONE = 102400;
+	static final int RUN_ITER = 60;
 	static final int BUFFER_SIZE = 10240;
 
 	byte[][] data = new byte[WRITE_BATCH][];
@@ -102,38 +102,6 @@ public class StreamWrite {
 			data[i] = MockUtil.randByteArray(WRITE_ONE);
 	}
 
-	/**
-     * A方法追加文件：使用RandomAccessFile
-     */
-    public static void appendMethodA(String fileName, String content) {
-        try {
-            // 打开一个随机访问文件流，按读写方式
-            RandomAccessFile randomFile = new RandomAccessFile(fileName, "rw");
-            // 文件长度，字节数
-            long fileLength = randomFile.length();
-            //将写文件指针移到文件尾。
-            randomFile.seek(fileLength);
-            randomFile.writeBytes(content);
-            randomFile.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * B方法追加文件：使用FileWriter
-     */
-    public static void appendMethodB(String fileName, String content) {
-        try {
-            //打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
-            FileWriter writer = new FileWriter(fileName, true);
-            writer.write(content);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 	public static void main(String[] argv) throws IOException {
 		StopWatch sw = new StopWatch(10);
 		StreamWrite wr = new StreamWrite();
@@ -150,6 +118,7 @@ public class StreamWrite {
 		}
 		sw.done();
 		sw.print();
+		wr.clean();
 
 		sw.begin(true);
 		System.out.println("directWrite");
@@ -160,6 +129,7 @@ public class StreamWrite {
 		}
 		sw.done();
 		sw.print();
+		wr.clean();
 
 		sw.begin(true);
 		System.out.println("randomWrite");
@@ -170,17 +140,20 @@ public class StreamWrite {
 		}
 		sw.done();
 		sw.print();
+		wr.clean();
 
 		sw.begin(true);
-		System.out.println("mmapWrite");
+		System.out.println("channelWrite");
 		for (int i = 0; i < RUN_ITER; ++i) {
 			Stop s = sw.start();
-			wr.mmapWrite();
+			wr.channelWrite();
 			s.stop();
 		}
 		sw.done();
 		sw.print();
+		wr.clean();
 
+		SystemUtil.sleep(1000);
 		wr.clean();
 	}
 
