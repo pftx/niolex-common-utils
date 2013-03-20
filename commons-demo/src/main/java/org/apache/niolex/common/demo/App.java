@@ -42,6 +42,8 @@ public class App
         System.out.println("\n**** Test String functions");
         System.out.println("+null = " + god);
         System.out.println("//split = " + Arrays.toString("remote://1.2.3.4:808///abc/de".split("//")));
+        System.out.println("rnsplit[rnrnanbcrrndefrnrnnrn] = " + Arrays.toString("\r\n\r\na\nbc\r\r\ndef\r\n\r\n\n\r\n".split("\r*\n")));
+        System.out.println("rnsplit[abcde] = " + Arrays.toString("abcde".split(" ")));
         System.out.println("last index of a = " + "last index of ** = ".lastIndexOf('a'));
         String uuid = UUID.randomUUID().toString();
         System.out.println("UUID = " + uuid);
