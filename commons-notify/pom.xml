@@ -1,0 +1,103 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.apache.niolex</groupId>
+		<artifactId>niolex-parent</artifactId>
+		<version>1.0.0</version>
+		<relativePath />
+	</parent>
+
+	<groupId>com.renren.infra</groupId>
+	<artifactId>notify-core</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>notify</name>
+	<url>http://maven.apache.org</url>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+			<version>3.3.6</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>log4j</artifactId>
+					<groupId>log4j</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jline</artifactId>
+					<groupId>jline</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>1.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.niolex</groupId>
+			<artifactId>commons-core</artifactId>
+			<version>1.0.10</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>reflectasm</artifactId>
+					<groupId>com.esotericsoftware.reflectasm</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-mapper-asl</artifactId>
+					<groupId>org.codehaus.jackson</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>[4.8.2,5.0)</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.perf4j</groupId>
+			<artifactId>perf4j</artifactId>
+			<version>0.9.16</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>[1.0.7,2.0.0)</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+	<scm>
+		<connection>  
+        scm:svn:http://svn.d.xiaonei.com/ads/adsystem/notify-core/trunk
+    </connection>
+		<developerConnection>  
+        scm:svn:http://svn.d.xiaonei.com/ads/adsystem/notify-core/trunk
+    </developerConnection>
+	</scm>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<tagBase>http://svn.d.xiaonei.com/ads/adsystem/notify-core/tags/</tagBase>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
