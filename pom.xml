@@ -27,9 +27,7 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
-					<include>**/*.txt</include>
-					<include>**/*.properties</include>
-					<include>**/*.xml</include>
+					<include>**/*.*</include>
 				</includes>
 			</resource>
 		</resources>
@@ -45,9 +43,7 @@
 			<testResource>
 				<directory>src/test/resources</directory>
 				<includes>
-					<include>**/*.txt</include>
-					<include>**/*.xml</include>
-					<include>**/*.properties</include>
+					<include>**/*.*</include>
 				</includes>
 			</testResource>
 		</testResources>
