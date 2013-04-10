@@ -46,14 +46,14 @@ public class StreamWrite {
 	byte[][] data = new byte[WRITE_BATCH][];
 
 	public void directWrite() throws IOException {
-		FileOutputStream out = new FileOutputStream("D:\\data\\tmp\\" + System.nanoTime());
+		FileOutputStream out = new FileOutputStream("D:\\home\\tmp\\" + System.nanoTime());
 		for (int i = 0; i < data.length; i++)
 			out.write(data[i]);
 		out.close();
 	}
 
 	public void bufferWrite() throws IOException {
-		FileOutputStream out = new FileOutputStream("D:\\data\\tmp\\" + System.nanoTime());
+		FileOutputStream out = new FileOutputStream("D:\\home\\tmp\\" + System.nanoTime());
 		BufferedOutputStream outb = new BufferedOutputStream(out, BUFFER_SIZE);
 		for (int i = 0; i < data.length; i++)
 			outb.write(data[i]);
@@ -62,14 +62,14 @@ public class StreamWrite {
 	}
 
 	public void randomWrite() throws IOException {
-		RandomAccessFile file = new RandomAccessFile("D:\\data\\tmp\\" + System.nanoTime(), "rw");
+		RandomAccessFile file = new RandomAccessFile("D:\\home\\tmp\\" + System.nanoTime(), "rw");
 		for (int i = 0; i < data.length; i++)
 			file.write(data[i]);
 		file.close();
 	}
 
 	public void channelWrite() throws IOException {
-	    RandomAccessFile file = new RandomAccessFile("D:\\data\\tmp\\" + System.nanoTime(), "rw");
+	    RandomAccessFile file = new RandomAccessFile("D:\\home\\tmp\\" + System.nanoTime(), "rw");
 	    FileChannel channel = file.getChannel();
 	    for (int i = 0; i < data.length; i++)
 	        channel.write(ByteBuffer.wrap(data[i]));
@@ -78,7 +78,7 @@ public class StreamWrite {
 	}
 
 	public void mmapWrite() throws IOException {
-		RandomAccessFile file = new RandomAccessFile("D:\\data\\tmp\\" + System.nanoTime(), "rw");
+		RandomAccessFile file = new RandomAccessFile("D:\\home\\tmp\\" + System.nanoTime(), "rw");
 		FileChannel channel = file.getChannel();
 		MappedByteBuffer buffer = null;
 		buffer = channel.map(MapMode.READ_WRITE, 0, WRITE_BATCH * WRITE_ONE);
@@ -91,7 +91,7 @@ public class StreamWrite {
 	}
 
 	public void clean() throws IOException {
-		File f = new File("D:\\data\\tmp\\");
+		File f = new File("D:\\home\\tmp\\");
 		for (File t : f.listFiles()) {
 			t.delete();
 		}
