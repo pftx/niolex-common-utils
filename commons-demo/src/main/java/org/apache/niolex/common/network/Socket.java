@@ -40,7 +40,7 @@ public class Socket {
         ch.configureBlocking(false);
         ch.socket().setTcpNoDelay(true);
         ch.socket().setSoLinger(false, 0);
-        boolean b = ch.connect(new InetSocketAddress("localhost", 9909));
+        boolean b = ch.connect(new InetSocketAddress("localhost", 8088));
         System.out.println("\n**** Test NIO Socket");
         System.out.println("Connected ? ..." + b);
         Selector selector = Selector.open();
@@ -48,7 +48,8 @@ public class Socket {
         System.out.println("Key ? ..." + key);
         for (int i = 0; i < 5; ++i) {
             selector.select();
-            System.out.println("Keys ? ..." + selector.selectedKeys());
+            System.out.print("Keys ? ..." + selector.selectedKeys().size());
+            System.out.println("..." + selector.selectedKeys().iterator().next().interestOps());
         }
         ch.close();
     }

@@ -49,6 +49,11 @@ public class FakeClassLoaderTest {
         Object o2 = FieldUtil.getFieldValue(f2, f2);
         System.out.println(o2.toString());
         assertNotEquals(o1, o2);
+        // One class loader will load a class only one time. This is cached in super method.
+        Class<?> c3 = fcl2.loadClass("org.apache.niolex.common.classloader.Single");
+        Field f3 = FieldUtil.getField(c3, "S");
+        Object o3 = FieldUtil.getFieldValue(f3, f3);
+        System.out.println(o3.toString());
     }
 
 }
