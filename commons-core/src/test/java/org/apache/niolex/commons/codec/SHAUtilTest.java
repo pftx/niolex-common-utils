@@ -17,9 +17,6 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-
 import org.junit.Assert;
 
 import org.apache.niolex.commons.codec.SHAUtil;
@@ -30,7 +27,7 @@ import org.junit.Test;
 public class SHAUtilTest {
 
     @Test
-    public void testSHA() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testSHA() {
         String in = "hello world! welcome Beijing!";
         String sha1 = SHAUtil.sha1(in);
         System.out.println("sha1 => " + sha1);
@@ -39,7 +36,7 @@ public class SHAUtilTest {
     }
 
     @Test
-    public void testSHA_2() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testSHA_2() {
         String in = "谢谢对我们开发测试中发现的问题的积极反馈，现在A++项目已经进入最后测试阶段";
         String sha1 = SHAUtil.sha1(in);
         System.out.println("sha1 => " + sha1);
@@ -48,7 +45,7 @@ public class SHAUtilTest {
     }
 
     @Test
-    public void testSHA_M() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testSHA_M() {
         String sha1 = SHAUtil.sha1("gmail", "ajin");
         System.out.println("sha1 => " + sha1);
         Assert.assertTrue(SHAUtil.sha1Check(sha1, "gmail", "ajin"));

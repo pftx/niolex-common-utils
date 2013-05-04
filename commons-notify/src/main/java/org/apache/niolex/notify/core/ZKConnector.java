@@ -1,6 +1,6 @@
 /**
  * ZKConnector.java
- * 
+ *
  * Copyright 2012 Niolex, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,12 @@
 package org.apache.niolex.notify.core;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
@@ -55,7 +55,7 @@ public class ZKConnector {
 
     /**
      * Construct a new ZKConnector and connect to ZK server.
-     * 
+     *
      * @param clusterAddress
      * @param sessionTimeout
      * @throws IOException
@@ -69,10 +69,10 @@ public class ZKConnector {
         }
         connectToZookeeper();
     }
-    
+
     /**
      * Make a connection to zookeeper, and wait until connected.
-     * 
+     *
      * @throws IOException
      */
     private void connectToZookeeper() throws IOException {
@@ -81,10 +81,10 @@ public class ZKConnector {
         this.zk = new ZooKeeper(clusterAddress, sessionTimeout, new ZKConnWatcher(this, latch));
         waitForConnectedTillDeath(latch);
     }
-    
+
     /**
      * Wait for zookeeper to be connected, if can not connect, wait forever.
-     * 
+     *
      * @param latch
      */
     private void waitForConnectedTillDeath(CountDownLatch latch) {
@@ -104,12 +104,8 @@ public class ZKConnector {
      * @param password
      */
     public void addAuthInfo(String username, String password) {
-        try {
-            auth = (username + ":" + password).getBytes("utf8");
-            this.zk.addAuthInfo("digest", auth);
-        } catch (UnsupportedEncodingException e) {
-            LOG.error("Failed to add auth info because your jdk doesn't support utf8.", e);
-        }
+        auth = StringUtil.strToUtf8Byte(username + ":" + password);
+        this.zk.addAuthInfo("digest", auth);
     }
 
     /**
@@ -176,7 +172,7 @@ public class ZKConnector {
 
     /**
      * Do real watch. Please use submitWatcher instead. This method is for internal use.
-     * 
+     *
      * @param item the item to do watch
      * @return the current data
      */
@@ -192,7 +188,7 @@ public class ZKConnector {
             throw NotifyException.makeInstance("Failed to do Watch.", e);
         }
     }
-    
+
     /**
      * Create node.
      *
@@ -202,7 +198,7 @@ public class ZKConnector {
     protected void createNode(String path) {
         createNode(path, null, false, false);
     }
-    
+
     /**
      * Create node.
      *
@@ -252,7 +248,7 @@ public class ZKConnector {
 
     /**
      * Do create a new ZK node.
-     * 
+     *
      * @param path
      * @param data
      * @param createMode
@@ -264,10 +260,10 @@ public class ZKConnector {
             throws KeeperException, InterruptedException {
         return zk.create(path, data, Ids.OPEN_ACL_UNSAFE, createMode);
     }
-    
+
     /**
      * Update data of a node.
-     * 
+     *
      * @param path
      * @param data
      * @throws NotifyException
@@ -279,11 +275,11 @@ public class ZKConnector {
             throw NotifyException.makeInstance("Failed to update Node data.", e);
         }
     }
-    
+
     /**
      * Delete a node from zookeeper.
      * This is very important, so we only open this method for subclasses.
-     * 
+     *
      * @param path
      * @throws NotifyException
      */

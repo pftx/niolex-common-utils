@@ -25,6 +25,17 @@ package org.apache.niolex.commons.bean;
  */
 public class Pair<A, B> {
 
+    /**
+     * Create a Pair with this specified value.
+     *
+     * @param t the first parameter
+     * @param p the second parameter
+     * @return the created object
+     */
+    public static <T, P> Pair<T, P> create(T t, P p) {
+        return new Pair<T, P>(t, p);
+    }
+
 	public A a;
 
 	public B b;

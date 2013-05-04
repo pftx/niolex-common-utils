@@ -17,12 +17,13 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 
 
@@ -35,6 +36,24 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class StringUtil {
 
+    /**
+     * Eight-bit Unicode Transformation Format.
+     * <p>
+     * Every implementation of the Java platform is required to support this character encoding.
+     *
+     * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     */
+    public static final Charset UTF_8 = Charset.forName(CharEncoding.UTF_8);
+
+    /**
+     * Seven-bit ASCII, also known as ISO646-US, also known as the Basic Latin block of the Unicode character set.
+     * <p>
+     * Every implementation of the Java platform is required to support this character encoding.
+     *
+     * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     */
+    public static final Charset US_ASCII = Charset.forName(CharEncoding.US_ASCII);
+
 	/**
 	 * Translate UTF8 encoded byte array to String.
 	 *
@@ -42,11 +61,7 @@ public abstract class StringUtil {
 	 * @return the result string
 	 */
 	public static final String utf8ByteToStr(byte[] data) {
-		try {
-			return new String(data, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException("Your JDK do not support UTF-8", e);
-		}
+	    return new String(data, UTF_8);
 	}
 
 	/**
@@ -55,11 +70,7 @@ public abstract class StringUtil {
 	 * @return the encoded byte array
 	 */
 	public static final byte[] strToUtf8Byte(String str) {
-		try {
-			return str.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException("Your JDK do not support UTF-8", e);
-		}
+	    return str.getBytes(UTF_8);
 	}
 
 	/**
@@ -69,11 +80,7 @@ public abstract class StringUtil {
 	 * @return the string
 	 */
 	public static final String asciiByteToStr(byte[] data) {
-		try {
-			return new String(data, "US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException("Your JDK do not support US-ASCII", e);
-		}
+	    return new String(data, US_ASCII);
 	}
 
 	/**
@@ -82,11 +89,7 @@ public abstract class StringUtil {
 	 * @return the encoded byte array
 	 */
 	public static final byte[] strToAsciiByte(String str) {
-		try {
-			return str.getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException("Your JDK do not support US-ASCII", e);
-		}
+	    return str.getBytes(US_ASCII);
 	}
 
 	/**

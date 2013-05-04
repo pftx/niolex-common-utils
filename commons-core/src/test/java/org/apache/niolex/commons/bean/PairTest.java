@@ -45,4 +45,12 @@ public class PairTest {
         assertEquals("this", p.a);
     }
 
+    @Test
+    public void testPairCreate() throws Exception {
+        Pair<String, Integer> p = Pair.create("more", 123);
+        p.a = "this";
+        assertEquals("this", p.a);
+        assertEquals(123, p.b.intValue());
+    }
+
 }

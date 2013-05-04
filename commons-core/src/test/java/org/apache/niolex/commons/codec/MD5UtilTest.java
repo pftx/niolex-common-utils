@@ -17,9 +17,6 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-
 import org.junit.Assert;
 
 import org.apache.niolex.commons.codec.MD5Util;
@@ -30,7 +27,7 @@ import org.junit.Test;
 public class MD5UtilTest {
 
     @Test
-    public void testMD5() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testMD5() {
         String in = "hello world! welcome jess calen!";
         String md5 = MD5Util.md5(in);
         System.out.println("md5 => " + md5);
@@ -39,7 +36,7 @@ public class MD5UtilTest {
     }
 
     @Test
-    public void testMD5_2() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testMD5_2() {
         String in = "谢谢对我们开发测试中发现的问题的积极反馈，现在Aaa项目已经进入最后测试阶段";
         String md5 = MD5Util.md5(in);
         System.out.println("md5 => " + md5);
@@ -48,14 +45,14 @@ public class MD5UtilTest {
     }
 
     @Test
-    public void testMD5_M() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testMD5_M() {
         String md5 = MD5Util.md5("gmail", "ajin");
         System.out.println("md5 => " + md5);
         Assert.assertTrue(MD5Util.md5Check(md5, "gmail", "ajin"));
     }
 
     @Test
-    public void testMD5_Null() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testMD5_Null() {
     	String md5 = MD5Util.md5("gmail", null, "ajin");
     	System.out.println("md5 => " + md5);
     	Assert.assertFalse(MD5Util.md5Check(md5, "gmail", "ajin"));

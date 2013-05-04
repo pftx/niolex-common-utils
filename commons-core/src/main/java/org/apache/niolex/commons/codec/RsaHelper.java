@@ -17,7 +17,6 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -45,9 +44,8 @@ public abstract class RsaHelper {
 	 * Encode public key into xml string.
 	 * @param key
 	 * @return the encoded key
-	 * @throws UnsupportedEncodingException
 	 */
-    public static String encodePublicKeyToXml(PublicKey key) throws UnsupportedEncodingException {
+    public static String encodePublicKeyToXml(PublicKey key) {
         if (!RSAPublicKey.class.isInstance(key)) {
             return null;
         }
@@ -70,9 +68,8 @@ public abstract class RsaHelper {
      * Encode private key to xml string.
      * @param key
      * @return the encoded key
-     * @throws UnsupportedEncodingException
      */
-    public static String encodePrivateKeyToXml(PrivateKey key) throws UnsupportedEncodingException {
+    public static String encodePrivateKeyToXml(PrivateKey key) {
         if (!RSAPrivateCrtKey.class.isInstance(key)) {
             return null;
         }
@@ -98,9 +95,8 @@ public abstract class RsaHelper {
      * Decode public key from XML string.
      * @param xml
      * @return the decoded key
-     * @throws UnsupportedEncodingException
      */
-    public static PublicKey decodePublicKeyFromXml(String xml) throws UnsupportedEncodingException {
+    public static PublicKey decodePublicKeyFromXml(String xml) {
         xml = xml.replaceAll("\r", "").replaceAll("\n", "");
         BigInteger modulus = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Modulus>", "</Modulus>")));
         BigInteger publicExponent = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Exponent>",
@@ -121,9 +117,8 @@ public abstract class RsaHelper {
      * Decode private key from XML string.
      * @param xml
      * @return the decoded key
-     * @throws UnsupportedEncodingException
      */
-    public static PrivateKey decodePrivateKeyFromXml(String xml) throws UnsupportedEncodingException {
+    public static PrivateKey decodePrivateKeyFromXml(String xml) {
         xml = xml.replaceAll("\r", "").replaceAll("\n", "");
         BigInteger modulus = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Modulus>", "</Modulus>")));
         BigInteger publicExponent = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Exponent>",

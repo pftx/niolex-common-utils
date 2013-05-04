@@ -17,7 +17,6 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -98,10 +97,9 @@ public abstract class RSAUtil {
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      * @throws InvalidKeyException 假如输入的RSA私钥不合法
      * @throws SignatureException 假如根据privateKey生成密钥失败
-     * @throws UnsupportedEncodingException 假如privateKey不是使用UTF-8进行编码
      */
     public static String sign(byte[] data, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidKeyException, SignatureException, UnsupportedEncodingException {
+            InvalidKeyException, SignatureException {
         // 解密由base64编码的私钥
         byte[] keyBytes = Base64Util.base64toByte(privateKey);
 
@@ -138,11 +136,10 @@ public abstract class RSAUtil {
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      * @throws InvalidKeyException 假如输入的RSA私钥不合法
      * @throws SignatureException 假如根据privateKey生成密钥失败
-     * @throws UnsupportedEncodingException 假如privateKey不是使用UTF-8进行编码
      *
      */
     public static boolean verify(byte[] data, String publicKey, String sign) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidKeyException, SignatureException, UnsupportedEncodingException {
+            InvalidKeyException, SignatureException {
         // 解密由base64编码的公钥
         byte[] keyBytes = Base64Util.base64toByte(publicKey);
 
@@ -173,16 +170,13 @@ public abstract class RSAUtil {
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      * @throws InvalidKeyException 假如输入的RSA私钥不合法
-     * @throws SignatureException 假如根据privateKey生成密钥失败
-     * @throws UnsupportedEncodingException 假如privateKey不是使用UTF-8进行编码
      * @throws NoSuchPaddingException 假如产生的密钥对有问题
-     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
      * @throws IllegalBlockSizeException 假如输入的加密的数据字节数不是BlockSize的整数倍
-     * @throws ShortBufferException
+     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
+     * @throws ShortBufferException 如果给定的输出缓冲区太小而无法保存结果
      */
     public static byte[] decryptByPrivateKey(byte[] data, String key) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidKeyException, SignatureException, UnsupportedEncodingException, NoSuchPaddingException,
-            IllegalBlockSizeException, BadPaddingException, ShortBufferException {
+            InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 对密钥解密
         byte[] keyBytes = Base64Util.base64toByte(key);
 
@@ -208,16 +202,13 @@ public abstract class RSAUtil {
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      * @throws InvalidKeyException 假如输入的RSA私钥不合法
-     * @throws SignatureException 假如根据privateKey生成密钥失败
-     * @throws UnsupportedEncodingException 假如privateKey不是使用UTF-8进行编码
      * @throws NoSuchPaddingException 假如产生的密钥对有问题
-     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
      * @throws IllegalBlockSizeException 假如输入的加密的数据字节数不是BlockSize的整数倍
-     * @throws ShortBufferException
+     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
+     * @throws ShortBufferException 如果给定的输出缓冲区太小而无法保存结果
      */
     public static byte[] decryptByPrivateKey(byte[] data, Key privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidKeyException, SignatureException, UnsupportedEncodingException, NoSuchPaddingException,
-            IllegalBlockSizeException, BadPaddingException, ShortBufferException {
+            InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 对数据解密
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
@@ -236,16 +227,13 @@ public abstract class RSAUtil {
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      * @throws InvalidKeyException 假如输入的RSA私钥不合法
-     * @throws SignatureException 假如根据privateKey生成密钥失败
-     * @throws UnsupportedEncodingException 假如privateKey不是使用UTF-8进行编码
      * @throws NoSuchPaddingException 假如产生的密钥对有问题
-     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
      * @throws IllegalBlockSizeException 假如输入的加密的数据字节数不是BlockSize的整数倍
-     * @throws ShortBufferException
+     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
+     * @throws ShortBufferException 如果给定的输出缓冲区太小而无法保存结果
      */
     public static byte[] decryptByPublicKey(byte[] data, String key) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidKeyException, SignatureException, UnsupportedEncodingException, NoSuchPaddingException,
-            IllegalBlockSizeException, BadPaddingException, ShortBufferException {
+            InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 对密钥解密
         byte[] keyBytes = Base64Util.base64toByte(key);
 
@@ -271,16 +259,13 @@ public abstract class RSAUtil {
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      * @throws InvalidKeyException 假如输入的RSA私钥不合法
-     * @throws SignatureException 假如根据privateKey生成密钥失败
-     * @throws UnsupportedEncodingException 假如privateKey不是使用UTF-8进行编码
      * @throws NoSuchPaddingException 假如产生的密钥对有问题
-     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
      * @throws IllegalBlockSizeException 假如输入的加密的数据字节数不是BlockSize的整数倍
-     * @throws ShortBufferException
+     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
+     * @throws ShortBufferException 如果给定的输出缓冲区太小而无法保存结果
      */
     public static byte[] encryptByPublicKey(byte[] data, String key) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidKeyException, SignatureException, UnsupportedEncodingException, NoSuchPaddingException,
-            IllegalBlockSizeException, BadPaddingException, ShortBufferException {
+            InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 对公钥解密
         byte[] keyBytes = Base64Util.base64toByte(key);
 
@@ -306,16 +291,13 @@ public abstract class RSAUtil {
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      * @throws InvalidKeyException 假如输入的RSA私钥不合法
-     * @throws SignatureException 假如根据privateKey生成密钥失败
-     * @throws UnsupportedEncodingException 假如privateKey不是使用UTF-8进行编码
      * @throws NoSuchPaddingException 假如产生的密钥对有问题
-     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
      * @throws IllegalBlockSizeException 假如输入的加密的数据字节数不是BlockSize的整数倍
-     * @throws ShortBufferException
+     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
+     * @throws ShortBufferException 如果给定的输出缓冲区太小而无法保存结果
      */
-    public static byte[] encryptByPublicKey(byte[] data, Key publicKey) throws NoSuchAlgorithmException,
-            InvalidKeySpecException, InvalidKeyException, SignatureException, UnsupportedEncodingException,
-            NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
+    public static byte[] encryptByPublicKey(byte[] data, Key publicKey) throws NoSuchAlgorithmException,InvalidKeySpecException,
+            InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 取得公钥
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 
@@ -336,16 +318,13 @@ public abstract class RSAUtil {
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      * @throws InvalidKeyException 假如输入的RSA私钥不合法
-     * @throws SignatureException 假如根据privateKey生成密钥失败
-     * @throws UnsupportedEncodingException 假如privateKey不是使用UTF-8进行编码
      * @throws NoSuchPaddingException 假如产生的密钥对有问题
-     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
      * @throws IllegalBlockSizeException 假如输入的加密的数据字节数不是BlockSize的整数倍
-     * @throws ShortBufferException
+     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
+     * @throws ShortBufferException 如果给定的输出缓冲区太小而无法保存结果
      */
     public static byte[] encryptByPrivateKey(byte[] data, String key) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidKeyException, SignatureException, UnsupportedEncodingException, NoSuchPaddingException,
-            IllegalBlockSizeException, BadPaddingException, ShortBufferException {
+            InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 对密钥解密
         byte[] keyBytes = Base64Util.base64toByte(key);
 
@@ -371,16 +350,13 @@ public abstract class RSAUtil {
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      * @throws InvalidKeyException 假如输入的RSA私钥不合法
-     * @throws SignatureException 假如根据privateKey生成密钥失败
-     * @throws UnsupportedEncodingException 假如privateKey不是使用UTF-8进行编码
      * @throws NoSuchPaddingException 假如产生的密钥对有问题
-     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
      * @throws IllegalBlockSizeException 假如输入的加密的数据字节数不是BlockSize的整数倍
-     * @throws ShortBufferException
+     * @throws BadPaddingException 假如输入的加密的数据填充数据错误
+     * @throws ShortBufferException 如果给定的输出缓冲区太小而无法保存结果
      */
     public static byte[] encryptByPrivateKey(byte[] data, Key privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException,
-    InvalidKeyException, SignatureException, UnsupportedEncodingException, NoSuchPaddingException,
-    IllegalBlockSizeException, BadPaddingException, ShortBufferException {
+            InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 取得私钥
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 
@@ -396,11 +372,10 @@ public abstract class RSAUtil {
      *
      * @param key 密钥对加密后形成的字符串
      * @return 私钥
-     * @throws UnsupportedEncodingException 假如用户的环境不支持UTF-8
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
      */
-    public static Key getPrivateKey(String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public static Key getPrivateKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
         // 对密钥解密
         byte[] keyBytes = Base64Util.base64toByte(key);
 
@@ -415,9 +390,8 @@ public abstract class RSAUtil {
      *
      * @param keyMap 密钥对Map
      * @return 私钥
-     * @throws UnsupportedEncodingException 假如用户的环境不支持UTF-8
      */
-    public static String getPrivateKey(Map<String, Object> keyMap) throws UnsupportedEncodingException {
+    public static String getPrivateKey(Map<String, Object> keyMap) {
         Key key = (Key) keyMap.get(PRIVATE_KEY);
 
         return Base64Util.byteToBase64(key.getEncoded());
@@ -428,11 +402,10 @@ public abstract class RSAUtil {
      *
      * @param key 密钥对加密后形成的字符串
      * @return 公钥
-     * @throws UnsupportedEncodingException 假如用户的环境不支持UTF-8
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      * @throws InvalidKeySpecException 假如根据publicKey生成密钥失败
      */
-    public static Key getPublicKey(String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public static Key getPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
         // 对密钥解密
         byte[] keyBytes = Base64Util.base64toByte(key);
 
@@ -447,9 +420,8 @@ public abstract class RSAUtil {
      *
      * @param keyMap 密钥对Map
      * @return 公钥
-     * @throws UnsupportedEncodingException 假如用户的环境不支持UTF-8
      */
-    public static String getPublicKey(Map<String, Object> keyMap) throws UnsupportedEncodingException {
+    public static String getPublicKey(Map<String, Object> keyMap) {
         Key key = (Key) keyMap.get(PUBLIC_KEY);
 
         return Base64Util.byteToBase64(key.getEncoded());

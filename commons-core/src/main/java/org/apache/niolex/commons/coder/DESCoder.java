@@ -17,7 +17,6 @@
  */
 package org.apache.niolex.commons.coder;
 
-import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -103,7 +102,7 @@ public class DESCoder extends BaseCoder {
      * @return 采用Base64加密的密钥
      * @throws Exception
      */
-    public static String genKey() throws UnsupportedEncodingException {
+    public static String genKey() {
         return genKey(null);
     }
 
@@ -112,9 +111,8 @@ public class DESCoder extends BaseCoder {
      *
      * @param seed
      * @return the object
-     * @throws Exception
      */
-    public static String genKey(String seed) throws UnsupportedEncodingException {
+    public static String genKey(String seed) {
         LOG.info("The current seed is set to: " + seed);
         SecureRandom secureRandom = null;
 
@@ -182,14 +180,13 @@ public class DESCoder extends BaseCoder {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < args.length; ++i) {
-            String str = args[i];
-            sb.append(str);
+            sb.append(args[i]);
             if (i < args.length - 1)
                 sb.append(']').append(i).append('[');
         }
         sb.append("]");
         try {
-            String encoded = Base64Util.byteToBase64(encrypt(sb.toString().getBytes("UTF-8")));
+            String encoded = Base64Util.byteToBase64(encrypt(sb.toString().getBytes(ENC)));
 
             int i = encoded.indexOf('=');
             int l = encoded.length();
@@ -210,7 +207,7 @@ public class DESCoder extends BaseCoder {
             int i = arg.charAt(arg.length() - 1) - '0';
             while (i-- > 0)
                 sb.append('=');
-            return new String(decrypt(Base64Util.base64toByte(sb.toString())), "UTF-8");
+            return new String(decrypt(Base64Util.base64toByte(sb.toString())), ENC);
         } catch (Exception e) {
             LOG.warn("Error occured when decode the ticket: {}.", e.getMessage());
         }

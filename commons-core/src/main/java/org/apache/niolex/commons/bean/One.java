@@ -25,6 +25,16 @@ package org.apache.niolex.commons.bean;
  */
 public class One<T> {
 
+    /**
+     * Create an One with this specified value.
+     *
+     * @param t the value inside
+     * @return the created object
+     */
+    public static <T> One<T> create(T t) {
+        return new One<T>(t);
+    }
+
     public T a;
 
     /**
@@ -42,6 +52,13 @@ public class One<T> {
     public One(T a) {
         super();
         this.a = a;
+    }
+
+    /**
+     * Returns true if this instance contains a null reference.
+     */
+    public boolean absent() {
+        return a == null;
     }
 
 }

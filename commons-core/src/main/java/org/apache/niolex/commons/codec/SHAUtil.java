@@ -17,7 +17,8 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.io.UnsupportedEncodingException;
+import static org.apache.niolex.commons.codec.StringUtil.*;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -44,12 +45,16 @@ public abstract class SHAUtil {
      * @param plainTexts 用来产生SHA签名的字符串列表
      * @return 输入字符串列表的SHA签名
      * @throws NoSuchAlgorithmException 当用户的JDK不支持SHA哈希算法时
-     * @throws UnsupportedEncodingException 当输入的字符串不是UTF-8编码时
      */
-    public static final String sha1(String... plainTexts) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest md = MessageDigest.getInstance("SHA");
+    public static final String sha1(String... plainTexts) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("The runtime doesn't support SHA algorithm.", e);
+        }
         for (String plainText : plainTexts) {
-            md.update(plainText.getBytes("UTF-8"));
+            md.update(strToUtf8Byte(plainText));
         }
         byte bytes[] = md.digest();
 
@@ -63,16 +68,9 @@ public abstract class SHAUtil {
      * @param plainTexts 用来进行校验的字符串列表
      * @return 如果通过返回true，失败返回false
      * @throws NoSuchAlgorithmException 当用户的JDK不支持SHA哈希算法时
-     * @throws UnsupportedEncodingException 当输入的字符串不是UTF-8编码时
      */
-    public static final boolean sha1Check(String sha1, String... plainTexts) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest md = MessageDigest.getInstance("SHA");
-        for (String plainText : plainTexts) {
-            md.update(plainText.getBytes("UTF-8"));
-        }
-        byte bytes[] = md.digest();
-
-        return Base16Util.byteToBase16(bytes).equalsIgnoreCase(sha1);
+    public static final boolean sha1Check(String sha1, String... plainTexts) {
+        return sha1.equalsIgnoreCase(sha1(plainTexts));
     }
 
 }

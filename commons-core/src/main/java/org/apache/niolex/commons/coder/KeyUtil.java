@@ -17,7 +17,6 @@
  */
 package org.apache.niolex.commons.coder;
 
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -60,7 +59,7 @@ public abstract class KeyUtil {
      * @return 采用Base64加密的密钥
      * @throws Exception
      */
-    public static String genKey(String ALGORITHM) throws UnsupportedEncodingException {
+    public static String genKey(String ALGORITHM) {
         return genKey(null, ALGORITHM);
     }
 
@@ -69,9 +68,8 @@ public abstract class KeyUtil {
      *
      * @param seed
      * @return 采用Base64加密的密钥
-     * @throws Exception
      */
-    public static String genKey(String seed, String ALGORITHM) throws UnsupportedEncodingException {
+    public static String genKey(String seed, String ALGORITHM) {
         LOG.info("The current seed is set to: " + seed);
         SecureRandom secureRandom = null;
 

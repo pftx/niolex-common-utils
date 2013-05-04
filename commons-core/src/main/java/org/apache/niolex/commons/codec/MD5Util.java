@@ -17,10 +17,10 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.io.UnsupportedEncodingException;
+import static org.apache.niolex.commons.codec.StringUtil.strToUtf8Byte;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 /**
  * MD5Util是一个用来产生MD5签名和校验MD5签名的工具类
  *
@@ -43,17 +43,21 @@ public abstract class MD5Util {
      *
      * @param plainTexts 用来产生MD5签名的字符串列表
      * @return 输入字符串列表的MD5签名
-     * @throws NoSuchAlgorithmException 当用户的JDK不支持MD5哈希算法时
-     * @throws UnsupportedEncodingException 当输入的字符串不是UTF-8编码时
      */
-    public static final String md5(String... plainTexts) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
+    public static final String md5(String... plainTexts) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("The runtime doesn't support MD5 algorithm.", e);
+        }
         for (String plainText : plainTexts) {
         	if (plainText == null) {
+        	    // This is the magic code for null string.
         		md.update((byte) 216);
         		continue;
         	}
-            md.update(plainText.getBytes("UTF-8"));
+            md.update(strToUtf8Byte(plainText));
         }
         byte bytes[] = md.digest();
 
@@ -67,16 +71,20 @@ public abstract class MD5Util {
      * @param plainTexts 用来进行校验的字符串列表
      * @return 如果通过返回true，失败返回false
      * @throws NoSuchAlgorithmException 当用户的JDK不支持MD5哈希算法时
-     * @throws UnsupportedEncodingException 当输入的字符串不是UTF-8编码时
      */
-    public static final boolean md5Check(String md5, String... plainTexts) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
+    public static final boolean md5Check(String md5, String... plainTexts) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("The runtime doesn't support MD5 algorithm.", e);
+        }
         for (String plainText : plainTexts) {
         	if (plainText == null) {
         		md.update((byte) 216);
         		continue;
         	}
-            md.update(plainText.getBytes("UTF-8"));
+            md.update(strToUtf8Byte(plainText));
         }
         byte bytes[] = md.digest();
 

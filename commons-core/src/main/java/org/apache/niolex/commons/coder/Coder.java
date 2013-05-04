@@ -17,6 +17,10 @@
  */
 package org.apache.niolex.commons.coder;
 
+import java.nio.charset.Charset;
+
+import org.apache.niolex.commons.codec.StringUtil;
+
 /**
  * 加密解密框架的基础接口。定义了操作二进制和操作字符串的方法。
  *
@@ -25,7 +29,7 @@ package org.apache.niolex.commons.coder;
  */
 public interface Coder {
 
-    String ENC = "UTF-8";
+    Charset ENC = StringUtil.UTF_8;
 
     /**
      * 初始化密钥和IV参数

@@ -52,4 +52,15 @@ public class TripleTest {
         assertEquals(68456564l, tp.z.longValue());
     }
 
+    /**
+     * Test method for {@link org.apache.niolex.commons.bean.Triple#Triple(java.lang.Object, java.lang.Object, java.lang.Object)}.
+     */
+    @Test
+    public void testTripleCreate() {
+        Triple<String, Date, Long> tp = Triple.create("Not yet implemented",
+                new Date(), 68456564l);
+        assertEquals("Not yet implemented", tp.x);
+        assertEquals(68456564l, tp.z.longValue());
+    }
+
 }

@@ -18,7 +18,6 @@
 package org.apache.niolex.commons.coder;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -103,7 +102,7 @@ public class TripleDESCoder extends BaseCoder {
      * @return 采用Base64加密的密钥
      * @throws Exception
      */
-    public static String genKey() throws UnsupportedEncodingException {
+    public static String genKey() {
         return genKey(null);
     }
 
@@ -114,7 +113,7 @@ public class TripleDESCoder extends BaseCoder {
      * @return 采用Base64加密的密钥
      * @throws Exception
      */
-    public static String genKey(String seed) throws UnsupportedEncodingException {
+    public static String genKey(String seed) {
         LOG.info("The current seed is set to: " + seed);
         SecureRandom secureRandom = null;
 

@@ -35,7 +35,9 @@ public class OneTest {
     @Test
     public void testOne() {
         One<String> o = new One<String>();
+        assertTrue(o.absent());
         o.a = "Not yet implemented";
+        assertFalse(o.absent());
         assertEquals("Not yet implemented", o.a);
     }
 
@@ -46,6 +48,16 @@ public class OneTest {
     public void testOneT() {
         One<String> o = new One<String>("Not yet implemented");
         assertEquals("Not yet implemented", o.a);
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.bean.One#One(java.lang.Object)}.
+     */
+    @Test
+    public void testCreate() {
+        One<String> o = One.create("Xie, Jiyun");
+        assertEquals("Xie, Jiyun", o.a);
+        assertFalse(o.absent());
     }
 
 }

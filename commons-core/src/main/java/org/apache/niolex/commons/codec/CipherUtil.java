@@ -32,7 +32,6 @@ import org.apache.commons.lang.ArrayUtils;
  * @version 1.0.0, $Date: 2012-4-9$
  */
 public abstract class CipherUtil {
-    private static final int OUTPUT_SIZE = 8 * 1024;
 
     /**
      * For some kind of cipher, e.g. RSA, can not handle bytes larger than a fixed block size.
@@ -50,17 +49,19 @@ public abstract class CipherUtil {
         if (input.length <= blockSize) {
             return cipher.doFinal(input);
         }
+        final int OUTPUT_SIZE = (input.length + blockSize - 1) / blockSize * cipher.getOutputSize(blockSize);
+
         byte[] output = new byte[OUTPUT_SIZE];
-        int outputSize = 0;
+        int outputIndex = 0;
         for (int i = 0; ;i += blockSize) {
             if (i + blockSize < input.length)
-                outputSize += cipher.doFinal(input, i, blockSize, output, outputSize);
+                outputIndex += cipher.doFinal(input, i, blockSize, output, outputIndex);
             else {
-                outputSize += cipher.doFinal(input, i, input.length - i, output, outputSize);
+                outputIndex += cipher.doFinal(input, i, input.length - i, output, outputIndex);
                 break;
             }
         }
-        return ArrayUtils.subarray(output, 0, outputSize);
+        return ArrayUtils.subarray(output, 0, outputIndex);
     }
 
 }

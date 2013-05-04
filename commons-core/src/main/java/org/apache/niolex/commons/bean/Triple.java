@@ -24,6 +24,18 @@ package org.apache.niolex.commons.bean;
  * @version 1.0.5, $Date: 2012-12-5$
  */
 public class Triple<X, Y, Z> {
+
+    /**
+     * Create a Triple with the specified value.
+     *
+     * @param x
+     * @param y
+     * @param z
+     */
+    public static <X, Y, Z> Triple<X, Y, Z> create(X x, Y y, Z z) {
+        return new Triple<X, Y, Z>(x, y, z);
+    }
+
     public X x;
 
     public Y y;

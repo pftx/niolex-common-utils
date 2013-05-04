@@ -17,7 +17,6 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.io.UnsupportedEncodingException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -34,14 +33,14 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * 
+ *
  * @version 1.0.0, $Date: 2012-4-11$
- * 
+ *
  */
 public class RsaHelperTest {
-    
+
     private static Map<String, Object> initKeys = null;
-    
+
     static {
         try {
             initKeys = RSAUtil.initKey();
@@ -56,25 +55,25 @@ public class RsaHelperTest {
         Assert.assertEquals(RsaHelper.getMiddleString("<RSAKeyValue><Modulus>AK3TiBdwM9CJVQSWA6VrTJUU8NxB9uil7ByGQ+bSXNtecogAigvmiMF6QHg2QtgAApmwNFGfCFK6A+DEn9DroGVVThKpD3XkraQkq9i6y95FXX+GZKKFfC1fowGIFMaB5Wxns8pn+qMi3jagl/lin7Lohf3d0o0T7U//9vjiuzjT</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>", "<Modulus>", "</Modulus>"),
                 "AK3TiBdwM9CJVQSWA6VrTJUU8NxB9uil7ByGQ+bSXNtecogAigvmiMF6QHg2QtgAApmwNFGfCFK6A+DEn9DroGVVThKpD3XkraQkq9i6y95FXX+GZKKFfC1fowGIFMaB5Wxns8pn+qMi3jagl/lin7Lohf3d0o0T7U//9vjiuzjT");
     }
-    
+
     @Test
-    public void testPublicKey() throws UnsupportedEncodingException {
+    public void testPublicKey() {
         PublicKey key = (PublicKey)initKeys.get(RSAUtil.PUBLIC_KEY);
         String xml = RsaHelper.encodePublicKeyToXml(key);
         System.out.println("Pubk => " + xml);
         PublicKey key2 = RsaHelper.decodePublicKeyFromXml(xml);
         Assert.assertEquals(key, key2);
     }
-    
+
     @Test
-    public void testPrivateKey() throws UnsupportedEncodingException {
+    public void testPrivateKey() {
         PrivateKey key = (PrivateKey)initKeys.get(RSAUtil.PRIVATE_KEY);
         String xml = RsaHelper.encodePrivateKeyToXml(key);
         System.out.println("Prik => " + xml);
         PrivateKey key2 = RsaHelper.decodePrivateKeyFromXml(xml);
         Assert.assertEquals(key, key2);
     }
-    
+
     @Test
     public void testWork() throws Exception {
         String key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCVhipL6FX03wgyuKA2RlWiBLqQN+SGqlClYtC6DPN2omqG34+jBqFvkU8KhdBFBenx0xLZliTLTRT/xzhISDTwgdB3IE2Ae5nu6IE2D18qJaoBEoNFTRVOipyQ5Q8GuMzdmQKtXVVGlwTAStCXXCjKp1sCJSTNVYFTSMZfKH7TNwIDAQAB";
