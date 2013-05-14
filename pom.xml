@@ -101,14 +101,14 @@
 
 	<distributionManagement>
 		<repository>
-			<id>Ad-nexus-releases</id>
-			<name>Ad nexus releases</name>
-			<url>http://10.22.197.190:8081/nexus/content/repositories/Ad-nexus-releases/</url>
+			<id>local-release-repo</id>
+			<name>Local nexus releases</name>
+			<url>http://local-repo:8081/nexus/content/repositories/abc/</url>
 		</repository>
 		<snapshotRepository>
-			<id>Ad-nexus-snapshots</id>
-			<name>Ad nexus snapshots</name>
-			<url>http://10.22.197.190:8081/nexus/content/repositories/Ad-nexus-snapshots/</url>
+			<id>local-snapshot-repo</id>
+			<name>Local nexus snapshots</name>
+			<url>http://local-repo:8081/nexus/content/repositories/abc-s/</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
