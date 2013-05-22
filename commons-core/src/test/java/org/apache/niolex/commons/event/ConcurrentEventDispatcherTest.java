@@ -39,20 +39,32 @@ public class ConcurrentEventDispatcherTest {
     public void testAddListener() {
         IEventDispatcher dis = new ConcurrentEventDispatcher();
         final AtomicInteger au = new AtomicInteger(1);
+        final AtomicInteger bu = new AtomicInteger(1);
         EventListener<StringEvent> el = new EventListener<StringEvent>() {
 
             @Override
             public void eventHappened(StringEvent e) {
                 System.out.println(au.getAndIncrement() + ": " + e);
             }
+
+            /**
+             * This is the override of super method.
+             * @see org.apache.niolex.commons.event.EventListener#onClassCastException(org.apache.niolex.commons.event.Event, java.lang.ClassCastException)
+             */
+            @Override
+            protected void onClassCastException(Event<?> e, ClassCastException ex) {
+                bu.incrementAndGet();
+            }
+
         };
         dis.addListener("A", el);
         dis.fireEvent(new Event<String>("B", "Event Fired."));
-        dis.fireEvent(new StringEvent("A", "Not yet implemented"));
+        dis.fireEvent(new StringEvent("A", "The Second."));
         assertEquals(2, au.intValue());
         dis.fireEvent(new StringEvent("A", "Event Fired."));
         dis.fireEvent(new Event<String>("A", "Event Fired."));
         assertEquals(3, au.intValue());
+        assertEquals(2, bu.intValue());
     }
 
     /**
@@ -62,22 +74,42 @@ public class ConcurrentEventDispatcherTest {
     public void testOnClassCastException() {
         IEventDispatcher dis = new ConcurrentEventDispatcher();
         final AtomicInteger au = new AtomicInteger(1);
+        final AtomicInteger bu = new AtomicInteger(1);
         EventListener<Event<String>> el = new EventListener<Event<String>>() {
 
             @Override
             public void eventHappened(Event<String> e) {
-                System.out.println(au.getAndIncrement() + ": " + e);
+                String s = e.getEventValue();
+                // -- This line maybe not printed.
+                System.out.println(au.getAndIncrement() + ": " + s);
+            }
+
+            /**
+             * This is the override of super method.
+             * @see org.apache.niolex.commons.event.EventListener#onClassCastException(org.apache.niolex.commons.event.Event, java.lang.ClassCastException)
+             */
+            @Override
+            protected void onClassCastException(Event<?> e, ClassCastException ex) {
+                bu.incrementAndGet();
             }
         };
-        dis.addListener("A", el);
         dis.addListener("A", new PrintEventListener());
-        dis.fireEvent(new StringEvent("A", "Not yet implemented"));
+        dis.addListener("A", el);
+        dis.fireEvent(new IntEvent("A", 4));
+        dis.fireEvent(new StringEvent("A", "In Event"));
+        // -- StringEvent is compatible with Event<String>
+        // -- IntEvent is compatible with Event<String>, but you can not get a String as EventValue!!!
         assertEquals(2, au.intValue());
+        assertEquals(2, bu.intValue());
+        // -----
         dis.fireEvent(new StringEvent("A", "Event Fired."));
         assertEquals(3, au.intValue());
+        // -- Test remove listener
         dis.removeListener("A", el);
+        dis.fireEvent(new Event<Integer>("A", 6));
         dis.fireEvent(new StringEvent("A", "Event Fired After."));
         assertEquals(3, au.intValue());
+        assertEquals(2, bu.intValue());
     }
 
     /**
@@ -86,7 +118,7 @@ public class ConcurrentEventDispatcherTest {
      * .
      */
     @Test
-    public void testAddGood() {
+    public void testRemoveFromNothing() {
         IEventDispatcher dis = new ConcurrentEventDispatcher();
         dis.removeListener("A", new PrintEventListener());
         dis.fireEvent(new StringEvent("A", "Event Fired."));
@@ -120,7 +152,7 @@ public class ConcurrentEventDispatcherTest {
      * Test method for {@link org.apache.niolex.commons.event.ConcurrentEventDispatcher#fireEvent(java.lang.Object)}.
      */
     @Test
-    public void testFireEvent() {
+    public void testFireEventWithNothing() {
         ConcurrentEventDispatcher dis = new ConcurrentEventDispatcher();
         dis.fireEvent(new Event<String>("B", "Event Fired."));
     }

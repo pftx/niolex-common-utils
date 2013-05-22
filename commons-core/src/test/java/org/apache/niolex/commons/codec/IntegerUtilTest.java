@@ -147,4 +147,36 @@ public class IntegerUtilTest {
 		assertEquals(arr[1], (byte)0xff);
 	}
 
+	/**
+	 * Test formatSize
+	 *
+	 * @throws Exception
+	 */
+    @Test
+    public void testFormatSize() throws Exception {
+        assertEquals("123", IntegerUtil.formatSize(123));
+        assertEquals("1K", IntegerUtil.formatSize(1024));
+        assertEquals("1K", IntegerUtil.formatSize(1025));
+        assertEquals("1K", IntegerUtil.formatSize(1026));
+        assertEquals("1.01K", IntegerUtil.formatSize(1034));
+        assertEquals("1.01K", IntegerUtil.formatSize(1036));
+        // -- M
+        assertEquals("1M", IntegerUtil.formatSize(1048576));
+        assertEquals("1M", IntegerUtil.formatSize(1049576));
+        assertEquals("1.01M", IntegerUtil.formatSize(1059576));
+        assertEquals("1.96M", IntegerUtil.formatSize(2059576));
+        assertEquals("1.97M", IntegerUtil.formatSize(2060452));
+        // -- G
+        assertEquals("1G", IntegerUtil.formatSize(1073741824));
+        assertEquals("1G", IntegerUtil.formatSize(1074741824));
+        // -- T
+        assertEquals("1T", IntegerUtil.formatSize(1099511627776L));
+        assertEquals("1.82T", IntegerUtil.formatSize(2000511627776L));
+        assertEquals("1.67T", IntegerUtil.formatSize(1831236616061L));
+        String s;
+        s = IntegerUtil.formatSize(1234);
+        //System.out.println(s);
+        assertEquals("1.21K", s);
+    }
+
 }

@@ -17,6 +17,11 @@
  */
 package org.apache.niolex.commons.codec;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
+import org.apache.niolex.commons.util.Const;
+
 /**
  * Encode & Decode integers.
  *
@@ -72,4 +77,29 @@ public abstract class IntegerUtil {
 		arr[idx++] = (byte)(i >> 8);
 		arr[idx] = (byte)i;
 	}
+
+	/**
+	 * Format the size into string end with one letter.
+	 *
+	 * @param size the size need to be formatted
+	 * @return the string representation
+	 */
+	public static final String formatSize(double size) {
+	    DecimalFormat df = new DecimalFormat("#,###.##");
+	    df.setRoundingMode(RoundingMode.HALF_UP);
+	    if (size >= Const.T) {
+	        return df.format(size / Const.T) + "T";
+	    }
+	    if (size >= Const.G) {
+	        return df.format(size / Const.G) + "G";
+	    }
+	    if (size >= Const.M) {
+	        return df.format(size / Const.M) + "M";
+	    }
+	    if (size >= Const.K) {
+	        return df.format(size / Const.K) + "K";
+	    }
+	    return df.format(size);
+	}
+
 }

@@ -150,5 +150,14 @@ public class SystemUtil {
 	    }
 	    return null;
 	}
+	
+	public static final Throwable getRootCause(Throwable e) {
+	    Throwable p = e.getCause();
+        while (p != null) {
+            e = p;
+            p = e.getCause();
+        }
+        return e;
+	}
 
 }

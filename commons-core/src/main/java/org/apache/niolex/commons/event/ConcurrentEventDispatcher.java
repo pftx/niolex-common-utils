@@ -30,18 +30,18 @@ import org.apache.niolex.commons.concurrent.ConcurrentUtil;
  */
 public class ConcurrentEventDispatcher implements IEventDispatcher {
 
-    private final ConcurrentHashMap<String, ConcurrentLinkedQueue<EventListener<? extends Event<?>>>> handlerMap =
-            new ConcurrentHashMap<String, ConcurrentLinkedQueue<EventListener<? extends Event<?>>>>();
+    private final ConcurrentHashMap<String, ConcurrentLinkedQueue<EventListener<?>>> handlerMap =
+            new ConcurrentHashMap<String, ConcurrentLinkedQueue<EventListener<?>>>();
 
     /**
      * Override super method
      * @see org.apache.niolex.commons.event.IEventDispatcher#addListener(java.lang.String, org.apache.niolex.commons.event.EventListener)
      */
     @Override
-    public void addListener(String eventType, EventListener<? extends Event<?>> eListener) {
-        ConcurrentLinkedQueue<EventListener<? extends Event<?>>> queue = handlerMap.get(eventType);
+    public void addListener(String eventType, EventListener<?> eListener) {
+        ConcurrentLinkedQueue<EventListener<?>> queue = handlerMap.get(eventType);
         if (queue == null) {
-            queue = ConcurrentUtil.initMap(handlerMap, eventType, new ConcurrentLinkedQueue<EventListener<? extends Event<?>>>());
+            queue = ConcurrentUtil.initMap(handlerMap, eventType, new ConcurrentLinkedQueue<EventListener<?>>());
         }
         queue.add(eListener);
     }
@@ -51,8 +51,8 @@ public class ConcurrentEventDispatcher implements IEventDispatcher {
      * @see org.apache.niolex.commons.event.IEventDispatcher#removeListener(java.lang.String, org.apache.niolex.commons.event.EventListener)
      */
     @Override
-    public void removeListener(String eventType, EventListener<? extends Event<?>> eListener) {
-        ConcurrentLinkedQueue<EventListener<? extends Event<?>>> queue = handlerMap.get(eventType);
+    public void removeListener(String eventType, EventListener<?> eListener) {
+        ConcurrentLinkedQueue<EventListener<?>> queue = handlerMap.get(eventType);
         if (queue != null) {
             queue.remove(eListener);
         }
@@ -64,9 +64,9 @@ public class ConcurrentEventDispatcher implements IEventDispatcher {
      */
     @Override
     public void fireEvent(Event<?> e) {
-        ConcurrentLinkedQueue<EventListener<? extends Event<?>>> queue = handlerMap.get(e.getEventType());
+        ConcurrentLinkedQueue<EventListener<?>> queue = handlerMap.get(e.getEventType());
         if (queue != null) {
-            for (EventListener<? extends Event<?>> eLi : queue) {
+            for (EventListener<?> eLi : queue) {
                 eLi.internalEventHappened(e);
             }
         }

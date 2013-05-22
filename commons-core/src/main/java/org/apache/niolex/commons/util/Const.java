@@ -45,4 +45,9 @@ public interface Const {
      */
     int G = K * M;
 
+    /**
+     * The size of one T.
+     */
+    long T = 1024L * G;
+
 }
