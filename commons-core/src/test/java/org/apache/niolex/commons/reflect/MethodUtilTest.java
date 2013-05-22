@@ -18,6 +18,8 @@
 package org.apache.niolex.commons.reflect;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 
@@ -51,5 +53,49 @@ public class MethodUtilTest {
         m = MethodUtil.getMethod(MethodTestBean.class, "echoName");
         ret = MethodUtil.invokeMethod(m, host);
         Assert.assertEquals(ret, "niolex-common-utils");
+    }
+
+    public static class Base extends MethodUtil {
+        public void find() {}
+    }
+
+    public static interface Inter {
+        public void find(int k);
+    }
+
+    public static class Con extends Base implements Inter {
+
+        /**
+         * This is the override of super method.
+         * @see org.apache.niolex.commons.reflect.MethodUtilTest.Inter#find(int)
+         */
+        @Override
+        public void find(int k) {
+        }
+
+        public int find(int k, int m) {
+            return k * m;
+        }
+
+    }
+
+    @Test
+    public void testGetMethodsObjectString() throws Exception {
+        Object obj = new Con();
+        Method[] arr = MethodUtil.getMethods(obj, "find");
+        System.out.println("All find in Con:");
+        for (Method m : arr)
+            System.out.println("\t" + m);
+        Assert.assertEquals(arr.length, 4);
+    }
+
+    @Test
+    public void testGetMethodsObjectStringArrayList() throws Exception {
+        List<Method> outLst = new ArrayList<Method>();
+        Method[] arr = MethodUtil.getMethods(outLst, "toArray");
+        System.out.println("All toArray in ArrayList:");
+        for (Method m : arr)
+            System.out.println("\t" + m);
+        Assert.assertEquals(arr.length, 8);
     }
 }
