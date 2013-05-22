@@ -119,4 +119,12 @@ public class SystemUtilTest {
         System.out.println(i + ", " + s);
     }
 
+    @Test
+    public void testGetRootCause() throws Exception {
+        Throwable t = SystemUtil.getRootCause(new RuntimeException("not yet implemented", new Exception("K")));
+        assertEquals("K", t.getMessage());
+        t = SystemUtil.getRootCause(new RuntimeException("Met"));
+        assertEquals("Met", t.getMessage());
+    }
+
 }

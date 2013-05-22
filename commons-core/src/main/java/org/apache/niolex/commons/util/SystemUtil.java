@@ -150,7 +150,13 @@ public class SystemUtil {
 	    }
 	    return null;
 	}
-	
+
+	/**
+	 * Get the root cause from the exception chain.
+	 *
+	 * @param e the exception
+	 * @return the root cause
+	 */
 	public static final Throwable getRootCause(Throwable e) {
 	    Throwable p = e.getCause();
         while (p != null) {
