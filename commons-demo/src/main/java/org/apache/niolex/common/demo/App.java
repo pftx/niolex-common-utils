@@ -51,5 +51,11 @@ public class App
         System.out.println("\n**** Test Java SecurityManager");
         SecurityManager mgr = System.getSecurityManager();
         System.out.println("Is Null ? " + (mgr == null));
+
+        System.out.println("\n**** Bits Op");
+        System.out.println("-128 >> 3 ? " + (-128 >> 3));
+        System.out.println("-128 >>> 3 ? " + (-128 >>> 3));
+        System.out.println("~-128 ? " + (~-128));
+        System.out.println("1L << 200 ? " + (1L << 200));
     }
 }
