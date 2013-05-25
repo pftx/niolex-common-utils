@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.util;
+package org.apache.niolex.commons.hash;
 
 import java.util.Collection;
 import java.util.HashSet;
