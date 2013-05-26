@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.google.common.hash.Hashing;
+
 /**
  * The implementation of ConsistentHash.
  * This experiment shows that a figure of one or two hundred replicas achieves
@@ -91,7 +93,38 @@ public class ConsistentHash<T> {
          */
         @Override
         public int hashCode(Object o, int seed) {
-            return (seed + o.toString()).hashCode();
+            return (seed + o.toString() + seed).hashCode();
+        }
+
+    }
+
+    /**
+     * A Hash funtion implementation Using guava murmur3_32 as hash method, and use toString to
+     * digest the object.
+     *
+     * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
+     * @version 1.0.0
+     * @since 2013-5-25
+     */
+    public static class GuavaHash implements HashFunction {
+        public static final GuavaHash INSTANCE = new GuavaHash();
+
+        /**
+         * This is the override of super method.
+         * @see org.apache.niolex.commons.util.ConsistentHash.HashFunction#hashCode(java.lang.Object)
+         */
+        @Override
+        public int hashCode(Object o) {
+            return Hashing.murmur3_32().hashString(o.toString()).asInt();
+        }
+
+        /**
+         * This is the override of super method.
+         * @see org.apache.niolex.commons.util.ConsistentHash.HashFunction#hashCode(java.lang.Object, int)
+         */
+        @Override
+        public int hashCode(Object o, int seed) {
+            return Hashing.murmur3_32(seed).hashString(o.toString()).asInt();
         }
 
     }
@@ -159,7 +192,11 @@ public class ConsistentHash<T> {
      * @param node the node to be added
      */
     public synchronized void add(T node) {
-        for (int i = 0; i < numberOfReplicas; i++) {
+        int START = hashFunction.hashCode(node);
+        if (START > Integer.MAX_VALUE - numberOfReplicas) {
+            START -= numberOfReplicas * 79;
+        }
+        for (int i = START; i < numberOfReplicas + START; i++) {
             circle.put(hashFunction.hashCode(node, i), node);
         }
     }
@@ -170,7 +207,11 @@ public class ConsistentHash<T> {
      * @param node the node to be removed
      */
     public synchronized void remove(T node) {
-        for (int i = 0; i < numberOfReplicas; i++) {
+        int START = hashFunction.hashCode(node);
+        if (START > Integer.MAX_VALUE - numberOfReplicas) {
+            START -= numberOfReplicas * 79;
+        }
+        for (int i = START; i < numberOfReplicas + START; i++) {
             circle.remove(hashFunction.hashCode(node, i));
         }
     }
@@ -190,6 +231,17 @@ public class ConsistentHash<T> {
         Entry<Integer, T> en = circle.ceilingEntry(hash);
         en = en == null ? circle.firstEntry() : en;
         return en.getValue();
+    }
+
+
+    /**
+     * Get the node list for this key.
+     *
+     * @param key the key
+     * @return the node list, which contains only two nodes
+     */
+    public Collection<T> getNodeList(Object key) {
+        return getNodeList(key, 2);
     }
 
     /**

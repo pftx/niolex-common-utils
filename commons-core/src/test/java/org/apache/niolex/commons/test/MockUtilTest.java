@@ -115,4 +115,11 @@ public class MockUtilTest {
         System.out.println("UUID " + MockUtil.randUUID());
     }
 
+    @Test
+    public void testRandString()
+     throws Exception {
+        Assert.assertNotEquals(MockUtil.randString(8), MockUtil.randString());
+        System.out.println("RRID " + MockUtil.randString(6));
+    }
+
 }

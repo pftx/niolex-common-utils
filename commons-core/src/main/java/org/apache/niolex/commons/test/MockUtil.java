@@ -20,6 +20,8 @@ package org.apache.niolex.commons.test;
 import java.util.Random;
 import java.util.UUID;
 
+import org.apache.commons.lang.RandomStringUtils;
+
 /**
  * Generate mock datas, for unit test like things.
  *
@@ -111,12 +113,31 @@ public abstract class MockUtil {
     }
 
     /**
-     * Generates random UUID and format it into standard string.
+     * Generates random UUID.
      *
      * @return the result
      */
     public static final String randUUID() {
         return UUID.randomUUID().toString();
+    }
+
+    /**
+     * Generates random string which contains only alphabetic and number.
+     *
+     * @return the result with length 8
+     */
+    public static final String randString() {
+        return randString(8);
+    }
+
+    /**
+     * Generates random string which contains only alphabetic and number.
+     *
+     * @param length the length of the generated string
+     * @return the result
+     */
+    public static final String randString(int length) {
+        return RandomStringUtils.randomAlphanumeric(length);
     }
 
 }
