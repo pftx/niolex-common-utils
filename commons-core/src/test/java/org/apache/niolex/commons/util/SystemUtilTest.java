@@ -127,4 +127,10 @@ public class SystemUtilTest {
         assertEquals("Met", t.getMessage());
     }
 
+    @Test
+    public void testPrintln() throws Exception {
+        SystemUtil.println("");
+        SystemUtil.println("For: {%d}, This is your [%s].", 3, "Girl");
+    }
+
 }

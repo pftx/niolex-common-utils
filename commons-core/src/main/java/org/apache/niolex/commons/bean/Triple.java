@@ -63,4 +63,13 @@ public class Triple<X, Y, Z> {
         this.z = z;
     }
 
+    /**
+     * This is the override of super method.
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return String.format("{x=%s, y=%s, z=%s}", x, y, z);
+    }
+
 }

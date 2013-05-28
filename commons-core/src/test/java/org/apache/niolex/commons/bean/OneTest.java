@@ -35,6 +35,7 @@ public class OneTest {
     @Test
     public void testOne() {
         One<String> o = new One<String>();
+        assertEquals("{null}", o.toString());
         assertTrue(o.absent());
         o.a = "Not yet implemented";
         assertFalse(o.absent());

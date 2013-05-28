@@ -105,6 +105,16 @@ public class SystemUtil {
 	}
 
 	/**
+	 * Format the output and print it into system out.
+	 *
+	 * @param s the format string
+	 * @param args the argument list
+	 */
+	public static final void println(String s, Object ... args) {
+        System.out.println(String.format(s, args));
+	}
+
+	/**
 	 * Safely close the Closeable, without throwing the exception.
 	 *
 	 * @param cl the object you want to close.

@@ -39,6 +39,7 @@ public class TripleTest {
         Triple<String, Date, Long> tp = new Triple<String, Date, Long>();
         tp.z = 12888l;
         assertEquals(12888l, tp.z.longValue());
+        assertEquals("{x=null, y=null, z=12888}", tp.toString());
     }
 
     /**

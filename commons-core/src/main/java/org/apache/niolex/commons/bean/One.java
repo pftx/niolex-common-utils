@@ -61,4 +61,13 @@ public class One<T> {
         return a == null;
     }
 
+    /**
+     * This is the override of super method.
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "{" + a + "}";
+    }
+
 }

@@ -51,6 +51,13 @@ public class PairTest {
         p.a = "this";
         assertEquals("this", p.a);
         assertEquals(123, p.b.intValue());
+        assertEquals("{a=this, b=123}", p.toString());
+    }
+
+    @Test
+    public void testToStringStringString() throws Exception {
+        Pair<String, Integer> p = new Pair<String, Integer>("avg", 6815);
+        assertEquals("{key=avg, value=6815}", p.toString("key", "value"));
     }
 
 }

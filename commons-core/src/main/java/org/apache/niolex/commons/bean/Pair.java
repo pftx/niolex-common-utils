@@ -59,4 +59,26 @@ public class Pair<A, B> {
 		this.b = b;
 	}
 
+    /**
+     * This is the override of super method.
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "{a=" + a + ", b=" + b + "}";
+    }
+
+    /**
+     * Generate the string format of this object, using the labels in parameters.
+     *
+     * @param labelA the label for field a
+     * @param labelB the label for field b
+     * @return the formated string
+     */
+    public String toString(String labelA, String labelB) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{").append(labelA).append("=").append(a).append(", ").append(labelB).append("=").append(b).append("}");
+        return sb.toString();
+    }
+
 }

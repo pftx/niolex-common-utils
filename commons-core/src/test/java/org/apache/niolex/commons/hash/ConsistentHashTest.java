@@ -24,7 +24,9 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.niolex.commons.hash.ConsistentHash.GuavaHash;
+import org.apache.niolex.commons.test.Counter;
 import org.apache.niolex.commons.test.MockUtil;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
@@ -55,8 +57,9 @@ public class ConsistentHashTest {
             System.out.print(i.charAt(0) + " ");
         }
         String i = cHash.getNode("This-First-Va");
-        System.out.println("This-First-Va => " + i);
+        SystemUtil.println("This-First-Va => %s", i);
     }
+
     /**
      * Test method for {@link org.apache.niolex.commons.util.ConsistentHash#getNode(java.lang.Object)}.
      */
@@ -92,20 +95,22 @@ public class ConsistentHashTest {
         cHash.add("9sd");
 
         Collection<String> nodeList = cHash.getNodeList("0-dafk30f", 3);
-        System.out.println(nodeList);
+        System.out.println("0-dafk30f =>" + nodeList);
+        assertEquals(nodeList.size(), 3);
 
-        nodeList = cHash.getNodeList("30-8ad;klajfdo", 3);
-        System.out.println(nodeList);
+        nodeList = cHash.getNodeList("0932ldio", 3);
+        System.out.println("0932ldio =>" + nodeList);
         assertEquals(nodeList.size(), 3);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testAdd() throws Exception {
         ConsistentHash<String> cHash = new ConsistentHash<String>(GuavaHash.INSTANCE, 5, Arrays.asList("23", "ef", "pod"));
-        Collection<String> nodeList = cHash.getNodeList("0-dafk30f", 3);
+        Collection<String> nodeList = cHash.getNodeList("@#fd03df", 3);
         System.out.println("[ef, 23, pod] => " + nodeList);
         cHash.getNodeList("32qrads", 4);
     }
+
     @Test
     public void testRemove() throws Exception {
         ConsistentHash<String> cHash = new ConsistentHash<String>(new ConsistentHash.HashFunction(){
@@ -159,6 +164,7 @@ public class ConsistentHashTest {
                 map.put(key, integer);
             }
         }
+        System.out.println("Balancei => " + Counter.calcMeanSquareError(map.values()).toString("avg", "MSE"));
         System.out.println("Balancei => " + map);
     }
 
@@ -187,6 +193,7 @@ public class ConsistentHashTest {
                 map.put(key, integer);
             }
         }
+        System.out.println("Balances => " + Counter.calcMeanSquareError(map.values()).toString("avg", "MSE"));
         System.out.println("Balances => " + map);
     }
 

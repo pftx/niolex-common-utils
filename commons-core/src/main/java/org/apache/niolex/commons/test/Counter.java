@@ -17,6 +17,10 @@
  */
 package org.apache.niolex.commons.test;
 
+import java.util.Collection;
+
+import org.apache.niolex.commons.bean.Pair;
+
 /**
  * This is used for count.
  *
@@ -54,5 +58,43 @@ public class Counter {
 	public void set(int cnt) {
 	    this.cnt = cnt;
 	}
+
+	/**
+	 * Calculate the mean square error
+	 *
+	 * @param array the array of data input
+	 * @return the pair of results, first the average, second the mean square error
+	 */
+	public static Pair<Integer, Double> calcMeanSquareError(int ...array) {
+	    long total = 0;
+	    for (int i : array) {
+	        total += i;
+	    }
+	    int avg = (int) (total / array.length);
+	    double msr = 0.0;
+	    for (int i : array) {
+	        msr += Math.pow(avg - i, 2);
+	    }
+	    return Pair.create(avg, Math.sqrt(msr / array.length));
+	}
+
+	/**
+     * Calculate the mean square error
+     *
+     * @param array the array of data input
+     * @return the pair of results, first the average, second the mean square error
+     */
+	public static Pair<Integer, Double> calcMeanSquareError(Collection<Integer> array) {
+        long total = 0;
+        for (int i : array) {
+            total += i;
+        }
+        int avg = (int) (total / array.size());
+        double msr = 0.0;
+        for (int i : array) {
+            msr += Math.pow(avg - i, 2);
+        }
+        return Pair.create(avg, Math.sqrt(msr / array.size()));
+    }
 
 }
