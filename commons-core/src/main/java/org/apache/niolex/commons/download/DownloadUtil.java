@@ -154,6 +154,12 @@ public abstract class DownloadUtil {
 		}
 	}
 
+	/**
+	 * Test the content type is text or not.
+	 *
+	 * @param contentType the content type
+	 * @return true if we think it's text
+	 */
 	public static boolean isTextFileType(String contentType) {
 		if (contentType == null || contentType.length() == 0)
 			return false;
