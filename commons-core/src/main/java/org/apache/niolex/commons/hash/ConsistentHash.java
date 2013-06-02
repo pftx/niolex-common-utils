@@ -31,6 +31,11 @@ import com.google.common.hash.Hashing;
  * This experiment shows that a figure of one or two hundred replicas achieves
  * an acceptable balance (a standard deviation that is roughly between 5% and 10% of the mean).
  *
+ * This class is mean for use in high concurrency, Applications developers need to call prepare
+ * to supply all the nodes(or supply in the constructor). And call add or remove at runtime
+ * to adjust the hash ring. We will copy the whole hash ring in add & remove method to achieve
+ * high concurrency with out using lock.
+ *
  * It was originally copied from Tom White's implementation found here:
  * https://weblogs.java.net/blog/tomwhite/archive/2007/11/consistent_hash.html
  *
@@ -129,9 +134,20 @@ public class ConsistentHash<T> {
 
     }
 
+    /**
+     * The hash function
+     */
     private final HashFunction hashFunction;
+
+    /**
+     * The number of replicas per node
+     */
     private final int numberOfReplicas;
-    private final TreeMap<Integer, T> circle = new TreeMap<Integer, T>();
+
+    /**
+     * The hash ring
+     */
+    private TreeMap<Integer, T> circle = new TreeMap<Integer, T>();
 
 
     /**
@@ -176,44 +192,82 @@ public class ConsistentHash<T> {
     }
 
     /**
-     * Prepare the hash ring.
+     * Prepare the hash ring.<br>
+     * This method must be called before using the hash ring.
      *
      * @param nodes the nodes to be prepared into the hash ring
      */
     public void prepare(Collection<T> nodes) {
         for (T node : nodes) {
-            add(node);
+            internalAdd(circle, node);
         }
+    }
+
+    /**
+     * Prepare the hash ring.<br>
+     * This method must be called before using the hash ring.
+     *
+     * @param nodes the nodes to be prepared into the hash ring
+     */
+    public void prepare(T ...nodes) {
+        for (T node : nodes) {
+            internalAdd(circle, node);
+        }
+    }
+
+    /**
+     * Add this node into the hash ring at runtime.<br>
+     * We will clone the hash ring inside this method, so we will need more
+     * memory and create more objects. It's better to call prepare to add all the nodes
+     * before start. And use this method only after the system is running.
+     *
+     * @param node the node to be added
+     */
+    public synchronized void add(T node) {
+        // We clone the hash ring.
+        @SuppressWarnings("unchecked")
+        TreeMap<Integer, T> ring = (TreeMap<Integer, T>) circle.clone();
+        internalAdd(ring, node);
+        // We replace the old hash ring with this new ring.
+        this.circle = ring;
     }
 
     /**
      * Add this node into the hash ring.
      *
+     * @param ring the hash ring
      * @param node the node to be added
      */
-    public synchronized void add(T node) {
+    private void internalAdd(TreeMap<Integer, T> ring, T node) {
         int START = hashFunction.hashCode(node);
         if (START > Integer.MAX_VALUE - numberOfReplicas) {
             START -= numberOfReplicas * 79;
         }
         for (int i = START; i < numberOfReplicas + START; i++) {
-            circle.put(hashFunction.hashCode(node, i), node);
+            ring.put(hashFunction.hashCode(node, i), node);
         }
     }
 
     /**
-     * Remove this node from the hash ring.
+     * Remove this node from the hash ring at runtime.<br>
+     * We will clone the hash ring inside this method, in exchange for high
+     * concurrency.
      *
      * @param node the node to be removed
      */
     public synchronized void remove(T node) {
+        // We clone the hash ring.
+        @SuppressWarnings("unchecked")
+        TreeMap<Integer, T> ring = (TreeMap<Integer, T>) circle.clone();
         int START = hashFunction.hashCode(node);
         if (START > Integer.MAX_VALUE - numberOfReplicas) {
             START -= numberOfReplicas * 79;
         }
         for (int i = START; i < numberOfReplicas + START; i++) {
-            circle.remove(hashFunction.hashCode(node, i));
+            ring.remove(hashFunction.hashCode(node, i));
         }
+        // We replace the old hash ring with this new ring.
+        this.circle = ring;
     }
 
     /**

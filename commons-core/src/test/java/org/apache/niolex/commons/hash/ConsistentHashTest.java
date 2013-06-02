@@ -17,19 +17,15 @@
  */
 package org.apache.niolex.commons.hash;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 
 import org.apache.niolex.commons.hash.ConsistentHash.GuavaHash;
-import org.apache.niolex.commons.test.Counter;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
-
-import com.google.common.collect.Maps;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -51,7 +47,7 @@ public class ConsistentHashTest {
         cHash.add("32ja0f;qlkafkf");
         // ----------------------------------------
         String key = "This-First-Key";
-        System.out.print("testGetNode ");
+        System.out.print("testGetNode  JVM ");
         for (int j = 0; j < 10; ++j) {
             String i = cHash.getNode(j + key + j + key);
             System.out.print(i.charAt(0) + " ");
@@ -95,20 +91,21 @@ public class ConsistentHashTest {
         cHash.add("9sd");
 
         Collection<String> nodeList = cHash.getNodeList("0-dafk30f", 3);
-        System.out.println("0-dafk30f =>" + nodeList);
+        System.out.print("0-dafk30f =>" + nodeList);
         assertEquals(nodeList.size(), 3);
 
         nodeList = cHash.getNodeList("0932ldio", 3);
-        System.out.println("0932ldio =>" + nodeList);
+        System.out.println("\t0932ldio =>" + nodeList);
         assertEquals(nodeList.size(), 3);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testAdd() throws Exception {
         ConsistentHash<String> cHash = new ConsistentHash<String>(GuavaHash.INSTANCE, 5, Arrays.asList("23", "ef", "pod"));
-        Collection<String> nodeList = cHash.getNodeList("@#fd03df", 3);
-        System.out.println("[ef, 23, pod] => " + nodeList);
-        cHash.getNodeList("32qrads", 4);
+        cHash.prepare("9j", "de", "qa");
+        Collection<String> nodeList = cHash.getNodeList("@#093naf", 3);
+        System.out.println("ef, qa, pod] => " + nodeList);
+        cHash.getNodeList("32qrads", 7);
     }
 
     @Test
@@ -127,74 +124,52 @@ public class ConsistentHashTest {
             }, 5, Arrays.asList("2", "ef", "pod"));
 
         cHash.add("Nice");
-        System.out.println("3a3f => " + cHash.getNode("3a3f"));
+        System.out.print("3a3f => " + cHash.getNode("3a3f"));
         cHash.remove("ef");
-        System.out.println("3a3f => " + cHash.getNode("3a3f"));
+        System.out.print(" 3a3f => " + cHash.getNode("3a3f"));
         cHash.remove("Nice");
-        System.out.println("3a3f => " + cHash.getNode("3a3f"));
+        System.out.print(" 3a3f => " + cHash.getNode("3a3f"));
         cHash.remove("2");
-        System.out.println("3a3f => " + cHash.getNode("3a3f"));
+        System.out.print(" 3a3f => " + cHash.getNode("3a3f"));
         cHash.remove("pod");
-        System.out.println("3a3f => " + cHash.getNode("3a3f"));
-        System.out.println("3a3f => " + cHash.getNodeList("3a3f"));
+        System.out.print(" 3a3f => " + cHash.getNode("3a3f"));
+        System.out.println(" 3a3f => " + cHash.getNodeList("3a3f"));
     }
 
     @Test
-    public void testBalance() {
+    public void testConsistency() throws Exception {
         ConsistentHash<String> cHash = new ConsistentHash<String>();
-        cHash.add("10.214.133.100:8087");
-        cHash.add("10.214.133.100:8088");
-        cHash.add("10.214.133.101:8087");
-        cHash.add("10.214.133.101:8088");
-        cHash.add("10.214.65.11:8087");
-        cHash.add("10.214.65.11:8088");
-        cHash.add("10.214.65.12:8087");
-        cHash.add("10.214.65.12:8088");
-        // Now we have four cache machines, each run two instances, a total of 8 instances.
-        Map<String, Integer> map = Maps.newHashMap();
-        for (int i = 10001; i < 90001; ++i) {
-            Collection<String> nodeList = cHash.getNodeList(i);
-            for (String key : nodeList) {
-                Integer integer = map.get(key);
-                if (integer == null) {
-                    integer = 1;
-                } else {
-                    integer += 1;
-                }
-                map.put(key, integer);
-            }
-        }
-        System.out.println("Balancei => " + Counter.calcMeanSquareError(map.values()).toString("avg", "MSE"));
-        System.out.println("Balancei => " + map);
-    }
+        ConsistentHash<String> dHash = new ConsistentHash<String>();
+        // --- prepare
+        cHash.prepare("2", "ef", "pod", "nice", "might", "noodle");
+        dHash.prepare("2", "ef", "pod", "nice", "might", "noodle");
 
-    @Test
-    public void testBalanceString() {
-        ConsistentHash<String> cHash = new ConsistentHash<String>();
-        cHash.add("10.214.133.100:8087");
-        cHash.add("10.214.133.100:8088");
-        cHash.add("10.214.133.101:8087");
-        cHash.add("10.214.133.101:8088");
-        cHash.add("10.214.65.11:8087");
-        cHash.add("10.214.65.11:8088");
-        cHash.add("10.214.65.12:8087");
-        cHash.add("10.214.65.12:8088");
-        // Now we have four cache machines, each run two instances, a total of 8 instances.
-        Map<String, Integer> map = Maps.newHashMap();
-        for (int i = 10001; i < 90001; ++i) {
-            Collection<String> nodeList = cHash.getNodeList(MockUtil.randUUID());
-            for (String key : nodeList) {
-                Integer integer = map.get(key);
-                if (integer == null) {
-                    integer = 1;
-                } else {
-                    integer += 1;
-                }
-                map.put(key, integer);
-            }
+        for (int i = 0; i < 2000; ++i) {
+            String key = MockUtil.randString(8);
+            String server1 = cHash.getNode(key);
+            String server2 = cHash.getNode(key);
+            assertEquals(server1, server2);
         }
-        System.out.println("Balances => " + Counter.calcMeanSquareError(map.values()).toString("avg", "MSE"));
-        System.out.println("Balances => " + map);
+
+        cHash.add("morning");
+        dHash.add("morning");
+
+        for (int i = 0; i < 2000; ++i) {
+            String key = MockUtil.randString(9);
+            String server1 = cHash.getNode(key);
+            String server2 = cHash.getNode(key);
+            assertEquals(server1, server2);
+        }
+
+        cHash.remove("2");
+        dHash.remove("2");
+
+        for (int i = 0; i < 2000; ++i) {
+            String key = MockUtil.randString(7);
+            String server1 = cHash.getNode(key);
+            String server2 = cHash.getNode(key);
+            assertEquals(server1, server2);
+        }
     }
 
 }
