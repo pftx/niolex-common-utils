@@ -167,7 +167,7 @@ public class ConsistentHash<T> {
     }
 
     /**
-     * Create a ConsistentHash with default JVM hash.
+     * Create a ConsistentHash with the specified hash function and number of replicas.
      *
      * @param hashFunction the hash function
      * @param numberOfReplicas the number of replicas per node
@@ -179,7 +179,7 @@ public class ConsistentHash<T> {
     }
 
     /**
-     * Create a ConsistentHash with default JVM hash.
+     * Create a ConsistentHash with the specified hash function and number of replicas.
      *
      * @param hashFunction the hash function
      * @param numberOfReplicas the number of replicas per node

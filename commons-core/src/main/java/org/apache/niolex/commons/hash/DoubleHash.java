@@ -26,17 +26,17 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 
 /**
- * The DoubleHash is to replace ConsistentHash in some conditions.
+ * The DoubleHash is to replace the <code>ConsistentHash</code> in some conditions.
  * The <code>ConsistentHash</code> is using the random hash ring, so there
  * are some kind of uncertainty. In order to minimize this uncertainty, we need
  * to add many replicas for one node.<br>
  *
- * But this DoubleHash is very simple and has no uncertainty. But it can only
- * provide two candidates, which is enough in most of the times.<br>
+ * This DoubleHash is very simple and has no uncertainty. We use two independent hash functions to
+ * find two candidates. Although we can only provide two candidates, but it is enough in most of the times.<br>
  *
- * We use two independent hash functions to find two candidates.
+ * We guarantee that the two candidates returned is not the same node.<br>
  *
- * User can add and remove nodes at runtime dynamically.
+ * User can add and remove nodes at runtime dynamically. We use copy on write to remove the need of lock.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -52,7 +52,7 @@ public class DoubleHash<T> {
     private Object[] nodeArray;
 
     /**
-     * The only * Constructor to create this object.
+     * The only * Constructor to create this object. All Parameters must be filled.
      *
      * @param primary the primary hash function
      * @param secondary the secondary hash function
@@ -68,20 +68,21 @@ public class DoubleHash<T> {
     /**
      * Add this node into the candidate list.<br>
      * We will use Guava's consistent hash method, so only 1/n hash values will be affected by
-     * adding new nodes.
+     * adding new node.
      *
      * @param node the node to be added
      */
     public synchronized void add(T node) {
         Object[] tmpArray = new Object[this.nodeArray.length + 1];
+        System.arraycopy(this.nodeArray, 0, tmpArray, 0, this.nodeArray.length);
         tmpArray[this.nodeArray.length] = node;
         this.nodeArray = tmpArray;
     }
 
     /**
      * Remove the first occurrence of this node from the candidate list at runtime.<br>
-     * We will use Guava's consistent hash method, so only 1/n hash values will be affected by
-     * remove this node.
+     * We will use Guava's consistent hash method, but there is no hash ring, so lots of nodes will
+     * be affected by remove node from the hash list. It's better to keep it there than remove it.
      *
      * @param node the node to be removed
      */
@@ -100,6 +101,13 @@ public class DoubleHash<T> {
             System.arraycopy(this.nodeArray, i + 1, tmpArray, i, tmpArray.length - i);
             this.nodeArray = tmpArray;
         }
+    }
+
+    /**
+     * @return the size of the candidate list.
+     */
+    public int size() {
+        return this.nodeArray.length;
     }
 
     /**
