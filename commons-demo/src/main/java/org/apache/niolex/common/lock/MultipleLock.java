@@ -72,7 +72,7 @@ public class MultipleLock {
     }
 
     public static void inc() {
-        int key = MockUtil.ranInt(MAX);
+        int key = MockUtil.randInt(MAX);
         Counter c = hashMap.get(key);
         synchronized (c) {
             c.set(c.cnt() + 1);

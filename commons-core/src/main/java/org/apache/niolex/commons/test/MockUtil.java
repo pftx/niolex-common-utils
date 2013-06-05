@@ -35,13 +35,25 @@ public abstract class MockUtil {
 
     /**
      * Generate a random int uniformly distributed int value between 0 (inclusive) and the specified value
-     * (exclusive), drawn from this random number generator's sequence.
+     * (exclusive), drawn from the inner random number generator's sequence.
      *
      * @param max
      * @return the result
      */
-    public static final int ranInt(int max) {
+    public static final int randInt(int max) {
     	return generator.nextInt(max);
+    }
+
+    /**
+     * Generate a random int uniformly distributed int value between <code>from (inclusive)</code> and <code>to</code>
+     * (exclusive), drawn from the inner random number generator's sequence.
+     *
+     * @param from
+     * @param to
+     * @return the result
+     */
+    public static final int randInt(int from, int to) {
+        return generator.nextInt(to - from) + from;
     }
 
     /**
@@ -50,7 +62,7 @@ public abstract class MockUtil {
      *
      * @return the result
      */
-    public static final long ranLong() {
+    public static final long randLong() {
         return generator.nextLong();
     }
 

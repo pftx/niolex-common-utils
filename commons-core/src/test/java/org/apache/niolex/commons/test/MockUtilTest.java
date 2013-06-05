@@ -33,9 +33,16 @@ public class MockUtilTest {
 	static int i1, i2, i3, i4, i5, i6, i7, i8;
 
     @Test
-    public void doTestRanInt() {
-        int a = MockUtil.ranInt(128);
+    public void doTestRandInt() {
+        int a = MockUtil.randInt(128);
         Assert.assertTrue(a < 128);
+    }
+
+    @Test
+    public void doTestRandIntFromTo() {
+        int a = MockUtil.randInt(118, 128);
+        Assert.assertTrue(a < 128);
+        Assert.assertTrue(a > 117);
     }
 
     @Test
@@ -104,9 +111,9 @@ public class MockUtilTest {
     }
 
     @Test
-    public void testRanLong() throws Exception {
+    public void testRandLong() throws Exception {
         new MockUtil() {};
-        Assert.assertNotEquals(MockUtil.ranLong(), MockUtil.ranLong());
+        Assert.assertNotEquals(MockUtil.randLong(), MockUtil.randLong());
     }
 
     @Test

@@ -53,7 +53,7 @@ public class Benchmark {
     public static final Benchmark makeBenchmark() {
         Benchmark b = new Benchmark();
         b.setClassId(908123 + autoInc++);
-        b.setPersonId(MockUtil.ranInt(Integer.MAX_VALUE));
+        b.setPersonId(MockUtil.randInt(Integer.MAX_VALUE));
         b.setJoinId(System.currentTimeMillis());
         b.setStatus(-1293 + autoInc);
         b.setPriv(9128 + autoInc);
@@ -222,10 +222,10 @@ public class Benchmark {
 
         public static final Group makeGroup() {
 			Group g = new Group();
-			g.setGroupId((long)(MockUtil.ranInt(Integer.MAX_VALUE) << 32) + MockUtil.ranInt(Integer.MAX_VALUE));
-			g.setGroupName("Benchmark Group - " + MockUtil.ranInt(12312));
+			g.setGroupId((long)(MockUtil.randInt(Integer.MAX_VALUE) << 32) + MockUtil.randInt(Integer.MAX_VALUE));
+			g.setGroupName("Benchmark Group - " + MockUtil.randInt(12312));
 			g.setGroupStatus(1280934 + autoInc);
-			g.setPrice(autoInc + MockUtil.ranInt(1000));
+			g.setPrice(autoInc + MockUtil.randInt(1000));
 			Map<String, Bean> beanMap = new HashMap<String, Benchmark.Bean>();
 			g.setBeanMap(beanMap);
 			beanMap.put("Qute", Bean.makeBean());
@@ -328,7 +328,7 @@ public class Benchmark {
 		private Date birth;
 
 		public static final Bean makeBean() {
-		    return new Bean(autoInc, "Bennchmark Bean", System.nanoTime() + MockUtil.ranInt(939393), new Date());
+		    return new Bean(autoInc, "Bennchmark Bean", System.nanoTime() + MockUtil.randInt(939393), new Date());
 		}
 
 		public Bean() {

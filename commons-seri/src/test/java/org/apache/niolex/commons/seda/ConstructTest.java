@@ -185,7 +185,7 @@ public class ConstructTest {
 	@Test
 	public void testDispatch() throws Exception {
 		for (int i = 0; i < computeSize; ++i) {
-			disp.dispatch("c1", new TInput(MockUtil.ranInt(1000)));
+			disp.dispatch("c1", new TInput(MockUtil.randInt(1000)));
 			Thread.sleep(1);
 		}
 

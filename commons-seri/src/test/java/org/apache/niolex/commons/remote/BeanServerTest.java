@@ -134,7 +134,7 @@ public class BeanServerTest {
 
 			@Override
 			public void runMe() {
-				m.addValue("test.me", MockUtil.ranInt(200));
+				m.addValue("test.me", MockUtil.randInt(200));
 			}
 
 		};

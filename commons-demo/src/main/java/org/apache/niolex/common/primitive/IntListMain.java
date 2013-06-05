@@ -41,7 +41,7 @@ public class IntListMain {
 		for (int i = 0; i < 1000; ++i) {
 			Stop s = w.start();
 			for (int j = 0; j < 10000; ++j) {
-				inList.add(MockUtil.ranInt(1239087231));
+				inList.add(MockUtil.randInt(1239087231));
 			}
 			s.stop();
 		}
@@ -53,7 +53,7 @@ public class IntListMain {
 		for (int i = 0; i < 1000; ++i) {
 			Stop s = w.start();
 			for (int j = 0; j < 10000; ++j) {
-				oList.add(MockUtil.ranInt(1239087231));
+				oList.add(MockUtil.randInt(1239087231));
 			}
 			s.stop();
 		}
