@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>org.apache.niolex</groupId>
 			<artifactId>commons-core</artifactId>
-			<version>1.0.10</version>
+			<version>[1.0.10,2.0.0)</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>reflectasm</artifactId>
@@ -77,16 +77,16 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<scm>
-		<connection>  
+		<connection>
         scm:svn:http://svn.d.xiaonei.com/ads/adsystem/notify-core/trunk
     </connection>
-		<developerConnection>  
+		<developerConnection>
         scm:svn:http://svn.d.xiaonei.com/ads/adsystem/notify-core/trunk
     </developerConnection>
 	</scm>
-	
+
 	<build>
 		<plugins>
 			<plugin>
