@@ -132,6 +132,34 @@ public abstract class DateTimeUtil {
     }
 
     /**
+     * Format the current date time to "HH:mm:ss" format string.
+     * @return the result
+     */
+    public static final String formatDate2TimeStr() {
+        return formatDate2TimeStr(new Date());
+    }
+
+    /**
+     * Format the given date time to "HH:mm:ss" format string.
+     * @param date
+     * @return the result
+     */
+    public static final String formatDate2TimeStr(Date date) {
+        SimpleDateFormat s = new SimpleDateFormat("HH:mm:ss");
+        return s.format(date);
+    }
+
+    /**
+     * Format the given date time to "HH:mm:ss" format string.
+     * @param date
+     * @return the result
+     */
+    public static final String formatDate2TimeStr(long date) {
+        SimpleDateFormat s = new SimpleDateFormat("HH:mm:ss");
+        return s.format(new Date(date));
+    }
+
+    /**
      * Format the current date time to "yyyyMMdd" format string.
      * @return the result
      */

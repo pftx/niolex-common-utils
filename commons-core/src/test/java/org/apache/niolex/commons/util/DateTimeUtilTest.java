@@ -230,4 +230,25 @@ public class DateTimeUtilTest {
         i = DateTimeUtil.getMinute(d);
         Assert.assertEquals(i, 0);
     }
+
+    @Test
+    public void testFormatDate2ShortStr() throws Exception {
+        String r = DateTimeUtil.formatDate2TimeStr();
+        Assert.assertEquals(8, r.length());
+    }
+
+    @Test
+    public void testFormatDate2ShortStrDate() throws Exception {
+        String s = "2011-09-21 15:46:53";
+        Date d = DateTimeUtil.parseDateFromDateTimeStr(s);
+        String r = DateTimeUtil.formatDate2TimeStr(d);
+        Assert.assertEquals("15:46:53", r);
+    }
+
+    @Test
+    public void testFormatDate2ShortStrLong() throws Exception {
+        String r = DateTimeUtil.formatDate2TimeStr(123456000l);
+        Assert.assertEquals("18:17:36", r);
+    }
+
 }
