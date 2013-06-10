@@ -1,5 +1,5 @@
 /**
- * DoubleHashBalanceTest.java
+ * ConsistentHashDynamicBalanceText.java
  *
  * Copyright 2013 the original author or authors.
  *
@@ -28,25 +28,24 @@ import org.apache.niolex.commons.test.MockUtil;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
-import com.google.common.hash.Hashing;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2013-6-4
+ * @since 2013-6-10
  */
-public class DoubleHashBalanceTest {
+public class ConsistentHashDynamicBalanceTest {
 
     @Test
     public void testAddBalance() throws Exception {
         Collection<String> nodeList = Arrays.asList("10.214.133.100:8087", "10.214.133.101:8088", "10.214.65.11:8087", "10.214.65.12:8088",
                 "10.214.133.102:8087", "10.214.133.103:8088", "10.214.65.13:8087", "10.214.65.14:8088");
-        DoubleHash<String> dHash = new DoubleHash<String>(Hashing.murmur3_128(), Hashing.crc32(), nodeList);
+        ConsistentHash<String> dHash = new ConsistentHash<String>(ConsistentHash.GuavaHash.INSTANCE, 100, nodeList);
         Map<String, Integer> map = Maps.newHashMap();
         Map<String, String> trap = Maps.newHashMap();
         for (int i = 0; i < 20000; ++i) {
             String key = MockUtil.randString();
-            String node = dHash.getPairNodes(key).a;
+            String node = dHash.getNode(key);
             Integer in = map.get(node);
             in = in == null ? 1 : in + 1;
             map.put(node, in);
@@ -57,7 +56,35 @@ public class DoubleHashBalanceTest {
         dHash.add("10.13.65.131:8088");
         int cnt = 0;
         for (Entry<String, String> o : trap.entrySet()) {
-            String node = dHash.getPairNodes(o.getKey()).a;
+            String node = dHash.getNode(o.getKey());
+            if (!node.equals(o.getValue())) {
+                ++cnt;
+            }
+        }
+        System.out.println("ChangedA => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
+    }
+
+    @Test
+    public void testAdd2Balance() throws Exception {
+        Collection<String> nodeList = Arrays.asList("10.214.133.100:8087", "10.214.133.101:8088", "10.214.65.11:8087", "10.214.65.12:8088",
+                "10.214.133.102:8087", "10.214.133.103:8088", "10.214.65.13:8087", "10.214.65.14:8088");
+        ConsistentHash<String> dHash = new ConsistentHash<String>(ConsistentHash.GuavaHash.INSTANCE, 100, nodeList);
+        Map<String, Integer> map = Maps.newHashMap();
+        Map<String, String> trap = Maps.newHashMap();
+        for (int i = 0; i < 20000; ++i) {
+            String key = MockUtil.randString();
+            String node = dHash.getNode(key);
+            Integer in = map.get(node);
+            in = in == null ? 1 : in + 1;
+            map.put(node, in);
+            trap.put(key, node);
+        }
+        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        System.out.println("BalanceA => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
+        dHash.add("10.214.35.131:8088");
+        int cnt = 0;
+        for (Entry<String, String> o : trap.entrySet()) {
+            String node = dHash.getNode(o.getKey());
             if (!node.equals(o.getValue())) {
                 ++cnt;
             }
@@ -69,18 +96,18 @@ public class DoubleHashBalanceTest {
     public void testRemoveBalance() throws Exception {
         Collection<String> nodeList = Arrays.asList("10.214.133.100:8087", "10.214.133.101:8088", "10.214.65.11:8087", "10.214.65.12:8088",
                 "10.214.133.102:8087", "10.214.133.103:8088", "10.214.65.13:8087", "10.214.65.14:8088");
-        DoubleHash<String> dHash = new DoubleHash<String>(Hashing.murmur3_128(), Hashing.crc32(), nodeList);
+        ConsistentHash<String> dHash = new ConsistentHash<String>(ConsistentHash.GuavaHash.INSTANCE, 100, nodeList);
         Map<String, String> trap = Maps.newHashMap();
         for (int i = 0; i < 20000; ++i) {
             String key = MockUtil.randString();
-            String node = dHash.getPairNodes(key).a;
+            String node = dHash.getNode(key);
             trap.put(key, node);
         }
         dHash.remove("10.214.133.101:8088");
         int cnt = 0;
         Map<String, Integer> map = Maps.newHashMap();
         for (Entry<String, String> o : trap.entrySet()) {
-            String node = dHash.getPairNodes(o.getKey()).a;
+            String node = dHash.getNode(o.getKey());
             Integer in = map.get(node);
             in = in == null ? 1 : in + 1;
             map.put(node, in);
@@ -94,49 +121,21 @@ public class DoubleHashBalanceTest {
     }
 
     @Test
-    public void testRemoveFirstBalance() throws Exception {
+    public void testRemove2Balance() throws Exception {
         Collection<String> nodeList = Arrays.asList("10.214.133.100:8087", "10.214.133.101:8088", "10.214.65.11:8087", "10.214.65.12:8088",
                 "10.214.133.102:8087", "10.214.133.103:8088", "10.214.65.13:8087", "10.214.65.14:8088");
-        DoubleHash<String> dHash = new DoubleHash<String>(Hashing.murmur3_128(), Hashing.crc32(), nodeList);
+        ConsistentHash<String> dHash = new ConsistentHash<String>(ConsistentHash.GuavaHash.INSTANCE, 100, nodeList);
         Map<String, String> trap = Maps.newHashMap();
         for (int i = 0; i < 20000; ++i) {
             String key = MockUtil.randString();
-            String node = dHash.getPairNodes(key).a;
-            trap.put(key, node);
-        }
-        dHash.remove("10.214.133.100:8087");
-        int cnt = 0;
-        Map<String, Integer> map = Maps.newHashMap();
-        for (Entry<String, String> o : trap.entrySet()) {
-            String node = dHash.getPairNodes(o.getKey()).a;
-            Integer in = map.get(node);
-            in = in == null ? 1 : in + 1;
-            map.put(node, in);
-            if (!node.equals(o.getValue())) {
-                ++cnt;
-            }
-        }
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
-        System.out.println("BalanceR => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
-        System.out.println("ChangedR => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
-    }
-
-    @Test
-    public void testRemoveLastBalance() throws Exception {
-        Collection<String> nodeList = Arrays.asList("10.214.133.100:8087", "10.214.133.101:8088", "10.214.65.11:8087", "10.214.65.12:8088",
-                "10.214.133.102:8087", "10.214.133.103:8088", "10.214.65.13:8087", "10.214.65.14:8088");
-        DoubleHash<String> dHash = new DoubleHash<String>(Hashing.murmur3_128(), Hashing.crc32(), nodeList);
-        Map<String, String> trap = Maps.newHashMap();
-        for (int i = 0; i < 20000; ++i) {
-            String key = MockUtil.randString();
-            String node = dHash.getPairNodes(key).a;
+            String node = dHash.getNode(key);
             trap.put(key, node);
         }
         dHash.remove("10.214.65.14:8088");
         int cnt = 0;
         Map<String, Integer> map = Maps.newHashMap();
         for (Entry<String, String> o : trap.entrySet()) {
-            String node = dHash.getPairNodes(o.getKey()).a;
+            String node = dHash.getNode(o.getKey());
             Integer in = map.get(node);
             in = in == null ? 1 : in + 1;
             map.put(node, in);
@@ -145,7 +144,35 @@ public class DoubleHashBalanceTest {
             }
         }
         Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
-        System.out.println("BalanceL => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
-        System.out.println("ChangedL => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
+        System.out.println("BalanceR => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
+        System.out.println("ChangedR => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
+    }
+
+    @Test
+    public void testRemove3Balance() throws Exception {
+        Collection<String> nodeList = Arrays.asList("10.214.133.100:8087", "10.214.133.101:8088", "10.214.65.11:8087", "10.214.65.12:8088",
+                "10.214.133.102:8087", "10.214.133.103:8088", "10.214.65.13:8087", "10.214.65.14:8088");
+        ConsistentHash<String> dHash = new ConsistentHash<String>(ConsistentHash.GuavaHash.INSTANCE, 100, nodeList);
+        Map<String, String> trap = Maps.newHashMap();
+        for (int i = 0; i < 20000; ++i) {
+            String key = MockUtil.randString();
+            String node = dHash.getNode(key);
+            trap.put(key, node);
+        }
+        dHash.remove("10.214.133.100:8087");
+        int cnt = 0;
+        Map<String, Integer> map = Maps.newHashMap();
+        for (Entry<String, String> o : trap.entrySet()) {
+            String node = dHash.getNode(o.getKey());
+            Integer in = map.get(node);
+            in = in == null ? 1 : in + 1;
+            map.put(node, in);
+            if (!node.equals(o.getValue())) {
+                ++cnt;
+            }
+        }
+        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        System.out.println("BalanceR => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
+        System.out.println("ChangedR => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
     }
 }

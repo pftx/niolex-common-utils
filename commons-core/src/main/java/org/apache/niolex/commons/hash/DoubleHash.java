@@ -80,9 +80,17 @@ public class DoubleHash<T> {
     }
 
     /**
-     * Remove the first occurrence of this node from the candidate list at runtime.<br>
+     * Remove the first occurrence of this node from the candidate list at runtime.
+     * the remove of last node will cause 1/n, and others 2/n - 1/n^2 hash values be affected.<br>
+     *
      * We will use Guava's consistent hash method, but there is no hash ring, so lots of nodes will
-     * be affected by remove node from the hash list. It's better to keep it there than remove it.
+     * be affected by remove node from the hash list. In order to minimize the effect, we always replace
+     * the target node with the last node, and remove the last slot to keep the node list stable.<br>
+     *
+     * So according to Guava's consistent hash method, there will be 1/n hash values affected by remove the last
+     * node, and there is another 1/n hash values affected by the replace. In total we have 2/n hash values affected.<br>
+     *
+     * It's better to keep it there than remove it if possible.
      *
      * @param node the node to be removed
      */
@@ -97,8 +105,12 @@ public class DoubleHash<T> {
 
         if (i != length) {
             Object[] tmpArray = new Object[length - 1];
-            System.arraycopy(this.nodeArray, 0, tmpArray, 0, i);
-            System.arraycopy(this.nodeArray, i + 1, tmpArray, i, tmpArray.length - i);
+            // First we copy all the old array into new array except the last one.
+            System.arraycopy(this.nodeArray, 0, tmpArray, 0, length - 1);
+            if (i != length - 1) {
+                // Then we replace target with last node.
+                tmpArray[i] = this.nodeArray[length - 1];
+            }
             this.nodeArray = tmpArray;
         }
     }

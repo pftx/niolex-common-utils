@@ -85,7 +85,7 @@ public class DoubleHashTest {
         Pair<String,String> pair;
         pair = dHash.getPairNodes(36);
 
-        assertEquals("{a=10.214.65.11:8088, b=10.214.133.100:8088}", pair.toString());
+        assertEquals("{a=10.214.65.11:8087, b=10.214.65.11:8088}", pair.toString());
     }
 
     @Test
