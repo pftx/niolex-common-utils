@@ -20,7 +20,6 @@ package org.apache.niolex.common.esper;
 import java.util.List;
 
 import org.apache.niolex.commons.test.MockUtil;
-import org.apache.niolex.commons.test.ObjToStringUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 
 import com.espertech.esper.client.Configuration;
@@ -29,8 +28,6 @@ import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.UpdateListener;
 import com.google.common.collect.Lists;
 
 /**
@@ -119,9 +116,15 @@ public class AccessProcess {
         }
     }
 
-    public static class CEPListener implements UpdateListener {
-        public void update(EventBean[] newData, EventBean[] oldData) {
-            SystemUtil.println("Event received, old: %s, new: %s.", ObjToStringUtil.objToString(oldData), ObjToStringUtil.objToString(newData));
+    public static class Subscriber {
+        public void update(String ip, long cnt) {
+            SystemUtil.println("Event received, IP: %s, count: %d.", ip, cnt);
+        }
+    }
+
+    public static class Subscriber2 {
+        public void update(String ip, double cnt) {
+            SystemUtil.println("Event received, IP: %s, count: %d.", ip, cnt);
         }
     }
 
@@ -133,10 +136,13 @@ public class AccessProcess {
         EPRuntime cepRT = cep.getEPRuntime();
 
         EPAdministrator cepAdm = cep.getEPAdministrator();
-        EPStatement cepStatement = cepAdm.createEPL("select ip, count(*) from " + "Access.win:time(1 sec) group by ip"
-                + " having count(*) > 120");
+        EPStatement cepStatement = cepAdm.createEPL("select ip, count(*) as cnt from " + "Access.win:time(1 sec) group by ip"
+                + " having count(*) > 120 output first every 10 seconds");
 
-        cepStatement.addListener(new CEPListener());
+        //cepStatement.setSubscriber(new Subscriber());
+
+        cepStatement = cepAdm.createEPL("select ip, rate(10) as cnt from " + "Access group by ip");
+        cepStatement.setSubscriber(new Subscriber2());
 
         // We generate a few ticks...
         for (int i = 0; i < 3000; i++) {
