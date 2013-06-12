@@ -17,6 +17,9 @@
  */
 package org.apache.niolex.commons.codec;
 
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -54,6 +57,20 @@ public class RsaHelperTest {
         Assert.assertEquals(RsaHelper.getMiddleString("baabcdiedc", "ba", "dc"), "abcdie");
         Assert.assertEquals(RsaHelper.getMiddleString("<RSAKeyValue><Modulus>AK3TiBdwM9CJVQSWA6VrTJUU8NxB9uil7ByGQ+bSXNtecogAigvmiMF6QHg2QtgAApmwNFGfCFK6A+DEn9DroGVVThKpD3XkraQkq9i6y95FXX+GZKKFfC1fowGIFMaB5Wxns8pn+qMi3jagl/lin7Lohf3d0o0T7U//9vjiuzjT</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>", "<Modulus>", "</Modulus>"),
                 "AK3TiBdwM9CJVQSWA6VrTJUU8NxB9uil7ByGQ+bSXNtecogAigvmiMF6QHg2QtgAApmwNFGfCFK6A+DEn9DroGVVThKpD3XkraQkq9i6y95FXX+GZKKFfC1fowGIFMaB5Wxns8pn+qMi3jagl/lin7Lohf3d0o0T7U//9vjiuzjT");
+    }
+
+    @Test
+    public void testEncodePublicKeyToXml() {
+        PublicKey key = mock(PublicKey.class);
+        String xml = RsaHelper.encodePublicKeyToXml(key);
+        assertNull(xml);
+    }
+
+    @Test
+    public void testEncodePrivateKeyToXml() {
+        PrivateKey key = mock(PrivateKey.class);
+        String xml = RsaHelper.encodePrivateKeyToXml(key);
+        assertNull(xml);
     }
 
     @Test

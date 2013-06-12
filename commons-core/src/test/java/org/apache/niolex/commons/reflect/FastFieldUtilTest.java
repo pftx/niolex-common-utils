@@ -42,6 +42,7 @@ public class FastFieldUtilTest {
 		String[] fields = FastFieldUtil.getFields(FieldTestBean.class);
         System.out.println("FieldTestBean fields => " + Arrays.toString(fields));
         Assert.assertTrue(fields.length >= 3);
+        new FastFieldUtil(){};
 	}
 
 	/**

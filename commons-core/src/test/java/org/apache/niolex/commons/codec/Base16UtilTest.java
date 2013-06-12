@@ -56,14 +56,19 @@ public class Base16UtilTest {
         Assert.assertEquals("", s);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void testBase16_invalid() {
-    	Base16Util.base16toByte(null);
+        try {
+            Base16Util.base16toByte(null);
+        } catch (IllegalArgumentException e) {
+            return;
+        }
+        Assert.assertTrue(false);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testBase16_invalid_2() {
-    	Base16Util.base16toByte(null);
+    	Base16Util.byteToBase16(null);
     }
 
     @Test

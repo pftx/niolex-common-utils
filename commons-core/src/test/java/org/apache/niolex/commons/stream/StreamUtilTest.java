@@ -18,6 +18,9 @@
 package org.apache.niolex.commons.stream;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +49,17 @@ public class StreamUtilTest {
 	}
 
 	/**
+	 * Test method for {@link org.apache.niolex.commons.stream.StreamUtil#closeStream(java.io.InputStream)}.
+	 * @throws IOException
+	 */
+	@Test
+	public void testCloseStreamInputStreamError() throws IOException {
+	    InputStream in = mock(InputStream.class);
+	    doThrow(new IOException("Just 4 test")).when(in).close();
+	    StreamUtil.closeStream(in);
+	}
+
+	/**
 	 * Test method for {@link org.apache.niolex.commons.stream.StreamUtil#closeStream(java.io.OutputStream)}.
 	 */
 	@Test
@@ -54,6 +68,16 @@ public class StreamUtilTest {
 		StreamUtil.closeStream(out);
 		out = new PipedOutputStream();
 		StreamUtil.closeStream(out);
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.stream.StreamUtil#closeStream(java.io.OutputStream)}.
+	 */
+	@Test
+	public void testCloseStreamOutputStreamError() throws IOException {
+	    OutputStream out = mock(OutputStream.class);
+        doThrow(new IOException("Just 4 test")).when(out).close();
+        StreamUtil.closeStream(out);
 	}
 
 	@Test
@@ -67,6 +91,14 @@ public class StreamUtilTest {
 		StreamUtil.writeString(out, "This is so good");
 		System.out.println(snk.available());
 		assertEquals(15, snk.available());
+	}
+
+	@Test
+	public void testWriteStringOutputStreamError() throws IOException {
+	    OutputStream out = mock(OutputStream.class);
+        doThrow(new IOException("Just 4 test")).when(out).write(any(byte[].class));
+	    StreamUtil.writeString(out, "This is so good");
+	    new StreamUtil();
 	}
 
 }

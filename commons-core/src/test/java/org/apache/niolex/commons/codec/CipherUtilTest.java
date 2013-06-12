@@ -46,4 +46,15 @@ public class CipherUtilTest {
 		Assert.assertArrayEquals(input, outup);
 	}
 
+	@Test
+    public final void testGetInstance() {
+	    try {
+	        CipherUtil.getInstance("SHA2");
+	    } catch (IllegalStateException e) {
+	        System.out.println(e.getMessage());
+	        return;
+	    }
+	    Assert.assertTrue(false);
+	}
+
 }

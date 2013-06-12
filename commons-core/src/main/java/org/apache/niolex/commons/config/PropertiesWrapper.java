@@ -93,12 +93,7 @@ public class PropertiesWrapper extends Properties {
      * @throws NullPointerException 假如文件名是null
      */
     public void load(String resource, Class<?> cls) throws IOException {
-        InputStream in = cls.getResourceAsStream(resource);
-        try {
-            load(in);
-        } finally {
-            SystemUtil.close(in);
-        }
+        load(cls.getResourceAsStream(resource));
     }
 
     /**
@@ -111,14 +106,24 @@ public class PropertiesWrapper extends Properties {
      * @throws SecurityException 假如系统中配置了security manager并且该security manager拒绝了读文件的请求
      */
     public void load(String fileName) throws IOException {
-        InputStream in = new FileInputStream(fileName);
-        try {
-            load(in);
-        } finally {
-            SystemUtil.close(in);
-        }
+        load(new FileInputStream(fileName));
     }
 
+    /**
+     * Reads a property list (key and element pairs) from the input
+     * byte stream. We will close this stream here, instead of leave it open as the super method do.
+     * This is the override of super method.
+     *
+     * @see java.util.Properties#load(java.io.InputStream)
+     */
+    @Override
+    public synchronized void load(InputStream inStream) throws IOException {
+        try {
+            super.load(inStream);
+        } finally {
+            SystemUtil.close(inStream);
+        }
+    }
 
     /**
      * 从配置文件中读取字符串类型的配置

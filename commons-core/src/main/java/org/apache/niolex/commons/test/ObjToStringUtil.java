@@ -21,6 +21,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 
+import org.apache.niolex.commons.reflect.FieldUtil;
+
 /**
  * ObjToStringUtil translate general objects into string.
  * We only nest into 5 levels.
@@ -113,16 +115,12 @@ public abstract class ObjToStringUtil {
         }
         sb.append("{\n");
         for (Field f : o.getClass().getDeclaredFields()) {
-            f.setAccessible(true);
             if (f.isSynthetic() || (f.getModifiers() & Modifier.STATIC) > 0)
                 continue;
-            try {
-                generateIndentation(sb, indentation);
-                sb.append(f.getName()).append("=");
-                printFields(f.get(o), sb, indentation + 2);
-                sb.append("\n");
-            } catch (Exception e) {
-            }
+            generateIndentation(sb, indentation);
+            sb.append(f.getName()).append("=");
+            printFields(FieldUtil.safeFieldValue(f, o), sb, indentation + 2);
+            sb.append("\n");
         }
         int i = sb.length() - 2;
         if (sb.charAt(i) == '{')

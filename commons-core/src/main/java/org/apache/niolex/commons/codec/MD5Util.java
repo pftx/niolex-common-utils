@@ -45,12 +45,7 @@ public abstract class MD5Util {
      * @return 输入字符串列表的MD5签名
      */
     public static final String md5(String... plainTexts) {
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("The runtime doesn't support MD5 algorithm.", e);
-        }
+        MessageDigest md = CipherUtil.getInstance("MD5");
         for (String plainText : plainTexts) {
         	if (plainText == null) {
         	    // This is the magic code for null string.
@@ -73,12 +68,7 @@ public abstract class MD5Util {
      * @throws NoSuchAlgorithmException 当用户的JDK不支持MD5哈希算法时
      */
     public static final boolean md5Check(String md5, String... plainTexts) {
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("The runtime doesn't support MD5 algorithm.", e);
-        }
+        MessageDigest md = CipherUtil.getInstance("MD5");
         for (String plainText : plainTexts) {
         	if (plainText == null) {
         		md.update((byte) 216);

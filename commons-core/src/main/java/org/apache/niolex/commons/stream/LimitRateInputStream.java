@@ -20,8 +20,7 @@ package org.apache.niolex.commons.stream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.niolex.commons.util.SystemUtil;
 
 /**
  * Restrict the input rate.
@@ -31,7 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 public class LimitRateInputStream extends InputStream {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LimitRateInputStream.class);
     // We check when we received every 1K for rate.
     private static final int CHECK_SIZE_THRESHOLD = 10240;
     private final InputStream delegate;
@@ -73,11 +71,7 @@ public class LimitRateInputStream extends InputStream {
             long usedTime = System.nanoTime() - startedTime;
             long needTime = (long) (cnt / expectedRate);
             if (usedTime < needTime - 300000) {
-                try {
-                    Thread.sleep((needTime - usedTime) / 1000000 + 1);
-                } catch (Exception e) {
-                    LOG.info("Exception while sleep - ", e.getMessage());
-                }
+                SystemUtil.sleep((needTime - usedTime) / 1000000 + 1);
             }
             chunk += CHECK_SIZE_THRESHOLD;
         }

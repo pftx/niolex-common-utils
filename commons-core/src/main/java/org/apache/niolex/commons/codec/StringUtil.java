@@ -57,7 +57,7 @@ public abstract class StringUtil {
 	/**
 	 * Translate UTF8 encoded byte array to String.
 	 *
-	 * @param data
+	 * @param data the binary format
 	 * @return the result string
 	 */
 	public static final String utf8ByteToStr(byte[] data) {
@@ -66,7 +66,7 @@ public abstract class StringUtil {
 
 	/**
 	 * Translate String to UTF8 encoded byte array.
-	 * @param str
+	 * @param str the string
 	 * @return the encoded byte array
 	 */
 	public static final byte[] strToUtf8Byte(String str) {
@@ -76,7 +76,7 @@ public abstract class StringUtil {
 	/**
 	 * Translate US-ASCII encoded byte array to String.
 	 *
-	 * @param data
+	 * @param data the binary format
 	 * @return the string
 	 */
 	public static final String asciiByteToStr(byte[] data) {
@@ -85,7 +85,7 @@ public abstract class StringUtil {
 
 	/**
 	 * Translate String to US-ASCII encoded byte array.
-	 * @param str
+	 * @param str the string
 	 * @return the encoded byte array
 	 */
 	public static final byte[] strToAsciiByte(String str) {
@@ -93,10 +93,21 @@ public abstract class StringUtil {
 	}
 
 	/**
+     * Join the string array into one single string by the separator.
+     *
+     * @param sep the separator
+     * @param strs the string array
+     * @return the result string
+     */
+	public static final String join(String sep, String... strs) {
+	    return join(strs, sep);
+	}
+
+	/**
 	 * Join the string array into one single string by the separator.
 	 *
-	 * @param strs
-	 * @param sep
+	 * @param strs the string array
+	 * @param sep the separator
 	 * @return the result string
 	 */
 	public static final String join(String[] strs, String sep) {
@@ -112,10 +123,21 @@ public abstract class StringUtil {
 	}
 
 	/**
+     * Join the string collection into one single string by the separator.
+     *
+     * @param sep the separator
+     * @param strs the collection of string
+     * @return the result string
+     */
+    public static final String join(String sep, Collection<String> strs) {
+        return join(strs, sep);
+    }
+
+	/**
 	 * Join the string collection into one single string by the separator.
 	 *
-	 * @param strs
-	 * @param sep
+	 * @param strs the collection of string
+	 * @param sep the separator
 	 * @return the result string
 	 */
 	public static final String join(Collection<String> strs, String sep) {
@@ -132,10 +154,10 @@ public abstract class StringUtil {
 	}
 
 	/**
-	 * Concatenates all the parameters into one string by the specified seperator.
+	 * Concatenates all the parameters into one string by the specified separator.
 	 *
-	 * @param sep
-	 * @param arr
+	 * @param sep the separator
+	 * @param arr the string array
 	 * @return the result string
 	 */
 	public static final String concat(String sep, String ...arr) {

@@ -41,6 +41,7 @@ public class ProxyUtilTest {
         String strValue = mapTest.get("gmail");
         Assert.assertEquals(strValue, "Xie, Jiyun");
         Assert.assertEquals(h.getInvokeNum(), 2);
+        new ProxyUtil();
     }
 
 }

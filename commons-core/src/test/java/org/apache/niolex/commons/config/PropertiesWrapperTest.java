@@ -17,6 +17,11 @@
  */
 package org.apache.niolex.commons.config;
 
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -64,6 +69,33 @@ public class PropertiesWrapperTest {
         hello = PropUtil.getProperty("greeting");
         System.out.println("a => " + hello);
         Assert.assertEquals("您好！", hello);
+    }
+
+    @Test
+    public void testCloseStream() throws Exception {
+        String f = PropertiesWrapperTest.class.getResource("new.properties").toExternalForm().substring(6);
+        FileInputStream in = new FileInputStream(f);
+        in = spy(in);
+        PropertiesWrapper p = new PropertiesWrapper();
+        p.load(in);
+        Assert.assertEquals(798197318998413l, p.getLong("lb"));
+        verify(in, times(1)).close();
+    }
+
+    @Test
+    public void testCloseStreamError() throws Exception {
+        FileInputStream in = mock(FileInputStream.class);
+        PropertiesWrapper p = new PropertiesWrapper();
+        when(in.read(any(byte[].class))).thenThrow(new IOException("Just 4 test"));
+        boolean f = true;
+        try {
+            p.load(in);
+        } catch (Exception e) {
+            f = false;
+        }
+        Assert.assertEquals(566l, p.getLong("lb", 566));
+        verify(in, times(1)).close();
+        assertFalse(f);
     }
 
     @Test

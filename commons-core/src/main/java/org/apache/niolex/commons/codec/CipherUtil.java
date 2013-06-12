@@ -17,6 +17,9 @@
  */
 package org.apache.niolex.commons.codec;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -32,6 +35,21 @@ import org.apache.commons.lang.ArrayUtils;
  * @version 1.0.0, $Date: 2012-4-9$
  */
 public abstract class CipherUtil {
+
+    /**
+     * Returns a MessageDigest object that implements the specified digest algorithm.
+     *
+     * @param name algorithm the name of the algorithm requested
+     * @return a Message Digest object that implements the specified algorithm.
+     * @throws IllegalStateException If the runtime doesn't support the algorithm
+     */
+    public static MessageDigest getInstance(String name) {
+        try {
+            return MessageDigest.getInstance(name);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("The runtime doesn't support the algorithm: " + name, e);
+        }
+    }
 
     /**
      * For some kind of cipher, e.g. RSA, can not handle bytes larger than a fixed block size.

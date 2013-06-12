@@ -111,6 +111,28 @@ public abstract class FieldUtil {
     }
 
     /**
+     * 获取一个Java对象中指定属性的值，不抛出任何检查的异常
+     *
+     * @param <T> 该属性的返回类型，方法中将按照该类型进行强制类型转换
+     * @param f 需要获取的值的属性定义
+     * @param host 用来获取指定属性的值的对象
+     * @return 指定属性的值
+     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
+     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     */
+    @SuppressWarnings("unchecked")
+    public static final <T> T safeFieldValue(Field f, Object host) {
+        f.setAccessible(true);
+        try {
+            return (T) f.get(host);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException("Failed to access the field.", e);
+        }
+    }
+
+    /**
      * 设置一个Java对象中指定属性的值
      *
      * @param f 需要设置的值的属性定义

@@ -63,6 +63,9 @@ public class FastMethodUtilTest {
 		MethodTestBean host = new MethodTestBean("niolex-common-utils");
         Object ret = FastMethodUtil.invokeMethod("echoName", host, "Xie, Jiyun");
         Assert.assertEquals(ret, "Xie, Jiyun");
+        ret = FastMethodUtil.invokeMethod("echoName", host);
+        Assert.assertEquals(ret, "niolex-common-utils");
+        new FastMethodUtil();
 	}
 
 }

@@ -39,6 +39,7 @@ public class StringUtilTest {
 	 */
 	@Test
 	public void testUtf8ByteToStr() {
+	    new StringUtil(){};
 		byte[] a = MockUtil.randByteArray(16);
 		String s = StringUtil.asciiByteToStr(a);
 		System.out.println(s);
@@ -92,6 +93,24 @@ public class StringUtilTest {
 	}
 
 	@Test
+	public void testJoinStr() {
+	    String b = StringUtil.join(", ", "I", "am", "Lex");
+	    assertEquals(b, "I, am, Lex");
+	}
+
+	@Test
+	public void testJoinStr1() {
+	    String b = StringUtil.join(" ", "I", "am", "Lex");
+	    assertEquals(b, "I am Lex");
+	}
+
+	@Test
+	public void testJoinStrEmpty() {
+	    String b = StringUtil.join(" ");
+	    assertEquals(b, "");
+	}
+
+	@Test
 	public void testJoin2() {
 		String s = "Randomly reorder the int array, with all data stay the same.";
 		String[] arr = s.split(" ");
@@ -101,6 +120,18 @@ public class StringUtilTest {
 		System.out.println(sarr);
 		String b = StringUtil.join(sarr, " ");
 		assertEquals(b, s);
+	}
+
+	@Test
+	public void testJoin5() {
+	    String s = "Randomly reorder the int array, with all data stay the same.";
+	    String[] arr = s.split(" ");
+	    List<String> sarr = new ArrayList<String>(12);
+	    for (String t : arr)
+	        sarr.add(t);
+	    System.out.println(sarr);
+	    String b = StringUtil.join(" ", sarr);
+	    assertEquals(b, s);
 	}
 
 	@Test

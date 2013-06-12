@@ -47,12 +47,7 @@ public abstract class SHAUtil {
      * @throws NoSuchAlgorithmException 当用户的JDK不支持SHA哈希算法时
      */
     public static final String sha1(String... plainTexts) {
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("SHA");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("The runtime doesn't support SHA algorithm.", e);
-        }
+        MessageDigest md = CipherUtil.getInstance("SHA");
         for (String plainText : plainTexts) {
             md.update(strToUtf8Byte(plainText));
         }

@@ -17,6 +17,10 @@
  */
 package org.apache.niolex.commons.reflect;
 
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
@@ -33,6 +37,7 @@ public class FieldUtilTest {
         Field[] fields = FieldUtil.getFields(FieldTestBean.class);
         System.out.println("FieldTestBean fields => " + Arrays.toString(fields));
         Assert.assertTrue(fields.length >= 11);
+        new FieldUtil(){};
     }
 
     @Test
@@ -66,6 +71,46 @@ public class FieldUtilTest {
 
         Integer intBeanLevel = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(intBeanLevel.intValue(), 5);
+    }
+
+    @Test
+    public void testSafeFieldValue() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "strName");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldValue(field, bean, "Xie, Jiyun");
+        Assert.assertEquals(bean.echoName(), "Xie, Jiyun");
+
+        String fieldValue = FieldUtil.safeFieldValue(field, bean);
+        Assert.assertEquals(fieldValue, "Xie, Jiyun");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSafeFieldValueInvalidHost() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "strName");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldValue(field, bean, "Xie, Jiyun");
+        Assert.assertEquals(bean.echoName(), "Xie, Jiyun");
+
+        String fieldValue = FieldUtil.safeFieldValue(field, "Invalid");
+        Assert.assertEquals(fieldValue, "Xie, Jiyun");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSafeFieldValueInvalidAccess() throws Exception {
+        Field field = spy(FieldUtil.getField(FieldTestBean.class, "strName"));
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldValue(field, bean, "Xie, Jiyun");
+        Assert.assertEquals(bean.echoName(), "Xie, Jiyun");
+
+        when(field.get(bean)).thenThrow(new IllegalAccessException("This is very good"));
+
+        try {
+            String fieldValue = FieldUtil.safeFieldValue(field, "Invalid");
+            Assert.assertEquals(fieldValue, "Xie, Jiyun");
+        } catch (IllegalArgumentException e) {
+            Assert.assertEquals(e.getMessage(), "Failed to access the field.");
+            throw e;
+        }
     }
 
     @Test

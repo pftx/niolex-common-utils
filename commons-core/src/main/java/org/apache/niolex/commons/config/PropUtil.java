@@ -19,7 +19,6 @@ package org.apache.niolex.commons.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * PropUtil是一个用来管理properties配置文件的工具类
@@ -77,7 +76,7 @@ import java.util.Properties;
  */
 
 public abstract class PropUtil {
-    private static final Properties PROPS = new Properties();
+    private static final PropertiesWrapper PROPS = new PropertiesWrapper();
 
     /**
      * 从class path中加载指定名字的配置文件
@@ -134,7 +133,7 @@ public abstract class PropUtil {
      * @return 待读取的配置的值，如果配置不存在则返回null
      */
     public static final String getString(String key) {
-        return PROPS.getProperty(key);
+        return PROPS.getString(key);
     }
 
     /**
@@ -146,7 +145,7 @@ public abstract class PropUtil {
      * @return 待读取的配置的值，如果配置不存在则返回<code>defaultValue</code>
      */
     public static final String getString(String key, String defaultValue) {
-        return PROPS.getProperty(key, defaultValue);
+        return PROPS.getString(key, defaultValue);
     }
 
     /**
@@ -157,7 +156,7 @@ public abstract class PropUtil {
      * @throws NumberFormatException 如果配置不存在,或者配置不是可以解析的整数
      */
     public static final int getInteger(String key) {
-        return Integer.parseInt(PROPS.getProperty(key));
+        return PROPS.getInteger(key);
     }
 
     /**
@@ -170,7 +169,7 @@ public abstract class PropUtil {
      *         或者配置不是可以解析的整数
      */
     public static final int getInteger(String key, String defaultValue) {
-        return Integer.parseInt(PROPS.getProperty(key, defaultValue));
+        return PROPS.getInteger(key, defaultValue);
     }
 
     /**
@@ -182,7 +181,7 @@ public abstract class PropUtil {
      * @throws NumberFormatException 如果配置不是可以解析的整数
      */
     public static final int getInteger(String key, int defaultValue) {
-        return Integer.parseInt(PROPS.getProperty(key, Integer.toString(defaultValue)));
+        return PROPS.getInteger(key, Integer.toString(defaultValue));
     }
 
     /**
@@ -193,7 +192,7 @@ public abstract class PropUtil {
      * @throws NumberFormatException 如果配置不存在,或者配置不是可以解析的整数
      */
     public static final long getLong(String key) {
-    	return Long.parseLong(PROPS.getProperty(key));
+    	return PROPS.getLong(key);
     }
 
     /**
@@ -206,7 +205,7 @@ public abstract class PropUtil {
      *         或者配置不是可以解析的整数
      */
     public static final long getLong(String key, String defaultValue) {
-    	return Long.parseLong(PROPS.getProperty(key, defaultValue));
+    	return PROPS.getLong(key, defaultValue);
     }
 
     /**
@@ -218,7 +217,7 @@ public abstract class PropUtil {
      * @throws NumberFormatException 如果配置不是可以解析的整数
      */
     public static final long getLong(String key, long defaultValue) {
-    	return Long.parseLong(PROPS.getProperty(key, Long.toString(defaultValue)));
+    	return PROPS.getLong(key, Long.toString(defaultValue));
     }
 
     /**
@@ -229,7 +228,7 @@ public abstract class PropUtil {
      * @return 待读取的配置的值，（请注意）如果配置不存在则返回false
      */
     public static boolean getBoolean(String key) {
-        return Boolean.parseBoolean(PROPS.getProperty(key));
+        return PROPS.getBoolean(key);
     }
 
     /**
@@ -241,7 +240,7 @@ public abstract class PropUtil {
      * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
      */
     public static boolean getBoolean(String key, String defaultValue) {
-        return Boolean.parseBoolean(PROPS.getProperty(key, defaultValue));
+        return PROPS.getBoolean(key, defaultValue);
     }
 
     /**
@@ -253,6 +252,6 @@ public abstract class PropUtil {
      * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
      */
     public static boolean getBoolean(String key, boolean defaultValue) {
-        return Boolean.parseBoolean(PROPS.getProperty(key, Boolean.toString(defaultValue)));
+        return PROPS.getBoolean(key, Boolean.toString(defaultValue));
     }
 }

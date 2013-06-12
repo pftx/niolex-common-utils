@@ -42,6 +42,7 @@ public class PropUtilTest {
 
     @Test
     public void testGetProperty() {
+        new PropUtil(){};
         String hello = null;
         hello = PropUtil.getProperty("a");
         System.out.println("a => " + hello);
