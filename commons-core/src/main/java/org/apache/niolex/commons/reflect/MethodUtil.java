@@ -20,6 +20,7 @@ package org.apache.niolex.commons.reflect;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -79,6 +80,35 @@ public class MethodUtil {
     }
 
     /**
+     * 获取一个Java对象的所有类型和接口
+     *
+     * @param obj 需要获取类型的对象
+     * @return 类型集合
+     */
+    public static final Collection<Class<?>> getAllTypes(Object obj) {
+        // Store all the classes and interfaces here.
+        HashSet<Class<?>> clsSet = new HashSet<Class<?>>();
+        getAllTypes(obj.getClass(), clsSet);
+        return clsSet;
+    }
+
+    /**
+     * 获取一个Java类型的所有父类和接口
+     *
+     * @param cls 需要获取类型的类
+     * @param clsSet 类型集合
+     */
+    public static final void getAllTypes(Class<?> cls, HashSet<Class<?>> clsSet) {
+        if (cls != null && !clsSet.contains(cls)) {
+            clsSet.add(cls);
+            for (Class<?> itf : cls.getInterfaces()) {
+                getAllTypes(itf, clsSet);
+            }
+            getAllTypes(cls.getSuperclass(), clsSet);
+        }
+    }
+
+    /**
      * 获取一个Java对象中所有指定名字的方法
      * 我们会递归的获取所有父类和接口的方法
      * 注意：接口只访问直接接口中的方法，接口的父接口不递归访问
@@ -90,15 +120,8 @@ public class MethodUtil {
      */
     public static final Method[] getMethods(Object obj, String name) {
         List<Method> outLst = new ArrayList<Method>();
-        // Store all the classes and interfaces here.
-        HashSet<Class<?>> clsSet = new HashSet<Class<?>>();
-        Class<?> cls = obj.getClass();
-        while (cls != null) {
-            clsSet.add(cls);
-            for (Class<?> itf : cls.getInterfaces())
-                clsSet.add(itf);
-            cls = cls.getSuperclass();
-        }
+
+        Collection<Class<?>> clsSet = getAllTypes(obj);
         // Start to find methods.
         for (Class<?> cl : clsSet) {
             Method[] oriArr = cl.getDeclaredMethods();

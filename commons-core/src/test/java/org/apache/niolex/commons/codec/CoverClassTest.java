@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.codec;
 
+import org.apache.niolex.commons.coder.KeyUtil;
+import org.apache.niolex.commons.util.Runner;
 import org.junit.Test;
 
 /**
@@ -36,6 +38,9 @@ public class CoverClassTest {
         new CipherUtil(){};
         new RsaHelper(){};
         new RSAUtil(){};
+        // --
+        new Runner(){};
+        new KeyUtil(){};
         System.out.println("All covered.");
     }
 

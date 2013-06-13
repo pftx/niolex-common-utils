@@ -71,7 +71,7 @@ public abstract class FieldUtil {
         List<Field> outLst = new ArrayList<Field>();
 
         for (Field f : oriArr) {
-            if (f != null && f.getType().equals(filter)) {
+            if (filter.isAssignableFrom(f.getType())) {
                 outLst.add(f);
             }
         }
@@ -93,24 +93,6 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 获取一个Java对象中指定属性的值
-     *
-     * @param <T> 该属性的返回类型，方法中将按照该类型进行强制类型转换
-     * @param f 需要获取的值的属性定义
-     * @param host 用来获取指定属性的值的对象
-     * @return 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     */
-    @SuppressWarnings("unchecked")
-    public static final <T> T getFieldValue(Field f, Object host)
-            throws IllegalArgumentException, IllegalAccessException {
-        f.setAccessible(true);
-        return (T) f.get(host);
-    }
-
-    /**
      * 获取一个Java对象中指定属性的值，不抛出任何检查的异常
      *
      * @param <T> 该属性的返回类型，方法中将按照该类型进行强制类型转换
@@ -121,14 +103,41 @@ public abstract class FieldUtil {
      * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
      */
     @SuppressWarnings("unchecked")
-    public static final <T> T safeFieldValue(Field f, Object host) {
+    public static final <T> T getFieldValue(Field f, Object host) throws IllegalArgumentException {
+        return (T) safeGetFieldValue(f, host);
+    }
+
+    /**
+     * 获取一个Java对象中指定属性的值，不抛出任何检查的异常
+     *
+     * @param f 需要获取的值的属性定义
+     * @param host 用来获取指定属性的值的对象
+     * @return 指定属性的值
+     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
+     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     */
+    public static final Object safeGetFieldValue(Field f, Object host) {
         f.setAccessible(true);
+        return unsafeGetFieldValue(f, host);
+    }
+
+    /**
+     * 获取一个Java对象中指定属性的值，不抛出任何检查的异常
+     *
+     * @param f 需要获取的值的属性定义
+     * @param host 用来获取指定属性的值的对象
+     * @return 指定属性的值
+     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
+     * @throws IllegalStateException 如果指定的属性不可访问
+     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     */
+    public static final Object unsafeGetFieldValue(Field f, Object host) {
         try {
-            return (T) f.get(host);
+            return f.get(host);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("Failed to access the field.", e);
+            throw new IllegalStateException("Failed to access the field.", e);
         }
     }
 

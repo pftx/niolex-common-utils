@@ -36,7 +36,7 @@ public class AESCoderTest {
     @BeforeClass
     public static void init() {
         try {
-            coder.initKey("qQosJcrqeOpW1lNe9jnb6b6orNClgWHtmAQGdkRhUvra");
+            coder.initKey("HPjtiFc2CEMWTBBDOS7F3uWWKwRAP0HlgtvFtPGKEok=");
         } catch (Exception e) {
             e.printStackTrace();
         }

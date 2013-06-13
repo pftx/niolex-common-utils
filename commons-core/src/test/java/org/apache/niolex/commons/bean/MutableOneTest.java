@@ -20,6 +20,8 @@ package org.apache.niolex.commons.bean;
 import static org.junit.Assert.*;
 
 import org.apache.niolex.commons.test.Counter;
+import org.apache.niolex.commons.util.Runner;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 /**
@@ -127,8 +129,32 @@ public class MutableOneTest {
     public void testUpdateData() {
         MutableOne<String> one = new MutableOne<String>("Hello W!");
         assertEquals("Hello W!", one.data());
+        one.addListener(new MutableOne.DataChangeListener<String>() {
+
+            @Override
+            public void onDataChange(String newData) {
+                if (newData.startsWith("This")) {
+                    SystemUtil.sleep(100);
+                }
+
+            }});
+        Runner.run(this, "updateSleep", one);
+        SystemUtil.sleep(10);
+        one.addListener(new MutableOne.DataChangeListener<String>() {
+
+            @Override
+            public void onDataChange(String newData) {
+                System.out.println("New data -- " + newData);
+
+            }});
+        assertEquals("This is sleep...", one.data());
+        // ---
         one.updateData("Not yet implemented");
         assertEquals("Not yet implemented", one.data());
+    }
+
+    public void updateSleep(MutableOne<String> one) {
+        one.updateData("This is sleep...");
     }
 
 }

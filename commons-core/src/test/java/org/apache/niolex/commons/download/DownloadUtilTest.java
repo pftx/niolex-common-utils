@@ -23,7 +23,7 @@ public class DownloadUtilTest {
 				.downloadFile("http://mat1.gtimg.com/www/mb/images/nloginBg110617.jpg",
 						10000, 20000, 1230000);
 		System.out.println("SL " + con.length);
-		Assert.assertEquals(69661, con.length);
+		Assert.assertEquals(69611, con.length);
 	}
 
 	@Test(expected=DownloadException.class)

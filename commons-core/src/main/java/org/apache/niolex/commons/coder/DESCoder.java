@@ -18,12 +18,8 @@
 package org.apache.niolex.commons.coder;
 
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
@@ -40,102 +36,21 @@ import org.slf4j.LoggerFactory;
 public class DESCoder extends BaseCoder {
     private static final Logger LOG = LoggerFactory.getLogger(DESCoder.class);
 
-    /**
-     * ALGORITHM 算法 <br>
-     * 可替换为以下任意一种算法，同时key值的size相应改变。
-     *
-     * <pre>
-     * DES                  key size must be equal to 56
-     * DESede(TripleDES)    key size must be equal to 112 or 168
-     * AES                  key size must be equal to 128, 192 or 256,but 192 and 256 bits may not be available
-     * Blowfish             key size must be multiple of 8, and can only range from 32 to 448 (inclusive)
-     * RC2                  key size must be between 40 and 1024 bits
-     * RC4(ARCFOUR)         key size must be between 40 and 1024 bits
-     * </pre>
-     *
-     * 在Key toKey(byte[] key)方法中使用下述代码 <code>SecretKey secretKey = new SecretKeySpec(key, ALGORITHM);</code> 替换 <code>
-     * DESKeySpec dks = new DESKeySpec(key);
-     * SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
-     * SecretKey secretKey = keyFactory.generateSecret(dks);
-     * </code>
-     */
-
     private static final String ALGORITHM = "DES";
     private Key key;
 
     /**
      * 初始化密钥和IV参数
+     *
      * @param key
      * @throws Exception
      */
     @Override
     public void initKey(String key) throws Exception {
-    	this.key = toKey(key);
-    }
-
-    /**
-     * 转换密钥<br>
-     *
-     * @param key
-     * @return the object
-     * @throws Exception
-     */
-    private Key toKey(byte[] key) throws Exception {
-        DESKeySpec dks = new DESKeySpec(key);
+        DESKeySpec dks = new DESKeySpec(Base64Util.base64toByte(key));
         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
-        SecretKey secretKey = keyFactory.generateSecret(dks);
-
-        // 当使用其他对称加密算法时，如AES、Blowfish等算法时，用下述代码替换上述三行代码
-        // SecretKey secretKey = new SecretKeySpec(key, ALGORITHM);
-
-        return secretKey;
+    	this.key = keyFactory.generateSecret(dks);
     }
-
-    private Key toKey(String key) throws Exception {
-        return toKey(Base64Util.base64toByte(key));
-    }
-
-
-    /**
-     * 生成密钥
-     *
-     * @return 采用Base64加密的密钥
-     * @throws Exception
-     */
-    public static String genKey() {
-        return genKey(null);
-    }
-
-    /**
-     * 生成密钥
-     *
-     * @param seed
-     * @return the object
-     */
-    public static String genKey(String seed) {
-        LOG.info("The current seed is set to: " + seed);
-        SecureRandom secureRandom = null;
-
-        if (seed != null) {
-            secureRandom = new SecureRandom(Base64Util.base64toByte(seed));
-        } else {
-            secureRandom = new SecureRandom();
-        }
-
-        KeyGenerator kg = null;
-        try {
-            kg = KeyGenerator.getInstance(ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-        }
-        kg.init(secureRandom);
-
-        SecretKey secretKey = kg.generateKey();
-
-        String curKey = Base64Util.byteToBase64(secretKey.getEncoded());
-        LOG.info("The encripted key is: " + curKey);
-        return curKey;
-    }
-
 
     /**
      * 加密
@@ -146,7 +61,6 @@ public class DESCoder extends BaseCoder {
      */
     @Override
     public byte[] encrypt(byte[] data) throws Exception {
-
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, key);
 
@@ -162,7 +76,6 @@ public class DESCoder extends BaseCoder {
      */
     @Override
     public byte[] decrypt(byte[] data) throws Exception {
-
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, key);
 
@@ -171,6 +84,7 @@ public class DESCoder extends BaseCoder {
 
     /**
      * Encode multiple string together into a Base64 string
+     *
      * @param args
      * @return the object
      */
@@ -193,11 +107,17 @@ public class DESCoder extends BaseCoder {
             i = i < 0 ? l : i;
             return encoded.substring(0, i) + '-' + (l - i);
         } catch (Exception e) {
-            LOG.warn("Error occured when generate the ticket: {}.", e.getMessage());
+            LOG.warn("Error occured when encode the string array: {}.", e.getMessage());
         }
         return "";
     }
 
+    /**
+     * Decode the argument into plain text
+     *
+     * @param arg
+     * @return the plain text
+     */
     public String decodes(String arg) {
         if (arg == null || arg.length() < 3)
             return "";
@@ -209,7 +129,7 @@ public class DESCoder extends BaseCoder {
                 sb.append('=');
             return new String(decrypt(Base64Util.base64toByte(sb.toString())), ENC);
         } catch (Exception e) {
-            LOG.warn("Error occured when decode the ticket: {}.", e.getMessage());
+            LOG.warn("Error occured when decode the string: {}.", e.getMessage());
         }
         return "";
     }

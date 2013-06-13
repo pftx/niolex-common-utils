@@ -198,11 +198,7 @@ class Blowfish2 {
         return retval;
     }
 
-    private int processBlock(final byte[] in, final int inOff, final byte[] out, final int outOff, boolean encrypting) {
-        if (workingKey == null) {
-            throw new IllegalStateException("Blowfish not initialised");
-        }
-
+    protected int processBlock(final byte[] in, final int inOff, final byte[] out, final int outOff, boolean encrypting) {
         if ((inOff + BLOCK_SIZE) > in.length) {
             throw new IllegalArgumentException("input buffer too short");
         }

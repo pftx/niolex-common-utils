@@ -26,8 +26,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
-import org.apache.commons.lang.ArrayUtils;
-
 
 /**
  * This class is for generate RSA XML description file.
@@ -53,11 +51,7 @@ public abstract class RsaHelper {
         StringBuilder sb = new StringBuilder();
 
         sb.append("<RSAKeyValue>");
-        byte[] modulus = pubKey.getModulus().toByteArray();
-        if (modulus[0] == 0) {
-            modulus = ArrayUtils.subarray(modulus, 1, modulus.length);
-        }
-        sb.append("<Modulus>").append(Base64Util.byteToBase64(modulus)).append("</Modulus>");
+        sb.append("<Modulus>").append(Base64Util.byteToBase64(pubKey.getModulus().toByteArray())).append("</Modulus>");
         sb.append("<Exponent>").append(Base64Util.byteToBase64(pubKey.getPublicExponent().toByteArray()))
                 .append("</Exponent>");
         sb.append("</RSAKeyValue>");
@@ -97,7 +91,7 @@ public abstract class RsaHelper {
      * @return the decoded key
      */
     public static PublicKey decodePublicKeyFromXml(String xml) {
-        xml = xml.replaceAll("\r", "").replaceAll("\n", "");
+        xml = xml.replaceAll("[\r\n ]", "");
         BigInteger modulus = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Modulus>", "</Modulus>")));
         BigInteger publicExponent = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Exponent>",
                 "</Exponent>")));

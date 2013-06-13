@@ -41,6 +41,14 @@ public class Base64UtilTest {
     }
 
     @Test
+    public void testBase64I() throws Exception {
+        byte[] in = new byte[1];
+        String base64 = Base64Util.byteToBase64(in);
+        System.out.println("base64 => " + base64);
+        Assert.assertEquals("AA==", base64);
+    }
+
+    @Test
     public void testBase64R() throws Exception {
         String in = "谢谢对我们开发测试中发现的问题的积极反馈，现在项目已经进入最后测试阶段";
         String base64 = "6LCi6LCi5a+55oiR5Lus5byA5Y+R5rWL6K+V5Lit5Y+R546w55qE6Zeu6aKY55qE56ev5p6B5Y+N6aaI77yM546w5Zyo6aG555uu5bey57uP6L+b5YWl5pyA5ZCO5rWL6K+V6Zi25q61";

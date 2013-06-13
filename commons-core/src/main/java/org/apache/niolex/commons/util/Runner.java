@@ -44,10 +44,7 @@ public class Runner {
 		Thread t = new Thread(){
 			public void run() {
 				try {
-				    Method[] ms = MethodUtil.getMethods(host.getClass(), methodName);
-				    if (ms.length == 0) {
-				        ms = MethodUtil.getMethods(host.getClass().getSuperclass(), methodName);
-				    }
+				    Method[] ms = MethodUtil.getMethods(host, methodName);
 					Method m = ms[0];
 					m.setAccessible(true);
 					m.invoke(host, args);

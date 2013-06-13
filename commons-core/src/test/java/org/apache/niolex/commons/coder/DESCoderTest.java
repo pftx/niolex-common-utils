@@ -18,11 +18,9 @@
 package org.apache.niolex.commons.coder;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-
-import org.apache.niolex.commons.coder.DESCoder;
+import org.apache.niolex.commons.codec.Base16Util;
+import org.apache.niolex.commons.codec.StringUtil;
 import org.junit.Test;
 
 
@@ -51,10 +49,10 @@ public class DESCoderTest {
         final String b = "高兴，就笑，让大家都知道。悲伤，就假装什么也没发生";
         byte[] a = dCoder.encrypt(b.getBytes());
         final byte[] o = dCoder.decrypt(a);
-        System.out.println("加密前：" + b + "\n解密后：" + new String(o));
-        System.out.println("中间结果：" + Arrays.toString(a));
-        assertEquals(b, new String(o));
-        assertTrue(Arrays.equals(b.getBytes(), o));
+        final String t = new String(o, StringUtil.UTF_8);
+        System.out.println("加密前：" + b + "\n解密后：" + t);
+        System.out.println("中间结果：" + Base16Util.byteToBase16(a));
+        assertEquals(b, t);
     }
 
     @Test
@@ -64,10 +62,10 @@ public class DESCoderTest {
         final String b = "XX*^SJzz唉说好话，、。‘【；、【【】）（地方";
         byte[] a = dCoder.encrypt(b.getBytes());
         final byte[] o = dCoder.decrypt(a);
-        System.out.println("加密前：" + b + "\n解密后：" + new String(o));
-        System.out.println("中间结果：" + Arrays.toString(a));
-        assertEquals(b, new String(o));
-        assertTrue(Arrays.equals(b.getBytes(), o));
+        final String t = new String(o, StringUtil.UTF_8);
+        System.out.println("加密前：" + b + "\n解密后：" + t);
+        System.out.println("中间结果：" + Base16Util.byteToBase16(a));
+        assertEquals(b, t);
     }
 
     @Test
@@ -123,6 +121,56 @@ public class DESCoderTest {
         System.out.println("加密前：" + b + "\n解密后：" + c);
         System.out.println("中间结果：" + a);
         assertEquals(b, c);
+    }
+
+    @Test
+    public void testEncodes() throws Exception {
+        String s = dCoder.encodes();
+        assertEquals("", s);
+    }
+
+    @Test
+    public void testEncodesNull() throws Exception {
+        String s = dCoder.encodes((String[])null);
+        assertEquals("", s);
+    }
+
+    @Test
+    public void testEncodesError() {
+        DESCoder c = new DESCoder();
+        final String b = "[郑控电器]0[20100831 12:13:14]1[宽容-00]2[123##$$%]";
+        String a = dCoder.encodes("郑控电器", "20100831 12:13:14", "宽容-00", "123##$$%");
+        String c2 = c.decodes(a);
+
+        System.out.println("加密前：" + b + "\n解密后：" + c2);
+        System.out.println("中间结果：" + a);
+        assertEquals("", c2);
+        assertEquals("t7LrBCNVF+xKbc4Lsq73JHDQ0ZySEL3rD4LjQKSHUTdmiLW+au522jdW67kpntX0bO4kL2eEuTy/aO7qtZDh0w-2", a);
+    }
+
+    @Test
+    public void testDecodes() throws Exception {
+        String s = dCoder.decodes(null);
+        assertEquals("", s);
+    }
+
+    @Test
+    public void testDecodesSmall() throws Exception {
+        String s = dCoder.decodes("8D");
+        assertEquals("", s);
+    }
+
+    @Test
+    public void testDecodesError() {
+        DESCoder c = new DESCoder();
+        final String b = "[郑控电器]0[20100831 12:13:14]1[宽容-00]2[123##$$%]";
+        String a = c.encodes("郑控电器", "20100831 12:13:14", "宽容-00", "123##$$%");
+        String c2 = dCoder.decodes(a);
+
+        System.out.println("加密前：" + b + "\n解密后：" + c2);
+        System.out.println("中间结果：" + a);
+        assertEquals("", c2);
+        assertEquals("", a);
     }
 
 }

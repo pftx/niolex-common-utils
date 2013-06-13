@@ -119,7 +119,7 @@ public abstract class ObjToStringUtil {
                 continue;
             generateIndentation(sb, indentation);
             sb.append(f.getName()).append("=");
-            printFields(FieldUtil.safeFieldValue(f, o), sb, indentation + 2);
+            printFields(FieldUtil.safeGetFieldValue(f, o), sb, indentation + 2);
             sb.append("\n");
         }
         int i = sb.length() - 2;

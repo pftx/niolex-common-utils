@@ -21,6 +21,8 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
+import org.apache.niolex.commons.codec.Base16Util;
+import org.apache.niolex.commons.codec.StringUtil;
 import org.junit.Test;
 
 
@@ -36,8 +38,7 @@ public class TripleDESCoderTest {
 
     static {
         try {
-            String key = TripleDESCoder.genKey("I am a gmail good man");
-            TripleDESCoder.genKey();
+            String key = KeyUtil.genKey("I am a gmail good man", "TripleDES", 64, 168);
             System.out.println("key => " + key);
             coder = new TripleDESCoder();
             coder.initKey(key);
@@ -54,10 +55,9 @@ public class TripleDESCoderTest {
         byte[] a = coder.encrypt(b.getBytes());
         final byte[] o = coder.decrypt(a);
         System.out.println("加密前：" + b + "\n解密后：" + new String(o));
-        System.out.println("中间结果：" + Arrays.toString(a));
-        assertEquals(b, new String(o));
+        System.out.println("中间结果：" + Base16Util.byteToBase16(a));
+        assertEquals(b, new String(o, StringUtil.UTF_8));
         assertTrue(Arrays.equals(b.getBytes(), o));
-        assertNotEquals(TripleDESCoder.genKey(null), TripleDESCoder.genKey());
     }
 
     @Test
@@ -68,8 +68,8 @@ public class TripleDESCoderTest {
         byte[] a = coder.encrypt(b.getBytes());
         final byte[] o = coder.decrypt(a);
         System.out.println("加密前：" + b + "\n解密后：" + new String(o));
-        System.out.println("中间结果：" + Arrays.toString(a));
-        assertEquals(b, new String(o));
+        System.out.println("中间结果：" + Base16Util.byteToBase16(a));
+        assertEquals(b, new String(o, StringUtil.UTF_8));
         assertTrue(Arrays.equals(b.getBytes(), o));
     }
 }

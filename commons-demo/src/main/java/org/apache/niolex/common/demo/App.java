@@ -57,5 +57,11 @@ public class App
         System.out.println("-128 >>> 3 ? " + (-128 >>> 3));
         System.out.println("~-128 ? " + (~-128));
         System.out.println("1L << 200 ? " + (1L << 200));
+
+        System.out.println("\n**** isAssignableFrom");
+        System.out.println("Long isAssignableFrom Number ? " + (Long.class.isAssignableFrom(Number.class)));
+        System.out.println("Number isAssignableFrom Long ? " + (Number.class.isAssignableFrom(Long.class)));
+        Long ll = 129012l;
+        System.out.println("Number.class isInstance Long Object ? " + (Number.class.isInstance(ll)));
     }
 }
