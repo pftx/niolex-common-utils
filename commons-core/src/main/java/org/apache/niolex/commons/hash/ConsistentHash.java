@@ -85,7 +85,7 @@ public class ConsistentHash<T> {
 
         /**
          * This is the override of super method.
-         * @see org.apache.niolex.commons.util.ConsistentHash.HashFunction#hashCode(java.lang.Object)
+         * @see org.apache.niolex.commons.hash.ConsistentHash.HashFunction#hashCode(java.lang.Object)
          */
         @Override
         public int hashCode(Object o) {
@@ -94,7 +94,7 @@ public class ConsistentHash<T> {
 
         /**
          * This is the override of super method.
-         * @see org.apache.niolex.commons.util.ConsistentHash.HashFunction#hashCode(java.lang.Object, int)
+         * @see org.apache.niolex.commons.hash.ConsistentHash.HashFunction#hashCode(java.lang.Object, int)
          */
         @Override
         public int hashCode(Object o, int seed) {
@@ -116,7 +116,7 @@ public class ConsistentHash<T> {
 
         /**
          * This is the override of super method.
-         * @see org.apache.niolex.commons.util.ConsistentHash.HashFunction#hashCode(java.lang.Object)
+         * @see org.apache.niolex.commons.hash.ConsistentHash.HashFunction#hashCode(java.lang.Object)
          */
         @Override
         public int hashCode(Object o) {
@@ -125,7 +125,7 @@ public class ConsistentHash<T> {
 
         /**
          * This is the override of super method.
-         * @see org.apache.niolex.commons.util.ConsistentHash.HashFunction#hashCode(java.lang.Object, int)
+         * @see org.apache.niolex.commons.hash.ConsistentHash.HashFunction#hashCode(java.lang.Object, int)
          */
         @Override
         public int hashCode(Object o, int seed) {

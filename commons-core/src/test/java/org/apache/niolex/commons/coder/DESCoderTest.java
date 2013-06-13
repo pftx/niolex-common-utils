@@ -47,7 +47,7 @@ public class DESCoderTest {
         System.out.println("原始的 加密-解密");
         // B6i6jFFtQLo=
         final String b = "高兴，就笑，让大家都知道。悲伤，就假装什么也没发生";
-        byte[] a = dCoder.encrypt(b.getBytes());
+        byte[] a = dCoder.encrypt(b.getBytes(StringUtil.UTF_8));
         final byte[] o = dCoder.decrypt(a);
         final String t = new String(o, StringUtil.UTF_8);
         System.out.println("加密前：" + b + "\n解密后：" + t);
@@ -60,7 +60,7 @@ public class DESCoderTest {
         System.out.println("原始的 加密-解密");
         // B6i6jFFtQLo=
         final String b = "XX*^SJzz唉说好话，、。‘【；、【【】）（地方";
-        byte[] a = dCoder.encrypt(b.getBytes());
+        byte[] a = dCoder.encrypt(b.getBytes(StringUtil.UTF_8));
         final byte[] o = dCoder.decrypt(a);
         final String t = new String(o, StringUtil.UTF_8);
         System.out.println("加密前：" + b + "\n解密后：" + t);

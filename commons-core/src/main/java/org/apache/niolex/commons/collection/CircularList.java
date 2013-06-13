@@ -139,7 +139,7 @@ public class CircularList<E> extends AbstractList<E> {
 	 * Inserts the specified element at the end of this list.
 	 *
 	 * <p> Please note that this implementation calls {@code add(e)}, which is
-	 * different from the default specification in {@link java.util.List#add(int, E)}.
+	 * different from the default specification in {@link java.util.List#add(int, Object)}.
 	 */
 	@Override
 	public void add(int index, E element) {

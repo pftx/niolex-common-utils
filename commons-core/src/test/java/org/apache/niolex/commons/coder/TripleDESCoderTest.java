@@ -52,12 +52,12 @@ public class TripleDESCoderTest {
         System.out.println("原始的 加密-解密");
         // B6i6jFFtQLo=
         final String b = "即使输掉了一切，也不要输掉微笑……始终相信，文字是有灵魂的，若绵绵的雨，若轻轻的风";
-        byte[] a = coder.encrypt(b.getBytes());
+        byte[] a = coder.encrypt(b.getBytes(StringUtil.UTF_8));
         final byte[] o = coder.decrypt(a);
-        System.out.println("加密前：" + b + "\n解密后：" + new String(o));
+        System.out.println("加密前：" + b + "\n解密后：" + new String(o, StringUtil.UTF_8));
         System.out.println("中间结果：" + Base16Util.byteToBase16(a));
         assertEquals(b, new String(o, StringUtil.UTF_8));
-        assertTrue(Arrays.equals(b.getBytes(), o));
+        assertTrue(Arrays.equals(b.getBytes(StringUtil.UTF_8), o));
     }
 
     @Test
@@ -65,11 +65,11 @@ public class TripleDESCoderTest {
         System.out.println("原始的 加密-解密");
         // B6i6jFFtQLo=
         final String b = "不要因为冲动说一些过激的话，会慢慢氤氲、渗透每一个相知的心灵，并于无声处开出润暖的花来";
-        byte[] a = coder.encrypt(b.getBytes());
+        byte[] a = coder.encrypt(b.getBytes(StringUtil.UTF_8));
         final byte[] o = coder.decrypt(a);
-        System.out.println("加密前：" + b + "\n解密后：" + new String(o));
+        System.out.println("加密前：" + b + "\n解密后：" + new String(o, StringUtil.UTF_8));
         System.out.println("中间结果：" + Base16Util.byteToBase16(a));
         assertEquals(b, new String(o, StringUtil.UTF_8));
-        assertTrue(Arrays.equals(b.getBytes(), o));
+        assertTrue(Arrays.equals(b.getBytes(StringUtil.UTF_8), o));
     }
 }

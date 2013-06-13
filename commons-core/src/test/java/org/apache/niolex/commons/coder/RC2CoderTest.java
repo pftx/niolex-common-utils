@@ -47,7 +47,7 @@ public class RC2CoderTest {
     @Test
     public void testCase1() throws Exception {
         String s = "不要停止学习。不管学习什么，语言，厨艺，各种技能";
-        byte[] data = coder.encrypt(s.getBytes());
+        byte[] data = coder.encrypt(s.getBytes(StringUtil.UTF_8));
         System.out.println("m => " + Base64Util.byteToBase64(data));
         data = coder.decrypt(data);
         String r = new String(data, StringUtil.UTF_8);
@@ -58,7 +58,7 @@ public class RC2CoderTest {
     @Test
     public void testCase2() throws Exception {
         String s = "钱很重要，但不能依靠父母，自己一定要保持";
-        byte[] data = coder.encrypt(s.getBytes());
+        byte[] data = coder.encrypt(s.getBytes(StringUtil.UTF_8));
         System.out.println("m => " + Base64Util.byteToBase64(data));
         data = coder.decrypt(data);
         String r = new String(data, StringUtil.UTF_8);
@@ -70,7 +70,7 @@ public class RC2CoderTest {
     public void testSecure1() throws Exception {
     	coder.secureInitKey("zmWE8DVjvWEmymTBIs2ETIzAe5GsSt78Bh+VQxg8cAPKIApm8VKHMzGBcYmuPnTrdBDEbmfNjWOXqa2YVvWq315iWEOFZ5NPPNJ2D8Fi9PA=");
     	String s = "钱很重要，但不能依靠父母，自己一定要保持";
-    	byte[] data = coder.encrypt(s.getBytes());
+    	byte[] data = coder.encrypt(s.getBytes(StringUtil.UTF_8));
     	System.out.println("m => " + Base64Util.byteToBase64(data));
     	data = coder.decrypt(data);
     	String r = new String(data, StringUtil.UTF_8);
@@ -82,7 +82,7 @@ public class RC2CoderTest {
     public void testSecure2() throws Exception {
     	coder.secureInitKey("zmWE8DVjvWEmymTBIs2ETIzAe5GsSt78Bh+VQxg8cAPKIApm8VKHMzGBcYmuPnTrdBDEbmfNjWOXqa2YVvWq315iWEOFZ5NPPNJ2D8Fi9PA=");
     	String s = "少用一页纸,绿色多一点 小米手机坏了";
-    	byte[] data = coder.encrypt(s.getBytes());
+    	byte[] data = coder.encrypt(s.getBytes(StringUtil.UTF_8));
     	System.out.println("m => " + Base64Util.byteToBase64(data));
     	data = coder.decrypt(data);
     	String r = new String(data, StringUtil.UTF_8);
