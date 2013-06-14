@@ -58,9 +58,7 @@ public abstract class Runme extends Thread {
 	public void run() {
 		if (isWorking) {
 			// Do initial sleep.
-			try {
-				Thread.sleep(new Random().nextLong() % sleepInterval);
-			} catch (Exception e) {}
+		    SystemUtil.sleep(new Random().nextLong() % sleepInterval);
 		} else {
 			isWorking = true;
 		}

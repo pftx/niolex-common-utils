@@ -23,8 +23,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
+import org.apache.niolex.commons.internal.Finally;
 import org.apache.niolex.commons.stream.StreamUtil;
+import org.apache.niolex.commons.util.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,65 +39,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class FileUtil {
     private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);
-
-    /**
-     * Read The File Content into a string.
-     *
-     * @param pathname
-     *            The file path and file name.
-     * @param encoding
-     *            The file encoding.
-     * @return The file content as string.
-     */
-    public static String getCharacterFileContentFromFileSystem(String pathname, String encoding) {
-        String result = "";
-        try {
-            result = new String(getBinaryFileContentFromFileSystem(pathname), encoding);
-        } catch (Exception e) {
-            LOG.error("Error occured while format the file content into String - {}", e.toString());
-        }
-        return result;
-    }
-
-    /**
-     * Read the file content into a byte array.
-     *
-     * @param pathname
-     *            The file path and file name.
-     * @return The file content as byte array.
-     */
-    public static byte[] getBinaryFileContentFromFileSystem(String pathname) {
-        InputStream in = null;
-        try {
-            File file = new File(pathname);
-            byte[] raw = new byte[(int) file.length()];
-            in = new FileInputStream(file);
-            in.read(raw);
-            return raw;
-        } catch (Exception e) {
-            LOG.warn("Error occured while read file [{}] reason - {}", pathname, e.toString());
-        } finally {
-        	StreamUtil.closeStream(in);
-        }
-        return null;
-    }
-
-    /**
-     * Store the string into local file system.
-     *
-     * @param pathname the file path and name
-     * @param content the string to store
-     * @param charsetName the charset to use
-     * @return true if file store success
-     */
-    public static boolean setCharacterFileContentToFileSystem(String pathname, String content, String charsetName) {
-        try {
-            return setBinaryFileContentToFileSystem(pathname, content.getBytes(charsetName));
-        } catch (Exception e) {
-            LOG.error("Error occured while store character content to file - {}", e.toString());
-        }
-        return false;
-    }
 
     /**
      * Store binary data into local disk.
@@ -109,13 +53,93 @@ public abstract class FileUtil {
             out = new FileOutputStream(pathname);
             out.write(raw);
             out.flush();
+            StreamUtil.closeStream(out);
             return true;
         } catch (Exception e) {
             LOG.warn("Error occured while store content to file [{}] reason - {}", pathname, e.toString());
-        } finally {
-        	StreamUtil.closeStream(out);
+            StreamUtil.closeStream(out);
+            return false;
         }
-        return false;
+    }
+
+    /**
+     * Store the string into local file system.
+     *
+     * @param pathname the file path and name
+     * @param content the string to store
+     * @param charsetName the charset to use
+     * @return true if file store success
+     */
+    public static boolean setCharacterFileContentToFileSystem(String pathname, String content, Charset charsetName) {
+        return setBinaryFileContentToFileSystem(pathname, content.getBytes(charsetName));
+    }
+
+    /**
+     * Read the file content into a byte array. The file must less than 10MB.
+     *
+     * @param pathname
+     *            The file path and file name.
+     * @return The file content as byte array.
+     * @throws IllegalStateException If file larger than 10 MB.
+     */
+    public static byte[] getBinaryFileContentFromFileSystem(String pathname) {
+        return getBinaryFileContentFromFileSystem(pathname, Const.M * 10);
+    }
+
+
+    /**
+     * Read the file content into a byte array.
+     *
+     * @param pathname
+     *            The file path and file name.
+     * @param maxSize The max file size.
+     * @return The file content as byte array.
+     * @throws IllegalStateException If file too large.
+     */
+    public static byte[] getBinaryFileContentFromFileSystem(String pathname, final int maxSize) {
+        InputStream in = null;
+        try {
+            File file = new File(pathname);
+            final int SIZE = (int) file.length();
+            if (SIZE > maxSize) {
+                throw new IllegalStateException("File too large. max " + maxSize + ", file size " + SIZE);
+            }
+            byte[] raw = new byte[SIZE];
+            in = new FileInputStream(file);
+            int k = 0;
+            while (k != SIZE) {
+                k += in.read(raw, k, SIZE - k);
+            }
+            return raw;
+        } catch (IllegalStateException ie) {
+            throw ie;
+        } catch (Exception e) {
+            LOG.warn("Error occured while read file [{}] from filesystem; reason - {}", pathname, e.toString());
+        } finally {
+            StreamUtil.closeStream(in);
+        }
+        return null;
+    }
+
+    /**
+     * Read the file content into a byte array.
+     *
+     * @param pathname
+     *            The file path and file name.
+     * @return The file content as byte array, or null if encounter exception.
+     */
+    public static <T> byte[] getBinaryFileContentFromClassPath(String pathname, Class<T> cls) {
+    	try {
+    	    InputStream in = cls.getResourceAsStream(pathname);
+    	    if (in != null) {
+    	        ByteArrayOutputStream out = new ByteArrayOutputStream(10240);
+    	        Finally.transferAndClose(in, out, 4096);
+    	        return out.toByteArray();
+    	    }
+    	} catch (Exception e) {
+    		LOG.warn("Error occured while read file [{}] from class [{}]; reason - {}", pathname, cls, e.toString());
+        }
+        return null;
     }
 
     /**
@@ -127,38 +151,27 @@ public abstract class FileUtil {
      *            The file encoding.
      * @return The file content as string.
      */
-    public static <T> String getCharacterFileContentFromClassPath(String pathname, Class<T> cls, String encoding) {
-        String result = "";
-        try {
-            result = new String(getBinaryFileContentFromClassPath(pathname, cls), encoding);
-        } catch (Exception e) {
-            LOG.error("Error occured while format the file content into String - {}", e.toString());
+    public static String getCharacterFileContentFromFileSystem(String pathname, Charset encoding) {
+        byte[] data = getBinaryFileContentFromFileSystem(pathname);
+        if (data != null) {
+            return new String(data, encoding);
         }
-        return result;
+        return null;
     }
 
     /**
-     * Read the file content into a byte array.
+     * Read The File Content into a string.
      *
      * @param pathname
      *            The file path and file name.
-     * @return The file content as byte array.
+     * @param encoding
+     *            The file encoding.
+     * @return The file content as string.
      */
-    public static <T> byte[] getBinaryFileContentFromClassPath(String pathname, Class<T> cls) {
-    	InputStream in = null;
-    	try {
-    		in = cls.getResourceAsStream(pathname);
-	    	ByteArrayOutputStream bos = new ByteArrayOutputStream(10240);
-	    	byte[] buffer = new byte[4096];
-	    	int cnt = 0;
-	    	while ((cnt = in.read(buffer)) > 0) {
-	    		bos.write(buffer, 0, cnt);
-	    	}
-	        return bos.toByteArray();
-    	} catch (Exception e) {
-    		LOG.warn("Error occured while read file [{}] from class [{}] message - " + e.toString(), pathname, cls);
-        } finally {
-        	StreamUtil.closeStream(in);
+    public static <T> String getCharacterFileContentFromClassPath(String pathname, Class<T> cls, Charset encoding) {
+        byte[] data = getBinaryFileContentFromClassPath(pathname, cls);
+        if (data != null) {
+            return new String(data, encoding);
         }
         return null;
     }

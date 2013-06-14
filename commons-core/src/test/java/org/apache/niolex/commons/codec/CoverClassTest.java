@@ -18,6 +18,11 @@
 package org.apache.niolex.commons.codec;
 
 import org.apache.niolex.commons.coder.KeyUtil;
+import org.apache.niolex.commons.compress.GZipUtil;
+import org.apache.niolex.commons.compress.ZLibUtil;
+import org.apache.niolex.commons.file.FileUtil;
+import org.apache.niolex.commons.internal.IgnoreException;
+import org.apache.niolex.commons.internal.Synchronized;
 import org.apache.niolex.commons.util.Runner;
 import org.junit.Test;
 
@@ -41,6 +46,15 @@ public class CoverClassTest {
         // --
         new Runner(){};
         new KeyUtil(){};
+        new FileUtil(){};
+        // --
+        new IgnoreException();
+        new Synchronized();
+        // --
+        new ZLibUtil(){};
+        new GZipUtil(){};
+        new ZLibUtil(){};
+        new FileUtil(){};
         System.out.println("All covered.");
     }
 

@@ -25,6 +25,7 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -53,6 +54,14 @@ public abstract class JacksonUtil {
      */
     public static final JsonFactory getJsonFactory() {
     	return mapper.getJsonFactory();
+    }
+
+    /**
+     * Get the internal Type Factory this Object Mapper is using.
+     * @return the internal factory
+     */
+    public static final TypeFactory getTypeFactory() {
+        return mapper.getTypeFactory();
     }
 
     /**

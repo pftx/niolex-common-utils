@@ -35,15 +35,19 @@ public class TimeCheckTest {
 
     @Test
     public void testTimeCheck() throws Exception {
-        TimeCheck tc = new TimeCheck(2, 2, 100);
-        tc.lastCheckTime = System.currentTimeMillis() - 1;
+        TimeCheck tc = new TimeCheck(6, 2, 100);
+        tc.lastCheckTime = System.currentTimeMillis() - 3;
         tc.counter.set(101);
         assertTrue(tc.check());
         assertFalse(tc.lastCheckStatus());
         assertEquals(1, tc.getCounter().get());
         tc.counter.set(50);
-        assertFalse(tc.check());
-        tc.lastCheckTime = System.currentTimeMillis() - 1;
+        boolean b = tc.check();
+        if (b) {
+            assertEquals(System.currentTimeMillis(), tc.getLastCheckTime());
+        }
+        assertFalse(b);
+        tc.lastCheckTime = System.currentTimeMillis() - 3;
         assertTrue(tc.check());
         assertEquals(0, tc.controler.getHead());
         assertEquals(101, tc.controler.getArray()[0]);

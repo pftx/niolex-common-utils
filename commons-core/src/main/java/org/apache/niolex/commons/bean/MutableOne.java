@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.niolex.commons.internal.Synchronized;
+
 /**
  * A Mutable One is to store a mutable data, when data changed, Application can notify
  * users about it.
@@ -95,11 +97,7 @@ public class MutableOne<T> {
      */
     public void updateData(T one) {
         this.one = one;
-        synchronized (list) {
-            for (DataChangeListener<T> li : list) {
-                li.onDataChange(one);
-            }
-        }
+        Synchronized.notifyListeners(list, one);
     }
 
     /**

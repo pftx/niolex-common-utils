@@ -19,6 +19,8 @@ package org.apache.niolex.commons.control;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.niolex.commons.internal.Synchronized;
+
 /**
  * This class manage the frequency check of one item, used only in {@link TimeControler}
  *
@@ -85,15 +87,8 @@ public class TimeCheck {
         long t = System.currentTimeMillis();
         // Need to check when interval is enough.
         if (t - lastCheckTime >= intervalTime) {
-            int cnt = 0;
             // Check will happen in synchronized area.
-            synchronized (counter) {
-                if (t - lastCheckTime >= intervalTime) {
-                    // It's not necessary to do normalization
-                    cnt = counter.getAndSet(0);
-                    lastCheckTime = t;
-                }
-            }
+            int cnt = Synchronized.getIntervalCnt(intervalTime, t, this);
             if (cnt != 0) {
                 // Let's check it.
                 lastCheckStatus = controler.check(cnt);
@@ -129,6 +124,20 @@ public class TimeCheck {
      */
     public boolean lastCheckStatus() {
         return lastCheckStatus;
+    }
+
+    /**
+     * @return the lastCheckTime
+     */
+    public long getLastCheckTime() {
+        return lastCheckTime;
+    }
+
+    /**
+     * @param lastCheckTime the lastCheckTime to set
+     */
+    public void setLastCheckTime(long lastCheckTime) {
+        this.lastCheckTime = lastCheckTime;
     }
 
 }

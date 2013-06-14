@@ -29,7 +29,6 @@ import org.junit.Assert;
 import org.apache.niolex.commons.compress.ZLibUtil;
 import org.apache.niolex.commons.download.DownloadUtil;
 import org.apache.niolex.commons.download.DownloadException;
-import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
 import org.junit.Test;
 
@@ -78,11 +77,10 @@ public class ZLibUtilTest {
         System.out.println("Compressed size => " + q.length);
         Assert.assertEquals(data.length, 54757);
         Assert.assertEquals(q.length, 18029);
-
     }
 
     @Test
-    public void doCompress_1() throws IOException {
+    public void testCompressObj() throws IOException {
     	CTBean t = new CTBean(3, "Qute", 12212, new Date());
     	byte[] data = ZLibUtil.compressObj(t);
     	System.out.println("Obj data size => " + data.length);
@@ -90,15 +88,27 @@ public class ZLibUtilTest {
     	assertEquals(q, t);
     }
 
-    @SuppressWarnings("deprecation")
 	@Test
-    public void doCompress_2() throws IOException {
-    	CTBean t = new CTBean(3, "Qute", 12212, new Date());
+    public void testCompressArray() throws IOException {
+    	CTBean t = new CTBean(5, "Lex", 893244, new Date());
     	byte[] data = ZLibUtil.compressObj(new CTBean[] {t});
     	System.out.println("Obj data size => " + data.length);
-    	JavaType s = TypeFactory.collectionType(ArrayList.class, CTBean.class);
+    	JavaType s = JacksonUtil.getTypeFactory().constructCollectionType(ArrayList.class, CTBean.class);
     	List<CTBean> m = ZLibUtil.decompressObj(data, s);
     	assertEquals(m.size(), 1);
     	assertEquals(m.get(0), t);
     }
+
+	@Test
+	public void testCompressArrayList() throws IOException {
+	    CTBean t = new CTBean(5, "Lex", 893244, new Date());
+	    CTBean r = new CTBean(8, "Nio", 8162, new Date());
+	    byte[] data = ZLibUtil.compressObj(new CTBean[] {t, r});
+	    System.out.println("Obj data size => " + data.length);
+	    JavaType s = JacksonUtil.getTypeFactory().constructCollectionType(ArrayList.class, CTBean.class);
+	    List<CTBean> m = ZLibUtil.decompressObj(data, s);
+	    assertEquals(m.size(), 2);
+	    assertEquals(m.get(0), t);
+	    assertEquals(m.get(1), r);
+	}
 }

@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.internal.Finally;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.JavaType;
@@ -46,11 +48,7 @@ public abstract class GZipUtil {
     public static final byte[] compress(byte[] data) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         GZIPOutputStream zout = new GZIPOutputStream(out);
-        try {
-            zout.write(data);
-        } finally {
-            zout.close();
-        }
+        Finally.writeAndClose(zout, data);
         return out.toByteArray();
     }
 
@@ -65,17 +63,8 @@ public abstract class GZipUtil {
     public static final byte[] decompress(byte[] data) throws IOException {
         GZIPInputStream zin = new GZIPInputStream(new ByteArrayInputStream(data));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            data = new byte[10240];
-            int len;
-            while ((len = zin.read(data)) != -1) {
-                out.write(data, 0, len);
-            }
-            return out.toByteArray();
-        } finally {
-            zin.close();
-            out.close();
-        }
+        Finally.transferAndClose(zin, out, 10240);
+        return out.toByteArray();
     }
 
     /**
@@ -86,8 +75,7 @@ public abstract class GZipUtil {
      * @throws IOException
      */
     public static final byte[] compressString(String str) throws IOException {
-        byte[] data = str.getBytes("UTF-8");
-        return compress(data);
+        return compress(str.getBytes(StringUtil.UTF_8));
     }
 
     /**
@@ -98,8 +86,18 @@ public abstract class GZipUtil {
      * @throws IOException
      */
     public static final String decompressString(byte[] data) throws IOException {
-        data = decompress(data);
-        return new String(data, "UTF-8");
+        return new String(decompress(data), StringUtil.UTF_8);
+    }
+
+    /**
+     * 压缩对象，使用Json作为内部表现形式
+     *
+     * @param value
+     * @return 压缩后的数据
+     * @throws IOException
+     */
+    public static byte[] compressObj(Object value) throws IOException {
+        return compress(JacksonUtil.obj2bin(value));
     }
 
     /**
@@ -115,12 +113,7 @@ public abstract class GZipUtil {
      */
     public static final <T> T decompressObj(byte[] data, Class<T> valueType) throws JsonParseException, JsonMappingException,
             IOException {
-        GZIPInputStream zin = new GZIPInputStream(new ByteArrayInputStream(data));
-        try {
-            return JacksonUtil.readObj(zin, valueType);
-        } finally {
-            zin.close();
-        }
+        return JacksonUtil.bin2Obj(decompress(data), valueType);
     }
 
     /**
@@ -134,32 +127,9 @@ public abstract class GZipUtil {
      * @throws JsonMappingException
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
     public static final <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException, JsonMappingException,
             IOException {
-        GZIPInputStream zin = new GZIPInputStream(new ByteArrayInputStream(data));
-        try {
-            return (T) JacksonUtil.readObj(zin, valueType);
-        } finally {
-            zin.close();
-        }
+        return JacksonUtil.bin2Obj(decompress(data), valueType);
     }
 
-    /**
-     * 压缩对象，使用Json作为内部表现形式
-     *
-     * @param value
-     * @return 压缩后的数据
-     * @throws IOException
-     */
-    public static byte[] compressObj(Object value) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-    	GZIPOutputStream zout = new GZIPOutputStream(out);
-    	try {
-    		JacksonUtil.writeObj(zout, value);
-    	} finally {
-    		zout.close();
-    	}
-    	return out.toByteArray();
-    }
 }

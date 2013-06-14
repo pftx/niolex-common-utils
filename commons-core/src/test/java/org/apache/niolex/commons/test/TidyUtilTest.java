@@ -19,6 +19,7 @@ package org.apache.niolex.commons.test;
 
 import static org.junit.Assert.*;
 
+import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.file.FileUtil;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class TidyUtilTest {
 	@Test
 	public final void testRemovePrefix() {
 	    new TidyUtil() {};
-		String str = FileUtil.getCharacterFileContentFromClassPath("Data.txt", TidyUtilTest.class, "utf-8");
+		String str = FileUtil.getCharacterFileContentFromClassPath("Data.txt", TidyUtilTest.class, StringUtil.UTF_8);
 		str = TidyUtil.removePrefix(str, 2);
         System.out.println("SL " + str.length());
         assertEquals(654, str.length());

@@ -22,7 +22,7 @@ public class JacksonUtilTest {
 		CTBean t = new CTBean(3, "Qute", 12212, new Date(1338008328709L));
 		String st = "{\"likely\":3,\"name\":\"Qute\",\"id\":12212,\"birth\":1338008328709}";
 		String s = obj2Str(t);
-		System.out.println("s => " + s);
+		System.out.println("str => " + s);
 		assertEquals(st, s);
 	}
 
@@ -96,6 +96,10 @@ public class JacksonUtilTest {
 		System.out.println(new JacksonUtil(){} + ", " + fac.getCodec().toString());
 	}
 
+	/**
+	 * We can not read two objects from one input stream, due to prefetch.
+	 * @throws Exception
+	 */
 	@Test(expected=EOFException.class)
 	public void testReadObjOfTwo() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -104,12 +108,50 @@ public class JacksonUtilTest {
 		writeObj(out, t);
 		writeObj(out, q);
 		out.close();
-		System.out.println("s => " + StringUtil.utf8ByteToStr(out.toByteArray()));
+		System.out.println("ObjOfTwo => " + StringUtil.utf8ByteToStr(out.toByteArray()));
 		ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
 		CTBean r = readObj(in, CTBean.class);
 		CTBean s = readObj(in, CTBean.class);
 		assertEquals(t, r);
 		assertEquals(q, s);
 	}
+
+    @Test
+    public void testObj2bin() throws Exception {
+        CTBean t = new CTBean(3, "Lex", 2341, new Date(1338008328709L));
+        String st = "{\"likely\":3,\"name\":\"Lex\",\"id\":2341,\"birth\":1338008328709}";
+        byte[] out = obj2bin(t);
+        String ot = StringUtil.utf8ByteToStr(out);
+        assertEquals(st, ot);
+    }
+
+    @Test
+    public void testBin2Obj() throws Exception {
+        CTBean t = new CTBean(3, "Lex", 2341, new Date(1338008328709L));
+        String st = "{\"likely\":3,\"name\":\"Lex\",\"id\":2341,\"birth\":1338008328709}";
+        byte[] in = StringUtil.strToAsciiByte(st);
+        CTBean r = bin2Obj(in, CTBean.class);
+        assertEquals(t, r);
+    }
+
+    @Test
+    public void testBin2ObjJavaType() throws Exception {
+        CTBean t = new CTBean(3, "Lex", 2341, new Date(1338008328709L));
+        String st = "[{\"likely\":3,\"name\":\"Lex\",\"id\":2341,\"birth\":1338008328709}]";
+        byte[] in = StringUtil.strToAsciiByte(st);
+        CTBean[] r = bin2Obj(in, getTypeFactory().constructArrayType(CTBean.class));
+        assertEquals(1, r.length);
+        assertEquals(t, r[0]);
+    }
+
+    @Test
+    public void testBin2ObjTypeRef() throws Exception {
+        CTBean t = new CTBean(3, "Lex", 2341, new Date(1338008328709L));
+        String st = "[{\"likely\":3,\"name\":\"Lex\",\"id\":2341,\"birth\":1338008328709}]";
+        byte[] in = StringUtil.strToAsciiByte(st);
+        List<CTBean> m = bin2Obj(in, new TypeReference<List<CTBean>>(){});
+        assertEquals(t, m.get(0));
+        assertEquals(1, m.size());
+    }
 
 }
