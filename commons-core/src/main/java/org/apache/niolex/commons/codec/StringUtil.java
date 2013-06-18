@@ -203,4 +203,42 @@ public abstract class StringUtil {
 	    }
 	    return list.toArray(new String[list.size()]);
 	}
+
+	/**
+     * Check whether the target is in the argument array.
+     *
+     * @param target the target need be checked
+     * @param args the argument array
+     * @return true if found, false otherwise
+     */
+    public static final boolean isIn(String target, String ...args) {
+        return isIn(target, true, args);
+    }
+
+	/**
+	 * Check whether the target is in the argument array.
+	 *
+	 * @param target the target need be checked
+	 * @param caseSensitive true if case sensitive
+	 * @param args the argument array
+	 * @return true if found, false otherwise
+	 */
+	public static final boolean isIn(String target, boolean caseSensitive, String ...args) {
+	    if (args == null || args.length == 0) {
+	        return false;
+	    }
+	    for (String s : args) {
+	        if (caseSensitive) {
+	            if (target.equals(s)) {
+	                return true;
+	            }
+	        } else {
+	            if (target.equalsIgnoreCase(s)) {
+                    return true;
+                }
+	        }
+	    }
+	    return false;
+	}
+
 }

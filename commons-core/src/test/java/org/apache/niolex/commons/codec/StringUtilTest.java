@@ -18,7 +18,9 @@
 package org.apache.niolex.commons.codec;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -107,6 +109,27 @@ public class StringUtilTest {
 	@Test
 	public void testJoinStrEmpty() {
 	    String b = StringUtil.join(" ");
+	    assertEquals(b, "");
+	}
+
+	@Test
+	public void testJoinStrNull() {
+	    String[] arr = null;
+	    String b = StringUtil.join(arr, " ");
+	    assertEquals(b, "");
+	}
+
+	@Test
+	public void testJoinNull() {
+	    String[] arr = null;
+	    String b = StringUtil.join(" ", arr);
+	    assertEquals(b, "");
+	}
+
+	@Test
+	public void testJoinColNull() {
+	    List<String> arr = null;
+	    String b = StringUtil.join(" ", arr);
 	    assertEquals(b, "");
 	}
 
@@ -310,6 +333,68 @@ public class StringUtilTest {
         assertEquals(arr.length, 4);
         String b = StringUtil.join(arr, "\n");
         assertEquals(b, "接口\nChecksum\n中的\ngetValue");
+    }
+
+    @Test
+    public void testIsInStringStringArray() throws Exception {
+        boolean b = StringUtil.isIn("Lex", "lex", "");
+        assertFalse(b);
+    }
+
+    @Test
+    public void testIsInStringStringArrayYes() throws Exception {
+        boolean b = StringUtil.isIn("Lex", null, "Lex", "empty", "");
+        assertTrue(b);
+    }
+
+    @Test
+    public void testIsInStringStringArrayNull() throws Exception {
+        String[] arr = null;
+        boolean b = StringUtil.isIn("Lex", arr);
+        assertFalse(b);
+    }
+
+    @Test
+    public void testIsInStringStringArrayEmpty() throws Exception {
+        boolean b = StringUtil.isIn("Lex");
+        assertFalse(b);
+    }
+
+    @Test
+    public void testIsInStringBooleanStringArray() throws Exception {
+        boolean b = StringUtil.isIn("Lex", false, "lex", "");
+        assertTrue(b);
+    }
+
+    @Test
+    public void testIsInStringBooleanStringArrayYes() throws Exception {
+        boolean b = StringUtil.isIn("Lex", false, null, "Lex", "empty", "");
+        assertTrue(b);
+    }
+
+    @Test
+    public void testIsInStringBooleanStringArrayYesAg() throws Exception {
+        boolean b = StringUtil.isIn("inijoin", false, null, "ini", "jion", "iniJoin");
+        assertTrue(b);
+    }
+
+    @Test
+    public void testIsInStringBooleanStringArrayYesTrueAg() throws Exception {
+        boolean b = StringUtil.isIn("inijoin", true, null, "ini", "jion", "iniJoin");
+        assertFalse(b);
+    }
+
+    @Test
+    public void testIsInStringBooleanStringArrayEmpty() throws Exception {
+        boolean b = StringUtil.isIn("inijoin", false);
+        assertFalse(b);
+    }
+
+    @Test
+    public void testIsInStringBooleanStringArrayNull() throws Exception {
+        String[] arr = null;
+        boolean b = StringUtil.isIn("inijoin", false, arr);
+        assertFalse(b);
     }
 
 }

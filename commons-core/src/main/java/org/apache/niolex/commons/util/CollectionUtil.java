@@ -20,6 +20,7 @@ package org.apache.niolex.commons.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.niolex.commons.bean.Pair;
 
@@ -123,5 +124,49 @@ public abstract class CollectionUtil {
 	    b.removeAll(left);
 	    return new Pair<List<E>, List<E>>(a, b);
 	}
+
+	/**
+     * Return <code>true</code> if the supplied Collection is <code>null</code>
+     * or empty. Otherwise, return <code>false</code>.<br>
+     *
+     * @param collection the Collection to check
+     * @return whether the given Collection is empty
+     */
+    public static boolean isEmpty(Collection<?> collection) {
+        return (collection == null || collection.isEmpty());
+    }
+
+    /**
+     * Return <code>true</code> if the supplied Map is <code>null</code>
+     * or empty. Otherwise, return <code>false</code>.<br>
+     *
+     * @param map the Map to check
+     * @return whether the given Map is empty
+     */
+    public static boolean isEmpty(Map<?, ?> map) {
+        return (map == null || map.isEmpty());
+    }
+
+    /**
+     * Return <code>true</code> if the supplied Collection is not <code>null</code>
+     * and contain only one element. Otherwise, return <code>false</code>.<br>
+     *
+     * @param collection the Collection to check
+     * @return whether the given Collection is Single
+     */
+    public static boolean isSingle(Collection<?> collection) {
+        return (collection != null && collection.size() == 1);
+    }
+
+    /**
+     * Return <code>true</code> if the supplied Map is not <code>null</code>
+     * and contain only one element. Otherwise, return <code>false</code>.<br>
+     *
+     * @param map the Map to check
+     * @return whether the given Map is Single
+     */
+    public static boolean isSingle(Map<?, ?> map) {
+        return (map != null && map.size() == 1);
+    }
 
 }

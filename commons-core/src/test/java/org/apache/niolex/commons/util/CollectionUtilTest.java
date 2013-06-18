@@ -17,13 +17,21 @@
  */
 package org.apache.niolex.commons.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
@@ -170,6 +178,94 @@ public class CollectionUtilTest {
         Pair<List<String>,List<String>> pair = CollectionUtil.intersection(l, l);
         assertEquals(0, pair.a.size());
         assertEquals(0, pair.b.size());
+    }
+
+    @Test
+    public void testIsEmptyColNull() {
+        List<String> col = null;
+        assertTrue(CollectionUtil.isEmpty(col));
+    }
+
+    @Test
+    public void testIsEmptyMapNull() {
+        Map<String, ?> col = null;
+        assertTrue(CollectionUtil.isEmpty(col));
+    }
+
+    @Test
+    public void testIsEmptyColEmpty() {
+        List<String> col = Collections.emptyList();
+        assertTrue(CollectionUtil.isEmpty(col));
+    }
+
+    @Test
+    public void testIsEmptyMapEmpty() {
+        Map<String, ?> col = Collections.emptyMap();
+        assertTrue(CollectionUtil.isEmpty(col));
+    }
+
+    @Test
+    public void testIsEmptyColFalse() {
+        Collection<String> col = Collections.singleton("Lex");
+        assertFalse(CollectionUtil.isEmpty(col));
+    }
+
+    @Test
+    public void testIsEmptyMapFalse() {
+        Map<String, ?> col = Collections.singletonMap("Tei mail", "Hap");
+        assertFalse(CollectionUtil.isEmpty(col));
+    }
+
+    @Test
+    public void testIsSingleColNull() {
+        Collection<String> col = null;
+        assertFalse(CollectionUtil.isSingle(col));
+    }
+
+    @Test
+    public void testIsSingleMapNull() {
+        Map<String, ?> col = null;
+        assertFalse(CollectionUtil.isSingle(col));
+    }
+
+    @Test
+    public void testIsSingleColSingle() {
+        Collection<String> col = Collections.singleton("Lex");
+        assertTrue(CollectionUtil.isSingle(col));
+    }
+
+    @Test
+    public void testIsSingleMapSingle() {
+        Map<String, ?> col = Collections.singletonMap("Tei mail", "Hap");
+        assertTrue(CollectionUtil.isSingle(col));
+    }
+
+    @Test
+    public void testIsSingleColFalse() {
+        Collection<String> col = Sets.newHashSet();
+        assertFalse(CollectionUtil.isSingle(col));
+    }
+
+    @Test
+    public void testIsSingleMapFalse() {
+        Map<String, ?> col = Maps.newHashMap();
+        assertFalse(CollectionUtil.isSingle(col));
+    }
+
+    @Test
+    public void testIsSingleColMore() {
+        Collection<String> col = Sets.newHashSet();
+        col.add("G");
+        col.add("More");
+        assertFalse(CollectionUtil.isSingle(col));
+    }
+
+    @Test
+    public void testIsSingleMapMore() {
+        Map<String, String> col = Maps.newHashMap();
+        col.put("Nice", "Girl");
+        col.put("Happy", "Girl");
+        assertFalse(CollectionUtil.isSingle(col));
     }
 
 }
