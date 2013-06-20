@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.codec.CharEncoding;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 
@@ -224,7 +225,7 @@ public abstract class StringUtil {
 	 * @return true if found, false otherwise
 	 */
 	public static final boolean isIn(String target, boolean caseSensitive, String ...args) {
-	    if (args == null || args.length == 0) {
+	    if (ArrayUtils.isEmpty(args)) {
 	        return false;
 	    }
 	    for (String s : args) {
@@ -237,6 +238,25 @@ public abstract class StringUtil {
                     return true;
                 }
 	        }
+	    }
+	    return false;
+	}
+
+	/**
+	 * Test whether the target contains any of the string in the argument array.
+	 *
+	 * @param target the target need be checked
+	 * @param args the argument array
+	 * @return true if found, false otherwise
+	 */
+	public static final boolean containsAny(String target, String ...args) {
+	    if (ArrayUtils.isEmpty(args)) {
+            return false;
+        }
+	    for (String s : args) {
+	        if (target.contains(s)) {
+                return true;
+            }
 	    }
 	    return false;
 	}

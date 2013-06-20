@@ -179,4 +179,15 @@ public class IntegerUtilTest {
         assertEquals("1.21K", s);
     }
 
+    @Test
+    public void testIsIn() throws Exception {
+        assertFalse(IntegerUtil.isIn(5, 6));
+        assertTrue(IntegerUtil.isIn(5, 6, 7, 5));
+    }
+
+    @Test
+    public void testIsInEmpty() throws Exception {
+        assertFalse(IntegerUtil.isIn(5));
+    }
+
 }

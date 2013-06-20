@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.codec;
 
+import static org.apache.niolex.commons.codec.StringUtil.strToUtf8Byte;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -49,6 +51,31 @@ public abstract class CipherUtil {
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("The runtime doesn't support the algorithm: " + name, e);
         }
+    }
+
+    /**
+     * Generate digest for the plain texts.
+     *
+     * @param md a Message Digest object
+     * @param plainTexts the plain texts need to be digested
+     * @return the same Message Digest object as the parameter
+     */
+    public static MessageDigest digest(MessageDigest md, String[] plainTexts) {
+        final int size = plainTexts.length;
+        for (int i = 0; i < size; ++i) {
+            String plainText = plainTexts[i];
+            if (plainText == null) {
+                // This is the magic code for null string.
+                md.update((byte) 216);
+            } else {
+                md.update(strToUtf8Byte(plainText));
+            }
+            if (i != size - 1) {
+                // This is the magic code for separate parameters.
+                md.update((byte) 237);
+            }
+        }
+        return md;
     }
 
     /**

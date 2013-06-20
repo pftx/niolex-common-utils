@@ -17,10 +17,9 @@
  */
 package org.apache.niolex.commons.codec;
 
-import static org.apache.niolex.commons.codec.StringUtil.strToUtf8Byte;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 /**
  * MD5Util是一个用来产生MD5签名和校验MD5签名的工具类
  *
@@ -36,7 +35,7 @@ import java.security.NoSuchAlgorithmException;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */
-public abstract class MD5Util {
+public abstract class MD5Util extends CipherUtil {
 
     /**
      * 对输入的字符串列表产生MD5签名
@@ -45,15 +44,8 @@ public abstract class MD5Util {
      * @return 输入字符串列表的MD5签名
      */
     public static final String md5(String... plainTexts) {
-        MessageDigest md = CipherUtil.getInstance("MD5");
-        for (String plainText : plainTexts) {
-        	if (plainText == null) {
-        	    // This is the magic code for null string.
-        		md.update((byte) 216);
-        		continue;
-        	}
-            md.update(strToUtf8Byte(plainText));
-        }
+        MessageDigest md = getInstance("MD5");
+        digest(md, plainTexts);
         byte bytes[] = md.digest();
 
         return Base16Util.byteToBase16(bytes);
@@ -68,17 +60,9 @@ public abstract class MD5Util {
      * @throws NoSuchAlgorithmException 当用户的JDK不支持MD5哈希算法时
      */
     public static final boolean md5Check(String md5, String... plainTexts) {
-        MessageDigest md = CipherUtil.getInstance("MD5");
-        for (String plainText : plainTexts) {
-        	if (plainText == null) {
-        		md.update((byte) 216);
-        		continue;
-        	}
-            md.update(strToUtf8Byte(plainText));
-        }
-        byte bytes[] = md.digest();
+        String digest = md5(plainTexts);
 
-        return Base16Util.byteToBase16(bytes).equalsIgnoreCase(md5);
+        return digest.equalsIgnoreCase(md5);
     }
 
 }

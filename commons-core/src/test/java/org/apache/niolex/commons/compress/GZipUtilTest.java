@@ -25,11 +25,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
-
-import org.apache.niolex.commons.download.DownloadUtil;
-import org.apache.niolex.commons.download.DownloadException;
+import org.apache.niolex.commons.file.FileUtil;
 import org.codehaus.jackson.type.JavaType;
+import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -41,14 +39,7 @@ import org.junit.Test;
  */
 public class GZipUtilTest {
 
-    static byte[] data = null;
-    static {
-        try {
-            data = DownloadUtil.getClassPathResource("Data.txt", GZipUtilTest.class);
-        } catch (DownloadException e) {
-            e.printStackTrace();
-        }
-    }
+    static byte[] data = FileUtil.getBinaryFileContentFromClassPath("Data.txt", GZipUtilTest.class);
 
     @Test
     public void doSmoke() throws IOException {

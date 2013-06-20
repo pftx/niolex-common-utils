@@ -397,4 +397,15 @@ public class StringUtilTest {
         assertFalse(b);
     }
 
+    @Test
+    public void testContainsAny() throws Exception {
+        assertFalse(StringUtil.containsAny("txt/html", "http", "ftp"));
+        assertTrue(StringUtil.containsAny("txt/html", "http", "ftp", "txt"));
+    }
+
+    @Test
+    public void testContainsAnyEmpty() throws Exception {
+        assertFalse(StringUtil.containsAny("txt/html"));
+    }
+
 }

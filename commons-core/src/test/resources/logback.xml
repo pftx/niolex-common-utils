@@ -28,11 +28,7 @@
         </filter>
     </appender>
 
-    <logger name="org.apache.niolex.commons.download" level="DEBUG">
-		<appender-ref ref="CONSOLE" />
-	</logger>
-
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="CONSOLE" />
     </root>
 </configuration>

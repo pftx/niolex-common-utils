@@ -1,17 +1,28 @@
 package org.apache.niolex.common.demo;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.UUID;
 
 import org.apache.niolex.commons.util.SystemUtil;
+import org.slf4j.Logger;
 
 
 /**
  * Hello world!
  *
  */
-public class App
+public abstract class App extends HttpURLConnection
 {
+    /**
+     * Constructor
+     * @param u
+     */
+    protected App(URL u) {
+        super(u);
+    }
+
     public static void main(String[] args) {
         System.out.println("\n**** Test system property");
         String fileName = SystemUtil.getSystemProperty("ConfigClient.configurationFile", "config-client-properties",
@@ -63,5 +74,8 @@ public class App
         System.out.println("Number isAssignableFrom Long ? " + (Number.class.isAssignableFrom(Long.class)));
         Long ll = 129012l;
         System.out.println("Number.class isInstance Long Object ? " + (Number.class.isInstance(ll)));
+
+        System.out.println("\n**** Test extends Static " + HTTP_OK);
+        System.out.println(Logger.class.getResource("Logger.class").toExternalForm());
     }
 }

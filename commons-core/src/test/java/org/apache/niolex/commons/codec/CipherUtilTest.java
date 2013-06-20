@@ -17,6 +17,10 @@
  */
 package org.apache.niolex.commons.codec;
 
+import static org.junit.Assert.assertEquals;
+
+import java.security.MessageDigest;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NullCipher;
@@ -56,5 +60,13 @@ public class CipherUtilTest {
 	    }
 	    Assert.assertTrue(false);
 	}
+
+    @Test
+    public void testDigest() throws Exception {
+        MessageDigest md = CipherUtil.getInstance("SHA1");
+        CipherUtil.digest(md, new String[0]);
+        CipherUtil.digest(md, new String[] {"abc", null, "cde"});
+        assertEquals("2be34a726839515b64c04cf9397381d82c2cc010", Base16Util.byteToBase16(md.digest()));
+    }
 
 }

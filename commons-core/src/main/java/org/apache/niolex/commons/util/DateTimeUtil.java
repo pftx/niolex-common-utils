@@ -32,16 +32,16 @@ import java.util.GregorianCalendar;
 public abstract class DateTimeUtil {
 
     // One second specified in milliseconds.
-    public static final long SECOND = 1000;
+    public static final int SECOND = 1000;
 
     // One minute specified in milliseconds.
-    public static final long MINUTE = 60 * SECOND;
+    public static final int MINUTE = 60 * SECOND;
 
     // One hour specified in milliseconds.
-    public static final long HOUR = 60 * MINUTE;
+    public static final int HOUR = 60 * MINUTE;
 
     // One day specified in milliseconds.
-    public static final long DAY = 24 * HOUR;
+    public static final int DAY = 24 * HOUR;
 
     // /////////////////////////////////////////////////////////////////////////////////////
     // FORMART DATE TO STRING

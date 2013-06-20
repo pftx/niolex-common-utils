@@ -20,6 +20,7 @@ package org.apache.niolex.commons.codec;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.niolex.commons.util.Const;
 
 /**
@@ -100,6 +101,23 @@ public abstract class IntegerUtil {
 	        return df.format(size / Const.K) + "K";
 	    }
 	    return df.format(size);
+	}
+
+	/**
+     * Check whether the target is in the argument array.
+     *
+     * @param target the target need be checked
+     * @param args the argument array
+     * @return true if found, false otherwise
+     */
+	public static final boolean isIn(int target, int ...args) {
+	    if (ArrayUtils.isEmpty(args)) {
+            return false;
+        }
+        for (int i : args) {
+            if (target == i) return true;
+        }
+        return false;
 	}
 
 }

@@ -17,8 +17,6 @@
  */
 package org.apache.niolex.commons.codec;
 
-import static org.apache.niolex.commons.codec.StringUtil.*;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -37,7 +35,7 @@ import java.security.NoSuchAlgorithmException;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */
-public abstract class SHAUtil {
+public abstract class SHAUtil extends CipherUtil {
 
     /**
      * 对输入的字符串列表产生SHA签名
@@ -47,10 +45,8 @@ public abstract class SHAUtil {
      * @throws NoSuchAlgorithmException 当用户的JDK不支持SHA哈希算法时
      */
     public static final String sha1(String... plainTexts) {
-        MessageDigest md = CipherUtil.getInstance("SHA");
-        for (String plainText : plainTexts) {
-            md.update(strToUtf8Byte(plainText));
-        }
+        MessageDigest md = getInstance("SHA");
+        digest(md, plainTexts);
         byte bytes[] = md.digest();
 
         return Base16Util.byteToBase16(bytes);
