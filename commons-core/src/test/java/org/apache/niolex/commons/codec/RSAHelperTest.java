@@ -1,9 +1,9 @@
 /**
- * RsaHelperTest.java
+ * RSAHelperTest.java
  *
- * Copyright 2012 Niolex, Inc.
+ * Copyright 2013 the original author or authors.
  *
- * Niolex licenses this file to you under the Apache License, version 2.0
+ * We licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
  * License.  You may obtain a copy of the License at:
  *
@@ -17,108 +17,112 @@
  */
 package org.apache.niolex.commons.codec;
 
-import static org.junit.Assert.assertNull;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Map;
 
-import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-
 /**
- * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
- * @version 1.0.0, $Date: 2012-4-11$
- *
+ * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
+ * @version 1.0.0
+ * @since 2013-6-21
  */
-public class RSAHelperTest {
+public class RSAHelperTest extends RSAHelper {
 
-    private static Map<String, Object> initKeys = null;
+    static PrivateKey PRIK;
+    static PublicKey PUBK;
+    static Map<String, Object> MAP;
 
-    static {
-        try {
-            initKeys = RSAUtil.initKey();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+    @BeforeClass
+    public static void testInitKey() throws Exception {
+        MAP = initKey();
+        PRIK = (PrivateKey) MAP.get(PRIVATE_KEY);
+        PUBK = (PublicKey) MAP.get(PUBLIC_KEY);
     }
 
     @Test
-    public void getMiddleStringTest() {
-        Assert.assertEquals(RSAHelper.getMiddleString("baabcdiedc", "ba", "dc"), "abcdie");
-        Assert.assertEquals(RSAHelper.getMiddleString("<RSAKeyValue><Modulus>AK3TiBdwM9CJVQSWA6VrTJUU8NxB9uil7ByGQ+bSXNtecogAigvmiMF6QHg2QtgAApmwNFGfCFK6A+DEn9DroGVVThKpD3XkraQkq9i6y95FXX+GZKKFfC1fowGIFMaB5Wxns8pn+qMi3jagl/lin7Lohf3d0o0T7U//9vjiuzjT</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>", "<Modulus>", "</Modulus>"),
-                "AK3TiBdwM9CJVQSWA6VrTJUU8NxB9uil7ByGQ+bSXNtecogAigvmiMF6QHg2QtgAApmwNFGfCFK6A+DEn9DroGVVThKpD3XkraQkq9i6y95FXX+GZKKFfC1fowGIFMaB5Wxns8pn+qMi3jagl/lin7Lohf3d0o0T7U//9vjiuzjT");
+    public void testGetPrivateKeyString() throws Exception {
+        String k = getPrivateKey(MAP);
+        PrivateKey key = getPrivateKey(k);
+        assertEquals(key, PRIK);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetPrivateKeyInvalid() {
+        getPrivateKey("Lex is not a Key!!!");
     }
 
     @Test
-    public void testEncodePublicKeyToXml() {
+    public void testGetPublicKeyString() throws Exception {
+        String k = getPublicKey(MAP);
+        PublicKey key = getPublicKey(k);
+        assertEquals(key, PUBK);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetPublicKeyInvalid() throws Exception {
+        getPublicKey("Lex is not a Key!!!");
+    }
+
+    @Test
+    public void testEncodePublicKeyToXml() throws Exception {
+        String xml = encodePublicKeyToXml(PUBK);
+        assertTrue(xml.startsWith("<RSAKeyValue><Modulus>"));
+        assertEquals(243, xml.length());
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testEncodePublicKeyToXmlInvalid() throws Exception {
         PublicKey key = mock(PublicKey.class);
-        String xml = RSAHelper.encodePublicKeyToXml(key);
-        assertNull(xml);
+        encodePublicKeyToXml(key);
     }
 
     @Test
-    public void testEncodePrivateKeyToXml() {
+    public void testEncodePrivateKeyToXml() throws Exception {
+        String xml = encodePrivateKeyToXml(PRIK);
+        System.out.print(xml);
+        assertTrue(xml.startsWith("<RSAKeyValue><Modulus>"));
+        assertEquals(915, xml.length());
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testEncodePrivateKeyToXmlInvalid() throws Exception {
         PrivateKey key = mock(PrivateKey.class);
-        String xml = RSAHelper.encodePrivateKeyToXml(key);
-        assertNull(xml);
-    }
-
-    @Test
-    public void testPublicKey() {
-        PublicKey key = (PublicKey)initKeys.get(RSAUtil.PUBLIC_KEY);
-        String xml = RSAHelper.encodePublicKeyToXml(key);
-        System.out.println("Pubk => " + xml);
-        PublicKey key2 = RSAHelper.decodePublicKeyFromXml(xml);
-        Assert.assertEquals(key, key2);
-    }
-
-    @Test
-    public void testPrivateKey() {
-        PrivateKey key = (PrivateKey)initKeys.get(RSAUtil.PRIVATE_KEY);
-        String xml = RSAHelper.encodePrivateKeyToXml(key);
-        System.out.println("Prik => " + xml);
-        PrivateKey key2 = RSAHelper.decodePrivateKeyFromXml(xml);
-        Assert.assertEquals(key, key2);
-    }
-
-    @Test
-    public void testWork() throws Exception {
-        String key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCVhipL6FX03wgyuKA2RlWiBLqQN+SGqlClYtC6DPN2omqG34+jBqFvkU8KhdBFBenx0xLZliTLTRT/xzhISDTwgdB3IE2Ae5nu6IE2D18qJaoBEoNFTRVOipyQ5Q8GuMzdmQKtXVVGlwTAStCXXCjKp1sCJSTNVYFTSMZfKH7TNwIDAQAB";
-        byte[] keyBytes = Base64Util.base64toByte(key);
-        byte[] as = RSAUtil.encryptByPublicKey(keyBytes, key);
-        // 构造X509EncodedKeySpec对象
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-        // KEY_ALGORITHM 指定的加密算法
-        KeyFactory keyFactory = KeyFactory.getInstance(RSAUtil.ALGORITHM);
-        PublicKey key1 = keyFactory.generatePublic(keySpec);
-        String xmlKey = RSAHelper.encodePublicKeyToXml(key1);
-        System.out.println("Pubk => " + xmlKey);
-        // 取公钥匙对象
-        PublicKey key2 = RSAHelper.decodePublicKeyFromXml(xmlKey);
-        Assert.assertEquals(key1, key2);
-        byte[] bs = RSAUtil.encryptByPublicKey(keyBytes, key2);
-        Assert.assertEquals(as.length, bs.length);
-        System.out.println("OK: " + keyBytes.length);
+        encodePrivateKeyToXml(key);
     }
 
     @Test
     public void testDecodePublicKeyFromXml() throws Exception {
-        String pubKey = "<RSAKeyValue><Modulus>AA==</Modulus><Exponent>AA==</Exponent></RSAKeyValue>";
-        PublicKey key = RSAHelper.decodePublicKeyFromXml(pubKey);
-        assertNull(key);
+        String xml = encodePublicKeyToXml(PUBK);
+        PublicKey key = decodePublicKeyFromXml(xml);
+        assertEquals(key, PUBK);
     }
 
     @Test
     public void testDecodePrivateKeyFromXml() throws Exception {
-        String priKey = "<RSAKeyValue><Modulus>AA==</Modulus><Exponent>AQAB</Exponent><P>ANc2rj5vCbcmisRJJyy/2XPgGLmPHIQW1wPry25BM0fTPchWzsr77SyRNa6gwBfBIm0NKmtiiHCOUExP9+vYeQM=</P><Q>AM7Vw6B5EXJa03qUW2j7L/hY+n3VzP50rGxT64PV6Lt/+PsFdGcQS0Yz2Jmb61t8oVpLNvwfrTr8zIzWQtVS6gk=</Q><DP>a+drp7wOl/jIHLA85w/t3E5gtzDM8GFvPvULk2U3a+y7DmaP2nBDs1O/IaZRidd5BkpSmXLWy/BezFRQDr0Dtw==</DP><DQ>Wp/o3igNz+gh3wSf5KiihRMfdgE2l4sxfSlr+NDB712MDxh9vyaxhKn0zqE1h1ldLT3lcqTCdyUKzu6WS/fPWQ==</DQ><InverseQ>AKgLMYdhQ24CCR3TSi6F90JZwFW3LjdCUE0enBCHzNp8ro2UIisL52oNVFF01wCwGAYrJnXbdhMSjsMEO1cZ7WM=</InverseQ><D>AJNcRoIyeFwVX+zrSULn17Udzk7KC/R2CEWqfNhY7tH3D+A9UXynxiKxY56Qmtlgj7YaZjwa7wMXKEUIKfCnJ7nto+6Bu6Ak9u4xPphkPXmYvyhyuWFGGMK+iYrbJ1BxG0Mbzdcv9HcXqGYJari8A2VFOfav9YGA19sUG9Dl0NtR</D></RSAKeyValue>";
-        PrivateKey key = RSAHelper.decodePrivateKeyFromXml(priKey);
+        String xml = encodePrivateKeyToXml(PRIK);
+        PrivateKey key = decodePrivateKeyFromXml(xml);
+        assertEquals(key, PRIK);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testDecodePublicKeyFromXmlInvalidXml() throws Exception {
+        String pubKey = "<RSAKeyValue><Modulus>AA==</Modulus><Exponent>AA==</Exponent></RSAKeyValue>";
+        PublicKey key = decodePublicKeyFromXml(pubKey);
         assertNull(key);
     }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testDecodePrivateKeyFromXmlInvalidXml() throws Exception {
+        String priKey = "<RSAKeyValue><Modulus>AA==</Modulus><Exponent>AQAB</Exponent><P>ANc2rj5vCbcmisRJJyy/2XPgGLmPHIQW1wPry25BM0fTPchWzsr77SyRNa6gwBfBIm0NKmtiiHCOUExP9+vYeQM=</P><Q>AM7Vw6B5EXJa03qUW2j7L/hY+n3VzP50rGxT64PV6Lt/+PsFdGcQS0Yz2Jmb61t8oVpLNvwfrTr8zIzWQtVS6gk=</Q><DP>a+drp7wOl/jIHLA85w/t3E5gtzDM8GFvPvULk2U3a+y7DmaP2nBDs1O/IaZRidd5BkpSmXLWy/BezFRQDr0Dtw==</DP><DQ>Wp/o3igNz+gh3wSf5KiihRMfdgE2l4sxfSlr+NDB712MDxh9vyaxhKn0zqE1h1ldLT3lcqTCdyUKzu6WS/fPWQ==</DQ><InverseQ>AKgLMYdhQ24CCR3TSi6F90JZwFW3LjdCUE0enBCHzNp8ro2UIisL52oNVFF01wCwGAYrJnXbdhMSjsMEO1cZ7WM=</InverseQ><D>AJNcRoIyeFwVX+zrSULn17Udzk7KC/R2CEWqfNhY7tH3D+A9UXynxiKxY56Qmtlgj7YaZjwa7wMXKEUIKfCnJ7nto+6Bu6Ak9u4xPphkPXmYvyhyuWFGGMK+iYrbJ1BxG0Mbzdcv9HcXqGYJari8A2VFOfav9YGA19sUG9Dl0NtR</D></RSAKeyValue>";
+        PrivateKey key = decodePrivateKeyFromXml(priKey);
+        assertNull(key);
+    }
+
 }

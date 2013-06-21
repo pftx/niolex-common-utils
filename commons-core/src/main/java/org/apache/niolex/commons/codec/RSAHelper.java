@@ -18,25 +18,136 @@
 package org.apache.niolex.commons.codec;
 
 import java.math.BigInteger;
+import java.security.Key;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.niolex.commons.internal.IgnoreException;
 
 
 /**
- * This class is for generate RSA XML description file.
+ * This class is for generate RSA Keys and transform keys to XML description file or base64 string.
  * The XML description file can be used to exchange RSA Keys, especially for .Net project.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- *
- * @version 1.0.0, $Date: 2012-4-11$
- *
+ * @version 1.0.0
+ * @since 2012-4-11
  */
 public abstract class RSAHelper {
+
+    public static final String ALGORITHM = "RSA";
+    public static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
+    public static final String PUBLIC_KEY = "RSAPublicKey";
+    public static final String PRIVATE_KEY = "RSAPrivateKey";
+
+    /**
+     * Initialize the Key pair with 1024bit size.
+     *
+     * @return the Key Map
+     * @throws NoSuchAlgorithmException If Your JDK don't support RSA.
+     */
+    public static Map<String, Object> initKey() throws NoSuchAlgorithmException {
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(ALGORITHM);
+        keyPairGen.initialize(1024);
+        KeyPair keyPair = keyPairGen.generateKeyPair();
+
+        Map<String, Object> keyMap = new HashMap<String, Object>(2);
+
+        keyMap.put(PUBLIC_KEY, keyPair.getPublic());
+        keyMap.put(PRIVATE_KEY, keyPair.getPrivate());
+        return keyMap;
+    }
+
+    /**
+     * Get the RSA KeyFactory.
+     *
+     * @return the RSA KeyFactory
+     * @throws IllegalStateException If Your JDK don't support RSA.
+     */
+    public static KeyFactory getKeyFactory() {
+        return IgnoreException.getKeyFactory(ALGORITHM);
+    }
+
+    /**
+     * Decode the private key from the base64 encoded private key specification.
+     *
+     * @param key the base64 encoded private key specification
+     * @return the decoded private key
+     * @throws IllegalStateException If Your JDK don't support RSA.
+     * @throws IllegalArgumentException If the parameter key is damaged
+     */
+    public static PrivateKey getPrivateKey(String key) {
+        // 对密钥解密
+        byte[] keyBytes = Base64Util.base64toByte(key);
+
+        // 取得私钥
+        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
+
+        try {
+            return getKeyFactory().generatePrivate(pkcs8KeySpec);
+        } catch (InvalidKeySpecException e) {
+            throw new IllegalArgumentException("Invalid key specification");
+        }
+    }
+
+    /**
+     * Get the base64 encoded private key specification
+     *
+     * @param keyMap the Key Map
+     * @return the base64 encoded private key specification
+     */
+    public static String getPrivateKey(Map<String, Object> keyMap) {
+        Key key = (Key) keyMap.get(PRIVATE_KEY);
+
+        return Base64Util.byteToBase64(key.getEncoded());
+    }
+
+    /**
+     * Decode the public key from the base64 encoded public key specification.
+     *
+     * @param key the base64 encoded public key specification
+     * @return the decoded public key
+     * @throws IllegalStateException If Your JDK don't support RSA.
+     * @throws IllegalArgumentException If the parameter key is damaged
+     */
+    public static PublicKey getPublicKey(String key) {
+        // 对密钥解密
+        byte[] keyBytes = Base64Util.base64toByte(key);
+
+        // 取得私钥
+        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
+
+        try {
+            return getKeyFactory().generatePublic(x509KeySpec);
+        } catch (InvalidKeySpecException e) {
+            throw new IllegalArgumentException("Invalid key specification");
+        }
+    }
+
+    /**
+     * Get the base64 encoded public key specification
+     *
+     * @param keyMap the Key Map
+     * @return the base64 encoded public key specification
+     */
+    public static String getPublicKey(Map<String, Object> keyMap) {
+        Key key = (Key) keyMap.get(PUBLIC_KEY);
+
+        return Base64Util.byteToBase64(key.getEncoded());
+    }
 
 	/**
 	 * Encode public key into xml string.
@@ -45,7 +156,7 @@ public abstract class RSAHelper {
 	 */
     public static String encodePublicKeyToXml(PublicKey key) {
         if (!RSAPublicKey.class.isInstance(key)) {
-            return null;
+            throw new IllegalArgumentException("The key you provided is not RSAPublicKey");
         }
         RSAPublicKey pubKey = (RSAPublicKey) key;
         StringBuilder sb = new StringBuilder();
@@ -65,7 +176,7 @@ public abstract class RSAHelper {
      */
     public static String encodePrivateKeyToXml(PrivateKey key) {
         if (!RSAPrivateCrtKey.class.isInstance(key)) {
-            return null;
+            throw new IllegalArgumentException("The key you provided is not RSAPrivateCrtKey");
         }
         RSAPrivateCrtKey priKey = (RSAPrivateCrtKey) key;
         StringBuilder sb = new StringBuilder();
@@ -98,12 +209,10 @@ public abstract class RSAHelper {
 
         RSAPublicKeySpec rsaPubKey = new RSAPublicKeySpec(modulus, publicExponent);
 
-        KeyFactory keyf;
         try {
-            keyf = KeyFactory.getInstance(RSAUtil.ALGORITHM);
-            return keyf.generatePublic(rsaPubKey);
-        } catch (Exception e) {
-            return null;
+            return getKeyFactory().generatePublic(rsaPubKey);
+        } catch (InvalidKeySpecException e) {
+            throw new IllegalArgumentException("Invalid key specification");
         }
     }
 
@@ -128,12 +237,10 @@ public abstract class RSAHelper {
         RSAPrivateCrtKeySpec rsaPriKey = new RSAPrivateCrtKeySpec(modulus, publicExponent, privateExponent, primeP,
                 primeQ, primeExponentP, primeExponentQ, crtCoefficient);
 
-        KeyFactory keyf;
         try {
-            keyf = KeyFactory.getInstance(RSAUtil.ALGORITHM);
-            return keyf.generatePrivate(rsaPriKey);
-        } catch (Exception e) {
-            return null;
+            return getKeyFactory().generatePrivate(rsaPriKey);
+        } catch (InvalidKeySpecException e) {
+            throw new IllegalArgumentException("Invalid key specification");
         }
     }
 

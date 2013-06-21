@@ -20,20 +20,14 @@ package org.apache.niolex.commons.codec;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -42,122 +36,85 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.ShortBufferException;
 
 /**
- * RSAUtil是一个运用RSA加密算法进行签名和加密、解密的工具类
+ * RSAUtil is a collection of methods encryption and decryption, sign and verify using RSA algorithm.
  *
- * 目前提供的功能如下：
- * 1. public static String sign(byte[] data, String privateKey)
- * 用私钥对信息生成数字签名
- *
- * 2. public static boolean verify(byte[] data, String publicKey, String sign)
- * 校验数字签名的正确性
- *
- * 3. public static byte[] decryptByPrivateKey(byte[] data, String key)
- * 用私钥解密通过公钥加密的数据
- *
- * 4. public static byte[] decryptByPublicKey(byte[] data, String key)
- * 用公钥解密通过私钥加密的数据
- *
- * 5. public static byte[] encryptByPublicKey(byte[] data, String key)
- * 用公钥加密数据
- *
- * 6. public static byte[] encryptByPrivateKey(byte[] data, String key)
- * 用私钥加密数据
- *
- * 7. public static String getPrivateKey(Map<String, Object> keyMap)
- * 取得私钥
- *
- * 8. public static String getPublicKey(Map<String, Object> keyMap)
- * 取得公钥
- *
- * 9. public static Map<String, Object> initKey()
- * 初始化密钥,产生1024bit的密钥对
- *
- * @used 暂无项目使用
- * @category niolex-common-utils -> 公共库 -> 编码加密
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */
-public abstract class RSAUtil {
-    public static final String ALGORITHM = "RSA";
-    public static final String SIGNATURE_ALGORITHM = "MD5withRSA";
-    public static final String PUBLIC_KEY = "RSAPublicKey";
-    public static final String PRIVATE_KEY = "RSAPrivateKey";
+public abstract class RSAUtil extends RSAHelper {
 
     /**
-     * 用私钥对信息生成数字签名
+     * Use the private Key to sign the data.
      *
-     * @param data
-     *            需要签名的数据
-     * @param privateKey
-     *            用来签名的私钥
-     *
-     * @return 对数据的签名
-     *
-     * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
-     * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
-     * @throws InvalidKeyException 假如输入的RSA私钥不合法
-     * @throws SignatureException 假如根据privateKey生成密钥失败
+     * @param data the data to be signed
+     * @param privateKey the key used for sign
+     * @return the signature
+     * @throws IllegalStateException If Your JDK don't support RSA.
+     * @throws IllegalArgumentException If the parameter key is damaged
      */
-    public static String sign(byte[] data, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidKeyException, SignatureException {
-        // 解密由base64编码的私钥
-        byte[] keyBytes = Base64Util.base64toByte(privateKey);
-
-        // 构造PKCS8EncodedKeySpec对象
-        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-
-        // KEY_ALGORITHM 指定的加密算法
-        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
-
+    public static String sign(byte[] data, String privateKey) {
         // 取私钥匙对象
-        PrivateKey priKey = keyFactory.generatePrivate(pkcs8KeySpec);
-
-        // 用私钥对信息生成数字签名
-        Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
-        signature.initSign(priKey);
-        signature.update(data);
-
-        return Base64Util.byteToBase64(signature.sign());
+        PrivateKey priKey = getPrivateKey(privateKey);
+        return sign(data, priKey);
     }
 
     /**
-     * 校验数字签名的正确性
+     * Use the private Key to sign the data.
      *
-     * @param data
-     *            需要校验的数据
-     * @param publicKey
-     *            用来检验数字签名的公钥
-     * @param sign
-     *            数字签名
-     *
-     * @return 校验成功返回true 失败返回false
-     *
-     * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
-     * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
-     * @throws InvalidKeyException 假如输入的RSA私钥不合法
-     * @throws SignatureException 假如根据privateKey生成密钥失败
-     *
+     * @param data the data to be signed
+     * @param privateKey the key used for sign
+     * @return the signature
+     * @throws IllegalArgumentException If failed to sign the data.
      */
-    public static boolean verify(byte[] data, String publicKey, String sign) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidKeyException, SignatureException {
-        // 解密由base64编码的公钥
-        byte[] keyBytes = Base64Util.base64toByte(publicKey);
+    public static String sign(byte[] data, PrivateKey privateKey) {
+        try {
+            // 用私钥对信息生成数字签名
+            Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
+            signature.initSign(privateKey);
+            signature.update(data);
 
-        // 构造X509EncodedKeySpec对象
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+            return Base64Util.byteToBase64(signature.sign());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to sign the data.", e);
+        }
+    }
 
-        // KEY_ALGORITHM 指定的加密算法
-        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
-
+    /**
+     * Verifies the integrity of the data by the passed-in signature.
+     *
+     * @param data the data need to be verified
+     * @param publicKey the public key used to do verify
+     * @param sign the signature
+     * @return true if success, false otherwise
+     * @throws IllegalStateException If Your JDK don't support RSA.
+     * @throws IllegalArgumentException If the parameter key is damaged
+     */
+    public static boolean verify(byte[] data, String publicKey, String sign) {
         // 取公钥匙对象
-        PublicKey pubKey = keyFactory.generatePublic(keySpec);
+        PublicKey pubKey = getPublicKey(publicKey);
+        return verify(data, pubKey, sign);
+    }
 
-        Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
-        signature.initVerify(pubKey);
-        signature.update(data);
+    /**
+     * Verifies the integrity of the data by the passed-in signature.
+     *
+     * @param data the data need to be verified
+     * @param publicKey the public key used to do verify
+     * @param sign the signature
+     * @return true if success, false otherwise
+     * @throws IllegalArgumentException Failed to verify the data.
+     */
+    public static boolean verify(byte[] data, PublicKey publicKey, String sign) {
+        try {
+            Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
+            signature.initVerify(publicKey);
+            signature.update(data);
 
-        // 验证签名是否正常
-        return signature.verify(Base64Util.base64toByte(sign));
+            // 验证签名是否正常
+            return signature.verify(Base64Util.base64toByte(sign));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to verify the data.", e);
+        }
     }
 
     /**
@@ -367,88 +324,4 @@ public abstract class RSAUtil {
         return CipherUtil.process(cipher, 117, data);
     }
 
-    /**
-     * 取得私钥
-     *
-     * @param key 密钥对加密后形成的字符串
-     * @return 私钥
-     * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
-     * @throws InvalidKeySpecException 假如根据privateKey生成密钥失败
-     */
-    public static Key getPrivateKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        // 对密钥解密
-        byte[] keyBytes = Base64Util.base64toByte(key);
-
-        // 取得私钥
-        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
-        return keyFactory.generatePrivate(pkcs8KeySpec);
-    }
-
-    /**
-     * 取得私钥
-     *
-     * @param keyMap 密钥对Map
-     * @return 私钥
-     */
-    public static String getPrivateKey(Map<String, Object> keyMap) {
-        Key key = (Key) keyMap.get(PRIVATE_KEY);
-
-        return Base64Util.byteToBase64(key.getEncoded());
-    }
-
-    /**
-     * 取得公钥
-     *
-     * @param key 密钥对加密后形成的字符串
-     * @return 公钥
-     * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
-     * @throws InvalidKeySpecException 假如根据publicKey生成密钥失败
-     */
-    public static Key getPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        // 对密钥解密
-        byte[] keyBytes = Base64Util.base64toByte(key);
-
-        // 取得私钥
-        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
-        return keyFactory.generatePublic(x509KeySpec);
-    }
-
-    /**
-     * 取得公钥
-     *
-     * @param keyMap 密钥对Map
-     * @return 公钥
-     */
-    public static String getPublicKey(Map<String, Object> keyMap) {
-        Key key = (Key) keyMap.get(PUBLIC_KEY);
-
-        return Base64Util.byteToBase64(key.getEncoded());
-    }
-
-    /**
-     * 初始化密钥,产生1024bit的密钥对
-     *
-     * @return 密钥对Map
-     * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
-     */
-    public static Map<String, Object> initKey() throws NoSuchAlgorithmException {
-        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(ALGORITHM);
-        keyPairGen.initialize(1024);
-
-        KeyPair keyPair = keyPairGen.generateKeyPair();
-
-        // 公钥
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-
-        // 私钥
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-
-        Map<String, Object> keyMap = new HashMap<String, Object>(2);
-
-        keyMap.put(PUBLIC_KEY, publicKey);
-        keyMap.put(PRIVATE_KEY, privateKey);
-        return keyMap;
-    }
 }

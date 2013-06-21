@@ -19,6 +19,8 @@ package org.apache.niolex.commons.internal;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
@@ -30,6 +32,21 @@ import java.util.NoSuchElementException;
  * @since 2013-6-14
  */
 public class IgnoreException {
+
+    /**
+     * Get the KeyFactory for the specific algorithm.
+     *
+     * @param algorithm the algorithm you want.
+     * @return the algorithm KeyFactory
+     * @throws IllegalStateException If Your JDK don't support this algorithm.
+     */
+    public static KeyFactory getKeyFactory(String algorithm) {
+        try {
+            return KeyFactory.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Your JDK don't support " + algorithm);
+        }
+    }
 
     /**
      * Get all the network interfaces. If exception occurred, we return an empty enumeration.
@@ -57,6 +74,12 @@ public class IgnoreException {
         }
     }
 
+    /**
+     * Test whether the network interface is up or not.
+     *
+     * @param ifc the network interface to test
+     * @return true if it's up
+     */
     public static boolean isNetworkInterfaceUp(NetworkInterface ifc) {
         try {
             return ifc.isUp();
