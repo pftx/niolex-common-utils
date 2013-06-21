@@ -73,7 +73,8 @@ public class OldRSAHelperTest {
 
     @Test
     public void testWork() throws Exception {
-        String key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCVhipL6FX03wgyuKA2RlWiBLqQN+SGqlClYtC6DPN2omqG34+jBqFvkU8KhdBFBenx0xLZliTLTRT/xzhISDTwgdB3IE2Ae5nu6IE2D18qJaoBEoNFTRVOipyQ5Q8GuMzdmQKtXVVGlwTAStCXXCjKp1sCJSTNVYFTSMZfKH7TNwIDAQAB";
+        String key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCVhipL6FX03wgyuKA2RlWiBLqQN+SGqlClYtC6DPN2omqG34+jBqFvkU8Khd" +
+        		"BFBenx0xLZliTLTRT/xzhISDTwgdB3IE2Ae5nu6IE2D18qJaoBEoNFTRVOipyQ5Q8GuMzdmQKtXVVGlwTAStCXXCjKp1sCJSTNVYFTSMZfKH7TNwIDAQAB";
         byte[] keyBytes = Base64Util.base64toByte(key);
         byte[] as = RSAUtil.encryptByPublicKey(keyBytes, key);
         // 构造X509EncodedKeySpec对象
@@ -86,7 +87,8 @@ public class OldRSAHelperTest {
         // 取公钥匙对象
         PublicKey key2 = RSAHelper.decodePublicKeyFromXml(xmlKey);
         Assert.assertEquals(key1, key2);
-        byte[] bs = RSAUtil.encryptByPublicKey(keyBytes, key2);
+        byte[] bs = RSAUtil.encrypt(keyBytes, key2);
+        // !!The encryption with public key two times generate different results.
         Assert.assertEquals(as.length, bs.length);
     }
 

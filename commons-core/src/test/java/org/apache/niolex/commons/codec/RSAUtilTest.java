@@ -17,13 +17,15 @@
  */
 package org.apache.niolex.commons.codec;
 
-import java.security.Key;
+import static org.mockito.Mockito.mock;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Map;
 
+import org.apache.niolex.commons.download.DownloadExceptionTest;
+import org.apache.niolex.commons.file.FileUtil;
 import org.junit.Assert;
-
-import org.apache.niolex.commons.codec.Base64Util;
-import org.apache.niolex.commons.codec.RSAUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -46,6 +48,34 @@ public class RSAUtilTest {
         publicKey = RSAUtil.getPublicKey(keyPair);
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void testInvalidSign() {
+        byte[] data = "中国制造，惠及全球！".getBytes();
+        PrivateKey privateKey = mock(PrivateKey.class);
+        RSAUtil.sign(data, privateKey);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testInvalidDecrypt() {
+        byte[] data = "中国制造，惠及全球！".getBytes();
+        PrivateKey privateKey = mock(PrivateKey.class);
+        RSAUtil.decrypt(data, privateKey);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testInvalidEncrypt() {
+        byte[] data = "中国制造，惠及全球！".getBytes();
+        PrivateKey privateKey = mock(PrivateKey.class);
+        RSAUtil.encrypt(data, privateKey);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testInvalidVerify() {
+        byte[] data = "中国制造，惠及全球！".getBytes();
+        PublicKey key = mock(PublicKey.class);
+        RSAUtil.verify(data, key, "Lex");
+    }
+
     @Test
     public void testSignature() throws Exception {
         byte[] data = "中国制造，惠及全球！".getBytes();
@@ -56,7 +86,7 @@ public class RSAUtilTest {
 
     @Test
     public void testPublicEncription() throws Exception {
-        String in = "问天下苍穹，谁敢不从！";
+        String in = "问天下苍穹，谁敢不从！FTP分别是文件、传输、协议的英文单词的第一个字母，其全称是文件传输协议。";
         byte[] data = in.getBytes();
         byte[] encr = RSAUtil.encryptByPublicKey(data, publicKey);
         System.out.println("encr => " + Base64Util.byteToBase64(encr));
@@ -67,22 +97,18 @@ public class RSAUtilTest {
     }
 
     @Test
-    public void testPublicEncription_2() throws Exception {
-    	String in = "问天下苍穹，谁敢不从！";
-    	byte[] data = in.getBytes();
-    	Key pubkey = RSAUtil.getPublicKey(publicKey);
-    	byte[] encr = RSAUtil.encryptByPublicKey(data, pubkey);
-    	System.out.println("encr => " + Base64Util.byteToBase64(encr));
-    	Key prikey = RSAUtil.getPrivateKey(privateKey);
-    	byte[] outp = RSAUtil.decryptByPrivateKey(encr, prikey);
-    	String out = new String(outp);
-    	System.out.println("out => " + out);
-    	Assert.assertEquals(in, out);
+    public void testPublicEncription2() throws Exception {
+        byte[] data = FileUtil.getBinaryFileContentFromClassPath("nav.jpg.txt", DownloadExceptionTest.class);;
+        byte[] encr = RSAUtil.encryptByPublicKey(data, publicKey);
+        System.out.println("encr => " + Base64Util.byteToBase64(encr));
+        byte[] outp = RSAUtil.decryptByPrivateKey(encr, privateKey);
+        Assert.assertArrayEquals(data, outp);
     }
 
     @Test
     public void testPublicEncriptionLong() throws Exception {
-        String in = "问天下苍穹，谁敢不从！背叛伤害不了你，能伤你的，是你太在乎。分手伤害不了你，能伤你的，是回忆。无疾而终的恋情伤害不了你，能伤你的，是希望。你总以为是感情伤害了你，其实伤到你的人，永远是自己。所以，做人最高的境界，不是全心全意去爱，而是过好自己的人生，让别人来死缠烂打吧。";
+        String in = "问天下苍穹，谁敢不从！背叛伤害不了你，能伤你的，是你太在乎。分手伤害不了你，能伤你的，是回忆。无疾而终的恋情伤害不了你，能伤你的，" +
+        		"是希望。你总以为是感情伤害了你，其实伤到你的人，永远是自己。所以，做人最高的境界，不是全心全意去爱，而是过好自己的人生，让别人来死缠烂打吧。";
         byte[] data = in.getBytes();
         byte[] encr = RSAUtil.encryptByPublicKey(data, publicKey);
         System.out.println("encr => " + Base64Util.byteToBase64(encr));
@@ -105,21 +131,9 @@ public class RSAUtilTest {
     }
 
     @Test
-    public void testPrivateEncription_2() throws Exception {
-    	String in = "人大委员建议20岁的女孩找40的！20的男的等到40再找个20的女的！";
-    	byte[] data = in.getBytes();
-    	Key key = RSAUtil.getPrivateKey(privateKey);
-    	byte[] encr = RSAUtil.encryptByPrivateKey(data, key);
-    	System.out.println("encr => " + Base64Util.byteToBase64(encr));
-    	byte[] outp = RSAUtil.decryptByPublicKey(encr, publicKey);
-    	String out = new String(outp);
-    	System.out.println("out => " + out);
-    	Assert.assertEquals(in, out);
-    }
-
-    @Test
     public void testPrivateEncriptionLong() throws Exception {
-        String in = "人大委员建议20岁的女孩找40的！20的男的等到40再找个20的女的！背叛伤害不了你，能伤你的，是你太在乎。分手伤害不了你，能伤你的，是回忆。无疾而终的恋情伤害不了你，能伤你的，是希望。你总以为是感情伤害了你，其实伤到你的人，永远是自己。所以，做人最高的境界，不是全心全意去爱，而是过好自己的人生，让别人来死缠烂打吧。";
+        String in = "一类是需要用户名和密码的FTP，它则为每一位用户设置了一个账号，只有用对应的账号才能登录，并且系统根据要求为用户设置了不同权限，例如修改、删除等权限。" +
+        		"一类是匿名FTP，也就是无需用户名和密码，任何人都可以登录、上传、更改、删除文件。登录FTP的方式有IE浏览器登录（又称WEB登录）、FTP专用工具连接（如cuteftp或flashftp）";
         byte[] data = in.getBytes();
         byte[] encr = RSAUtil.encryptByPrivateKey(data, privateKey);
         System.out.println("encr => " + Base64Util.byteToBase64(encr));
