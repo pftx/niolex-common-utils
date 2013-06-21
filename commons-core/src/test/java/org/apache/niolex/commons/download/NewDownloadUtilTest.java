@@ -20,6 +20,9 @@ package org.apache.niolex.commons.download;
 import static org.apache.niolex.commons.download.DownloadUtil.*;
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.apache.niolex.commons.file.FileUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +41,32 @@ public class NewDownloadUtilTest {
     }
 
     final static String URL = "http://service.baidu.com/static/images/nav.jpg";
+    final static String FTP = "ftp://ftp:ftp@ftp.speed.hinet.net/test_001m.zip";
     final static String SMALL = NewDownloadUtilTest.class.getResource("Small.txt").toExternalForm();
     final static String JAR = Logger.class.getResource("Logger.class").toExternalForm();
+
+    @Test(expected=DownloadException.class)
+    public void testUnusualDownloadSmallFile() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[5]);
+        try {
+            unusualDownload(URL, in, 512, true);
+        } catch (DownloadException e) {
+            assertEquals(e.getCode(), DownloadException.ExCode.FILE_TOO_SMALL);
+            throw e;
+        }
+    }
+
+    @Test(expected=DownloadException.class)
+    public void testUnusualDownloadLargeFile() throws Exception {
+        byte[] local = FileUtil.getBinaryFileContentFromClassPath("nav.jpg.txt", getClass());
+        InputStream in = new ByteArrayInputStream(local);
+        try {
+            unusualDownload(URL, in, 512, true);
+        } catch (DownloadException e) {
+            assertEquals(e.getCode(), DownloadException.ExCode.FILE_TOO_LARGE);
+            throw e;
+        }
+    }
 
     @Test
     public void testDownload() throws DownloadException {
@@ -53,6 +80,12 @@ public class NewDownloadUtilTest {
         byte[] data = downloadFile(JAR);
         byte[] local = FileUtil.getBinaryFileContentFromClassPath("Logger.class", Logger.class);
         assertArrayEquals(local, data);
+    }
+
+    @Test
+    public void testDownloadFtp() throws DownloadException {
+        byte[] data = downloadFile(FTP);
+        assertEquals(1049902, data.length);
     }
 
     @Test(expected=DownloadException.class)

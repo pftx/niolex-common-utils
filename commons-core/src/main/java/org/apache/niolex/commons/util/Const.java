@@ -18,6 +18,7 @@
 package org.apache.niolex.commons.util;
 
 /**
+ * A collection of constants.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5

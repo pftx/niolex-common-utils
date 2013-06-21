@@ -78,7 +78,7 @@ import javax.crypto.ShortBufferException;
  * @version 1.0.0
  */
 public abstract class RSAUtil {
-    public static final String KEY_ALGORITHM = "RSA";
+    public static final String ALGORITHM = "RSA";
     public static final String SIGNATURE_ALGORITHM = "MD5withRSA";
     public static final String PUBLIC_KEY = "RSAPublicKey";
     public static final String PRIVATE_KEY = "RSAPrivateKey";
@@ -107,7 +107,7 @@ public abstract class RSAUtil {
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
 
         // KEY_ALGORITHM 指定的加密算法
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
 
         // 取私钥匙对象
         PrivateKey priKey = keyFactory.generatePrivate(pkcs8KeySpec);
@@ -147,7 +147,7 @@ public abstract class RSAUtil {
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
 
         // KEY_ALGORITHM 指定的加密算法
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
 
         // 取公钥匙对象
         PublicKey pubKey = keyFactory.generatePublic(keySpec);
@@ -182,7 +182,7 @@ public abstract class RSAUtil {
 
         // 取得私钥
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
         Key privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
 
         // 对数据解密
@@ -210,7 +210,7 @@ public abstract class RSAUtil {
     public static byte[] decryptByPrivateKey(byte[] data, Key privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 对数据解密
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
@@ -239,7 +239,7 @@ public abstract class RSAUtil {
 
         // 取得公钥
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
         Key publicKey = keyFactory.generatePublic(x509KeySpec);
 
         // 对数据解密
@@ -271,7 +271,7 @@ public abstract class RSAUtil {
 
         // 取得公钥
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
         Key publicKey = keyFactory.generatePublic(x509KeySpec);
 
         // 对数据加密
@@ -299,7 +299,7 @@ public abstract class RSAUtil {
     public static byte[] encryptByPublicKey(byte[] data, Key publicKey) throws NoSuchAlgorithmException,InvalidKeySpecException,
             InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 取得公钥
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
 
         // 对数据加密
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
@@ -330,7 +330,7 @@ public abstract class RSAUtil {
 
         // 取得私钥
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
         Key privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
 
         // 对数据加密
@@ -358,7 +358,7 @@ public abstract class RSAUtil {
     public static byte[] encryptByPrivateKey(byte[] data, Key privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ShortBufferException {
         // 取得私钥
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
 
         // 对数据加密
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
@@ -381,7 +381,7 @@ public abstract class RSAUtil {
 
         // 取得私钥
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
         return keyFactory.generatePrivate(pkcs8KeySpec);
     }
 
@@ -411,7 +411,7 @@ public abstract class RSAUtil {
 
         // 取得私钥
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
         return keyFactory.generatePublic(x509KeySpec);
     }
 
@@ -434,7 +434,7 @@ public abstract class RSAUtil {
      * @throws NoSuchAlgorithmException 假如用户的JDK不支持RSA
      */
     public static Map<String, Object> initKey() throws NoSuchAlgorithmException {
-        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(ALGORITHM);
         keyPairGen.initialize(1024);
 
         KeyPair keyPair = keyPairGen.generateKeyPair();

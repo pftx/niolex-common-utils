@@ -36,7 +36,7 @@ import java.security.spec.RSAPublicKeySpec;
  * @version 1.0.0, $Date: 2012-4-11$
  *
  */
-public abstract class RsaHelper {
+public abstract class RSAHelper {
 
 	/**
 	 * Encode public key into xml string.
@@ -100,7 +100,7 @@ public abstract class RsaHelper {
 
         KeyFactory keyf;
         try {
-            keyf = KeyFactory.getInstance(RSAUtil.KEY_ALGORITHM);
+            keyf = KeyFactory.getInstance(RSAUtil.ALGORITHM);
             return keyf.generatePublic(rsaPubKey);
         } catch (Exception e) {
             return null;
@@ -130,7 +130,7 @@ public abstract class RsaHelper {
 
         KeyFactory keyf;
         try {
-            keyf = KeyFactory.getInstance(RSAUtil.KEY_ALGORITHM);
+            keyf = KeyFactory.getInstance(RSAUtil.ALGORITHM);
             return keyf.generatePrivate(rsaPriKey);
         } catch (Exception e) {
             return null;

@@ -42,7 +42,7 @@ public class CoverClassTest {
         new MD5Util(){};
         new SHAUtil(){};
         new CipherUtil(){};
-        new RsaHelper(){};
+        new RSAHelper(){};
         new RSAUtil(){};
         // --
         new Runner(){};

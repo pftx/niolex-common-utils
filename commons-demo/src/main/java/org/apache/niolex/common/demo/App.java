@@ -74,8 +74,17 @@ public abstract class App extends HttpURLConnection
         System.out.println("Number isAssignableFrom Long ? " + (Number.class.isAssignableFrom(Long.class)));
         Long ll = 129012l;
         System.out.println("Number.class isInstance Long Object ? " + (Number.class.isInstance(ll)));
+        System.out.println("long.class isInstance Long Object ? " + (long.class.isInstance(ll)));
 
         System.out.println("\n**** Test extends Static " + HTTP_OK);
         System.out.println(Logger.class.getResource("Logger.class").toExternalForm());
+
+        System.out.println("\n**** Test array cast");
+        try {
+            String[] arr = (String[]) new Object[] {"Lex"};
+            System.out.println("cast obj array to string array ? " + arr[0]);
+        } catch (ClassCastException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }

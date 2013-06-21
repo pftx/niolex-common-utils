@@ -17,17 +17,33 @@
  */
 package org.apache.niolex.commons.test;
 
+import org.apache.commons.lang.Validate;
+
 /**
+ * A collect of utility methods check status, insure methods working as expected.
+ *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2013-6-20
  */
-public class Check {
+public class Check extends Validate {
 
+    /**
+     * Check that a equals b, otherwise we throw IllegalArgumentException
+     * @param a
+     * @param b
+     * @param msg
+     */
     public static void eq(int a, int b, String msg) {
         equal(a, b, msg);
     }
 
+    /**
+     * Check that a equals b, otherwise we throw IllegalArgumentException
+     * @param a
+     * @param b
+     * @param msg
+     */
     public static void equal(int a, int b, String msg) {
         if (a != b) {
             throw new IllegalArgumentException(msg);
