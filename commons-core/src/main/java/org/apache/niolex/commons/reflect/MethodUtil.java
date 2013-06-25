@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.lang.reflect.MethodUtils;
+
 /**
  * MethodUtil是一个通过反射机制来操作Java方法的工具类
  *
@@ -46,7 +48,7 @@ import java.util.List;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */
-public class MethodUtil {
+public class MethodUtil extends MethodUtils {
 
     /**
      * 获取一个Java类定义的所有方法
@@ -166,5 +168,23 @@ public class MethodUtil {
             throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         m.setAccessible(true);
         return m.invoke(host, args);
+    }
+
+    /**
+     * 在指定Java对象上调用指定的方法
+     *
+     * @param methodName 需要调用的方法
+     * @param host 用来调用指定方法的对象
+     * @param args 用来调用指定方法的参数，如果指定方法不使用参数，则不输入
+     * @return 调用指定的方法的返回值如果接口方法的声明返回类型是基本类型，则此值一定
+     * 是相应基本包装对象类的实例；否则，它一定是可分配到声明返回类型的类型。如果此值为 null则
+     * 接口方法的返回类型是void或者接口方法返回了null
+     * @throws IllegalArgumentException 假如输入的参数和方法的参数签名不匹配
+     * @throws IllegalAccessException 假如该方法不能被访问
+     * @throws InvocationTargetException 假如该方法在执行过程中抛出了异常
+     */
+    public static final Object invokeMethod(String methodName, Object host, Object... args)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return invokeMethod(host, methodName, args);
     }
 }

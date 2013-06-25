@@ -17,12 +17,11 @@
  */
 package org.apache.niolex.commons.reflect;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
@@ -67,5 +66,19 @@ public class FastMethodUtilTest {
         Assert.assertEquals(ret, "niolex-common-utils");
         new FastMethodUtil();
 	}
+
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.reflect.FastMethodUtil#invokeMethod(java.lang.String, java.lang.Object, java.lang.Object[])}.
+     * @throws Exception
+     * @throws IllegalAccessException
+     * @throws NoSuchMethodException
+     */
+    @Test
+    public void testInvokeMethodMore() throws NoSuchMethodException, IllegalAccessException, Exception {
+        MethodTestBean host = new MethodTestBean("niolex-common-utils");
+        Object ret = MethodUtil.invokeMethod("echoName", host, "Lex", 66);
+        Assert.assertEquals(ret, "Lex");
+    }
 
 }

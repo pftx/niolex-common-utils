@@ -35,10 +35,22 @@ public class FieldUtilTest {
     }
 
     @Test
+    public void testGetFields() throws Exception {
+        Field[] fields = FieldUtil.getFields(FieldTestBean.class, long.class);
+        FieldTestBean bean = new FieldTestBean();
+        long val;
+        for (Field f : fields) {
+            f.setAccessible(true);
+            val = f.getLong(bean);
+            System.out.println(f.getName() + " => " + val);
+        }
+    }
+
+    @Test
     public void testFieldsInt() throws Exception {
         Field[] fields = FieldUtil.getFields(FieldTestBean.class, int.class);
         System.out.println("FieldTestBean int fields => " + Arrays.toString(fields));
-        Assert.assertEquals(fields.length, 2);
+        Assert.assertEquals(fields.length, 5);
     }
 
     @Test

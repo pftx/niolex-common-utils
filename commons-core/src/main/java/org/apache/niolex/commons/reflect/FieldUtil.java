@@ -21,6 +21,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ClassUtils;
+
 /**
  * FieldUtil是一个用来通过反射机制来操作Java对象的工具类
  *
@@ -71,7 +73,7 @@ public abstract class FieldUtil {
         List<Field> outLst = new ArrayList<Field>();
 
         for (Field f : oriArr) {
-            if (filter.isAssignableFrom(f.getType())) {
+            if (ClassUtils.isAssignable(f.getType(), filter)) {
                 outLst.add(f);
             }
         }

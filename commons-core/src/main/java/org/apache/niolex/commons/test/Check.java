@@ -50,4 +50,26 @@ public class Check extends Validate {
         }
     }
 
+    /**
+     * Check that a less than b, otherwise we throw IllegalArgumentException
+     * @param a
+     * @param b
+     * @param msg
+     */
+    public static void lt(int a, int b, String msg) {
+        lessThan(a, b, msg);
+    }
+
+    /**
+     * Check that a less than b, otherwise we throw IllegalArgumentException
+     * @param a
+     * @param b
+     * @param msg
+     */
+    public static void lessThan(int a, int b, String msg) {
+        if (a >= b) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
 }

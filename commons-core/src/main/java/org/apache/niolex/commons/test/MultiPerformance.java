@@ -119,7 +119,7 @@ public abstract class MultiPerformance {
         }
         // Wait for result.
         for (int i = 0; i < threadsNumber; ++i) {
-            try { threads[i].join(); } catch (InterruptedException e) { }
+            try { threads[i].join(); } catch (Exception e) { }
         }
         // Done.
         long cu = total.get() / outerIteration;

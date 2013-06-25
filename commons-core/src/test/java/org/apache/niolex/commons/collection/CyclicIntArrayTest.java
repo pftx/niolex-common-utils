@@ -20,6 +20,7 @@ package org.apache.niolex.commons.collection;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
@@ -50,6 +51,13 @@ public class CyclicIntArrayTest {
         assertEquals(0, a.push(4));
         assertEquals(3, a.push(5));
         assertEquals(1, a.getHead());
+        assertEquals(2, a.size());
+        assertEquals(4, a.pop());
+        assertEquals(5, a.pop());
+        assertEquals(0, a.size());
+        assertEquals(4, a.push(-6));
+        assertEquals(1, a.size());
+        assertEquals(-6, a.pop());
     }
 
     /**
@@ -78,6 +86,37 @@ public class CyclicIntArrayTest {
         assertEquals(4, a.push(7));
         assertEquals("[6, 7]", Arrays.toString(a.getArray()));
         assertEquals(2, a.size());
+    }
+
+    @Test(expected=NoSuchElementException.class)
+    public void testPop() throws Exception {
+        CyclicIntArray a = new CyclicIntArray(2);
+        a.pop();
+    }
+
+    @Test
+    public void testGetHead() throws Exception {
+        CyclicIntArray a = new CyclicIntArray(4);
+        assertEquals(0, a.size());
+        for (int i = 12315; i < 12421; ++i) {
+            a.push(i);
+        }
+        assertEquals(4, a.size());
+        assertEquals(12417, a.pop());
+        assertEquals(12417, a.push(-7));
+        assertEquals(12418, a.pop());
+        assertEquals(12419, a.pop());
+        assertEquals(12418, a.push(-12));
+        assertEquals(12420, a.pop());
+        assertEquals(2, a.size());
+        assertEquals(-7, a.pop());
+        assertEquals(-12, a.pop());
+        try {
+            a.pop();
+        } catch (NoSuchElementException e) {
+            return;
+        }
+        assertTrue(false);
     }
 
 }

@@ -76,9 +76,9 @@ public class MultiPerformanceTest {
         System.out.print("Interrupted\t");
         Thread t = Runner.run(perf, "start");
         t.interrupt();
-        SystemUtil.sleep(1);
+        SystemUtil.sleep(5);
         t.interrupt();
-        SystemUtil.sleep(1);
+        SystemUtil.sleep(5);
         t.interrupt();
         t.join();
     }

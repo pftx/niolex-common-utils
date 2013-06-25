@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.collection;
 
+import java.util.NoSuchElementException;
+
 /**
  * This class encapsulate an int array, one can get the head and tail at any time.
  * When there are more data than the capacity, we override the eldest element.
@@ -33,9 +35,9 @@ public class CyclicIntArray {
     private final int[] array;
 
     /**
-     * The array size.
+     * The current array size.
      */
-    private final int size;
+    private int size;
 
     /**
      * The current head.
@@ -53,7 +55,7 @@ public class CyclicIntArray {
             throw new IllegalArgumentException("The size must greater than 1.");
         }
         this.array = new int[size];
-        this.size = size;
+        this.size = 0;
         head = 0;
     }
 
@@ -66,8 +68,24 @@ public class CyclicIntArray {
     public int push(int k) {
         int r = array[head];
         array[head] = k;
-        head = (head + 1) % size;
+        head = (head + 1) % array.length;
+        if (size < array.length) ++size;
         return r;
+    }
+
+    /**
+     * Return the eldest item in the array, or throw NoSuchElementException if the
+     * array is empty.
+     *
+     * @return the eldest item in the array
+     */
+    public int pop() {
+        if (size > 0) {
+            --size;
+            return array[(head + array.length - size - 1) % array.length];
+        } else {
+            throw new NoSuchElementException("The array is empty.");
+        }
     }
 
     /**

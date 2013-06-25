@@ -18,10 +18,12 @@
 package org.apache.niolex.commons.bean;
 
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.niolex.commons.test.ObjToStringUtil;
@@ -69,16 +71,7 @@ public class BeanUtil {
      */
     public static final <To, From> To merge(To to, From from, boolean mergeDefault) {
         try {
-            BeanInfo toInfo = Introspector.getBeanInfo(to.getClass());
-            HashMap<String, Method> writeMap = Maps.newHashMap();
-            // Iterate over all the attributes of to, prepare write methods.
-            for (PropertyDescriptor descriptor : toInfo.getPropertyDescriptors()) {
-                Method writeMethod = descriptor.getWriteMethod();
-                if (writeMethod == null) {
-                    continue;
-                }
-                writeMap.put(descriptor.getName(), writeMethod);
-            }
+            HashMap<String, Method> writeMap = prepareWriteMethodMap(to.getClass());
             BeanInfo fromInfo = Introspector.getBeanInfo(from.getClass());
             // Iterate over all the attributes of from, do copy here.
             for (PropertyDescriptor descriptor : fromInfo.getPropertyDescriptors()) {
@@ -109,6 +102,27 @@ public class BeanUtil {
     }
 
     /**
+     * Parse all the write methods and prepare them to the hash map.
+     *
+     * @param toClass the class to introspect
+     * @return the hash map
+     * @throws IntrospectionException
+     */
+    public static HashMap<String, Method> prepareWriteMethodMap(Class<?> toClass) throws IntrospectionException {
+        BeanInfo toInfo = Introspector.getBeanInfo(toClass);
+        HashMap<String, Method> writeMap = Maps.newHashMap();
+        // Iterate over all the attributes of to, prepare write methods.
+        for (PropertyDescriptor descriptor : toInfo.getPropertyDescriptors()) {
+            Method writeMethod = descriptor.getWriteMethod();
+            if (writeMethod == null) {
+                continue;
+            }
+            writeMap.put(descriptor.getName(), writeMethod);
+        }
+        return writeMap;
+    }
+
+    /**
      * Test whether the type is numeric primitive and the value is 0.
      *
      * @param type the value's real type
@@ -123,6 +137,33 @@ public class BeanUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * Merge the non null properties from the map to the target bean.
+     *
+     * @param to the target bean
+     * @param from the source map
+     * @return the target bean
+     */
+    public static final <To> To merge(To to, Map<String, Object> from) {
+        try {
+            HashMap<String, Method> writeMap = prepareWriteMethodMap(to.getClass());
+            for (Map.Entry<String, Object> entry : from.entrySet()) {
+                Method writeMethod = writeMap.get(entry.getKey());
+                if (writeMethod == null) {
+                    continue;
+                }
+                Object value = entry.getValue();
+                // Only copy value if it's assignable, auto boxing is OK.
+                if (ClassUtils.isAssignable(value.getClass(), writeMethod.getParameterTypes()[0], true)) {
+                    writeMethod.invoke(to, value);
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to merge propeties.", e);
+        }
+        return to;
     }
 
 }

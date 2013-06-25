@@ -10,22 +10,43 @@
 	</parent>
 
 	<artifactId>commons-spring</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
+
+	<properties>
+		<spring.version>3.0.7.RELEASE</spring.version>
+		<spring.security.version>3.1.4.RELEASE</spring.security.version>
+		<version>${project.version}</version>
+	</properties>
 
 	<name>commons-spring</name>
 	<url>http://maven.apache.org</url>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>[1.7.2,2.0.0)</version>
+			<groupId>org.apache.niolex</groupId>
+			<artifactId>commons-core</artifactId>
+			<version>[1.0.5,2.0.0)</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>2.5.6.SEC03</version>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.security.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
@@ -39,6 +60,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.9.5</version>
@@ -47,7 +74,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>[1.0.3,2.0.0)</version>
+			<version>[1.0.7,2.0.0)</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

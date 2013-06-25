@@ -20,7 +20,11 @@ package org.apache.niolex.commons.bean;
 
 import static org.junit.Assert.*;
 
+import java.util.Map;
+
 import org.junit.Test;
+
+import com.google.common.collect.Maps;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -44,6 +48,48 @@ public class BeanUtilTest extends BeanUtil {
         assertTrue(a.b);
         assertEquals(a.i, 665);
         assertEquals(a.name, "B");
+    }
+
+    @Test
+    public void testMergeFromMap() throws Exception {
+        A a = new A();
+        Map<String, Object> from = Maps.newHashMap();
+        from.put("i", 1231);
+        from.put("name", "Lex");
+        from.put("b", false);
+        from.put("num", 98435);
+        from.put("fmt", 6653);
+        assertEquals(a.i, 123);
+        assertTrue(a.b);
+        merge(a, from);
+        assertFalse(a.b);
+        assertEquals(a.i, 1231);
+        assertEquals(a.name, "Lex");
+        assertEquals(a.num, 98435);
+        assertEquals(a.fmt, 6653, 0.00001);
+    }
+
+    @Test
+    public void testMergeFromMapNotCompatible() throws Exception {
+        A a = new A();
+        Map<String, Object> from = Maps.newHashMap();
+        from.put("i", 1231.6);
+        from.put("name", "Lex");
+        from.put("good", "Lex");
+        assertEquals(a.i, 123);
+        assertTrue(a.b);
+        merge(a, from);
+        assertEquals(a.i, 123);
+        assertEquals(a.name, "Lex");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testMergeFromMapThrowException() throws Exception {
+        A a = new A();
+        Map<String, Object> from = null;
+        merge(a, from);
+        assertEquals(a.i, 123);
+        assertTrue(a.b);
     }
 
     @Test

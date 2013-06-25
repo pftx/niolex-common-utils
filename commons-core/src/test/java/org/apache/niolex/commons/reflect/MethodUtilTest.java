@@ -98,4 +98,18 @@ public class MethodUtilTest {
             System.out.println("\t" + m);
         Assert.assertEquals(arr.length, 8);
     }
+
+    @Test
+    public void testInvokeMethodStringObjectObjectArray() throws Exception {
+        Object obj = new Con();
+        Object res = MethodUtil.invokeMethod("find", obj, 921, 83);
+        Assert.assertEquals(76443, res);
+    }
+
+    @Test
+    public void testInvokeMethod() throws Exception {
+        MethodTestBean host = new MethodTestBean("niolex-common-utils");
+        Object ret = MethodUtil.invokeMethod("echoName", host, "Xie, Jiyun", 8334);
+        Assert.assertEquals(ret, "Xie, Jiyun");
+    }
 }

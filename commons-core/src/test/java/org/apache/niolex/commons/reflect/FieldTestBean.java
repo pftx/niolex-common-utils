@@ -3,14 +3,14 @@ package org.apache.niolex.commons.reflect;
 @SuppressWarnings("unused")
 public class FieldTestBean {
     public String strName;
-    private int intId;
-    protected int intLevel;
+    private int intId = 5;
+    protected int intLevel = 7;
     private Integer age;
-    private long empno;
+    private long empno = 15;
     private boolean gender;
     private byte resvered;
     private short veridk;
-    private char chdier;
+    private char chdier = 'c';
     private double earned;
     float tax;
 

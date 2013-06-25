@@ -66,4 +66,21 @@ public class CheckTest {
         }
     }
 
+    @Test
+    public void testLt() throws Exception {
+        lt(4, 5, "not yet implemented");
+        lt(0, 1, "not yet implemented");
+        lt(-1, 0, "not yet implemented");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testLessThan() throws Exception {
+        lessThan(0, 0, "not yet implemented");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testLessThanG() throws Exception {
+        lessThan(5, 4, "not yet implemented");
+    }
+
 }

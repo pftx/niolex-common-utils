@@ -19,9 +19,11 @@ package org.apache.niolex.commons.collection;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.niolex.commons.reflect.FieldUtil;
 import org.junit.Test;
 
 /**
@@ -76,6 +78,27 @@ public class RetainLinkedListTest {
 	}
 
 	/**
+     * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#handleNext()}.
+     */
+    @Test(expected=NullPointerException.class)
+    public void testHandleNextCover() throws Exception {
+        RetainLinkedList<String> other = new RetainLinkedList<String>(3);
+        other.add("It ");
+        other.add("is ");
+        other.add("a ");
+        other.add("big ");
+        other.add("world!");
+        RetainLinkedList<String> list = new RetainLinkedList<String>(3);
+        Field field = FieldUtil.getField(RetainLinkedList.class, "headPointerSize");
+        FieldUtil.setFieldValue(field, list, 5);
+        // ---
+        field = FieldUtil.getField(RetainLinkedList.class, "pointer");
+        Object ppt = FieldUtil.getFieldValue(field, other);
+        FieldUtil.setFieldValue(field, list, ppt);
+        list.handleNext();
+    }
+
+	/**
 	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#handleRetain()}.
 	 */
 	@Test
@@ -97,6 +120,17 @@ public class RetainLinkedListTest {
 		assertEquals(list.size(), 0);
 		assertEquals(list.handleSize(), 0);
 	}
+
+	/**
+     * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#handleRetain()}.
+     */
+    @Test(expected=NullPointerException.class)
+    public void testHandleRetainCover() throws Exception {
+        RetainLinkedList<String> list = new RetainLinkedList<String>(3);
+        Field field = FieldUtil.getField(RetainLinkedList.class, "headPointerSize");
+        FieldUtil.setFieldValue(field, list, 2);
+        list.handleRetain();
+    }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#addAll(org.apache.niolex.commons.collection.RetainLinkedList)}.
@@ -183,6 +217,15 @@ public class RetainLinkedListTest {
 	}
 
 	/**
+     * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#toArray(E[])}.
+     */
+    @Test(expected=NullPointerException.class)
+    public void testToArrayCover() {
+        RetainLinkedList<String> list = new RetainLinkedList<String>(3);
+        list.toArray(null);
+    }
+
+	/**
 	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#isEmpty()}.
 	 */
 	@Test
@@ -212,5 +255,13 @@ public class RetainLinkedListTest {
 		assertTrue(list.isEmpty());
 		assertTrue(list.handleEmpty());
 	}
+
+    @Test(expected=NullPointerException.class)
+    public void testAdd() throws Exception {
+        RetainLinkedList<String> list = new RetainLinkedList<String>(3);
+        Field field = FieldUtil.getField(RetainLinkedList.class, "tail");
+        FieldUtil.setFieldValue(field, list, null);
+        list.add("hello");
+    }
 
 }
