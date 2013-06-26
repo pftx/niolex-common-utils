@@ -20,6 +20,7 @@ package org.apache.niolex.commons.util;
 import java.util.Date;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 
 import org.apache.niolex.commons.util.DateTimeUtil;
 import org.junit.Test;
@@ -32,6 +33,11 @@ import org.junit.Test;
  *
  */
 public class DateTimeUtilTest {
+
+    @BeforeClass
+    public static void setup() {
+        DateTimeUtil.setTimeZone(DateTimeUtil.CN_TZ);
+    }
 
     @Test
     public void formatDate2LongStr() throws Exception {
