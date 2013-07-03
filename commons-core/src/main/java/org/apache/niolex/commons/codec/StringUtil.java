@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
  * @version 1.0.0
  * @since 2012-6-20
  */
-public abstract class StringUtil {
+public abstract class StringUtil extends StringUtils {
 
     /**
      * Eight-bit Unicode Transformation Format.
@@ -104,6 +104,17 @@ public abstract class StringUtil {
 	    return join(strs, sep);
 	}
 
+    /**
+     * Concatenates all the parameters into one string by the specified separator.
+     *
+     * @param sep the separator
+     * @param arr the string array
+     * @return the result string
+     */
+    public static final String concat(String sep, String ...arr) {
+        return join(arr, sep);
+    }
+
 	/**
 	 * Join the string array into one single string by the separator.
 	 *
@@ -155,17 +166,6 @@ public abstract class StringUtil {
 	}
 
 	/**
-	 * Concatenates all the parameters into one string by the specified separator.
-	 *
-	 * @param sep the separator
-	 * @param arr the string array
-	 * @return the result string
-	 */
-	public static final String concat(String sep, String ...arr) {
-		return join(arr, sep);
-	}
-
-	/**
 	 * This is a platform independent line split tool. We will split a line by
 	 * '\r', '\n', '\r\n', and preserve all empty lines is you need.
 	 *
@@ -176,7 +176,7 @@ public abstract class StringUtil {
 	 * @return the lines array
 	 */
 	public static final String[] splitLines(String str, boolean preserveEmptyLines) {
-	    if (StringUtils.isBlank(str)) {
+	    if (isBlank(str)) {
 	        return new String[] {str};
 	    }
 	    int len = str.length(), start = 0;

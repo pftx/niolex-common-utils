@@ -23,7 +23,9 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.file.FileUtil;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -84,6 +86,9 @@ public class NewDownloadUtilTest {
 
     @Test
     public void testDownloadFtp() throws DownloadException {
+        if (!StringUtil.isBlank(SystemUtil.getSystemProperty("download.ftp"))) {
+            return;
+        }
         byte[] data = downloadFile(FTP);
         assertEquals(1049902, data.length);
     }
