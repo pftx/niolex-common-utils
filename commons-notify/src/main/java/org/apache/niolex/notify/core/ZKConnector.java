@@ -307,6 +307,9 @@ public class ZKConnector {
         String[] seg = path.split("/");
         StringBuilder sb = new StringBuilder();
         for (String part : seg) {
+            if (StringUtil.isBlank(part)) {
+                continue;
+            }
             sb.append("/").append(part);
             createNodeIfAbsent(sb.toString());
         }

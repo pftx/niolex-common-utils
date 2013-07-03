@@ -1,6 +1,6 @@
 /**
  * NotifyTest.java
- * 
+ *
  * Copyright 2013 Niolex, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.niolex.commons.util.DateTimeUtil;
 import org.apache.niolex.notify.App;
+import org.apache.niolex.notify.AppTest;
 import org.apache.niolex.notify.ByteArray;
 import org.apache.niolex.notify.NotifyListener;
 import org.junit.AfterClass;
@@ -38,32 +39,33 @@ import org.junit.Test;
  * @since 2013-1-5
  */
 public class NotifyTest {
-    
+
     private static NotifyListener LI = new NotifyListener() {
-        
+
         @Override
         public void onPropertyChange(byte[] key, byte[] value) {
             System.out.println("=onPropertyChange Key [" + new String(key) +
                     "] Value: " + new String(value));
         }
-        
+
         @Override
         public void onDataChange(byte[] data) {
             System.out.println("====onDataChange data: " + new String(data));
         }
     };
-    
+
     private static Notify NO;
-    
+
     @BeforeClass
     public static void setUp() throws IOException {
-        App.init("10.22.241.233:8181", 10000);
+        App.init(AppTest.URL, 10000);
+        App.instance().makeSurePathExists("/notify/test/tmp");
         NO = App.instance().getNotify("/notify/test/tmp");
         NO.addListener(LI);
         NO.replaceProperty("permkey".getBytes(), "Client environment:os.name=Windows XP".getBytes());
         System.out.println("After --------- permkey -------------- change");
     }
-    
+
     @AfterClass
     public static void shutdown() {
         boolean b = NO.removeListener(LI);

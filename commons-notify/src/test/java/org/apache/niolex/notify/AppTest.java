@@ -15,15 +15,18 @@ import org.junit.Test;
  * Unit test for simple App.
  */
 public class AppTest {
-    
+
+    public static final String URL = "10.34.130.84:9181";
+
     @BeforeClass
     public static void setUp() throws IOException {
-        App.init("10.22.241.233:8181", 10000);
+        App.init(URL, 10000);
+        App.instance().makeSurePathExists("/notify/test");
     }
 
     /**
      * Rigorous Test :-)
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
     public void testApp() throws IOException {
@@ -37,11 +40,11 @@ public class AppTest {
         assertFalse(a == b);
         assertTrue(a == b.intern());
     }
-    
+
 
     /**
      * Rigorous Test :-)
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
     public void testProp() throws IOException {
@@ -51,10 +54,10 @@ public class AppTest {
         byte[] v = notify.getProperty("a".getBytes());
         System.out.println(new String(v));
     }
-    
+
     /**
      * Rigorous Test :-)
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
     public void testNull() throws IOException {
@@ -62,5 +65,5 @@ public class AppTest {
         Notify notify = app.getNotify("/notify/test/tmplevt");
         assertNull(notify);
     }
-    
+
 }

@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.apache.niolex.notify.App;
+import org.apache.niolex.notify.AppTest;
 import org.apache.niolex.notify.NotifyListener;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -51,7 +52,8 @@ public class ZKExceptionTest {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        App.init("10.22.241.233:8181", 10000);
+        App.init(AppTest.URL, 10000);
+        App.instance().makeSurePathExists("/notify/test/tmp");
         Notify notify = App.instance().getNotify("/notify/test/tmp");
         notify.addListener(LI);
     }
