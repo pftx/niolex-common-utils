@@ -20,10 +20,12 @@ package org.apache.niolex.notify.core;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The main Zookeeper connector, manage zookeeper and retry connection.
+ * We encapsulate the common add, update, delete and watch operations for Zookeeper.
  *
  * @author Xie, Jiyun
  * @version 1.0.0, Date: 2012-6-10
@@ -43,15 +46,15 @@ public class ZKConnector {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ZKConnector.class);
 
-    private final String clusterAddress;
+    protected ZooKeeper zk;
 
-    private final Set<WatcherItem> watcherSet = Collections.synchronizedSet(new HashSet<WatcherItem>());
+    private final String clusterAddress;
 
     private final int sessionTimeout;
 
-    private byte[] auth;
+    private final Set<WatcherItem> watcherSet = Collections.synchronizedSet(new HashSet<WatcherItem>());
 
-    protected ZooKeeper zk;
+    private byte[] auth;
 
     /**
      * Construct a new ZKConnector and connect to ZK server.
@@ -108,20 +111,12 @@ public class ZKConnector {
         this.zk.addAuthInfo("digest", auth);
     }
 
-    /**
-     * Close the connection to ZK server.
-     * 注意！一但关闭连接，请立即丢弃该对象，该对象的所有的方法的结果将不确定
-     */
-    public void close() {
-        try {
-            this.zk.close();
-        } catch (Exception e) {
-            LOG.info("Failed to close ZK connection.", e);
-        }
-    }
+    // ========================================================================
+    // Connection related operations
+    // ========================================================================
 
     /**
-     * Try to reconnect to zookeeper cluster.
+     * Try to reconnect to zookeeper cluster, do not call this method, we will use it when necessary.
      */
     protected void reconnect() {
         while (true) {
@@ -140,12 +135,26 @@ public class ZKConnector {
             } catch (Exception e) {
                 // We don't care, we will retry again and again.
                 LOG.error("Error occured when reconnect, system will retry.", e);
-                try {
-                    Thread.sleep(sessionTimeout / 3);
-                } catch (Exception e1) { }
+                SystemUtil.sleep(sessionTimeout / 3);
             }
         }
     }
+
+    /**
+     * Close the connection to ZK server.
+     * 注意！一但关闭连接，请立即丢弃该对象，该对象的所有的方法的结果将不确定
+     */
+    public void close() {
+        try {
+            this.zk.close();
+        } catch (Exception e) {
+            LOG.info("Failed to close ZK connection.", e);
+        }
+    }
+
+    // ========================================================================
+    // Watch/Read related operations
+    // ========================================================================
 
     /**
      * Attach a watcher to the path you want to watch.
@@ -161,22 +170,22 @@ public class ZKConnector {
      * @return the current data
      */
     @SuppressWarnings("unchecked")
-    protected <T> T submitWatcher(String path, RecoverableWatcher wat, boolean isChildren) {
+    public <T> T submitWatcher(String path, RecoverableWatcher wat, boolean isChildren) {
         WatcherItem item = new WatcherItem(path, wat, isChildren);
         Object r = doWatch(item);
         // Add this item to the list, so the system will
-        // add them after reconnected.
+        // recover them after reconnected.
         watcherSet.add(item);
-        return (T)r;
+        return (T) r;
     }
 
     /**
      * Do real watch. Please use submitWatcher instead. This method is for internal use.
      *
      * @param item the item to do watch
-     * @return the current data
+     * @return the current data in Zookeeper
      */
-    private Object doWatch(WatcherItem item) {
+    protected Object doWatch(WatcherItem item) {
         try {
             if (item.isChildren()) {
                 return this.zk.getChildren(item.getPath(), item.getWat());
@@ -185,42 +194,135 @@ public class ZKConnector {
                 return this.zk.getData(item.getPath(), item.getWat(), st);
             }
         } catch (Exception e) {
-            throw NotifyException.makeInstance("Failed to do Watch.", e);
+            throw ZKException.makeInstance("Failed to do Watch.", e);
         }
     }
 
     /**
-     * Create node.
+     * Get the node data of the specified path.
      *
-     * @param path
-     * @throws NotifyException
+     * @param path the specified path
+     * @return the node data
      */
-    protected void createNode(String path) {
+    public byte[] getData(String path) {
+        try {
+            return this.zk.getData(path, false, new Stat());
+        } catch (Exception e) {
+            throw ZKException.makeInstance("Failed to get Data.", e);
+        }
+    }
+
+    /**
+     * Get the node children of the specified path.
+     *
+     * @param path the specified path
+     * @return the node children
+     */
+    public List<String> getChildren(String path) {
+        try {
+            return this.zk.getChildren(path, false);
+        } catch (Exception e) {
+            throw ZKException.makeInstance("Failed to get Children.", e);
+        }
+    }
+
+    /**
+     * Check whether the specified path exists.
+     *
+     * @param path the specified path
+     * @return true if the node exists, false otherwise
+     */
+    public boolean exists(String path) {
+        try {
+            return this.zk.exists(path, false) != null;
+        } catch (Exception e) {
+            throw ZKException.makeInstance("Failed to check Exists.", e);
+        }
+    }
+
+    // ========================================================================
+    // CUD related operations
+    // ========================================================================
+
+    /**
+     * Create node without data.
+     *
+     * @param path the node path
+     * @throws ZKException
+     */
+    public void createNode(String path) {
         createNode(path, null, false, false);
     }
 
     /**
      * Create node.
      *
-     * @param path
-     * @param data
-     * @throws NotifyException
+     * @param path the node path
+     * @param data the data data
+     * @throws ZKException
      */
-    protected void createNode(String path, byte[] data) {
+    public void createNode(String path, byte[] data) {
         createNode(path, data, false, false);
+    }
+
+    /**
+     * Create node if absent without data.
+     *
+     * @param path the node path
+     * @param data the data data
+     * @throws ZKException
+     */
+    public void createNodeIfAbsent(String path) {
+        createNodeIfAbsent(path, null);
+    }
+
+    /**
+     * Create node if absent.
+     *
+     * @param path the node path
+     * @param data the data data
+     * @throws ZKException
+     */
+    public void createNodeIfAbsent(String path, byte[] data) {
+        try {
+            if (!exists(path)) {
+                createNode(path, data, false, false);
+            }
+        } catch (ZKException e) {
+            // The node may already exist.
+            if (e.getCode() != ZKException.Code.NODEEXISTS) {
+                throw e;
+            }
+        } catch (Exception e) {
+            throw ZKException.makeInstance("Failed to create Node.", e);
+        }
+    }
+
+    /**
+     * Make sure that the specified path exists. We will create any parent path if necessary.
+     *
+     * @param path the specified path
+     */
+    public void makeSurePathExists(String path) {
+        String[] seg = path.split("/");
+        StringBuilder sb = new StringBuilder();
+        for (String part : seg) {
+            sb.append("/").append(part);
+            createNodeIfAbsent(sb.toString());
+        }
     }
 
     /**
      * Create node.
      *
-     * @param path
-     * @param data
-     * @param isTmp
-     * @param isSequential
+     * @param path the node path
+     * @param data the node data
+     * @param isTmp whether the node is a temporary node or not
+     * @param isSequential whether the node is a sequential node or not
      * @return the actual path of the created node
-     * @throws NotifyException
+     * @throws ZKException
      */
-    protected String createNode(String path, byte[] data, boolean isTmp, boolean isSequential) {
+    public String createNode(String path, byte[] data, boolean isTmp, boolean isSequential) {
         try {
             CreateMode createMode = null;
             if (isTmp) {
@@ -242,16 +344,16 @@ public class ZKConnector {
             }
             return doCreateNode(path, data, createMode);
         } catch (Exception e) {
-            throw NotifyException.makeInstance("Failed to create Node.", e);
+            throw ZKException.makeInstance("Failed to create Node.", e);
         }
     }
 
     /**
      * Do create a new ZK node.
      *
-     * @param path
-     * @param data
-     * @param createMode
+     * @param path the node path
+     * @param data the node data
+     * @param createMode the create mode of this node
      * @return the actual path of the created node
      * @throws KeeperException
      * @throws InterruptedException
@@ -264,30 +366,30 @@ public class ZKConnector {
     /**
      * Update data of a node.
      *
-     * @param path
-     * @param data
-     * @throws NotifyException
+     * @param path the node path
+     * @param data the new node data
+     * @throws ZKException
      */
-    protected void updateNodeData(String path, byte[] data) {
+    public void updateNodeData(String path, byte[] data) {
         try {
             zk.setData(path, data, -1);
         } catch (Exception e) {
-            throw NotifyException.makeInstance("Failed to update Node data.", e);
+            throw ZKException.makeInstance("Failed to update Node data.", e);
         }
     }
 
     /**
      * Delete a node from zookeeper.
-     * This is very important, so we only open this method for subclasses.
+     * This is very critical, so we only open this method for subclasses.
      *
-     * @param path
-     * @throws NotifyException
+     * @param path the node path
+     * @throws ZKException
      */
     protected void deleteNode(String path) {
         try {
             zk.delete(path, -1);
         } catch (Exception e) {
-            throw NotifyException.makeInstance("Failed to delete Node.", e);
+            throw ZKException.makeInstance("Failed to delete Node.", e);
         }
     }
 

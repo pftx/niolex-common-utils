@@ -1,6 +1,6 @@
 /**
- * NotifyExceptionTest.java
- * 
+ * ZKExceptionTest.java
+ *
  * Copyright 2013 Niolex, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,29 +33,29 @@ import org.junit.Test;
  * @version 1.0.5
  * @since 2013-3-13
  */
-public class NotifyExceptionTest {
-    
+public class ZKExceptionTest {
+
     private static NotifyListener LI = new NotifyListener() {
-        
+
         @Override
         public void onPropertyChange(byte[] key, byte[] value) {
             System.out.println("[on] [" + new String(key) +
                     "] ==> " + new String(value));
         }
-        
+
         @Override
         public void onDataChange(byte[] data) {
             System.out.println("[on]DataChange ==> " + new String(data));
         }
     };
-    
+
     @BeforeClass
     public static void setUp() throws IOException {
         App.init("10.22.241.233:8181", 10000);
         Notify notify = App.instance().getNotify("/notify/test/tmp");
         notify.addListener(LI);
     }
-    
+
     @AfterClass
     public static void shutdown() {
         SystemUtil.sleep(100);
@@ -64,7 +64,7 @@ public class NotifyExceptionTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.NotifyException#getCode()}.
+     * Test method for {@link org.apache.niolex.notify.core.ZKException#getCode()}.
      */
     @Test
     public void testUpdateData() {
@@ -75,7 +75,7 @@ public class NotifyExceptionTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.NotifyException#getMessage()}.
+     * Test method for {@link org.apache.niolex.notify.core.ZKException#getMessage()}.
      */
     @Test
     public void testUpdateProperty() {

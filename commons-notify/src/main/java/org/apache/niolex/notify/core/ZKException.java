@@ -1,5 +1,5 @@
 /**
- * NotifyException.java, 2012-6-21.
+ * ZKException.java, 2012-6-21.
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -20,14 +20,14 @@ package org.apache.niolex.notify.core;
 import org.apache.zookeeper.KeeperException;
 
 /**
- * The RuntimeException thrown in Find core framework.
- * 
+ * The RuntimeException thrown in commons notify framework.
+ *
  * @author Xie, Jiyun
  */
-public class NotifyException extends RuntimeException {
+public class ZKException extends RuntimeException {
 
     public static enum Code {
-        INTERRUPT, NOAUTH, DISCONNECTED, OTHER, SYSTEMERROR, NONODE, NODEEXISTS
+        INTERRUPT, NOAUTH, DISCONNECTED, OTHER, SYSTEMERROR, NONODE, NODEEXISTS;
     }
 
     /**
@@ -37,24 +37,27 @@ public class NotifyException extends RuntimeException {
 
     private final Code code;
 
-    public NotifyException(String message, Throwable cause, Code code) {
+    public ZKException(String message, Throwable cause, Code code) {
         super(message, cause);
         this.code = code;
     }
 
-    public NotifyException(String message, Code code) {
+    public ZKException(String message, Code code) {
         super(message);
         this.code = code;
     }
 
     /**
-     * Make an instance of FindException
-     * 
+     * Make an instance of ZKException
+     *
      * @param message The message you want to say.
      * @param e The nested exception.
      * @return an instance of FindException
      */
-    public static final NotifyException makeInstance(String message, Throwable e) {
+    public static final ZKException makeInstance(String message, Throwable e) {
+        if (e instanceof RuntimeException) {
+            throw (RuntimeException) e;
+        }
         Code code = Code.OTHER;
         if (e instanceof KeeperException) {
             KeeperException ke = (KeeperException) e;
@@ -79,7 +82,7 @@ public class NotifyException extends RuntimeException {
         } else if (e instanceof InterruptedException) {
             code = Code.INTERRUPT;
         }
-        return new NotifyException(message, e, code);
+        return new ZKException(message, e, code);
     }
 
     /**
