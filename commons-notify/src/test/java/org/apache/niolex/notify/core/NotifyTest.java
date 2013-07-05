@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.niolex.commons.util.DateTimeUtil;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.apache.niolex.notify.App;
 import org.apache.niolex.notify.AppTest;
 import org.apache.niolex.notify.ByteArray;
@@ -50,19 +51,20 @@ public class NotifyTest {
 
         @Override
         public void onDataChange(byte[] data) {
-            System.out.println("====onDataChange data: " + new String(data));
+            System.out.println("=====onDataChange data: " + new String(data));
         }
     };
 
     private static Notify NO;
+    private static final App APP = AppTest.APP;
 
     @BeforeClass
     public static void setUp() throws IOException {
-        App.init(AppTest.URL, 10000);
-        App.instance().makeSurePathExists("/notify/test/tmp");
-        NO = App.instance().getNotify("/notify/test/tmp");
+        NO = APP.getNotify("/notify/test/tmp");
         NO.addListener(LI);
-        NO.replaceProperty("permkey".getBytes(), "Client environment:os.name=Windows XP".getBytes());
+        String v = "Client environment:os.name=" + SystemUtil.getSystemProperty("os.name");
+        NO.replaceProperty("permkey", v);
+        NO.replaceProperty("love", "lex");
         System.out.println("After --------- permkey -------------- change");
     }
 
@@ -77,8 +79,7 @@ public class NotifyTest {
      */
     @Test
     public void testUpdateData() {
-        Notify notify = App.instance().getNotify("/notify/test/tmp");
-        notify.updateData(("This is new data. Time: " + DateTimeUtil.formatDate2DateTimeStr()).getBytes());
+        NO.updateData(("This is new data. Time: " + DateTimeUtil.formatDate2DateTimeStr()).getBytes());
     }
 
     /**
@@ -87,7 +88,7 @@ public class NotifyTest {
     @Test
     public void testDeleteProperty() {
         Notify notify = App.instance().getNotify("/notify/test/tmp");
-        boolean b = notify.deleteProperty("tmpkey".getBytes());
+        boolean b = notify.deleteProperty("tmpkey");
         System.out.println("DeleteProperty res " + b);
     }
 
@@ -127,20 +128,40 @@ public class NotifyTest {
      * Test method for {@link org.apache.niolex.notify.core.Notify#getProperty(byte[])}.
      */
     @Test
-    public void testGetPropertyByteArray() {
+    public void testGetPropertyBytes() {
         Notify notify = App.instance().getNotify("/notify/test/tmp");
-        byte[] v = notify.getProperty("permkey".getBytes());
-        assertEquals(new String(v), "Client environment:os.name=Windows XP");
+        byte[] v = notify.getProperty("love".getBytes());
+        assertEquals(new String(v), "lex");
     }
 
     /**
      * Test method for {@link org.apache.niolex.notify.core.Notify#getProperty(org.apache.niolex.notify.ByteArray)}.
      */
     @Test
-    public void testGetPropertyByteArray1() {
+    public void testGetPropertyByteArray() {
         Notify notify = App.instance().getNotify("/notify/test/tmp");
-        byte[] v = notify.getProperty(new ByteArray("permkey".getBytes()));
-        assertEquals(new String(v), "Client environment:os.name=Windows XP");
+        byte[] v = notify.getProperty(new ByteArray("love".getBytes()));
+        assertEquals(new String(v), "lex");
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.notify.core.Notify#getProperty(org.apache.niolex.notify.ByteArray)}.
+     */
+    @Test
+    public void testGetPropertyByteArrayStr() {
+        Notify notify = App.instance().getNotify("/notify/test/tmp");
+        String v = notify.getProperty("love");
+        assertEquals(v, "lex");
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.notify.core.Notify#getProperty(org.apache.niolex.notify.ByteArray)}.
+     */
+    @Test
+    public void testGetPropertyByteArrayStrNull() {
+        Notify notify = App.instance().getNotify("/notify/test/tmp");
+        String v = notify.getProperty("love my best");
+        assertNull(v);
     }
 
     /**
@@ -159,7 +180,7 @@ public class NotifyTest {
     @Test
     public void testGetProperties() {
         Notify notify = App.instance().getNotify("/notify/test/tmp");
-        notify.getProperties();
+        System.out.println("testGetProperties data: " + notify.getProperties());
     }
 
 }

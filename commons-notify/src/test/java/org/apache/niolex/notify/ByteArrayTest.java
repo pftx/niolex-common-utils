@@ -1,6 +1,6 @@
 /**
  * ByteArrayTest.java
- * 
+ *
  * Copyright 2013 Niolex, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,6 +57,11 @@ public class ByteArrayTest {
         ByteArray t1 = new ByteArray(a);
         ByteArray t2 = new ByteArray(b);
         assertEquals(t1, t2);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testByteArray() throws Exception {
+        new ByteArray(null);
     }
 
 }

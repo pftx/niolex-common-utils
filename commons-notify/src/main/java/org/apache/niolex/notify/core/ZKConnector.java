@@ -59,8 +59,8 @@ public class ZKConnector {
     /**
      * Construct a new ZKConnector and connect to ZK server.
      *
-     * @param clusterAddress
-     * @param sessionTimeout
+     * @param clusterAddress the zookeeper cluster servers address list
+     * @param sessionTimeout the session timeout in microseconds
      * @throws IOException
      */
     public ZKConnector(String clusterAddress, int sessionTimeout) throws IOException {
@@ -128,7 +128,7 @@ public class ZKConnector {
                 // Re add all the watcher.
                 synchronized (watcherSet) {
                     for (WatcherItem item : watcherSet) {
-                        item.getWat().reconnected(item.path);
+                        item.getWat().reconnected(item.getPath());
                     }
                 }
                 break;
@@ -258,7 +258,7 @@ public class ZKConnector {
      * Create node.
      *
      * @param path the node path
-     * @param data the data data
+     * @param data the node data
      * @throws ZKException
      */
     public void createNode(String path, byte[] data) {
@@ -269,33 +269,34 @@ public class ZKConnector {
      * Create node if absent without data.
      *
      * @param path the node path
-     * @param data the data data
+     * @return true if a node created here, false if already exists
      * @throws ZKException
      */
-    public void createNodeIfAbsent(String path) {
-        createNodeIfAbsent(path, null);
+    public boolean createNodeIfAbsent(String path) {
+        return createNodeIfAbsent(path, null);
     }
 
     /**
      * Create node if absent.
      *
      * @param path the node path
-     * @param data the data data
+     * @param data the node data
+     * @return true if a node created here, false if already exists
      * @throws ZKException
      */
-    public void createNodeIfAbsent(String path, byte[] data) {
+    public boolean createNodeIfAbsent(String path, byte[] data) {
         try {
             if (!exists(path)) {
                 createNode(path, data, false, false);
+                return true;
             }
         } catch (ZKException e) {
             // The node may already exist.
             if (e.getCode() != ZKException.Code.NODEEXISTS) {
                 throw e;
             }
-        } catch (Exception e) {
-            throw ZKException.makeInstance("Failed to create Node.", e);
         }
+        return false;
     }
 
     /**
@@ -304,14 +305,20 @@ public class ZKConnector {
      * @param path the specified path
      */
     public void makeSurePathExists(String path) {
-        String[] seg = path.split("/");
-        StringBuilder sb = new StringBuilder();
-        for (String part : seg) {
-            if (StringUtil.isBlank(part)) {
-                continue;
+        if (!exists(path)) {
+            int idx = path.lastIndexOf('/');
+            if (idx > 0) {
+                // Make sure the parent path exists.
+                makeSurePathExists(path.substring(0, idx));
             }
-            sb.append("/").append(part);
-            createNodeIfAbsent(sb.toString());
+            try {
+                createNode(path, null, false, false);
+            } catch (ZKException e) {
+                // The node may already exist.
+                if (e.getCode() != ZKException.Code.NODEEXISTS) {
+                    throw e;
+                }
+            }
         }
     }
 
@@ -377,7 +384,7 @@ public class ZKConnector {
         try {
             zk.setData(path, data, -1);
         } catch (Exception e) {
-            throw ZKException.makeInstance("Failed to update Node data.", e);
+            throw ZKException.makeInstance("Failed to update Node Data.", e);
         }
     }
 

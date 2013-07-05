@@ -26,16 +26,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Watch connection status, try to reconnect if connection is broken.
- * 
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-6-18
  */
 public class ZKConnWatcher implements Watcher {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ZKConnWatcher.class);
-    
-    private ZKConnector conn;
-    private CountDownLatch latch;
+
+    private final ZKConnector conn;
+    private final CountDownLatch latch;
 
 	/**
      * @param conn

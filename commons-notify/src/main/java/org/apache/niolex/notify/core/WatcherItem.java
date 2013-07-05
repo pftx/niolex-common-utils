@@ -27,11 +27,11 @@ public class WatcherItem {
     /**
      * The path to watch.
      */
-    String path;
+    private final String path;
 
-    private RecoverableWatcher wat;
+    private final RecoverableWatcher wat;
 
-    private boolean isChildren;
+    private final boolean isChildren;
 
     /**
      * @param path

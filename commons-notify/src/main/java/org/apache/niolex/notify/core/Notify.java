@@ -1,6 +1,6 @@
 /**
  * Notify.java
- * 
+ *
  * Copyright 2012 Niolex, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,21 +35,21 @@ import org.apache.niolex.notify.NotifyListener;
 /**
  * The core class of this notify framework. Watch the changes of node data and node properties.
  * User can also change node data and node properties.
- * 
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
  * @since 2012-12-27
  */
 public class Notify {
-    
+
     private final Map<ByteArray, byte[]> properties = new HashMap<ByteArray, byte[]>();
     private final List<NotifyListener> list = Collections.synchronizedList(new ArrayList<NotifyListener>());
     private final ZKConnector zkConn;
     private final String basePath;
-    
+
     private byte[] data;
     private List<String> children;
-    
+
     /**
      * @param basePath the ZK base path of this notify. It's fixed for one notify.
      */
@@ -63,39 +63,39 @@ public class Notify {
                 new NotifyChildrenWatcher(zkConn, this), true);
         this.onChildrenChange(list);
     }
-    
+
     /**
      * Update the data of this notify.
-     * 
+     *
      * @param data the new data.
      */
     public void updateData(String data) {
         updateData(StringUtil.strToUtf8Byte(data));
     }
-    
+
     /**
      * Update the data of this notify.
-     * 
+     *
      * @param data the new data.
      */
     public synchronized void updateData(byte[] data) {
         this.zkConn.updateNodeData(basePath, data);
         // We will not set the new data to local directly, it will be updated by events.
     }
-    
+
     /**
      * Delete the property specified by this key.
-     * 
+     *
      * @param key
      * @return true if deleted, false if not found.
      */
     public boolean deleteProperty(String key) {
         return deleteProperty(StringUtil.strToUtf8Byte(key));
     }
-        
+
     /**
      * Delete the property specified by this key.
-     * 
+     *
      * @param key
      * @return true if deleted, false if not found.
      */
@@ -111,22 +111,22 @@ public class Notify {
         }
         return false;
     }
-    
+
     /**
      * Replace the property specified by this key if found, add a new
      * property for this key otherwise.
-     * 
+     *
      * @param key the key to replace
      * @param value the new value
      */
     public void replaceProperty(String key, String value) {
         replaceProperty(StringUtil.strToUtf8Byte(key), StringUtil.strToUtf8Byte(value));
     }
-    
+
     /**
      * Replace the property specified by this key if found, add a new
      * property for this key otherwise.
-     * 
+     *
      * @param key the key to replace
      * @param value the new value
      */
@@ -146,30 +146,30 @@ public class Notify {
         String p = KVBase64Util.kvToBase64(key, value);
         this.zkConn.createNode(basePath + "/" + p);
     }
-    
+
     /**
      * Add this specified listener.
-     * 
+     *
      * @param listener element to be appended to this notify
      */
     public void addListener(NotifyListener listener) {
         list.add(listener);
     }
-    
+
     /**
      * Remote this specified listener.
-     * 
+     *
      * @param listener element to be removed from this notify, if present
      * @return true if success, false if not found.
      */
     public boolean removeListener(NotifyListener listener) {
         return list.remove(listener);
     }
-    
+
     /**
      * Fired when the data of this notify changed.
      * This method is invoked from {@link org.apache.niolex.notify.core.NotifyDataWatcher}
-     * 
+     *
      * @param data the new data
      */
     protected void onDataChange(byte[] data) {
@@ -180,11 +180,11 @@ public class Notify {
             }
         }
     }
-    
+
     /**
      * Fired when the children of this notify changed.
      * This method is invoked from {@link org.apache.niolex.notify.core.NotifyChildrenWatcher}
-     * 
+     *
      * @param list the new children list
      */
     protected void onChildrenChange(List<String> list) {
@@ -212,10 +212,10 @@ public class Notify {
             }
         }
     }
-    
+
     /**
      * We will not fire property change on property delete.
-     * 
+     *
      * @param a
      * @param b
      */
@@ -226,31 +226,31 @@ public class Notify {
             }
         }
     }
-    
+
     /**
      * Get the property in this notify.
-     * 
+     *
      * @param key the property key
      * @return the property value, null if not found
      */
     public String getProperty(String key) {
-        byte[] v = properties.get(StringUtil.strToUtf8Byte(key));
+        byte[] v = getProperty(StringUtil.strToUtf8Byte(key));
         return v == null ? null : StringUtil.utf8ByteToStr(v);
     }
 
     /**
      * Get the property in this notify.
-     * 
+     *
      * @param key the property key
      * @return the property value, null if not found
      */
     public byte[] getProperty(byte[] key) {
         return properties.get(new ByteArray(key));
     }
-    
+
     /**
      * Get the property in this notify.
-     * 
+     *
      * @param key the property key
      * @return the property value, null if not found
      */
@@ -271,5 +271,5 @@ public class Notify {
     public Map<ByteArray, byte[]> getProperties() {
         return Collections.unmodifiableMap(properties);
     }
-    
+
 }

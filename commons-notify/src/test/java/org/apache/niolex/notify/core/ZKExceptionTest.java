@@ -17,13 +17,15 @@
  */
 package org.apache.niolex.notify.core;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.util.SystemUtil;
-import org.apache.niolex.notify.App;
 import org.apache.niolex.notify.AppTest;
 import org.apache.niolex.notify.NotifyListener;
+import org.apache.zookeeper.KeeperException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,18 +52,17 @@ public class ZKExceptionTest {
         }
     };
 
+    private static Notify notify;
+
     @BeforeClass
     public static void setUp() throws IOException {
-        App.init(AppTest.URL, 10000);
-        App.instance().makeSurePathExists("/notify/test/tmp");
-        Notify notify = App.instance().getNotify("/notify/test/tmp");
+        notify = AppTest.APP.getNotify("/notify/test/tmp");
         notify.addListener(LI);
     }
 
     @AfterClass
     public static void shutdown() {
         SystemUtil.sleep(100);
-        Notify notify = App.instance().getNotify("/notify/test/tmp");
         notify.removeListener(LI);
     }
 
@@ -70,7 +71,6 @@ public class ZKExceptionTest {
      */
     @Test
     public void testUpdateData() {
-        Notify notify = App.instance().getNotify("/notify/test/tmp");
         notify.updateData(MockUtil.randUUID());
         SystemUtil.sleep(20);
         notify.updateData(MockUtil.randByteArray(8));
@@ -81,8 +81,24 @@ public class ZKExceptionTest {
      */
     @Test
     public void testUpdateProperty() {
-        Notify notify = App.instance().getNotify("/notify/test/tmp");
         notify.replaceProperty("permkey", MockUtil.randUUID());
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testMakeInstance() throws Exception {
+        ZKException.makeInstance("not yet implemented", new IllegalArgumentException("Abc"));
+    }
+
+    @Test
+    public void testGetCode() throws Exception {
+        ZKException zk = ZKException.makeInstance("not yet implemented", new InterruptedException("Abc"));
+        assertEquals(zk.getCode(), ZKException.Code.INTERRUPT);
+    }
+
+    @Test
+    public void testGetMessage() throws Exception {
+        ZKException zk = ZKException.makeInstance("not yet implemented", KeeperException.create(KeeperException.Code.NOAUTH));
+        assertEquals(zk.getCode(), ZKException.Code.NOAUTH);
     }
 
 }

@@ -52,7 +52,7 @@ public class ZKException extends RuntimeException {
      *
      * @param message The message you want to say.
      * @param e The nested exception.
-     * @return an instance of FindException
+     * @return an instance of ZKException
      */
     public static final ZKException makeInstance(String message, Throwable e) {
         if (e instanceof RuntimeException) {
