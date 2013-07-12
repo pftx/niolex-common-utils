@@ -23,7 +23,6 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.file.FileUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Before;
@@ -86,7 +85,7 @@ public class NewDownloadUtilTest {
 
     @Test
     public void testDownloadFtp() throws DownloadException {
-        if (!StringUtil.isBlank(SystemUtil.getSystemProperty("download.ftp"))) {
+        if (SystemUtil.getSystemProperty("download.ftp") != null) {
             return;
         }
         byte[] data = downloadFile(FTP);
