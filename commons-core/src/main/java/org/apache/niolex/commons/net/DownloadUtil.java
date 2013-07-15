@@ -77,9 +77,9 @@ public abstract class DownloadUtil {
 	 * @param strUrl
 	 *            The Url to be downloaded.
 	 * @return The file content as byte array.
-	 * @throws DownloadException
+	 * @throws NetException
 	 */
-	public static byte[] downloadFile(String strUrl) throws DownloadException {
+	public static byte[] downloadFile(String strUrl) throws NetException {
 		return downloadFile(strUrl, CONNECT_TIMEOUT, READ_TIMEOUT, MAX_SIZE, null);
 	}
 
@@ -91,9 +91,9 @@ public abstract class DownloadUtil {
 	 * @param maxFileSize
      *            Max file size in BYTE.
 	 * @return The file content as byte array.
-	 * @throws DownloadException
+	 * @throws NetException
 	 */
-	public static byte[] downloadFile(String strUrl, int maxFileSize) throws DownloadException {
+	public static byte[] downloadFile(String strUrl, int maxFileSize) throws NetException {
 	    return downloadFile(strUrl, CONNECT_TIMEOUT, READ_TIMEOUT, maxFileSize, null);
 	}
 
@@ -110,10 +110,10 @@ public abstract class DownloadUtil {
 	 *            Max file size in BYTE.
 	 * @param useCache Whether we use thread local cache or not.
 	 * @return The file content as byte array.
-	 * @throws DownloadException
+	 * @throws NetException
 	 */
 	public static byte[] downloadFile(String strUrl, int connectTimeout, int readTimeout, int maxFileSize,
-	        Boolean useCache) throws DownloadException {
+	        Boolean useCache) throws NetException {
 		LOG.debug("Start to download file [{}], C{}R{}M{}.", strUrl, connectTimeout, readTimeout, maxFileSize);
 		InputStream in = null;
 		try {
@@ -139,13 +139,13 @@ public abstract class DownloadUtil {
             }
 			LOG.debug("Succeeded to download file [{}] size {}.", strUrl, ret.length);
 			return ret;
-		} catch (DownloadException e) {
+		} catch (NetException e) {
 		    LOG.info(e.getMessage());
 		    throw e;
 		} catch (Exception e) {
 		    String msg = "Failed to download file " + strUrl + " msg=" + e.getMessage();
 		    LOG.warn(msg);
-	        throw new DownloadException(DownloadException.ExCode.IOEXCEPTION, msg, e);
+	        throw new NetException(NetException.ExCode.IOEXCEPTION, msg, e);
 		} finally {
 			// Close the input stream.
 			StreamUtil.closeStream(in);
@@ -180,10 +180,10 @@ public abstract class DownloadUtil {
 	 * @param useCache Whether we use thread local cache or not.
 	 * @return the file content.
 	 * @throws IOException
-	 * @throws DownloadException
+	 * @throws NetException
 	 */
 	public static byte[] unusualDownload(String strUrl, InputStream in, int maxFileSize, Boolean useCache)
-	        throws IOException, DownloadException {
+	        throws IOException, NetException {
 	    byte[] byteBuf = getByteBuffer(useCache == null ? useThreadLocalCache : useCache);
 	    byte[] ret = null;
         int count, total = 0;
@@ -204,14 +204,14 @@ public abstract class DownloadUtil {
                 bos.write(byteBuf, 0, count);
                 total += count;
                 if (total > maxFileSize) {
-                    throw new DownloadException(DownloadException.ExCode.FILE_TOO_LARGE, "File " +
+                    throw new NetException(NetException.ExCode.FILE_TOO_LARGE, "File " +
                             strUrl + " size exceed [" + maxFileSize + "] download stoped.");
                 }
             } while ((count = in.read(byteBuf)) > 0);
             ret = bos.toByteArray();
         }
         if (ret.length < MIN_SIZE) {
-            throw new DownloadException(DownloadException.ExCode.FILE_TOO_SMALL, "File " + strUrl +
+            throw new NetException(NetException.ExCode.FILE_TOO_SMALL, "File " + strUrl +
                     " content size [" + ret.length + "] too small, it indicates error.");
         }
         return ret;
@@ -223,15 +223,15 @@ public abstract class DownloadUtil {
 	 * @param strUrl The Url to be downloaded.
 	 * @param contentLength The content Length from HTTP header.
 	 * @param maxFileSize Max file size in BYTE.
-	 * @throws DownloadException
+	 * @throws NetException
 	 */
-	public static void validateContentLength(final String strUrl, final int contentLength, final int maxFileSize) throws DownloadException {
+	public static void validateContentLength(final String strUrl, final int contentLength, final int maxFileSize) throws NetException {
 	    if (contentLength > maxFileSize) {
-            throw new DownloadException(DownloadException.ExCode.FILE_TOO_LARGE, "File " + strUrl +
+            throw new NetException(NetException.ExCode.FILE_TOO_LARGE, "File " + strUrl +
                     " content size [" + contentLength + "], max allowed [" + maxFileSize + "] too large; download stoped.");
         }
         if (contentLength != -1 && contentLength < MIN_SIZE) {
-            throw new DownloadException(DownloadException.ExCode.FILE_TOO_SMALL, "File " + strUrl +
+            throw new NetException(NetException.ExCode.FILE_TOO_SMALL, "File " + strUrl +
                     " content size [" + contentLength + "] too small, it indicates error.");
         }
 	}
@@ -241,13 +241,13 @@ public abstract class DownloadUtil {
 	 *
 	 * @param strUrl The Url to be downloaded.
 	 * @param httpCon The HTTP connection.
-	 * @throws DownloadException
+	 * @throws NetException
 	 * @throws IOException
 	 */
-	public static void validateHttpCode(final String strUrl, HttpURLConnection httpCon) throws DownloadException, IOException {
+	public static void validateHttpCode(final String strUrl, HttpURLConnection httpCon) throws NetException, IOException {
         if (!IntegerUtil.isIn(httpCon.getResponseCode(), HTTP_OK, HTTP_NOT_AUTHORITATIVE,
                 HTTP_MOVED_PERM, HTTP_MOVED_TEMP)) {
-            throw new DownloadException(DownloadException.ExCode.INVALID_SERVER_RESPONSE, "File " + strUrl + " invalid response [" + httpCon.getResponseMessage() + "]");
+            throw new NetException(NetException.ExCode.INVALID_SERVER_RESPONSE, "File " + strUrl + " invalid response [" + httpCon.getResponseMessage() + "]");
         }
 	}
 

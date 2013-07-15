@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.net;
 
-import static org.apache.niolex.commons.net.DownloadException.ExCode.*;
+import static org.apache.niolex.commons.net.NetException.ExCode.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -27,7 +27,7 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2013-6-20
  */
-public class DownloadExceptionTest {
+public class NetExceptionTest {
 
     @Test
     public void testFILE_TOO_LARGEGetCode() throws Exception {

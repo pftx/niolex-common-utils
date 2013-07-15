@@ -6,9 +6,9 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import org.apache.niolex.commons.net.DownloadException;
+import org.apache.niolex.commons.net.NetException;
 import org.apache.niolex.commons.net.DownloadUtil;
-import org.apache.niolex.commons.net.DownloadException.ExCode;
+import org.apache.niolex.commons.net.NetException.ExCode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,14 +23,14 @@ public class DownloadUtilTest {
 		Assert.assertTrue(70000 > con.length);
 	}
 
-	@Test(expected=DownloadException.class)
+	@Test(expected=NetException.class)
 	public final void testDownloadFileTooFast() throws Exception, Throwable {
 		try {
 			downloadFile("http://search.maven.org/#search%7Cga%7C1%7Cprotobuf-java",
 							1000, 50, 7990180, false);
-		} catch (DownloadException et) {
+		} catch (NetException et) {
 			System.out.println("MSG " + et.getMessage());
-			assertEquals(et.getCode(), DownloadException.ExCode.IOEXCEPTION);
+			assertEquals(et.getCode(), NetException.ExCode.IOEXCEPTION);
 			throw et;
 		}
 	}
@@ -42,24 +42,24 @@ public class DownloadUtilTest {
 		Assert.assertEquals(7299, con.length);
 	}
 
-	@Test(expected=DownloadException.class)
+	@Test(expected=NetException.class)
 	public final void testDownloadFileInvalidServerResponse() throws Exception, Throwable {
 		try {
 			downloadFile("http://www.renren.com/go/act/sale/8wangyi190x300.php?refpos=",
 					10000, 10000, 1000, false);
-		} catch (DownloadException et) {
-			assertEquals(et.getCode(), DownloadException.ExCode.INVALID_SERVER_RESPONSE);
+		} catch (NetException et) {
+			assertEquals(et.getCode(), NetException.ExCode.INVALID_SERVER_RESPONSE);
 			throw et;
 		}
 	}
 
-	@Test(expected=DownloadException.class)
-	public final void testDownloadFileTooLarge() throws DownloadException {
+	@Test(expected=NetException.class)
+	public final void testDownloadFileTooLarge() throws NetException {
 	    try {
 			downloadFile("http://jebe.xnimg.cn/20120428/10/936d29a4-7e8c-46cb-962e-cefb1b72b93b.jpg",
 					10000, 10000, 1000, false);
-		} catch (DownloadException et) {
-			assertEquals(et.getCode(), DownloadException.ExCode.FILE_TOO_LARGE);
+		} catch (NetException et) {
+			assertEquals(et.getCode(), NetException.ExCode.FILE_TOO_LARGE);
 			throw et;
 		}
 	}
@@ -129,7 +129,7 @@ public class DownloadUtilTest {
         HttpURLConnection con = new InternalHttpURLConnection(303);
         try {
             validateHttpCode("http://dd.ku.cn", con);
-        } catch (DownloadException e) {
+        } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.INVALID_SERVER_RESPONSE);
             assertEquals("INVALID_SERVER_RESPONSE: File http://dd.ku.cn invalid response [Msg 303]", e.getMessage());
             return;
@@ -142,7 +142,7 @@ public class DownloadUtilTest {
         HttpURLConnection con = new InternalHttpURLConnection(403);
         try {
             validateHttpCode("http://dd.ku.cn", con);
-        } catch (DownloadException e) {
+        } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.INVALID_SERVER_RESPONSE);
             assertEquals("INVALID_SERVER_RESPONSE: File http://dd.ku.cn invalid response [Msg 403]", e.getMessage());
             return;
@@ -161,7 +161,7 @@ public class DownloadUtilTest {
     public void testValidateContentLengthTooSmall() {
         try {
             validateContentLength("not yet implemented", 9, 210);
-        } catch (DownloadException e) {
+        } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.FILE_TOO_SMALL);
             assertEquals("FILE_TOO_SMALL: File not yet implemented content size [9] too small, it indicates error.", e.getMessage());
             return;
@@ -173,7 +173,7 @@ public class DownloadUtilTest {
     public void testValidateContentLengthTooSmall2() {
         try {
             validateContentLength("not yet implemented", 0, 210);
-        } catch (DownloadException e) {
+        } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.FILE_TOO_SMALL);
             assertEquals("FILE_TOO_SMALL: File not yet implemented content size [0] too small, it indicates error.", e.getMessage());
             return;
@@ -185,7 +185,7 @@ public class DownloadUtilTest {
     public void testValidateContentLengthTooLarge() {
         try {
             validateContentLength("not yet implemented", 211, 210);
-        } catch (DownloadException e) {
+        } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.FILE_TOO_LARGE);
             assertEquals("FILE_TOO_LARGE: File not yet implemented content size [211], max allowed [210] too large; download stoped.", e.getMessage());
             return;
@@ -197,7 +197,7 @@ public class DownloadUtilTest {
     public void testValidateContentLengthTooLarge2() {
         try {
             validateContentLength("not yet implemented", 21100, 234);
-        } catch (DownloadException e) {
+        } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.FILE_TOO_LARGE);
             assertEquals("FILE_TOO_LARGE: File not yet implemented content size [21100], max allowed [234] too large; download stoped.", e.getMessage());
             return;

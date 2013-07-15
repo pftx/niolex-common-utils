@@ -1,5 +1,5 @@
 /**
- * DownloadException.java
+ * NetException.java
  *
  * Copyright 2011 Niolex, Inc.
  *
@@ -24,7 +24,7 @@ package org.apache.niolex.commons.net;
  * @version 1.0.0
  *
  */
-public class DownloadException extends Exception {
+public class NetException extends Exception {
 	private static final long serialVersionUID = -6315233292954959316L;
 
 	public static enum ExCode {
@@ -34,12 +34,12 @@ public class DownloadException extends Exception {
 	// The exception code
 	private final ExCode code;
 
-	public DownloadException(ExCode code, String message) {
+	public NetException(ExCode code, String message) {
 	    super(message);
 	    this.code = code;
 	}
 
-	public DownloadException(ExCode code, String message, Throwable cause) {
+	public NetException(ExCode code, String message, Throwable cause) {
 		super(message, cause);
 		this.code = code;
 	}
