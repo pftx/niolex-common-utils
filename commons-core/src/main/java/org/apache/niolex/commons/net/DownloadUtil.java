@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.download;
+package org.apache.niolex.commons.net;
 
 import static java.net.HttpURLConnection.*;
 import static org.apache.niolex.commons.util.Const.*;

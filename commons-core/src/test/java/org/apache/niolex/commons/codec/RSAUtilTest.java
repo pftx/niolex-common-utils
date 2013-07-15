@@ -23,7 +23,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Map;
 
-import org.apache.niolex.commons.download.DownloadExceptionTest;
+import org.apache.niolex.commons.net.DownloadExceptionTest;
 import org.apache.niolex.commons.file.FileUtil;
 import org.junit.Assert;
 import org.junit.BeforeClass;

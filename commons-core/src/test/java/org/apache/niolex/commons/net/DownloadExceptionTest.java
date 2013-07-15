@@ -15,9 +15,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.download;
+package org.apache.niolex.commons.net;
 
-import static org.apache.niolex.commons.download.DownloadException.ExCode.*;
+import static org.apache.niolex.commons.net.DownloadException.ExCode.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;

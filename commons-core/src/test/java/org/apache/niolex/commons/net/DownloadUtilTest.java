@@ -1,12 +1,14 @@
-package org.apache.niolex.commons.download;
+package org.apache.niolex.commons.net;
 
-import static org.apache.niolex.commons.download.DownloadUtil.*;
+import static org.apache.niolex.commons.net.DownloadUtil.*;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import org.apache.niolex.commons.download.DownloadException.ExCode;
+import org.apache.niolex.commons.net.DownloadException;
+import org.apache.niolex.commons.net.DownloadUtil;
+import org.apache.niolex.commons.net.DownloadException.ExCode;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -15,15 +15,17 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.download;
+package org.apache.niolex.commons.net;
 
-import static org.apache.niolex.commons.download.DownloadUtil.*;
+import static org.apache.niolex.commons.net.DownloadUtil.*;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.apache.niolex.commons.file.FileUtil;
+import org.apache.niolex.commons.net.DownloadException;
+import org.apache.niolex.commons.net.DownloadUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Before;
 import org.junit.Test;
