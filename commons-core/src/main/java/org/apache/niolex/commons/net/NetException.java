@@ -28,7 +28,8 @@ public class NetException extends Exception {
 	private static final long serialVersionUID = -6315233292954959316L;
 
 	public static enum ExCode {
-	    FILE_TOO_LARGE, FILE_TOO_SMALL, IOEXCEPTION, INVALID_SERVER_RESPONSE;
+	    FILE_TOO_LARGE, FILE_TOO_SMALL, IOEXCEPTION, INVALID_SERVER_RESPONSE,
+	    INVALID_URL_TYPE;
 	}
 
 	// The exception code
