@@ -19,7 +19,6 @@ package org.apache.niolex.commons.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -95,41 +94,6 @@ public class FileUtilTest {
         str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp_file.txt", UTF8);
         System.out.println("SL2 " + str2.length());
         Assert.assertEquals(str, str2);
-    }
-
-    @Test
-    public final void testMkdirsIfAbsent() {
-        final String prex = "/home/work/tmp";
-        // -- Make sure we have this directory.
-        FileUtil.mkdirsIfAbsent(prex);
-
-        // -- Create a temp file for this test.
-        File f = new File(prex + "/tmp2");
-        if (f.exists()) {
-            for (File t : f.listFiles())
-                t.delete();
-            f.delete();
-        }
-        boolean b;
-        // No file
-        b = FileUtil.mkdirsIfAbsent(prex + "/tmp2");
-        assertTrue(b);
-        // Have file
-        b = FileUtil.mkdirsIfAbsent(prex + "/tmp2");
-        assertTrue(b);
-        // --- Done here. We create a test file.
-        String str1 = "如果未指定NULL属性，将列设置为NULL设置则会将它设置为当前的时间戳";
-        b = FileUtil.setCharacterFileContentToFileSystem(prex + "/tmp2/tmp_file.txt", str1, StringUtil.UTF_8);
-        assertTrue(b);
-        // File OK
-        String str2 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp2/tmp_file.txt", StringUtil.UTF_8);
-        assertEquals(str1, str2);
-        // File Not Found
-        String str3 = FileUtil.getCharacterFileContentFromFileSystem(prex + "/tmp2/not_found.txt", StringUtil.UTF_8);
-        assertNull(str3);
-        // Make file under file, should return false.
-        b = FileUtil.mkdirsIfAbsent(prex + "/tmp2/tmp_file.txt/cba");
-        assertFalse(b);
     }
 
     // -------------------------------------------------------------------------

@@ -176,18 +176,4 @@ public abstract class FileUtil {
         return null;
     }
 
-
-    /**
-     * Make Directories (including parent directories) if not exist.
-     *
-     * @param pathname
-     * @return true if Directory exist or successfully created, false otherwise.
-     */
-    public static final boolean mkdirsIfAbsent(String pathname) {
-        File file = new File(pathname);
-        if (!file.exists()) {
-        	return file.mkdirs();
-        }
-        return true;
-    }
 }

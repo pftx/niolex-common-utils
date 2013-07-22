@@ -21,6 +21,7 @@ package org.apache.niolex.commons.internal;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.junit.Test;
@@ -39,9 +40,11 @@ public class FinallyTest extends Finally {
         writeAndClose(out, null);
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected=IOException.class)
     public void testTransferAndClose() throws Exception {
-        transferAndClose(null, mock(OutputStream.class), 1024);
+        InputStream in = mock(InputStream.class);
+        doThrow(new IOException("Mock")).when(in).read(any(byte[].class));
+        transferAndClose(in, mock(OutputStream.class), 1024);
     }
 
 }
