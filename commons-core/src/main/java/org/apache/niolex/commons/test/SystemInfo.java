@@ -25,6 +25,7 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
 import java.util.List;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.util.Runme;
 
 /**
@@ -34,69 +35,86 @@ import org.apache.niolex.commons.util.Runme;
  */
 public class SystemInfo {
 
+    // The top level thread group.
+    private static final ThreadGroup TOP_GROUP = ThreadUtil.topGroup();
+
+    // The singleton instance.
+    private static final SystemInfo INSTANCE = new SystemInfo();
+
 	// Memory
 	private MemoryUsage heapMem;
-	private int usedRatio;
 	private MemoryUsage nonHeapMem;
-	// GC
-	private List<GarbageCollectorMXBean> gcList;
+	private int usedRatio;
+
 	// CPU
 	private int cpuNumber;
 	private double loadAverage;
+
+	// GC
+	private List<GarbageCollectorMXBean> gcList;
+
 	// Threads
 	private int totalThreadCount;
 	private int activeThreadCount;
 
-	private static final SystemInfo INSTANCE = new SystemInfo();
-	private static ThreadGroup TOP_GROUP;
+	// Internal use, for auto refresh.
+	private Runme runme;
 
-	static {
-		ThreadGroup group = Thread.currentThread().getThreadGroup();
-
-		// 遍历线程组树，获取根线程组
-		while (group != null) {
-			TOP_GROUP = group;
-			group = group.getParent();
-		}
-	}
-
-	public static SystemInfo getInstance() {
+	/**
+	 * Get the global singleton instance, we will refresh system info before return.
+	 *
+	 * @return the instance
+	 */
+	public static final SystemInfo getInstance() {
+	    INSTANCE.refreshSystemInfo();
 		return INSTANCE;
 	}
 
 	/**
-	 * The private constructor.
+	 * The private constructor, prevent others from creation.
 	 */
 	private SystemInfo() {
-		super();
-
-		gcList = ManagementFactory.getGarbageCollectorMXBeans();
 	}
 
 	/**
 	 * Set automatically refresh system info at the specified time interval.
+	 *
 	 * @param refreshInterval in milliseconds
 	 */
-	public void autoRefresh(int refreshInterval) {
-		Runme r = new Runme() {
-			@Override
-			public void runMe() {
-				refreshSystemInfo();
-			}
-		};
-		r.setSleepInterval(refreshInterval);
-		r.start();
+	public synchronized void autoRefresh(int refreshInterval) {
+	    if (runme == null) {
+	        runme = new Runme() {
+    			@Override
+    			public void runMe() {
+    				refreshSystemInfo();
+    			}
+    		};
+    		runme.setSleepInterval(refreshInterval);
+    		runme.start();
+	    } else {
+	        runme.setSleepInterval(refreshInterval);
+	    }
 	}
 
+	/**
+	 * Stop auto refresh the system info.
+	 */
+	public synchronized void stopRefresh() {
+	    if (runme != null) {
+	        runme.stopMe();
+	        runme = null;
+	    }
+	}
 
 	/**
 	 * Refresh the system info.
 	 */
 	public void refreshSystemInfo() {
+	    gcList = ManagementFactory.getGarbageCollectorMXBeans();
 		MemoryMXBean m = ManagementFactory.getMemoryMXBean();
 		heapMem = m.getHeapMemoryUsage();
-		usedRatio = (int) ((heapMem.getUsed()) * 100 / heapMem.getCommitted());
 		nonHeapMem = m.getNonHeapMemoryUsage();
+		usedRatio = (int) ((heapMem.getUsed()) * 100 / heapMem.getCommitted());
 
 		OperatingSystemMXBean o = ManagementFactory.getOperatingSystemMXBean();
 		cpuNumber = o.getAvailableProcessors();
@@ -115,16 +133,20 @@ public class SystemInfo {
 		return nonHeapMem;
 	}
 
+	public int getUsedRatio() {
+	    return usedRatio;
+	}
+
 	public int getCpuNumber() {
 		return cpuNumber;
 	}
 
-	public List<GarbageCollectorMXBean> getGcList() {
-		return gcList;
+	public double getLoadAverage() {
+	    return loadAverage;
 	}
 
-	public double getLoadAverage() {
-		return loadAverage;
+	public List<GarbageCollectorMXBean> getGcList() {
+		return gcList;
 	}
 
 	public int getTotalThreadCount() {
@@ -133,10 +155,6 @@ public class SystemInfo {
 
 	public int getActiveThreadCount() {
 		return activeThreadCount;
-	}
-
-	public int getUsedRatio() {
-		return usedRatio;
 	}
 
 }

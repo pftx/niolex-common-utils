@@ -19,45 +19,52 @@ package org.apache.niolex.commons.test;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.CountDownLatch;
-
+import org.apache.niolex.commons.codec.IntegerUtil;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2012-7-26
  */
-@RunWith(OrderedRunner.class)
 public class SystemInfoTest {
-	SystemInfo info = SystemInfo.getInstance();
+	static SystemInfo info = SystemInfo.getInstance();
 	String osName = System.getProperties().getProperty("os.name");
+
+	@BeforeClass
+	public static void testSystemInfo() {
+	    info.autoRefresh(10);
+	}
+
+	@AfterClass
+	public static void testStopRefresh() {
+	    info.stopRefresh();
+	}
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.test.SystemInfo#refreshSystemInfo()}.
+     * @throws InterruptedException
+     */
+    @Test
+    public void testAutoRefresh() throws InterruptedException {
+        info.autoRefresh(5);
+    }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.test.SystemInfo#refreshSystemInfo()}.
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testARefreshSystemInfo() throws InterruptedException {
-		info.autoRefresh(10);
-		info.refreshSystemInfo();
-		int num = info.getTotalThreadCount();
-		final CountDownLatch startSignal = new CountDownLatch(1);
-		final CountDownLatch doneSignal = new CountDownLatch(1);
+	public void testRefreshSystemInfo() throws InterruptedException {
+	    info.refreshSystemInfo();
+	}
 
-		new Thread() { public void run() {try {
-			startSignal.countDown();
-			doneSignal.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}}}.start();
-		startSignal.await();
-		Thread.sleep(20);
-		info.refreshSystemInfo();
-		int k = info.getTotalThreadCount();
-		doneSignal.countDown();
-		assertEquals(k, num + 1);
+	@Test
+    public void testGetTotalThreadCount() {
+	    int num = info.getTotalThreadCount();
+	    System.out.println("TotalThreads " + num + ", Active " + info.getActiveThreadCount());
 	}
 
 	/**
@@ -65,7 +72,7 @@ public class SystemInfoTest {
 	 */
 	@Test
 	public void testGetHeapMem() {
-		System.out.println(info.getHeapMem().getCommitted());
+		System.out.println("Heap " + IntegerUtil.formatSize(info.getHeapMem().getCommitted()));
 	}
 
 	/**
@@ -73,7 +80,7 @@ public class SystemInfoTest {
 	 */
 	@Test
 	public void testGetNonHeapMem() {
-		System.out.println(info.getNonHeapMem().getCommitted());
+		System.out.println("NonHeap " + IntegerUtil.formatSize(info.getNonHeapMem().getCommitted()));
 	}
 
 	/**
@@ -92,6 +99,8 @@ public class SystemInfoTest {
 	public void testGetLoadAverage() {
 		if (osName.contains("Win"))
 			assertEquals(-1.00, info.getLoadAverage(), 0.01);
+		else
+		    info.getLoadAverage();
 	}
 
 	/**
@@ -107,7 +116,13 @@ public class SystemInfoTest {
 	 */
 	@Test
 	public void testGetUsedRatio() {
+	    System.out.println("UsedMem " + info.getUsedRatio() + "%");
 		assertTrue(info.getUsedRatio() > 1);
 	}
+
+    @Test
+    public void testGetInstance() {
+        info.stopRefresh();
+    }
 
 }

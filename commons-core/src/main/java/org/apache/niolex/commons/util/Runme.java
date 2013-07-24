@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.util;
 
-import java.util.Random;
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 
 /**
  * This Runme utility class is for run a job periodically.
@@ -58,7 +58,7 @@ public abstract class Runme extends Thread {
 	public void run() {
 		if (isWorking) {
 			// Do initial sleep.
-		    SystemUtil.sleep(new Random().nextLong() % sleepInterval);
+		    ThreadUtil.sleep(System.nanoTime() % sleepInterval);
 		} else {
 			isWorking = true;
 		}

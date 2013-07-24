@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.internal.IgnoreException;
 
 /**
@@ -99,9 +100,7 @@ public class SystemUtil {
 	 * @param milliseconds the time to sleep in milliseconds
 	 */
 	public static final void sleep(long milliseconds) {
-		try {
-			Thread.sleep(milliseconds);
-		} catch (Exception e) {/*We Don't Care*/}
+	    ThreadUtil.sleep(milliseconds);
 	}
 
 	/**
