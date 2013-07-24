@@ -42,7 +42,14 @@ public class LangTest {
 		System.out.println("127 + 1 = " + (byte)(b + 1));
 		System.out.println("-128 - 1 = " + (byte)(a - 1));
 		int c = a - b;
-		System.out.println("-128 - 127 = " + (c));
+		System.out.println("-128 - 127 = (int)" + (c));
+		System.out.println("-128 - 127 = (byte)" + (byte)(a - b));
+	}
+
+	@Test(expected=InterruptedException.class)
+    public void testInterupt() throws Throwable {
+	    Thread.currentThread().interrupt();
+	    Thread.sleep(2);
 	}
 
 	class A extends B {
