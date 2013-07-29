@@ -23,13 +23,14 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.concurrent.Blocker;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.concurrent.WaitOn;
 import org.apache.niolex.commons.file.DirMonitor.ChildrenListener;
 import org.apache.niolex.commons.file.FileMonitor.EventListener;
 import org.apache.niolex.commons.file.FileMonitor.EventType;
 import org.apache.niolex.commons.test.Counter;
 import org.apache.niolex.commons.test.OrderedRunner;
-import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,16 +56,19 @@ public class DirMonitorTest {
     @AfterClass
     public static void stop() {
         monitor.stop();
+        DirUtil.delete(TMP + "/dir-monitor", true);
     }
 
     @Test
     public void testACreate() throws Exception {
         final Counter cnt = new Counter();
         final Counter cld = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         ChildrenListener cli = new ChildrenListener() {
 
             @Override
             public void notify(EventType type, long happenTime) {
+                blocker.release("S", "");
                 if (type == EventType.CREATE) cnt.inc();
                 System.out.println(type + " " + happenTime);
             }
@@ -75,8 +79,9 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
+        WaitOn<String> wait = blocker.initWait("s");
         DirUtil.mkdirsIfAbsent(TMP + "/dir-monitor");
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
         assertEquals(1, cld.cnt());
         boolean b = monitor.removeListener(cli);
@@ -88,10 +93,12 @@ public class DirMonitorTest {
     public void testAdd() throws Exception {
         final Counter cnt = new Counter();
         final Counter cld = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         ChildrenListener cli = new ChildrenListener() {
 
             @Override
             public void notify(EventType type, long happenTime) {
+                blocker.release("S", "");
                 if (type == EventType.UPDATE) cnt.inc();
                 System.out.println(type + " " + happenTime);
             }
@@ -102,8 +109,9 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
+        WaitOn<String> wait = blocker.initWait("s");
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/tmp.txt", "FileMonitor", StringUtil.US_ASCII);
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
         assertEquals(1, cld.cnt());
         boolean b = monitor.removeListener(cli);
@@ -114,6 +122,7 @@ public class DirMonitorTest {
     public void testAddAgain() throws Exception {
         final Counter cnt = new Counter();
         final Counter cld = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         ChildrenListener cli = new ChildrenListener() {
 
             @Override
@@ -140,14 +149,16 @@ public class DirMonitorTest {
                 if (type == EventType.UPDATE)
                     unt.inc();
                 System.out.println("UNT " + type + " " + happenTime);
+                blocker.release(type, "");
             }
         };
+        WaitOn<String> wait = blocker.initWait(EventType.CREATE);
         FileMonitor monitor2 = new DirMonitor(1, TMP + "/dir-monitor/tmp.txt");
         monitor2.addListener(update);
-        SystemUtil.sleep(5);
-
+        wait.waitForResult(100);
+        wait = blocker.initWait(EventType.UPDATE);
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/tmp.txt", "DirMonitor", StringUtil.US_ASCII);
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, unt.cnt());
         assertEquals(0, cnt.cnt());
         assertEquals(0, cld.cnt());
@@ -161,12 +172,14 @@ public class DirMonitorTest {
     public void testAddAnother() throws Exception {
         final Counter cnt = new Counter();
         final Counter cld = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         ChildrenListener cli = new ChildrenListener() {
 
             @Override
             public void notify(EventType type, long happenTime) {
                 if (type == EventType.UPDATE) cnt.inc();
                 System.out.println(type + " " + happenTime);
+                blocker.release("s", "");
             }
 
             @Override
@@ -175,8 +188,9 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
+        WaitOn<String> wait = blocker.initWait("s");
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/dir.txt", "Lex is the Best!!", StringUtil.US_ASCII);
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
         assertEquals(1, cld.cnt());
         boolean b = monitor.removeListener(cli);
@@ -189,12 +203,14 @@ public class DirMonitorTest {
     public void testBRemove() throws Exception {
         final Counter cnt = new Counter();
         final Counter cld = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         ChildrenListener cli = new ChildrenListener() {
 
             @Override
             public void notify(EventType type, long happenTime) {
                 if (type == EventType.UPDATE) cnt.inc();
                 System.out.println(type + " " + happenTime);
+                blocker.release("s", "");
             }
 
             @Override
@@ -203,8 +219,9 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
+        WaitOn<String> wait = blocker.initWait("s");
         DirUtil.delete(TMP + "/dir-monitor/dir.txt", false);
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
         assertEquals(1, cld.cnt());
         boolean b = monitor.removeListener(cli);
@@ -216,6 +233,7 @@ public class DirMonitorTest {
     public void testCheckCreate() throws Exception {
         final Counter cnt = new Counter();
         final Counter cld = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         ChildrenListener cli = new ChildrenListener() {
 
             @Override
@@ -223,6 +241,7 @@ public class DirMonitorTest {
                 if (type == EventType.CREATE)
                     cnt.inc();
                 System.out.println(type + " " + happenTime);
+                blocker.release("s", "");
             }
 
             @Override
@@ -234,10 +253,10 @@ public class DirMonitorTest {
         };
         DirMonitor monitor2 = new DirMonitor(1, TMP + "/dir-monitor/not-dir.txt");
         monitor2.addListener(cli);
-        SystemUtil.sleep(5);
+        WaitOn<String> wait = blocker.initWait("s");
 
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/not-dir.txt", "It's not a DIR", StringUtil.US_ASCII);
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
         assertEquals(1, cld.cnt());
         boolean b = monitor2.removeListener(cli);
@@ -251,12 +270,14 @@ public class DirMonitorTest {
     public void testDelete() throws Exception {
         final Counter cnt = new Counter();
         final Counter cld = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         ChildrenListener cli = new ChildrenListener() {
 
             @Override
             public void notify(EventType type, long happenTime) {
                 if (type == EventType.DELETE) cnt.inc();
                 System.out.println(type + " " + happenTime);
+                blocker.release(type, "");
             }
 
             @Override
@@ -265,17 +286,23 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
+        WaitOn<String> wait = blocker.initWait(EventType.DELETE);
         DirUtil.delete(TMP + "/dir-monitor", true);
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
         boolean b = monitor.removeListener(cli);
         assertTrue(b);
     }
 
-
     @Test
     public void testNotify() throws Exception {
         monitor.notify(EventType.NOT_DIR, 0);
+        monitor.notify(EventType.ADD_CHILDREN, 0);
+    }
+
+    @Test
+    public void testNotifyNull() throws Exception {
+        monitor.notify(null, 0);
     }
 
 }

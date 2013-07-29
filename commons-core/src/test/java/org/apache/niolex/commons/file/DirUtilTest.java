@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -34,12 +35,17 @@ import org.junit.Test;
 public class DirUtilTest extends DirUtil {
 
     static final String PREX = System.getProperty("java.io.tmpdir");
-    static final String TMP = "/home/work/tmp";
+    static final String TMP = PREX + "/tmp";
 
     @BeforeClass
     public static void setUp() {
         // -- Make sure we have this directory.
         mkdirsIfAbsent(TMP);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        delete(TMP, true);
     }
 
     @Test

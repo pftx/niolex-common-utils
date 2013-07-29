@@ -9,18 +9,48 @@ import java.net.HttpURLConnection;
 import org.apache.niolex.commons.net.NetException;
 import org.apache.niolex.commons.net.DownloadUtil;
 import org.apache.niolex.commons.net.NetException.ExCode;
+import org.apache.niolex.commons.test.StopWatch;
+import org.apache.niolex.commons.test.StopWatch.Stop;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DownloadUtilTest {
 
+    static StopWatch sw = new StopWatch(10);
+    private Stop start;
+
+    @BeforeClass
+    public static void setUP() {
+        sw.begin(true);
+    }
+
+    @AfterClass
+    public static void summary() {
+        sw.done();
+        sw.print();
+    }
+
+    @Before
+    public void before() {
+        start = sw.start();
+    }
+
+    @After
+    public void after() {
+        start.stop();
+    }
+
 	@Test
 	public final void testDownloadFileNormal() throws Exception, Throwable {
-		byte[] con = downloadFile("http://mat1.gtimg.com/www/mb/images/nloginBg110617.jpg",
-						10000, 20000, 1230000, false);
+		byte[] con = downloadFile("http://img01.51jobcdn.com/im/2009/logo/logo2009.gif",
+						3000, 3000, 3000, false);
 		System.out.println("SL " + con.length);
-		Assert.assertTrue(62000 < con.length);
-		Assert.assertTrue(70000 > con.length);
+		Assert.assertTrue(2800 < con.length);
+		Assert.assertTrue(2900 > con.length);
 	}
 
 	@Test(expected=NetException.class)

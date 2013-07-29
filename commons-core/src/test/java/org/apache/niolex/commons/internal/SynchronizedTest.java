@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.apache.niolex.commons.bean.MutableOne.DataChangeListener;
+import org.apache.niolex.commons.concurrent.Blocker;
+import org.apache.niolex.commons.concurrent.WaitOn;
 import org.apache.niolex.commons.control.TimeCheck;
 import org.apache.niolex.commons.util.Runner;
 import org.apache.niolex.commons.util.SystemUtil;
@@ -37,6 +39,15 @@ import com.google.common.collect.Lists;
  */
 public class SynchronizedTest extends Synchronized {
 
+    final Blocker<String> blocker = new Blocker<String>();
+
+    public void lockOneSec(Object obj) {
+        synchronized (obj) {
+            blocker.release("s", "s");
+            SystemUtil.sleep(100);
+        }
+    }
+
     @Test
     public void testNotifyListeners() throws Exception {
         List<DataChangeListener<String>> list = Lists.newArrayList();
@@ -46,10 +57,11 @@ public class SynchronizedTest extends Synchronized {
             public void onDataChange(String newData) {
                 System.out.println("PR\\" + newData);
             }});
+        WaitOn<String> on = blocker.initWait("s");
         Runner.run(this, "lockOneSec", list);
         // Make sure the lock thread is running
-        Thread.sleep(100);
-        notifyListeners(list, "This will happen in 400 msec latter.");
+        on.waitForResult(100);
+        notifyListeners(list, "This will happen in 100 msec latter.");
     }
 
     @Test
@@ -70,9 +82,10 @@ public class SynchronizedTest extends Synchronized {
     public void testGetIntervalCnt() throws Exception {
         TimeCheck check = new TimeCheck(100, 10, 1000);
         check.getCounter().set(120);
+        WaitOn<String> on = blocker.initWait("s");
         Runner.run(this, "lockOneSec", check.getCounter());
         // Make sure the lock thread is running
-        Thread.sleep(100);
+        on.waitForResult(100);
         int k = getIntervalCnt(10, System.currentTimeMillis() + 10, check);
         assertEquals(120, k);
     }
@@ -97,12 +110,6 @@ public class SynchronizedTest extends Synchronized {
 
         int k = getIntervalCnt(10, System.currentTimeMillis() + 10, check);
         assertEquals(120, k);
-    }
-
-    public void lockOneSec(Object obj) {
-        synchronized (obj) {
-            SystemUtil.sleep(500);
-        }
     }
 
 }

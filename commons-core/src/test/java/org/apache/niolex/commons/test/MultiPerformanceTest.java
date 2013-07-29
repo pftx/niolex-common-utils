@@ -17,8 +17,10 @@
  */
 package org.apache.niolex.commons.test;
 
+import java.util.concurrent.CountDownLatch;
+
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.util.Runner;
-import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 /**
@@ -34,7 +36,7 @@ public class MultiPerformanceTest {
      */
     @Test
     public void testAutoBoxing() {
-        MultiPerformance perf = new MultiPerformance(2, 1000000, 100) {
+        MultiPerformance perf = new MultiPerformance(4, 1000000, 100) {
             @Override
             protected void run() {
                 Integer i = 129;
@@ -52,7 +54,7 @@ public class MultiPerformanceTest {
      */
     @Test
     public void testPrimitive() {
-        MultiPerformance perf = new MultiPerformance(2, 1000000, 100) {
+        MultiPerformance perf = new MultiPerformance(4, 1000000, 100) {
             @Override
             protected void run() {
                 int i = 129;
@@ -67,18 +69,23 @@ public class MultiPerformanceTest {
 
     @Test
     public void testInterruptedException() throws InterruptedException {
-        MultiPerformance perf = new MultiPerformance(1, 1, 1) {
+        final CountDownLatch la = new CountDownLatch(2);
+        MultiPerformance perf = new MultiPerformance(1, 2, 2) {
             @Override
             protected void run() {
-                SystemUtil.sleep(1000);
+                la.countDown();
+                if (la.getCount() == 0)
+                    ThreadUtil.sleep(1000);
             }
         };
         System.out.print("Interrupted\t");
         Thread t = Runner.run(perf, "start");
+        la.await();
+        ThreadUtil.sleep(1);
         t.interrupt();
-        SystemUtil.sleep(5);
+        ThreadUtil.sleep(1);
         t.interrupt();
-        SystemUtil.sleep(5);
+        ThreadUtil.sleep(1);
         t.interrupt();
         t.join();
     }

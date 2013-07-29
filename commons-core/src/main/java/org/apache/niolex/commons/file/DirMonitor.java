@@ -81,15 +81,11 @@ public class DirMonitor extends FileMonitor implements FileMonitor.EventListener
      */
     @Override
     public void notify(EventType type, long happenTime) {
-        switch (type) {
-            case CREATE:
-            case UPDATE:
-                if (isDir == null) checkCreate();
-                else if (isDir == Boolean.TRUE) checkUpdate();
-                break;
-            case DELETE:
-                checkDelete();
-                break;
+        if (type == EventType.CREATE || type == EventType.UPDATE) {
+            if (isDir == null) checkCreate();
+            else if (isDir == Boolean.TRUE) checkUpdate();
+        } else if (type == EventType.DELETE) {
+            checkDelete();
         }
     }
 

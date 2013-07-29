@@ -26,8 +26,13 @@ import java.io.InputStream;
 import org.apache.niolex.commons.file.FileUtil;
 import org.apache.niolex.commons.net.NetException;
 import org.apache.niolex.commons.net.DownloadUtil;
+import org.apache.niolex.commons.test.StopWatch;
+import org.apache.niolex.commons.test.StopWatch.Stop;
 import org.apache.niolex.commons.util.SystemUtil;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -38,9 +43,29 @@ import org.slf4j.Logger;
  */
 public class NewDownloadUtilTest {
 
+    static StopWatch sw = new StopWatch(10);
+    private Stop start;
+
+    @BeforeClass
+    public static void setUP() {
+        sw.begin(false);
+    }
+
+    @AfterClass
+    public static void summary() {
+        sw.done();
+        sw.print();
+    }
+
     @Before
-    public void setUseCache() {
+    public void before() {
+        start = sw.start();
         setUseThreadLocalCache(true);
+    }
+
+    @After
+    public void after() {
+        start.stop();
     }
 
     final static String URL = "http://service.baidu.com/static/images/nav.jpg";

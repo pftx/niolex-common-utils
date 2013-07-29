@@ -20,6 +20,9 @@ package org.apache.niolex.commons.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
+
+import org.apache.niolex.commons.reflect.FieldUtil;
 import org.apache.niolex.commons.test.StopWatch.Stop;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,11 +42,13 @@ public class StopWatchTest {
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testBegin() throws InterruptedException {
+	public void testBegin() throws Exception {
 		try {
 		sw.done();
 		} catch (Exception e) {}
 		sw.begin(true);
+		Field f = FieldUtil.getField(StopWatch.class, "startTime");
+		FieldUtil.setFieldValue(f, sw, System.currentTimeMillis() - 1580);
 	}
 
 	/**
@@ -51,17 +56,20 @@ public class StopWatchTest {
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testCStart() throws InterruptedException {
+	public void testCStart() throws Exception {
 		Stop s = sw.start();
 		Stop s1 = sw.start();
-		Thread.sleep(10);
+		Field f = FieldUtil.getField(Stop.class, "startTime");
+        long value = System.currentTimeMillis() - 10;
+        FieldUtil.setFieldValue(f, s, value);
+        FieldUtil.setFieldValue(f, s1, value);
 		s.stop();
 		s1.stop();
 		s = sw.start();
-		Thread.sleep(20);
+		FieldUtil.setFieldValue(f, s, value - 10);
 		s.stop();
 		s = sw.start();
-		Thread.sleep(1500);
+		FieldUtil.setFieldValue(f, s, value - 1490);
 		s.stop();
 	}
 
@@ -70,7 +78,6 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testDone() {
-		System.out.println(System.currentTimeMillis());
 		sw.done();
 	}
 
@@ -79,30 +86,40 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testEPrint() {
+	    System.out.print("EPrint " + System.currentTimeMillis());
 		sw.print();
 	}
 
 	@Test
-	public void testFBegin() throws InterruptedException {
+	public void testFBegin() throws Exception {
 		sw.begin(false);
+		Field f = FieldUtil.getField(StopWatch.class, "startTime");
+        FieldUtil.setFieldValue(f, sw, System.currentTimeMillis() - 1580);
 	}
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.test.StopWatch#start()}.
 	 * @throws InterruptedException
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
 	 */
 	@Test
-	public void testFCStart() throws InterruptedException {
+	public void testFCStart() throws InterruptedException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		Stop s = sw.start();
 		Stop s1 = sw.start();
-		Thread.sleep(10);
+		Field f = FieldUtil.getField(Stop.class, "startTime");
+		long value = System.currentTimeMillis() - 10;
+		FieldUtil.setFieldValue(f, s, value);
+		FieldUtil.setFieldValue(f, s1, --value);
 		s.stop();
 		s1.stop();
 		s = sw.start();
-		Thread.sleep(20);
+		FieldUtil.setFieldValue(f, s, value - 10);
 		s.stop();
 		s = sw.start();
-		Thread.sleep(1500);
+		FieldUtil.setFieldValue(f, s, value - 1490);
 		s.stop();
 	}
 
@@ -111,7 +128,7 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testFDone() {
-		System.out.println(System.currentTimeMillis());
+		System.out.print("FDone" + System.currentTimeMillis());
 		sw.done();
 	}
 
@@ -149,7 +166,7 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testGetMax() {
-		assertTrue(sw.getMax() < 1700);
+		assertTrue(sw.getMax() < 1600);
 	}
 
 	/**
@@ -157,7 +174,7 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testGetMin() {
-		assertTrue(sw.getMin() >= 0);
+		assertTrue(sw.getMin() == 10);
 	}
 
 	/**
@@ -165,7 +182,7 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testGetRps() {
-		assertTrue(sw.getRps() < 100);
+		assertTrue(sw.getRps() < 10);
 		assertTrue(sw.getRpsList().size() < 3);
 	}
 

@@ -47,12 +47,14 @@ public class RetainLinkedTest {
 		 */
 		@Override
 		public void run() {
-			int k = (int)Thread.currentThread().getId() * runSize;
-			System.out.println(k + " start at " + System.currentTimeMillis());
+		    int id = (int)Thread.currentThread().getId();
+			int k = id * runSize;
+			long s = System.currentTimeMillis();
+			System.out.println(id + " Put start at " + s);
 			for (int i = 0; i < runSize; ++i) {
 				linked.add(k + i);
 			}
-			System.out.println(k + " stop at " + System.currentTimeMillis());
+			System.out.println(id + " stoped with " + (System.currentTimeMillis() - s));
 			inger.decrementAndGet();
 		}
 
@@ -67,7 +69,8 @@ public class RetainLinkedTest {
 		@Override
 		public void run() {
 			int k = (int)Thread.currentThread().getId();
-			System.out.println(k + " Take start at " + System.currentTimeMillis());
+			long s = System.currentTimeMillis();
+			System.out.println(k + " Take start at " + s);
 			while (true) {
 				Integer r = linked.handleNext();
 				if (r == null) {
@@ -85,9 +88,8 @@ public class RetainLinkedTest {
 					check.put(r, r);
 				}
 			}
-			System.out.println(k + " Take stop at " + System.currentTimeMillis());
+			System.out.println(k + " Take stoped with " + (System.currentTimeMillis() - s));
 		}
-
 	}
 
 	@Test

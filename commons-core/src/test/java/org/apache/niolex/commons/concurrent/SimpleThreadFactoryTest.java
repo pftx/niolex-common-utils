@@ -41,10 +41,12 @@ public class SimpleThreadFactoryTest {
     @Test
     public void testNewThread() throws Exception {
         final Counter cnt = new Counter();
+        final Blocker<Integer> blocker = new Blocker<Integer>();
         Thread t = factory.newThread(new Runnable() {
 
             @Override
             public void run() {
+                blocker.release("s", 1);
                 while (cnt.cnt() < 50) {
                     cnt.inc();
                     if (Thread.interrupted()) break;
@@ -55,7 +57,9 @@ public class SimpleThreadFactoryTest {
                     }
                 }
             }});
+        WaitOn<Integer> waitOn = blocker.initWait("s");
         t.start();
+        waitOn.waitForResult(100);
         assertEquals(t.getThreadGroup(), factory.getThreadGroup());
         assertEquals(t.getName(), "thread-fac-test@0");
         assertEquals(1, factory.getThreadGroup().activeCount());

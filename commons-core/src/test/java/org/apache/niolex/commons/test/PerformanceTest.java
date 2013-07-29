@@ -63,8 +63,8 @@ public class PerformanceTest {
 
 	}
 
-	private static int innerIteration = 1000000;
-	private static int outerIteration = 10;
+	private static int innerIteration = 100000;
+	private static int outerIteration = 100;
 
 	class DirectMethod extends Performance {
 		KTestBean bean = new KTestBean();
@@ -183,7 +183,7 @@ public class PerformanceTest {
 		 * @param outerIteration
 		 */
 		public ReflectMethod() {
-			super(innerIteration, outerIteration);
+			super(innerIteration, 10);
 			bean.setB(8475);
 			try {
 				m = MethodUtil.getMethod(KTestBean.class, "getB");
@@ -219,7 +219,7 @@ public class PerformanceTest {
 		 * @param outerIteration
 		 */
 		public ReflectField() {
-			super(2, innerIteration, outerIteration / 3);
+			super(2, innerIteration, 6);
 			bean.setB(8475);
 			try {
 				f = FieldUtil.getField(KTestBean.class, "b");
