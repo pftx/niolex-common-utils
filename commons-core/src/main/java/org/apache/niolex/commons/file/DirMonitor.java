@@ -27,7 +27,7 @@ import org.apache.niolex.commons.util.CollectionUtil;
 /**
  * Monitoring the directory changes from the file system and notify users.<br>
  * If you want to be notified for children related events, please implement the {@link ChildrenListener}
- * instead of {@link EventListener}
+ * instead of {@link FileMonitor.EventListener}
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
