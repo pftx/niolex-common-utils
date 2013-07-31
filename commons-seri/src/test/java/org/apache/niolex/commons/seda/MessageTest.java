@@ -70,11 +70,13 @@ public class MessageTest {
 	public final void testReject3() {
 		in.reject(RejectType.STAGE_SHUTDOWN, in, disp);
 		assertEquals(in, inp.getRejected());
+		assertEquals(RejectType.STAGE_SHUTDOWN.toString(), "STAGE_SHUTDOWN");
 	}
 
 	@Test
 	public final void testReject4() {
 		in.reject(RejectType.USER_REJECT, in, disp);
+		assertEquals(RejectType.valueOf("USER_REJECT"), RejectType.USER_REJECT);
 	}
 
 }

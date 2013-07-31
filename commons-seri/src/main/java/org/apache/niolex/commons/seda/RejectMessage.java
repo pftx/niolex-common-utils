@@ -31,7 +31,13 @@ public class RejectMessage extends Message {
 	private final RejectType type;
 
 	/**
-	 * The information send along with rejection
+	 * The information send along with rejection, explained in detail:
+     *     When reject type is:
+     *         PROCESS_ERROR then info is an instance of Throwable
+     *         USER_REJECT then info is defined by user application
+     *         STAGE_SHUTDOWN then info is the stage name
+     *         STAGE_BUSY then info is a reference to the stage object
+     *     User can use this parameter accordingly.
 	 */
 	private final Object info;
 
@@ -54,14 +60,29 @@ public class RejectMessage extends Message {
 		this.rejected = rejected;
 	}
 
+	/**
+	 * @return the reject type of this message
+	 */
 	public RejectType getType() {
 		return type;
 	}
 
+	/**
+	 * @return the information send along with rejection, explained in detail:
+     *     When reject type is:
+     *         PROCESS_ERROR then info is an instance of Throwable
+     *         USER_REJECT then info is defined by user application
+     *         STAGE_SHUTDOWN then info is the stage name
+     *         STAGE_BUSY then info is a reference to the stage object
+     *     User can use this parameter accordingly.
+	 */
 	public Object getInfo() {
 		return info;
 	}
 
+	/**
+	 * @return the message been rejected
+	 */
 	public Message getRejected() {
 		return rejected;
 	}

@@ -120,7 +120,7 @@ public class StageTest {
 	 * Test method for {@link org.apache.niolex.commons.seda.Stage#startPool()}.
 	 */
 	public final void startAdjust(SleepStage ss, Field f) throws Exception {
-		f.setLong(ss, System.currentTimeMillis() - 1005);
+		f.setLong(ss, System.currentTimeMillis() - 1001);
 		ss.adjustThreadPool();
 	}
 
@@ -212,46 +212,49 @@ public class StageTest {
 	 */
 	@Test
 	public final void testAdjustTremble() throws Exception {
-		SleepStage ss = new SleepStage("abc", dispatcher);
+		SleepStage ss = new SleepStage("abc", dispatcher, 600);
 		Field f = Stage.class.getDeclaredField("lastAdjustTime");
 		f.setAccessible(true);
 		TInput in = mock(TInput.class);
-		ss.stableRate = 0.0234;
+		ss.processRate = 0.030;
 		// Prepare ready.
 		// stage 1.
-		for (int i = 0; i < 60; ++i) {
+		for (int i = 0; i < 100; ++i) {
 			ss.addInput(in);
 		}
 		ss.exeCnt.addAndGet(3);
 		this.startAdjust(ss, f);
 		int psize = ss.currentPoolSize;
 		System.out.println("stage1 " + ss.currentPoolSize);
-		assertEquals(psize, 5);
+		assertEquals(psize, 2);
 		// stage 2. we drop fast.
 		ss.exeCnt.addAndGet(60);
 		ss.inputQueue.clear();
+		for (int i = 0; i < 41; ++i) {
+            ss.addInput(in);
+        }
 		this.startAdjust(ss, f);
 		psize = ss.currentPoolSize;
 		System.out.println("stage2 " + ss.currentPoolSize);
-		assertEquals(psize, 4);
+		assertEquals(psize, 1);
 		// stage 3. we rise very fast.
-		ss.exeCnt.addAndGet(60);
-		for (int i = 0; i < 60; ++i) {
+		ss.exeCnt.addAndGet(30);
+		for (int i = 0; i < 100; ++i) {
 			ss.addInput(in);
 		}
 		this.startAdjust(ss, f);
 		psize = ss.currentPoolSize;
 		System.out.println("stage3 " + ss.currentPoolSize);
-		assertEquals(psize, 5);
+		assertEquals(psize, 2);
 		// stage 4. we drop slowly.
 		ss.exeCnt.addAndGet(70);
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 30; ++i) {
 			ss.addInput(in);
 		}
 		this.startAdjust(ss, f);
 		psize = ss.currentPoolSize;
 		System.out.println("stage4 " + ss.currentPoolSize);
-		assertEquals(psize, 5);
+		assertEquals(psize, 3);
 		// stage 5. we drop faster.
 		ss.exeCnt.addAndGet(70);
 		for (int i = 0; i < 10; ++i) {
@@ -260,7 +263,7 @@ public class StageTest {
 		this.startAdjust(ss, f);
 		psize = ss.currentPoolSize;
 		System.out.println("stage5 " + ss.currentPoolSize);
-		assertEquals(psize, 4);
+		assertEquals(psize, 3);
 		// stage 6. we rise slowly.
 		ss.exeCnt.addAndGet(70);
 		for (int i = 0; i < 15; ++i) {
@@ -269,12 +272,12 @@ public class StageTest {
 		this.startAdjust(ss, f);
 		psize = ss.currentPoolSize;
 		System.out.println("stage6 " + ss.currentPoolSize);
-		assertEquals(psize, 4);
+		assertEquals(psize, 3);
 		// stage 7. we have nothing.
 		this.startAdjust(ss, f);
 		psize = ss.currentPoolSize;
 		System.out.println("stage7 " + ss.currentPoolSize);
-		assertEquals(psize, 2);
+		assertEquals(psize, 1);
 		// done.
 		ss.shutdown();
 	}

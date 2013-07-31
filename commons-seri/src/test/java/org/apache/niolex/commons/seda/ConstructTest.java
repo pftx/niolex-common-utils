@@ -116,7 +116,7 @@ public class ConstructTest {
 		 * @param sleepTime
 		 */
 		public S10Stage(String stageName, long sleepTime) {
-			super(stageName, sleepTime);
+			super(stageName, 50000, sleepTime);
 		}
 
 		@Override

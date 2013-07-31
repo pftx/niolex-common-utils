@@ -20,8 +20,14 @@ package org.apache.niolex.commons.seda;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
+
 /**
  * The Adjuster used to dynamically adjust thread pool size of stages.
+ * <br>
+ * We will use an independent thread to call {@link Stage#adjustThreadPool()} periodically,
+ * all the details of adjusting thread pool size are implemented there. The thread is
+ * running in the daemon state, it will stop automatically if the main threads are stopped.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-16$
@@ -62,7 +68,7 @@ public class Adjuster implements Runnable {
 	 */
 	public void startAdjust() {
 		if (thread == null) {
-			thread = new Thread(this);
+			thread = new Thread(null, this, "seda-Adjuster");
 			thread.setDaemon(true);
 			isWorking = true;
 			thread.start();
@@ -91,15 +97,11 @@ public class Adjuster implements Runnable {
 		long in;
 		while (isWorking) {
 			in = System.currentTimeMillis();
-			synchronized (this) {
-				ListIterator<Stage<?>> it = stageList.listIterator();
-				while (it.hasNext()) {
-					it.next().adjustThreadPool();
-				}
+			ListIterator<Stage<?>> it = stageList.listIterator();
+			while (it.hasNext()) {
+				it.next().adjustThreadPool();
 			}
-			try {
-				Thread.sleep(adjustInterval - in + System.currentTimeMillis());
-			} catch (Exception e) {}
+			ThreadUtil.sleep(adjustInterval - in + System.currentTimeMillis());
 		}
 	}
 

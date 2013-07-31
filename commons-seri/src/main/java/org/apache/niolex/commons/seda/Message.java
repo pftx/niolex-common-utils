@@ -41,15 +41,23 @@ public abstract class Message {
 	/**
 	 * Reject this message from a stage. This means this message will not get
 	 * processed correctly. User need to deal with it.
-	 *
+	 * <br>
 	 * The default implementation will dispatch this message to the reject handler with
-	 * in instance of {@link RejectMessage}
-	 *
+	 * an instance of {@link RejectMessage}, user need to add his own reject handler to
+	 * deal with this message by register a stage with the name
+	 * "org.apache.niolex.commons.seda.RejectMessage", or this message will be ignored.
+	 * <br>
 	 * User can override this method, but dealing this method need to be fast and
 	 * effective, do not take too much time from the rejection thread.
 	 *
 	 * @param type the reject type
-	 * @param info the related rejection information
+	 * @param info the related rejection information, explained in detail:
+	 *     When reject type is:
+	 *         PROCESS_ERROR then info is an instance of Throwable
+	 *         USER_REJECT then info is defined by user application
+	 *         STAGE_SHUTDOWN then info is the stage name
+	 *         STAGE_BUSY then info is a reference to the stage object
+	 *     User can use this parameter accordingly.
 	 * @param dispatcher the dispatcher used to dispatch this message
 	 */
 	public void reject(RejectType type, Object info, Dispatcher dispatcher) {

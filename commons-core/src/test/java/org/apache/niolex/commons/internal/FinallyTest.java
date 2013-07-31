@@ -27,7 +27,9 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.niolex.commons.concurrent.Blocker;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.concurrent.WaitOn;
 import org.apache.niolex.commons.reflect.MethodUtil;
 import org.apache.niolex.commons.util.Runner;
 import org.junit.Before;
@@ -58,18 +60,21 @@ public class FinallyTest extends Finally {
     }
 
     public void readTest(int k) {
+        blocker.release("r", "1");
         readCnt += k;
-        ThreadUtil.sleep(50);
+        ThreadUtil.sleep(80);
     }
 
     public void writeTest(int k) {
+        blocker.release("w", "1");
         writeCnt += k;
-        ThreadUtil.sleep(50);
+        ThreadUtil.sleep(80);
     }
 
     private Method r = MethodUtil.getMethods(getClass(), "readTest")[0];
     private Method w = MethodUtil.getMethods(getClass(), "writeTest")[0];
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private Blocker<String> blocker = new Blocker<String>();
 
     public void letsRead(int k) throws Throwable {
         useReadLock(lock, this, r, new Object[] {k});
@@ -87,8 +92,10 @@ public class FinallyTest extends Finally {
 
     @Test
     public void testUseReadLock() throws Exception {
+        WaitOn<String> wait = blocker.initWait("r");
         Runner.run(this, "letsRead", 3);
         Runner.run(this, "letsRead", 4);
+        wait.waitForResult(50);
         ThreadUtil.sleep(5);
         Runner.run(this, "letsWrite", 5);
         ThreadUtil.sleep(5);
@@ -98,14 +105,25 @@ public class FinallyTest extends Finally {
 
     @Test
     public void testUseWriteLock() throws Exception {
+        WaitOn<String> wait = blocker.initWait("w");
         Runner.run(this, "letsWrite", 2);
-        ThreadUtil.sleep(5);
+        wait.waitForResult(50);
         Runner.run(this, "letsRead", 3);
         Runner.run(this, "letsRead", 4);
         Runner.run(this, "letsWrite", 5);
         ThreadUtil.sleep(5);
         assertEquals(0, readCnt);
         assertEquals(2, writeCnt);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testErrReadLock() throws Throwable {
+        useReadLock(lock, this, r, new Object[0]);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testErrWriteLock() throws Throwable {
+        useWriteLock(lock, this, w, new Object[0]);
     }
 
 }

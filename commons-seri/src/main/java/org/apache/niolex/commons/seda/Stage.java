@@ -23,6 +23,7 @@ import java.util.ListIterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,15 +69,23 @@ public abstract class Stage<Input extends Message> {
 	protected final int maxPoolSize;
 
 	/**
-	 * The maximum input queue size. If the current queue size exceeds this number, we will add
-	 * more threads into the thread pool.
+	 * The maximum tolerable delay in milliseconds.
+	 * <br>
+	 * If the time to process current queue size exceeds this number, we will add
+	 * more threads into the thread pool. If the time to process current queue size
+	 * exceeds 2 times this number, we will start to drop messages.
 	 */
-	protected final int adjustFactor;
+	protected final int maxTolerableDelay;
 
 	/**
 	 * The execution count, used to calculate thread pool efficiency.
 	 */
 	protected final AtomicInteger exeCnt = new AtomicInteger(0);
+
+	/**
+	 * The execution time in us, used to calculate thread consume rate.
+	 */
+	protected final AtomicLong exeTime = new AtomicLong(0);
 
 	/**
 	 * The list to save all the workers.
@@ -119,25 +128,17 @@ public abstract class Stage<Input extends Message> {
     protected int lastAdjustQueueSize;
 
 	/**
-	 * The recent stable consume rate.
+	 * The recent process rate.
 	 */
-    protected double stableRate = 0.01;
+    protected double processRate = 1.01;
 
     /**
      * The last adjust status.
-     *
-     * ADD_2:	Last time we added two threads.
-     * SUB_2:	Last time we subtracted two threads.
-     * ...
+     * -1 for subtract threads
+     * 0 for no operation
+     * 1 for add threads
      */
     protected int lastAdjustStatus;
-    static final int ADD_4 = 4;
-    static final int ADD_3 = 3;
-    static final int ADD_2 = 2;
-    static final int ADD_1 = 1;
-    static final int NO_OP = 0;
-    static final int SUB_1 = -1;
-    static final int SUB_2 = -2;
 
 	/**
 	 * Create a Stage with all default parameters.
@@ -147,36 +148,58 @@ public abstract class Stage<Input extends Message> {
 	 * use default instance of Dispatcher for dispatcher
 	 * use 1 for minPoolSize
 	 * use 100 for maxPoolSize
-	 * use 4096 for adjustFactor
+	 * use 1000ms for maxTolerableDelay
 	 *
 	 * @param stageName the name of this stage.
 	 */
 	public Stage(String stageName) {
-		this(stageName, new LinkedBlockingQueue<Input>(), Dispatcher.getInstance(), 1, 100, 4096);
+		this(stageName, new LinkedBlockingQueue<Input>(), Dispatcher.getInstance(), 1, 100, 1000);
 	}
+
+	/**
+     * Create a Stage with some default parameters.
+     *
+     * We will initialize this stage with the following parameters:
+     * use LinkedBlockingQueue for inputQueue
+     * use default instance of Dispatcher for dispatcher
+     * use 1 for minPoolSize
+     * use 100 for maxPoolSize
+     *
+     * @param stageName the name of this stage.
+     * @param maxTolerableDelay The maximum tolerable delay in milliseconds.
+     * If the time to process current queue size exceeds this number, we will add
+     * more threads into the thread pool. If the time to process current queue size
+     * exceeds 2 times this number, we will start to drop messages.
+     */
+	public Stage(String stageName, int maxTolerableDelay) {
+        this(stageName, new LinkedBlockingQueue<Input>(), Dispatcher.getInstance(), 1, 100, maxTolerableDelay);
+    }
 
 	/**
 	 * Create a Stage with these parameters you passed in.
 	 *
 	 * When the queue exceeds 4 times adjustFactor, we will start to reject messages.
-	 * User can change this behavior by override the method {@link #dropMessage()}
+	 * User can change this behavior by override the method {@link #dropMessage(int)}
 	 *
 	 * @param stageName the name of this stage.
 	 * @param inputQueue the input queue user want to use.
 	 * @param dispatcher the dispatcher used to dispatch output.
 	 * @param minPoolSize the minimum thread pool size.
 	 * @param maxPoolSize the maximum thread pool size.
-	 * @param adjustFactor the maximum input queue size when we need to add threads.
+	 * @param maxTolerableDelay The maximum tolerable delay in milliseconds.
+     * If the time to process current queue size exceeds this number, we will add
+     * more threads into the thread pool. If the time to process current queue size
+     * exceeds 2 times this number, we will start to drop messages.
 	 */
 	public Stage(String stageName, BlockingQueue<Input> inputQueue, Dispatcher dispatcher,
-			int minPoolSize, int maxPoolSize, int adjustFactor) {
+			int minPoolSize, int maxPoolSize, int maxTolerableDelay) {
 		super();
 		this.stageName = stageName;
 		this.inputQueue = inputQueue;
 		this.dispatcher = dispatcher;
 		this.minPoolSize = minPoolSize;
 		this.maxPoolSize = maxPoolSize;
-		this.adjustFactor = adjustFactor;
+		this.maxTolerableDelay = maxTolerableDelay;
 		this.group = new ThreadGroup(stageName);
 		startPool();
 	}
@@ -220,6 +243,7 @@ public abstract class Stage<Input extends Message> {
 			// We run this loop endlessly.
 			while (stageStatus < Stage.STOP && isWorking) {
 				Input in = null;
+				long inTime = 0;
 				try {
 					if (stageStatus == RUNNING) {
 						// Take an element from input queue, wait if necessary.
@@ -232,6 +256,8 @@ public abstract class Stage<Input extends Message> {
 						// No input data to process, we break this loop.
 						break;
 					}
+					// Calculate process time here. We minus 5us for take object time.
+					inTime = System.nanoTime() - 5000;
 					process(in, dispatcher);
 				} catch (Throwable t) {
 					// Reject the message if it's not null.
@@ -240,8 +266,13 @@ public abstract class Stage<Input extends Message> {
 						in.reject(Message.RejectType.PROCESS_ERROR, t, dispatcher);
 					}
 				} finally {
-					// Add the execution count.
-					exeCnt.incrementAndGet();
+					if (inTime != 0) {
+					    // Add the execution count.
+					    exeCnt.incrementAndGet();
+					    // Add the execution time in us.
+					    long delta = (System.nanoTime() - inTime) / 1000;
+					    exeTime.addAndGet(delta);
+					}
 				}
 			}
 			if (stageStatus == SHUTDOWN) {
@@ -290,26 +321,6 @@ public abstract class Stage<Input extends Message> {
 	}
 
 	/**
-	 * We will call this method when the input queue size is greater than 4 times adjustFactor.
-	 * User can override this method to change the default behavior.
-	 *
-	 * @return the number of messages dropped.
-	 */
-	protected int dropMessage() {
-		int size = inputQueue.size() - 2 * adjustFactor;
-		Input in;
-		for (int i = 0; i < size; ++i) {
-			in = inputQueue.poll();
-			if (in != null) {
-				in.reject(Message.RejectType.STAGE_BUSY, this, dispatcher);
-			} else {
-				return i;
-			}
-		}
-		return size;
-	}
-
-	/**
 	 * Start the internal thread pool and initialize parameters, make this
 	 * stage ready for process inputs.
 	 */
@@ -331,6 +342,20 @@ public abstract class Stage<Input extends Message> {
 		workerList.add(worker);
 	}
 
+    /**
+     * Subtract a thread from the thread pool.
+     */
+    protected synchronized void subtractThread() {
+        Worker wo = workerList.poll();
+        if (wo != null) {
+            wo.setWorking(false);
+            // This worker is now end of service, we clear it from worker list.
+            --currentPoolSize;
+        } else {
+            LOG.warn("There is no more thread to subtract in stage: {}.", stageName);
+        }
+    }
+
 	/**
 	 * Adjust the thread pool from time to time.
 	 * The {@link Adjuster} will use this method to dynamically adjust thread poll size.
@@ -345,135 +370,111 @@ public abstract class Stage<Input extends Message> {
 		}
 		// This is the number of messages processed in this interval.
 		double intervalCnt = exeCnt.getAndSet(0);
+		// Time is the total process time in us.
+		long processTime = exeTime.getAndSet(0);
 		// the time between last adjust and this adjust.
 		long intervalTime = System.currentTimeMillis() - lastAdjustTime;
-		// The data consume rate.
-		double consumeRate = intervalCnt / intervalTime;
 		// Reset the adjust time.
 		lastAdjustTime = System.currentTimeMillis();
 		// The current input queue size.
 		int currentQueueSize = inputQueue.size();
-		int dropSize = 0;
-		if (currentQueueSize > 4 * adjustFactor) {
-			// Too many messages, we will drop some of them.
-			dropSize = dropMessage();
-			LOG.info("Too many messages in stage [{}], we droped {} messages.", stageName, dropSize);
-		}
 		// Now compute the input rate.
 		double inputRate = (currentQueueSize + intervalCnt - lastAdjustQueueSize) / intervalTime;
+		// The data consume rate.
+		double consumeRate = intervalCnt / intervalTime;
+		// Calculate the process rate per thread per millisecond.
+		if (processTime > 0) {
+		    processRate = intervalCnt * 1000 / processTime;
+		}
+		// Check drop message if necessary.
+		int dropSize = 0;
+		// The max queue size is 2 times the max messages we can process in the max tolerable delay.
+		int maxQueueSize = (int)(2 * maxTolerableDelay * processRate * currentPoolSize);
+		if (currentQueueSize >  maxQueueSize) {
+			// Too many messages, we will drop some of them.
+			dropSize = dropMessage(maxQueueSize / 4);
+			LOG.info("Too many messages in stage [{}], we droped {} messages.", stageName, dropSize);
+		}
 		// Reset the last queue size.
 		lastAdjustQueueSize = currentQueueSize - dropSize;
-		if (currentQueueSize > 256) {
-			stableRate = consumeRate / currentPoolSize;
-		}
-		if (inputRate - consumeRate <= 0.01 && stableRate > 0.001) {
-			// When the two rates are very close, we need to compute the consumeRate
-			// By another method.
-			consumeRate = stableRate * currentPoolSize;
-		}
 		// Invoke the real adjust method.
 		adjustThreadPool(consumeRate, inputRate, currentQueueSize);
 		return currentPoolSize;
 	}
 
+    /**
+     * We will call this method when the input queue size is greater than 4 times adjustFactor.
+     * User can override this method to change the default behavior.
+     *
+     * @return the number of messages to be dropped.
+     */
+    protected int dropMessage(int leaveCnt) {
+        int size = inputQueue.size() - leaveCnt;
+        Input in;
+        for (int i = 0; i < size; ++i) {
+            in = inputQueue.poll();
+            if (in != null) {
+                in.reject(Message.RejectType.STAGE_BUSY, this, dispatcher);
+            } else {
+                return i;
+            }
+        }
+        return size;
+    }
+
 	/**
 	 * Adjust the thread pool size.
 	 * User can override this method to provide their own implementation.
 	 *
-	 * @param consumeRate the data consume rate
-	 * @param inputRate the data input rate
+	 * @param consumeRate the data consume rate in CNT/millisecond
+	 * @param inputRate the data input rate in CNT/millisecond
 	 * @param queueSize the current input queue size.
 	 */
 	protected void adjustThreadPool(double consumeRate, double inputRate, int queueSize) {
 		// The rate: CNT/millisecond
 		if (LOG.isDebugEnabled()) {
 			// The total rate.
-			String crate = new DecimalFormat("#,##0.0000").format(consumeRate);
-			String irate = new DecimalFormat("#,##0.0000").format(inputRate);
-			LOG.debug("Stage [{}] crate: {}, irate: {}, psize: {}, qsize: {}.", stageName, crate,
-					irate, currentPoolSize, queueSize);
+		    DecimalFormat f = new DecimalFormat("#,##0.0000");
+		    String irate = f.format(inputRate);
+			String crate = f.format(consumeRate);
+			String prate = f.format(processRate);
+			LOG.debug("Stage [{}] input: {}, consume: {}, process: {}, pool: {}, queue: {}.", stageName,
+			        irate, crate, prate, currentPoolSize, queueSize);
 		}
 
 		// We check whether we need to add, or subtract threads.
-		double thisStatus = inputRate * currentPoolSize / consumeRate - currentPoolSize;
+		double thisStatus = inputRate / processRate - currentPoolSize;
 		// This is the core part of adjust thread pool size.
-		if (thisStatus > 0.8 || (thisStatus > 0 && queueSize > adjustFactor)) {
-			if (currentPoolSize >= maxPoolSize) {
-				// We can only adjust to max pool size.
-				return;
-			}
-			// We still have some root for Add threads here.
-			if (lastAdjustStatus >= 0) {
-				// We are in an rise phase
-				addThread();
-				// Rise faster if we need more.
-				if (thisStatus > 5.5 && currentPoolSize + 3 <= maxPoolSize) {
-					addThread();
-					addThread();
-					addThread();
-					lastAdjustStatus = ADD_4;
-				} else if (thisStatus > 3.5 && currentPoolSize + 2 <= maxPoolSize) {
-					addThread();
-					addThread();
-					lastAdjustStatus = ADD_3;
-				} else if (thisStatus > 2 && currentPoolSize + 1 <= maxPoolSize) {
-					addThread();
-					lastAdjustStatus = ADD_2;
-				} else {
-					lastAdjustStatus = ADD_1;
-				}
-			} else {
-				// We are in drop rise phase, so there maybe some tremble here, we need to
-				// make it flat.
-				if (thisStatus > 2) {
-					addThread();
-					lastAdjustStatus = ADD_1;
-				} else {
-					lastAdjustStatus = NO_OP;
-				}
-			}
-		} else if (thisStatus < -0.8 && queueSize < 256) {
-			if (currentPoolSize <= minPoolSize) {
-				// We can only adjust to min pool size.
-				return;
-			}
-			// Subtract some threads here.
-			if (lastAdjustStatus > 0) {
-				// We are in rise drop phase, so there maybe some tremble here, we need to
-				// make it flat.
-				if (thisStatus < -2) {
-					subtractThread();
-					lastAdjustStatus = SUB_1;
-				} else {
-					lastAdjustStatus = NO_OP;
-				}
-			} else {
-				// We are in drop phase.
-				subtractThread();
-				if (thisStatus < -2.5) {
-					subtractThread();
-					lastAdjustStatus = SUB_2;
-				} else {
-					lastAdjustStatus = SUB_1;
-				}
-			}
+		// We use thisStatus and the lastAdjustStatus to avoid tremble.
+		if (thisStatus > 0.6 || (thisStatus > 0 && queueSize > maxTolerableDelay * processRate * currentPoolSize)) {
+		    // We will need add threads here.
+		    int addNumber = 0;
+		    // Rule 1. If lastAdjustStatus < 0, then we will try not add so many threads here.
+		    if (lastAdjustStatus < 0) {
+		        addNumber = (int) (thisStatus * 0.6);
+		    } else {
+		        addNumber = (int) (thisStatus * 0.8);
+		    }
+		    // Rule 2. We will try to add at least one thread.
+		    if (addNumber == 0) {
+		        addNumber = 1;
+		    }
+		    while (addNumber-- > 0 && currentPoolSize < maxPoolSize) {
+	            addThread();
+	        }
+	        lastAdjustStatus = 1;
+		} else if (thisStatus < -0.8) {
+		    // We will need subtract threads here.
+		    int subNumber = (int) (thisStatus - 0.2);
+		    if (lastAdjustStatus > 0) {
+		        ++subNumber;
+		    }
+		    while (subNumber++ < 0 && currentPoolSize > minPoolSize) {
+	            subtractThread();
+	        }
+	        lastAdjustStatus = -1;
 		} else {
-			// We do not adjust the pool size.
-			lastAdjustStatus = NO_OP;
-		}
-	}
-
-	/**
-	 * Subtract a thread from the thread pool.
-	 */
-	protected synchronized void subtractThread() {
-		Worker wo = workerList.poll();
-		if (wo != null) {
-			wo.setWorking(false);
-			// This worker is now end of service, we clear it from worker list.
-			--currentPoolSize;
-		} else {
-			LOG.warn("There is no more thread to subtract in stage: {}.", stageName);
+		    lastAdjustStatus = 0;
 		}
 	}
 

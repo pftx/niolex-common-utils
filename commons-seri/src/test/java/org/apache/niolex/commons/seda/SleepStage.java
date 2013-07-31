@@ -30,16 +30,29 @@ public class SleepStage extends Stage<TInput> {
 	private final AtomicInteger cnt = new AtomicInteger(0);
 
 	public SleepStage(String stageName, long sleepTime) {
-		super(stageName);
+		super(stageName, 2000);
 		this.sleepTime = sleepTime;
 	}
 
-	public SleepStage(String stageName, Dispatcher dispatcher) {
+	/**
+     * Constructor
+     * @param stageName
+     * @param maxTolerableDelay
+     */
+    public SleepStage(String stageName, int maxTolerableDelay, long sleepTime) {
+        super(stageName, maxTolerableDelay);
+        this.sleepTime = sleepTime;
+    }
+
+    public SleepStage(String stageName, Dispatcher dispatcher) {
+        super(stageName, new LinkedBlockingQueue<TInput>(), dispatcher, 1, 6, 2560);
+        this.sleepTime = 6;
+    }
+
+    public SleepStage(String stageName, Dispatcher dispatcher, long sleepTime) {
 		super(stageName, new LinkedBlockingQueue<TInput>(), dispatcher, 1, 6, 2560);
-		this.sleepTime = 6;
+		this.sleepTime = sleepTime;
 	}
-
-
 
 	/**
 	 * Override super method
