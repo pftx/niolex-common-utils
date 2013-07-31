@@ -18,6 +18,7 @@
 package org.apache.niolex.commons.demo;
 
 import org.apache.niolex.commons.seda.Message;
+import org.apache.niolex.commons.test.StopWatch.Stop;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -27,6 +28,7 @@ import org.apache.niolex.commons.seda.Message;
 public class WeightMessage extends Message {
 
     private final int weight;
+    private Stop start;
 
     /**
      * Constructor
@@ -42,6 +44,17 @@ public class WeightMessage extends Message {
      */
     public int getWeight() {
         return weight;
+    }
+
+    /**
+     * @param start
+     */
+    public void setStop(Stop start) {
+        this.start = start;
+    }
+
+    public void stop() {
+        this.start.stop();
     }
 
 }

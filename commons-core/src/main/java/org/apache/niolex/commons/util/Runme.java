@@ -39,6 +39,13 @@ public abstract class Runme extends Thread {
 	private long sleepInterval = 1000;
 
 	/**
+     * Constructor to create Runme.
+     */
+    public Runme() {
+        super("Runme");
+    }
+
+    /**
 	 * Start this thread.
 	 *
 	 * Override super method

@@ -19,6 +19,7 @@ package org.apache.niolex.commons.demo;
 
 import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.seda.Dispatcher;
+import org.apache.niolex.commons.test.StopWatch;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -33,12 +34,16 @@ public class SedaDemo {
     public static void main(String[] args) {
         Dispatcher disp = Dispatcher.getInstance();
         ThreadGroup group = ThreadUtil.topGroup();
-        disp.register(new InputStage());
+        StopWatch sw = new StopWatch(10);
+        disp.register(new InputStage(sw));
+        disp.register(new LightStage());
         disp.register(new WeightStage());
+        disp.register(new FinishStage());
 
         disp.construction();
         disp.startAdjust(1000);
         group.list();
+        sw.begin(false);
 
         System.out.println("Stage 1 - dispatch 5K/s, 100(1ms) : 1(100ms) weight messages; for 30 sec.");
 
@@ -102,8 +107,13 @@ public class SedaDemo {
         }
         group.list();
 
-        ThreadUtil.sleep(10000);
+        ThreadUtil.sleep(2000);
         System.out.println("Done.");
+        sw.done();
+        sw.print();
+        disp.shutdown();
+        ThreadUtil.sleep(2000);
+        group.list();
 
     }
 

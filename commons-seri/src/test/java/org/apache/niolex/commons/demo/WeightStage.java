@@ -29,6 +29,8 @@ import org.apache.niolex.commons.seda.Stage;
  */
 public class WeightStage extends Stage<WeightMessage> {
 
+    private FinishStage fin;
+
     /**
      * Constructor
      * @param stageName
@@ -39,11 +41,21 @@ public class WeightStage extends Stage<WeightMessage> {
 
     /**
      * This is the override of super method.
+     * @see org.apache.niolex.commons.seda.Stage#construct()
+     */
+    @Override
+    public void construct() {
+        fin = super.dispatcher.getStage("fin");
+    }
+
+    /**
+     * This is the override of super method.
      * @see org.apache.niolex.commons.seda.Stage#process(org.apache.niolex.commons.seda.Message, org.apache.niolex.commons.seda.Dispatcher)
      */
     @Override
     protected void process(WeightMessage in, Dispatcher dispatcher) {
         ThreadUtil.sleep(in.getWeight());
+        fin.addInput(in);
     }
 
 }

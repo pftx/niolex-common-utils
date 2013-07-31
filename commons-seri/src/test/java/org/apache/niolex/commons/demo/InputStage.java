@@ -17,9 +17,9 @@
  */
 package org.apache.niolex.commons.demo;
 
-import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.seda.Dispatcher;
 import org.apache.niolex.commons.seda.Stage;
+import org.apache.niolex.commons.test.StopWatch;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -29,12 +29,15 @@ import org.apache.niolex.commons.seda.Stage;
 public class InputStage extends Stage<WeightMessage> {
 
     private WeightStage w;
+    private LightStage l;
+    private StopWatch sw;
 
     /**
      * Constructor
      */
-    public InputStage() {
+    public InputStage(StopWatch sw) {
         super("input");
+        this.sw = sw;
     }
 
     /**
@@ -44,6 +47,7 @@ public class InputStage extends Stage<WeightMessage> {
     @Override
     public void construct() {
         w = super.dispatcher.getStage("weight");
+        l = super.dispatcher.getStage("light");
     }
 
     /**
@@ -52,10 +56,11 @@ public class InputStage extends Stage<WeightMessage> {
      */
     @Override
     protected void process(WeightMessage in, Dispatcher dispatcher) {
+        in.setStop(sw.start());
         if (in.getWeight() > 1) {
             w.addInput(in);
         } else {
-            ThreadUtil.sleep(in.getWeight());
+            l.addInput(in);
         }
     }
 
