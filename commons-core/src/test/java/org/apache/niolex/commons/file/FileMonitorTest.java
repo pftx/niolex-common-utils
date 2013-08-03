@@ -21,11 +21,12 @@ package org.apache.niolex.commons.file;
 import static org.junit.Assert.*;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.concurrent.Blocker;
+import org.apache.niolex.commons.concurrent.WaitOn;
 import org.apache.niolex.commons.file.FileMonitor.EventListener;
 import org.apache.niolex.commons.file.FileMonitor.EventType;
 import org.apache.niolex.commons.test.Counter;
 import org.apache.niolex.commons.test.OrderedRunner;
-import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,17 +57,19 @@ public class FileMonitorTest {
     @Test
     public void testAddRun() throws Exception {
         final Counter cnt = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         EventListener add = new EventListener() {
 
             @Override
             public void notify(EventType type, long happenTime) {
+                blocker.release("S", "");
                 if (type == EventType.CREATE) cnt.inc();
                 System.out.println(type + " " + happenTime);
             }};
         monitor.addListener(add);
-
+        WaitOn<String> wait = blocker.initWait("s");
         DirUtil.mkdirsIfAbsent(TMP + "/file-monitor");
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
         boolean b = monitor.removeListener(add);
         assertTrue(b);
@@ -75,17 +78,19 @@ public class FileMonitorTest {
     @Test
     public void testBupdateAddListener() throws Exception {
         final Counter cnt = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         EventListener update = new EventListener() {
 
             @Override
             public void notify(EventType type, long happenTime) {
+                blocker.release("S", "");
                 if (type == EventType.UPDATE) cnt.inc();
                 System.out.println(type + " " + happenTime);
             }};
         monitor.addListener(update);
-
+        WaitOn<String> wait = blocker.initWait("s");
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/file-monitor/tmp.txt", "FileMonitor", StringUtil.US_ASCII);
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
         boolean b = monitor.removeListener(update);
         assertTrue(b);
@@ -94,17 +99,19 @@ public class FileMonitorTest {
     @Test
     public void testDeleteNotify() throws Exception {
         final Counter cnt = new Counter();
+        final Blocker<String> blocker = new Blocker<String>();
         EventListener delete = new EventListener() {
 
             @Override
             public void notify(EventType type, long happenTime) {
+                blocker.release("S", "");
                 if (type == EventType.DELETE) cnt.inc();
                 System.out.println(type + " " + happenTime);
             }};
         monitor.addListener(delete);
-
+        WaitOn<String> wait = blocker.initWait("s");
         DirUtil.delete(TMP + "/file-monitor", true);
-        SystemUtil.sleep(5);
+        wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
         boolean b = monitor.removeListener(delete);
         assertTrue(b);
