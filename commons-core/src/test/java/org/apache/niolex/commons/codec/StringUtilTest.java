@@ -17,10 +17,7 @@
  */
 package org.apache.niolex.commons.codec;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -34,7 +31,7 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-6-20
  */
-public class StringUtilTest {
+public class StringUtilTest extends StringUtil {
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.codec.StringUtil#utf8ByteToStr(byte[])}.
@@ -406,6 +403,29 @@ public class StringUtilTest {
     @Test
     public void testContainsAnyEmpty() throws Exception {
         assertFalse(StringUtil.containsAny("txt/html"));
+    }
+
+    @Test
+    public void testGBK() {
+        String s = "全国信息技术标准化技术委员会 GBK 汉字内码扩展规范编码表(二)";
+        byte[] arr = strToGbkByte(s);
+        assertEquals(59, arr.length);
+        String r = gbkByteToStr(arr);
+        assertEquals(s, r);
+    }
+
+    @Test
+    public void testCompatible() {
+        String s = "CHR(number_operand [USING charset_name])";
+        byte[] ascii = strToAsciiByte(s);
+        String gbk = gbkByteToStr(ascii);
+        assertEquals(s, gbk);
+        byte[] gbkarr = strToGbkByte(s);
+        byte[] uft8ar = strToUtf8Byte(s);
+        assertArrayEquals(ascii, gbkarr);
+        assertArrayEquals(ascii, uft8ar);
+        String utf8 = utf8ByteToStr(ascii);
+        assertEquals(s, utf8);
     }
 
 }

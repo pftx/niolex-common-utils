@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.niolex.commons.internal.IgnoreException;
 
 
 /**
@@ -55,6 +56,23 @@ public abstract class StringUtil extends StringUtils {
      */
     public static final Charset US_ASCII = Charset.forName(CharEncoding.US_ASCII);
 
+    /**
+     * Chinese Internal Code Specification version 1.0, also known as GBK. It's compatible with GB2312 but contains
+     * more characters. It's widely used in China mainland. It's also compatible with US_ASCII.
+     * <p>
+     * Not every implementation of the Java platform has this charset.
+     */
+    public static final Charset GBK = IgnoreException.getCharset("gbk");
+
+    /**
+     * ISO Latin Alphabet No. 1, a.k.a. ISO-LATIN-1.
+     * <p>
+     * Every implementation of the Java platform is required to support this character encoding.
+     *
+     * @see <a href="http://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     */
+    public static final Charset ISO8859_1 = Charset.forName(CharEncoding.US_ASCII);
+
 	/**
 	 * Translate UTF8 encoded byte array to String.
 	 *
@@ -67,6 +85,7 @@ public abstract class StringUtil extends StringUtils {
 
 	/**
 	 * Translate String to UTF8 encoded byte array.
+	 *
 	 * @param str the string
 	 * @return the encoded byte array
 	 */
@@ -86,11 +105,34 @@ public abstract class StringUtil extends StringUtils {
 
 	/**
 	 * Translate String to US-ASCII encoded byte array.
+	 *
 	 * @param str the string
 	 * @return the encoded byte array
 	 */
 	public static final byte[] strToAsciiByte(String str) {
 	    return str.getBytes(US_ASCII);
+	}
+
+	/**
+	 * Translate GBK encoded byte array to String.
+	 *
+	 * @param data the binary format
+	 * @return the string
+	 * @throws NullPointerException If your JDK dosen't support GBK
+	 */
+	public static final String gbkByteToStr(byte[] data) {
+	    return new String(data, GBK);
+	}
+
+	/**
+	 * Translate String to GBK encoded byte array.
+	 *
+	 * @param str the string
+	 * @return the encoded byte array
+	 * @throws NullPointerException If your JDK dosen't support GBK
+	 */
+	public static final byte[] strToGbkByte(String str) {
+	    return str.getBytes(GBK);
 	}
 
 	/**

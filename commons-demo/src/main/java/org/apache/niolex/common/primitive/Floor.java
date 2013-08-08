@@ -1,5 +1,5 @@
 /**
- * IgnoreExceptionTest.java
+ * Floor.java
  *
  * Copyright 2013 the original author or authors.
  *
@@ -15,33 +15,26 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.internal;
-
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+package org.apache.niolex.common.primitive;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2013-6-26
+ * @since 2013-8-7
  */
-public class IgnoreExceptionTest extends IgnoreException {
+public class Floor {
 
-    @Test(expected=IllegalStateException.class)
-    public void testGetKeyFactory() throws Exception {
-        getKeyFactory("Lex");
-    }
-
-    @Test
-    public void testGetCharset() {
-        assertNotNull(getCharset("utf8"));
-    }
-
-    @Test
-    public void testGetCharsetNull() {
-        assertNull(getCharset("utf9"));
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        System.out.println("FLOOR(6.5) => " + Math.floor(6.5));
+        System.out.println("FLOOR(-6.6) => " + Math.floor(-6.6));
+        System.out.println("FLOOR(-6.5) => " + Math.floor(-6.5));
+        // ---
+        System.out.println("CEIL(6.5) => " + Math.ceil(6.5));
+        System.out.println("CEIL(-6.6) => " + Math.ceil(-6.6));
+        System.out.println("CEIL(-6.5) => " + Math.ceil(-6.5));
     }
 
 }

@@ -19,6 +19,7 @@ package org.apache.niolex.commons.internal;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
@@ -86,6 +87,20 @@ public class IgnoreException {
         } catch (SocketException e) {
             /*We Don't Care*/
             return false;
+        }
+    }
+
+    /**
+     * Get the Charset by the charset name in string format.
+     *
+     * @param charsetName the charset name in string format.
+     * @return the Charset, null if not found.
+     */
+    public static Charset getCharset(String charsetName) {
+        try {
+            return Charset.forName(charsetName);
+        } catch (Exception e) {
+            return null;
         }
     }
 

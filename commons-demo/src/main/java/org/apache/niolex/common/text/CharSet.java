@@ -1,5 +1,5 @@
 /**
- * IgnoreExceptionTest.java
+ * CharSet.java
  *
  * Copyright 2013 the original author or authors.
  *
@@ -15,33 +15,29 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.internal;
+package org.apache.niolex.common.text;
 
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import org.apache.niolex.commons.codec.Base16Util;
+import org.apache.niolex.commons.codec.StringUtil;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2013-6-26
+ * @since 2013-8-6
  */
-public class IgnoreExceptionTest extends IgnoreException {
+public class CharSet {
 
-    @Test(expected=IllegalStateException.class)
-    public void testGetKeyFactory() throws Exception {
-        getKeyFactory("Lex");
-    }
-
-    @Test
-    public void testGetCharset() {
-        assertNotNull(getCharset("utf8"));
-    }
-
-    @Test
-    public void testGetCharsetNull() {
-        assertNull(getCharset("utf9"));
+    /**
+     * @param args
+     */
+    public static void main(String[] args) throws Throwable {
+        byte[] arr = StringUtil.strToUtf8Byte("abc中国lex谢佶芸");
+        String str = Base16Util.byteToBase16(arr);
+        System.out.println("Utf8 => " + str);
+        // -----
+        arr = "abc中国lex谢佶芸".getBytes("gbk");
+        str = Base16Util.byteToBase16(arr);
+        System.out.println("gbk => " + str);
     }
 
 }

@@ -84,7 +84,7 @@ public abstract class App extends HttpURLConnection
             String[] arr = (String[]) new Object[] {"Lex"};
             System.out.println("cast obj array to string array ? " + arr[0]);
         } catch (ClassCastException e) {
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 }

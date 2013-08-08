@@ -1,5 +1,5 @@
 /**
- * IgnoreExceptionTest.java
+ * Mod.java
  *
  * Copyright 2013 the original author or authors.
  *
@@ -15,33 +15,24 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.internal;
-
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+package org.apache.niolex.common.primitive;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2013-6-26
+ * @since 2013-8-6
  */
-public class IgnoreExceptionTest extends IgnoreException {
+public class Mod {
 
-    @Test(expected=IllegalStateException.class)
-    public void testGetKeyFactory() throws Exception {
-        getKeyFactory("Lex");
-    }
-
-    @Test
-    public void testGetCharset() {
-        assertNotNull(getCharset("utf8"));
-    }
-
-    @Test
-    public void testGetCharsetNull() {
-        assertNull(getCharset("utf9"));
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        System.out.println("5%3 => " + (5%3));
+        System.out.println("5%-3 => " + (5%-3));
+        System.out.println("-5%3 => " + (-5%3));
+        System.out.println("-5%-3 => " + (-5%-3));
+        System.out.println("5%3 => " + (5%3));
     }
 
 }
