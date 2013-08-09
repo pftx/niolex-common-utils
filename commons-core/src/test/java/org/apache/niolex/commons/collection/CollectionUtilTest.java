@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.util;
+package org.apache.niolex.commons.collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.niolex.commons.bean.Pair;
+import org.apache.niolex.commons.collection.CollectionUtil;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
@@ -41,7 +42,7 @@ import com.google.common.collect.Sets;
 public class CollectionUtilTest {
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.CollectionUtil#concat(java.util.Collection, E[])}.
+	 * Test method for {@link org.apache.niolex.commons.collection.CollectionUtil#concat(java.util.Collection, E[])}.
 	 */
 	@Test
 	public void testConcatCollectionOfEEArray() {
@@ -55,7 +56,7 @@ public class CollectionUtilTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.CollectionUtil#concat(E[])}.
+	 * Test method for {@link org.apache.niolex.commons.collection.CollectionUtil#concat(E[])}.
 	 */
 	@Test
 	public void testConcatEArray() {

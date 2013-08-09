@@ -28,7 +28,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.niolex.commons.bean.Pair;
 import org.apache.niolex.commons.codec.KVBase64Util;
 import org.apache.niolex.commons.codec.StringUtil;
-import org.apache.niolex.commons.util.CollectionUtil;
+import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.notify.ByteArray;
 import org.apache.niolex.notify.NotifyListener;
 

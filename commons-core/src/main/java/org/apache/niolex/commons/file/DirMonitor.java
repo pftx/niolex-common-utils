@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.niolex.commons.bean.Pair;
-import org.apache.niolex.commons.util.CollectionUtil;
+import org.apache.niolex.commons.collection.CollectionUtil;
 
 /**
  * Monitoring the directory changes from the file system and notify users.<br>

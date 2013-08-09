@@ -34,9 +34,9 @@ import java.util.Map;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.niolex.commons.bean.Pair;
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.commons.internal.Finally;
 import org.apache.niolex.commons.stream.StreamUtil;
-import org.apache.niolex.commons.util.CollectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
