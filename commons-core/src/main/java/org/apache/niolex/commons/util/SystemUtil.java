@@ -19,17 +19,9 @@ package org.apache.niolex.commons.util;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.niolex.commons.concurrent.ThreadUtil;
-import org.apache.niolex.commons.internal.IgnoreException;
 
 /**
  * System information related utility class.
@@ -38,80 +30,6 @@ import org.apache.niolex.commons.internal.IgnoreException;
  * @version 1.0.0, Date: 2012-8-1
  */
 public class SystemUtil {
-
-	/**
-	 * Get all the local Internet addresses.
-	 *
-	 * @return the result
-	 */
-	public static final Set<InetAddress> getAllLocalAddresses() {
-		Enumeration<NetworkInterface> interfaces = null;
-		Set<InetAddress> set = new HashSet<InetAddress>();
-		// Get All the network card interfaces
-		interfaces = IgnoreException.getNetworkInterfaces();
-		// iterate them
-		while (interfaces.hasMoreElements()) {
-		    NetworkInterface ifc = interfaces.nextElement();
-		    if (!IgnoreException.isNetworkInterfaceUp(ifc)) {
-		        // If it's down, there is nothing we can do.
-		        continue;
-		    }
-		    Enumeration<InetAddress> addressesOfAnInterface = ifc
-		            .getInetAddresses();
-		    while (addressesOfAnInterface.hasMoreElements()) {
-		        InetAddress address = addressesOfAnInterface.nextElement();
-		        set.add(address);
-		    }
-		}
-        return set;
-	}
-
-	/**
-	 * Returns the IP address string in textual presentation.
-	 * <p>
-	 * We will first get the local host name, and then get the IP
-	 * address by this host name.
-	 * If there are multiple addresses returned, we peek the first
-	 * one to return.
-	 * If local host name not found, we will use 127.0.0.1
-	 *
-	 * @return the IP address string
-	 * @throws UnknownHostException If the local host name is invalid
-	 */
-	public static final String getLocalIP() throws UnknownHostException {
-	    return InetAddress.getLocalHost().getHostAddress();
-	}
-
-	/**
-	 * Format the InetSocketAddress into IP:Port string.
-	 *
-	 * @param addr the InetSocketAddress to be formatted
-	 * @return the string
-	 */
-	public static final String inetSocketAddress2IpPort(InetSocketAddress addr) {
-	    String s = addr.toString();
-	    int idx = s.indexOf('/') + 1;
-	    return s.substring(idx);
-	}
-
-	/**
-	 * Make the current thread sleep, do not care about the exception.
-	 *
-	 * @param milliseconds the time to sleep in milliseconds
-	 */
-	public static final void sleep(long milliseconds) {
-	    ThreadUtil.sleep(milliseconds);
-	}
-
-	/**
-	 * Format the output and print it into system out.
-	 *
-	 * @param s the format string
-	 * @param args the argument list
-	 */
-	public static final void println(String s, Object ... args) {
-        System.out.println(String.format(s, args));
-	}
 
 	/**
 	 * Safely close the Closeable, without throwing the exception.
@@ -174,5 +92,24 @@ public class SystemUtil {
         }
         return e;
 	}
+
+    /**
+     * Make the current thread sleep, do not care about the exception.
+     *
+     * @param milliseconds the time to sleep in milliseconds
+     */
+    public static final void sleep(long milliseconds) {
+        ThreadUtil.sleep(milliseconds);
+    }
+
+    /**
+     * Format the output and print it into system out.
+     *
+     * @param s the format string
+     * @param args the argument list
+     */
+    public static final void println(String s, Object ... args) {
+        System.out.println(String.format(s, args));
+    }
 
 }

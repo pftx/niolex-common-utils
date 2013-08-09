@@ -18,16 +18,11 @@
 package org.apache.niolex.commons.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -37,22 +32,6 @@ import org.junit.Test;
  * @since 2012-8-1
  */
 public class SystemUtilTest {
-
-	/**
-	 * Test method for {@link org.apache.niolex.commons.util.SystemUtil#getAllLocalAddresses()}.
-	 * @throws Exception
-	 */
-	@Test
-	public void testGetAllLocalAddresses() throws Exception {
-		Set<InetAddress> set = SystemUtil.getAllLocalAddresses();
-		for (InetAddress i : set) {
-		    System.out.println(i + ", " + i.isSiteLocalAddress());
-		}
-		InetAddress i = InetAddress.getLocalHost();
-		System.out.println(i + ", " + i.isSiteLocalAddress());
-		InetAddress test = InetAddress.getByName("localhost");
-		assertTrue(set.contains(test));
-	}
 
 	@Test
 	public void testSleep() throws Exception {
@@ -94,29 +73,17 @@ public class SystemUtilTest {
     }
 
     @Test
-    public void testInetSocketAddress2IpPort() throws Exception {
-        String s = SystemUtil.inetSocketAddress2IpPort(new InetSocketAddress("1.2.3.4", 808));
-        System.out.println("InetSocketAddress[1.2.3.4] = " + s);
-        assertEquals("1.2.3.4:808", s);
-        s = SystemUtil.inetSocketAddress2IpPort(new InetSocketAddress("localhost", 808));
-        System.out.println("InetSocketAddress[localhost] = " + s);
-        assertEquals("127.0.0.1:808", s);
-    }
-
-    @Test
     public void testGetSystemProperty() throws Exception {
         String s = SystemUtil.getSystemProperty("user.home", "usr.home");
         System.out.println("home = " + s);
-        s = SystemUtil.getSystemProperty("usr.home", "java.CLASSPATH");
+        s = SystemUtil.getSystemProperty("usr.home", "java.class.path");
         System.out.println("home = " + s);
     }
 
     @Test
-    public void testGetLocalIP()
-     throws Exception {
-        InetAddress i = InetAddress.getByName("localhost");
-        String s = SystemUtil.getLocalIP();
-        System.out.println(i + ", " + s);
+    public void testGetSystemPropertyNull() throws Exception {
+        String s = SystemUtil.getSystemProperty("evn.home", "usr.home");
+        System.out.println("home = " + s);
     }
 
     @Test

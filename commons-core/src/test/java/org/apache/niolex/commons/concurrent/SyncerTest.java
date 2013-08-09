@@ -102,7 +102,7 @@ public class SyncerTest {
         Runner.run(this, "ano1", 30);
         Runner.run(this, "ano1", 50);
         rl.await();
-        ThreadUtil.sleep(1);
+        ThreadUtil.sleep(5);
         Runner.run(anno, "write", 20);
         ThreadUtil.sleep(10);
         assertEquals(160, anno.getReadCnt());
@@ -114,7 +114,7 @@ public class SyncerTest {
         Runner.run(this, "ano1", 30);
         Runner.run(this, "ano1", 50);
         rl.await();
-        ThreadUtil.sleep(1);
+        ThreadUtil.sleep(5);
         Runner.run(this, "ano2", 20);
         wl.await();
         ThreadUtil.sleep(10);

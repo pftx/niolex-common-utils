@@ -64,7 +64,7 @@ public class SimpleThreadFactoryTest {
         assertEquals(t.getName(), "thread-fac-test@0");
         assertEquals(1, factory.getThreadGroup().activeCount());
         factory.getThreadGroup().interrupt();
-        Thread.sleep(1);
+        Thread.sleep(10);
         assertEquals(0, factory.getThreadGroup().activeCount());
     }
 
