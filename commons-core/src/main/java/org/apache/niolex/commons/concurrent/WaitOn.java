@@ -61,9 +61,10 @@ public class WaitOn<E> {
 	 * If there is any exception thrown from the release side, that exception will
 	 * be thrown to you.
 	 *
-	 * @param time
-	 * @return the result
-	 * @throws InterruptedException
+	 * @param time the time to wait in milliseconds
+	 * @return the result, or null if timeout
+	 * @throws InterruptedException If interrupted by any other thread.
+     * @throws Exception If user release this key by an exception.
 	 */
 	public E waitForResult(long time) throws Exception {
 		// First, let's check whether data is ready for now?
@@ -96,7 +97,7 @@ public class WaitOn<E> {
 	/**
 	 * Release the wait thread with exception.
 	 *
-	 * @param exc
+	 * @param exc the exception
 	 */
 	public void release(Exception exc) {
 		this.exc = exc;

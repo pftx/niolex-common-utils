@@ -42,7 +42,7 @@ public class Blocker<E> {
 	 * If there is already another one waiting on the same key, that old structure will be returned.
 	 * Use this method if anyone want to wait on the same key concurrently.
 	 *
-	 * @param key
+	 * @param key the key to wait on
 	 * @return Pair.a true if the wait on object is newly created. Pair.b the wait on object.
 	 */
 	public Pair<Boolean, WaitOn<E>> init(Object key) {
@@ -66,7 +66,7 @@ public class Blocker<E> {
 	 *
 	 * @see #init(Object)
 	 *
-	 * @param key
+	 * @param key the key to wait on
 	 * @return the object to wait on.
 	 */
 	public WaitOn<E> initWait(Object key) {
@@ -80,10 +80,11 @@ public class Blocker<E> {
 	 * A concise alias for initWait(key).waitForResult(time).
 	 * Just for some one do not care about initialization.
 	 *
-	 * @param key
-	 * @param time
-	 * @return the result
-	 * @throws InterruptedException
+	 * @param key the key to wait on
+	 * @param time the time to wait for in milliseconds
+	 * @return the result or null if timeout
+	 * @throws InterruptedException If interrupted by any other thread.
+	 * @throws Exception If user release this key by an exception.
 	 */
 	public E waitForResult(Object key, long time) throws Exception {
 		return initWait(key).waitForResult(time);
@@ -96,8 +97,8 @@ public class Blocker<E> {
 	 *
 	 * @see #release(Object, Exception)
 	 *
-	 * @param key
-	 * @param value
+	 * @param key the key to be released
+	 * @param value the result to be send to the wait thread
 	 * @return true if success to release, false if no thread waiting on it.
 	 */
 	public boolean release(Object key, E value) {
@@ -115,8 +116,8 @@ public class Blocker<E> {
 	 * Release the thread waiting on the key with this exception.
 	 * The exception will be thrown to user application waiting on this key.
 	 *
-	 * @param key
-	 * @param value
+	 * @param key the key to be released
+	 * @param value the exception to be thrown to the wait thread
 	 * @return true if success to release, false if no thread waiting on it.
 	 */
 	public boolean release(Object key, Exception value) {

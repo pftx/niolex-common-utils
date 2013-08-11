@@ -21,6 +21,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.apache.niolex.commons.test.Counter;
 import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
@@ -80,10 +82,12 @@ public class BlockerTest {
 	@Test
 	public void testWaitForResult() throws InterruptedException {
 		final Counter c = new Counter();
+		final CountDownLatch cl = new CountDownLatch(1);
 		Thread t = new Thread() {
 			public void run() {
 				try {
-					int k = blocker.waitForResult("man", 100);
+				    cl.countDown();
+					int k = blocker.waitForResult("man", 200);
 					assertEquals(1546, k);
 					c.inc();
 				} catch (Exception e) {
@@ -92,7 +96,9 @@ public class BlockerTest {
 				}
 			}
 		};
+
 		t.start();
+		cl.await();
 		Thread.sleep(10);
 		blocker.release("man", 1546);
 		t.join();
@@ -115,10 +121,11 @@ public class BlockerTest {
 	@Test
 	public void testReleaseObjectException() throws InterruptedException {
 		final Counter c = new Counter();
+		final WaitOn<Integer> on = blocker.initWait("man");
 		Thread t = new Thread() {
 			public void run() {
 				try {
-					int k = blocker.waitForResult("man", 100);
+					int k = on.waitForResult(100);
 					assertEquals(1546, k);
 					assertFalse(true);
 				} catch (Exception e) {
@@ -128,7 +135,6 @@ public class BlockerTest {
 			}
 		};
 		t.start();
-		Thread.sleep(10);
 		blocker.release("man", new Exception("J"));
 		t.join();
 		assertEquals(1, c.cnt());

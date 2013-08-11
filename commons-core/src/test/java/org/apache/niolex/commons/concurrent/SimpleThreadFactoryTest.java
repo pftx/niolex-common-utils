@@ -20,7 +20,6 @@ package org.apache.niolex.commons.concurrent;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.niolex.commons.test.Counter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,22 +39,17 @@ public class SimpleThreadFactoryTest {
 
     @Test
     public void testNewThread() throws Exception {
-        final Counter cnt = new Counter();
         final Blocker<Integer> blocker = new Blocker<Integer>();
         Thread t = factory.newThread(new Runnable() {
 
             @Override
             public void run() {
                 blocker.release("s", 1);
-                while (cnt.cnt() < 50) {
-                    cnt.inc();
-                    if (Thread.interrupted()) break;
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
                 }
+                blocker.release("e", 1);
             }});
         WaitOn<Integer> waitOn = blocker.initWait("s");
         t.start();
@@ -63,7 +57,9 @@ public class SimpleThreadFactoryTest {
         assertEquals(t.getThreadGroup(), factory.getThreadGroup());
         assertEquals(t.getName(), "thread-fac-test@0");
         assertEquals(1, factory.getThreadGroup().activeCount());
+        waitOn = blocker.initWait("e");
         factory.getThreadGroup().interrupt();
+        waitOn.waitForResult(100);
         Thread.sleep(10);
         assertEquals(0, factory.getThreadGroup().activeCount());
     }

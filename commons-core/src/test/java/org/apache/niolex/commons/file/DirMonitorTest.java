@@ -111,7 +111,7 @@ public class DirMonitorTest {
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.initWait("s");
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/tmp.txt", "FileMonitor", StringUtil.US_ASCII);
-        wait.waitForResult(100);
+        wait.waitForResult(1000);
         assertEquals(1, cnt.cnt());
         assertEquals(1, cld.cnt());
         boolean b = monitor.removeListener(cli);
@@ -221,7 +221,7 @@ public class DirMonitorTest {
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.initWait("s");
         DirUtil.delete(TMP + "/dir-monitor/dir.txt", false);
-        wait.waitForResult(100);
+        wait.waitForResult(1500);
         assertEquals(1, cnt.cnt());
         assertEquals(1, cld.cnt());
         boolean b = monitor.removeListener(cli);
