@@ -34,8 +34,8 @@ import org.junit.Test;
  */
 public class DirUtilTest extends DirUtil {
 
-    static final String PREX = System.getProperty("java.io.tmpdir");
-    static final String TMP = PREX + "/tmp";
+    static final String PREX = System.getProperty("user.home");
+    static final String TMP = PREX + "/tmp/dirtest";
 
     @BeforeClass
     public static void setUp() {

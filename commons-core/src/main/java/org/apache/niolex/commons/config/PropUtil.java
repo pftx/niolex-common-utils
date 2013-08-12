@@ -181,7 +181,7 @@ public abstract class PropUtil {
      * @throws NumberFormatException 如果配置不是可以解析的整数
      */
     public static final int getInteger(String key, int defaultValue) {
-        return PROPS.getInteger(key, Integer.toString(defaultValue));
+        return PROPS.getInteger(key, defaultValue);
     }
 
     /**
@@ -217,7 +217,7 @@ public abstract class PropUtil {
      * @throws NumberFormatException 如果配置不是可以解析的整数
      */
     public static final long getLong(String key, long defaultValue) {
-    	return PROPS.getLong(key, Long.toString(defaultValue));
+    	return PROPS.getLong(key, defaultValue);
     }
 
     /**
@@ -252,6 +252,6 @@ public abstract class PropUtil {
      * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
      */
     public static boolean getBoolean(String key, boolean defaultValue) {
-        return PROPS.getBoolean(key, Boolean.toString(defaultValue));
+        return PROPS.getBoolean(key, defaultValue);
     }
 }

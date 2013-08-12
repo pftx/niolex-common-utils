@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 @RunWith(OrderedRunner.class)
 public class FileMonitorTest {
 
-    static final String TMP = System.getProperty("java.io.tmpdir");
+    static final String TMP = System.getProperty("user.home") + "/tmp";
     static FileMonitor monitor;
 
     @BeforeClass

@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
 @RunWith(OrderedRunner.class)
 public class DirMonitorTest {
 
-    static final String TMP = System.getProperty("java.io.tmpdir");
+    static final String TMP = System.getProperty("user.home") + "/tmp";
     static DirMonitor monitor;
 
     @BeforeClass
@@ -111,7 +111,7 @@ public class DirMonitorTest {
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.initWait("s");
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/tmp.txt", "FileMonitor", StringUtil.US_ASCII);
-        wait.waitForResult(1000);
+        wait.waitForResult(2000);
         assertEquals(1, cnt.cnt());
         assertEquals(1, cld.cnt());
         boolean b = monitor.removeListener(cli);
@@ -288,7 +288,7 @@ public class DirMonitorTest {
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.initWait(EventType.DELETE);
         DirUtil.delete(TMP + "/dir-monitor", true);
-        wait.waitForResult(500);
+        wait.waitForResult(2000);
         assertEquals(1, cnt.cnt());
         boolean b = monitor.removeListener(cli);
         assertTrue(b);
