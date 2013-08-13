@@ -44,4 +44,9 @@ public class IgnoreExceptionTest extends IgnoreException {
         assertNull(getCharset("utf9"));
     }
 
+    @Test
+    public void testIsNetworkInterfaceUpNull() throws Exception {
+        assertFalse(isNetworkInterfaceUp(null));
+    }
+
 }

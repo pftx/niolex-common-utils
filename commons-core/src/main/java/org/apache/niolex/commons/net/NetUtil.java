@@ -19,10 +19,7 @@ package org.apache.niolex.commons.net;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.niolex.commons.internal.IgnoreException;
@@ -38,30 +35,12 @@ import org.apache.niolex.commons.test.Check;
 public abstract class NetUtil extends Check {
 
     /**
-     * Get all the local Internet addresses.
+     * Get all the local Internet addresses. If exception occurred, we return an empty set.
      *
      * @return the result
      */
     public static final Set<InetAddress> getAllLocalAddresses() {
-        Enumeration<NetworkInterface> interfaces = null;
-        Set<InetAddress> set = new HashSet<InetAddress>();
-        // Get All the network card interfaces
-        interfaces = IgnoreException.getNetworkInterfaces();
-        // iterate them
-        while (interfaces.hasMoreElements()) {
-            NetworkInterface ifc = interfaces.nextElement();
-            if (!IgnoreException.isNetworkInterfaceUp(ifc)) {
-                // If it's down, there is nothing we can do.
-                continue;
-            }
-            Enumeration<InetAddress> addressesOfAnInterface = ifc
-                    .getInetAddresses();
-            while (addressesOfAnInterface.hasMoreElements()) {
-                InetAddress address = addressesOfAnInterface.nextElement();
-                set.add(address);
-            }
-        }
-        return set;
+        return IgnoreException.getAllLocalAddresses();
     }
 
     /**

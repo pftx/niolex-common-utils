@@ -17,13 +17,14 @@
  */
 package org.apache.niolex.commons.internal;
 
+import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
-import java.util.NoSuchElementException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * We ignore all the exceptions in this class.
@@ -50,29 +51,32 @@ public class IgnoreException {
     }
 
     /**
-     * Get all the network interfaces. If exception occurred, we return an empty enumeration.
+     * Get all the local Internet addresses. If exception occurred, we return an empty set.
      *
-     * @return the enumeration
+     * @return the result
      */
-    public static Enumeration<NetworkInterface> getNetworkInterfaces() {
+    public static final Set<InetAddress> getAllLocalAddresses() {
+        Set<InetAddress> set = new HashSet<InetAddress>();
         try {
-            return NetworkInterface.getNetworkInterfaces();
-        } catch (SocketException e) {
-            // We return an empty enumeration.
-            return  new Enumeration<NetworkInterface>() {
-
-                @Override
-                public boolean hasMoreElements() {
-                    return false;
+            // Get All the network card interfaces
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            // iterate them
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface ifc = interfaces.nextElement();
+                if (!isNetworkInterfaceUp(ifc)) {
+                    // If it's down, there is nothing we can do.
+                    continue;
                 }
-
-                @Override
-                public NetworkInterface nextElement() {
-                    throw new NoSuchElementException();
+                Enumeration<InetAddress> addressesOfAnInterface = ifc.getInetAddresses();
+                while (addressesOfAnInterface.hasMoreElements()) {
+                    InetAddress address = addressesOfAnInterface.nextElement();
+                    set.add(address);
                 }
-
-            };
+            }
+        } catch (Exception e) {
+            // We do nothing when exception occurred.
         }
+        return set;
     }
 
     /**
@@ -84,7 +88,7 @@ public class IgnoreException {
     public static boolean isNetworkInterfaceUp(NetworkInterface ifc) {
         try {
             return ifc.isUp();
-        } catch (SocketException e) {
+        } catch (Exception e) {
             /*We Don't Care*/
             return false;
         }

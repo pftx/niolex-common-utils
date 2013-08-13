@@ -41,10 +41,10 @@ public class NetUtilTest extends NetUtil {
     public void testGetAllLocalAddresses() throws Exception {
         Set<InetAddress> set = getAllLocalAddresses();
         for (InetAddress i : set) {
-            System.out.println(i + ", " + i.isSiteLocalAddress());
+            System.out.println("ALL " + i + ", " + i.isSiteLocalAddress());
         }
         InetAddress i = InetAddress.getLocalHost();
-        System.out.println(i + ", " + i.isSiteLocalAddress());
+        System.out.println("Loc " + i + ", " + i.isSiteLocalAddress());
         InetAddress test = InetAddress.getByName("localhost");
         assertTrue(set.contains(test));
     }
