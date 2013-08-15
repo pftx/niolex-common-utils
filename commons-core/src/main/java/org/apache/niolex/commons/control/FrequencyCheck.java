@@ -1,5 +1,5 @@
 /**
- * FrequencyControler.java
+ * FrequencyCheck.java
  *
  * Copyright 2012 The original author or authors.
  *
@@ -20,7 +20,7 @@ package org.apache.niolex.commons.control;
 import org.apache.niolex.commons.collection.CyclicIntArray;
 
 /**
- * This class controls the invoke frequency.
+ * This class controls the invoke frequency in batch.
  *
  * The frequency is controlled by two factor: the splitCnt and the totalNum.
  * The total interval is split by the splitCnt, and user need to update the
@@ -32,7 +32,7 @@ import org.apache.niolex.commons.collection.CyclicIntArray;
  * @version 1.0.5
  * @since 2012-12-25
  */
-public class FrequencyControler {
+public class FrequencyCheck {
 
     /**
      * Store the value of each slot.
@@ -55,7 +55,7 @@ public class FrequencyControler {
      * @param splitCnt the total interval will be split by this count.
      * @param totalNum the total number.
      */
-    public FrequencyControler(int splitCnt, int totalNum) {
+    public FrequencyCheck(int splitCnt, int totalNum) {
         super();
         this.cyclic = new CyclicIntArray(splitCnt);
         this.totalNum = totalNum;

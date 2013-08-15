@@ -20,7 +20,6 @@ package org.apache.niolex.commons.internal;
 import java.util.List;
 
 import org.apache.niolex.commons.bean.MutableOne.DataChangeListener;
-import org.apache.niolex.commons.control.TimeCheck;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -41,26 +40,6 @@ public class Synchronized {
                 li.onDataChange(one);
             }
         }
-    }
-
-    /**
-     * Check the time interval in a synchronized block.
-     *
-     * @param intervalTime
-     * @param time
-     * @param check
-     * @return the count happened in the time interval
-     */
-    public static int getIntervalCnt(final int intervalTime, final long time, TimeCheck check) {
-        int cnt = 0;
-        synchronized (check.getCounter()) {
-            if (time - check.getLastCheckTime() >= intervalTime) {
-                // It's not necessary to do normalization
-                cnt = check.getCounter().getAndSet(0);
-                check.setLastCheckTime(time);
-            }
-        }
-        return cnt;
     }
 
 }

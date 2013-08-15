@@ -27,14 +27,14 @@ import org.junit.Test;
  * @version 1.0.5
  * @since 2012-12-25
  */
-public class FrequencyControlerTest {
+public class FrequencyCheckTest {
 
     /**
-     * Test method for {@link org.apache.niolex.commons.control.FrequencyControler#FrequencyControler(int, int)}.
+     * Test method for {@link org.apache.niolex.commons.control.FrequencyCheck#FrequencyControler(int, int)}.
      */
     @Test
     public void testFrequencyControler() {
-        FrequencyControler fc = new FrequencyControler(10, 100);
+        FrequencyCheck fc = new FrequencyCheck(10, 100);
         assertTrue(fc.check(50));
         assertTrue(fc.check(30));
         assertTrue(fc.check(20));
@@ -47,18 +47,18 @@ public class FrequencyControlerTest {
 
     @Test
     public void testCover() {
-        FrequencyControler fc = new FrequencyControler(10, 100);
+        FrequencyCheck fc = new FrequencyCheck(10, 100);
         assertTrue(fc.check(50));
         assertEquals(1, fc.getHead());
         fc.getArray();
     }
 
     /**
-     * Test method for {@link org.apache.niolex.commons.control.FrequencyControler#check(int)}.
+     * Test method for {@link org.apache.niolex.commons.control.FrequencyCheck#check(int)}.
      */
     @Test
     public void testCheck() {
-        FrequencyControler fc = new FrequencyControler(4, 100);
+        FrequencyCheck fc = new FrequencyCheck(4, 100);
         assertTrue(fc.check(50));
         assertTrue(fc.check(30));
         assertTrue(fc.check(10));

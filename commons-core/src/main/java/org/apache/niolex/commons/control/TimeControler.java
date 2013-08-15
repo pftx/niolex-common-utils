@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * We can manage multiple keys together, and each key can have different configuration.
  *
  * Please call {@link #initTimeCheck(String, int, int, int)} before use the
- * key. Or we will always return true if the key has not been initialized.
+ * key. Or we will throw an Exception if the key has not been initialized yet.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
@@ -35,12 +35,13 @@ public class TimeControler {
     private final ConcurrentHashMap<String, TimeCheck> controlerMap = new ConcurrentHashMap<String, TimeCheck>();
 
     /**
-     * Init the key for frequency control.
+     * Init the key for frequency control. We will manage the check in batch, split by the splitCnt.
+     * The bigger the splitCnt, the more preciseness you will get, but consumes more memory meanwhile.
      *
-     * @param key the key to init.
-     * @param checkInterval the time interval to check.
-     * @param splitCnt the slot number to split.
-     * @param totalNum the total number of events.
+     * @param key the key to be initialized.
+     * @param checkInterval the time interval to check in milliseconds.
+     * @param splitCnt the slot number to split, must be a factor of checkInterval.
+     * @param totalNum the total number of events you can tolerate in the checkInterval.
      */
     public void initTimeCheck(String key, int checkInterval, int splitCnt, int totalNum) {
         TimeCheck tc = new TimeCheck(checkInterval, splitCnt, totalNum);
@@ -48,17 +49,19 @@ public class TimeControler {
     }
 
     /**
-     * Check the status of this key, and trigger a event if it's OK.
+     * Check the status of this key.
      *
-     * @param key the key to check.
+     * @param key the key to be checked.
      * @return true if check OK, false if it's too frequent, need to be controlled.
+     * @throws IllegalStateException If key not initialized.
      */
     public boolean check(String key) {
         TimeCheck tc = controlerMap.get(key);
         if (tc != null) {
             return tc.check();
+        } else {
+            throw new IllegalStateException("Please init this key first!");
         }
-        return true;
     }
 
 }

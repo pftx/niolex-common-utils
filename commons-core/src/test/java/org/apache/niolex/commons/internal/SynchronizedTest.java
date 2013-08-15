@@ -18,14 +18,11 @@
 package org.apache.niolex.commons.internal;
 
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 
 import org.apache.niolex.commons.bean.MutableOne.DataChangeListener;
 import org.apache.niolex.commons.concurrent.Blocker;
 import org.apache.niolex.commons.concurrent.WaitOn;
-import org.apache.niolex.commons.control.TimeCheck;
 import org.apache.niolex.commons.util.Runner;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
@@ -76,40 +73,6 @@ public class SynchronizedTest extends Synchronized {
                 SystemUtil.sleep(10);
             }});
         notifyListeners(list, "This will happen now.");
-    }
-
-    @Test
-    public void testGetIntervalCnt() throws Exception {
-        TimeCheck check = new TimeCheck(100, 10, 1000);
-        check.getCounter().set(120);
-        WaitOn<String> on = blocker.initWait("s");
-        Runner.run(this, "lockOneSec", check.getCounter());
-        // Make sure the lock thread is running
-        on.waitForResult(100);
-        int k = getIntervalCnt(10, System.currentTimeMillis() + 10, check);
-        assertEquals(120, k);
-    }
-
-    @Test
-    public void testGetIntervalCntWaitFor() throws Exception {
-        final TimeCheck check = new TimeCheck(100, 10, 1000) {
-
-            /**
-             * This is the override of super method.
-             * @see org.apache.niolex.commons.control.TimeCheck#getLastCheckTime()
-             */
-            @Override
-            public long getLastCheckTime() {
-                Runner.run(SynchronizedTest.this, "lockOneSec", this.getCounter());
-                SystemUtil.sleep(10);
-                return super.getLastCheckTime();
-            }
-
-        };
-        check.getCounter().set(120);
-
-        int k = getIntervalCnt(10, System.currentTimeMillis() + 10, check);
-        assertEquals(120, k);
     }
 
 }

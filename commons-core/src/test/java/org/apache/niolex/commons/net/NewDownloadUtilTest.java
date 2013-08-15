@@ -161,8 +161,8 @@ public class NewDownloadUtilTest {
 
     @Test
     public void testDownloadFile() throws NetException {
-        byte[] data = downloadFile("http://code.jquery.com/jquery-1.10.1.min.js", 93064);
-        byte[] local = FileUtil.getBinaryFileContentFromClassPath("jquery-1.10.1.min.js.txt", getClass());
+        byte[] data = downloadFile("http://down.360safe.com/360ent_shouyelist.exe", 922560);
+        byte[] local = FileUtil.getBinaryFileContentFromClassPath("360ent_shouyelist.ex.txt", getClass());
         assertArrayEquals(local, data);
     }
 

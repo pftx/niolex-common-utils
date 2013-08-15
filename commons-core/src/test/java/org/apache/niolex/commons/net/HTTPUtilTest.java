@@ -224,10 +224,10 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testHTTPNuLLHeader() throws Exception {
-        byte[] body = doHTTP("http://www.baidu.com/", null, null, 3000, 3000, false).b;
-        String s = StringUtil.utf8ByteToStr(body);
+        byte[] body = doHTTP("http://www.360.cn/", null, null, 3000, 3000, false).b;
+        String s = StringUtil.gbkByteToStr(body);
         assertTrue(s.length() > 1024);
-        assertTrue(s.contains("百度一下，你就知道"));
+        assertTrue(s.contains("360安全中心"));
     }
 
     @Test

@@ -19,8 +19,6 @@ package org.apache.niolex.commons.control;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.niolex.commons.internal.Synchronized;
-
 /**
  * This class manage the frequency check of one item, used only in {@link TimeControler}
  *
@@ -46,53 +44,51 @@ public class TimeCheck {
     final int intervalCnt;
 
     /**
-     * The frequency controler.
+     * The frequency check.
      */
-    final FrequencyControler controler;
+    final FrequencyCheck freqCheck;
 
     /**
      * Store the last check status.
      */
-    boolean lastCheckStatus;
+    volatile boolean lastCheckStatus;
 
     /**
      * The last check time snapshot.
      */
-    long lastCheckTime;
+    volatile long lastCheckTime;
 
     /**
      * Create a new TimeCheck.
      *
-     * @param checkInterval
-     * @param splitCnt
-     * @param totalNum
+     * @param checkInterval the time interval to check in milliseconds.
+     * @param splitCnt the slot number to split, must be a factor of checkInterval.
+     * @param totalNum the total number of events you can tolerate in the checkInterval.
      */
     public TimeCheck(int checkInterval, int splitCnt, int totalNum) {
         super();
         this.counter = new AtomicInteger();
         this.intervalTime = checkInterval / splitCnt;
         this.intervalCnt = totalNum / splitCnt;
-        this.controler = new FrequencyControler(splitCnt, totalNum);
+        this.freqCheck = new FrequencyCheck(splitCnt, totalNum);
         this.lastCheckStatus = true;
         this.lastCheckTime = System.currentTimeMillis();
     }
 
     /**
-     * Check the status of this object, and trigger a event if it's OK.
-     * If it's already too frequency, we will work in the downgrade mode.
+     * Check the frequency.
+     * If it's already too intensive, we will work in the downgrade mode.
+     * In the downgrade mode, we will only let the number of check less than
+     * intervalCnt return true.
      *
      * @return true if OK, false if you need to reject the event.
      */
     public boolean check() {
         long t = System.currentTimeMillis();
-        // Need to check when interval is enough.
+        // Need to check whether the interval is long enough to split.
         if (t - lastCheckTime >= intervalTime) {
             // Check will happen in synchronized area.
-            int cnt = Synchronized.getIntervalCnt(intervalTime, t, this);
-            if (cnt != 0) {
-                // Let's check it.
-                lastCheckStatus = controler.check(cnt);
-            }
+            checkIntervalCnt(t);
         }
         // We judge according to the last check status.
         if (lastCheckStatus) {
@@ -105,6 +101,22 @@ public class TimeCheck {
             } else {
                 return false;
             }
+        }
+    }
+
+    /**
+     * Check the time interval in a synchronized block, return zero if not available.
+     *
+     * @param time the current time stamp
+     * @return the count happened in the time interval
+     */
+    public synchronized void checkIntervalCnt(final long time) {
+        if (time - lastCheckTime >= intervalTime) {
+            // It's not necessary to do normalization: normal count to time interval.
+            lastCheckTime = time;
+            // Because there will be at most only 1 count not in the interval.
+            // Let's check it.
+            lastCheckStatus = freqCheck.check(counter.getAndSet(0));
         }
     }
 
@@ -131,13 +143,6 @@ public class TimeCheck {
      */
     public long getLastCheckTime() {
         return lastCheckTime;
-    }
-
-    /**
-     * @param lastCheckTime the lastCheckTime to set
-     */
-    public void setLastCheckTime(long lastCheckTime) {
-        this.lastCheckTime = lastCheckTime;
     }
 
 }

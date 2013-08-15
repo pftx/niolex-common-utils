@@ -47,15 +47,17 @@ public class TimeCheckTest {
             assertEquals(System.currentTimeMillis(), tc.getLastCheckTime());
         }
         assertFalse(b);
-        tc.lastCheckTime = System.currentTimeMillis() - 3;
+        long t = System.currentTimeMillis() - 3;
+        tc.lastCheckTime = t;
+        assertEquals(t, tc.getLastCheckTime());
         assertTrue(tc.check());
-        assertEquals(0, tc.controler.getHead());
-        assertEquals(101, tc.controler.getArray()[0]);
-        assertEquals(50, tc.controler.getArray()[1]);
+        assertEquals(0, tc.freqCheck.getHead());
+        assertEquals(101, tc.freqCheck.getArray()[0]);
+        assertEquals(50, tc.freqCheck.getArray()[1]);
     }
 
     public void sync(TimeCheck tc, CountDownLatch l) {
-        synchronized (tc.counter) {
+        synchronized (tc) {
             l.countDown();
             long in = System.currentTimeMillis(), out;
             do {
@@ -89,9 +91,9 @@ public class TimeCheckTest {
         assertEquals(4, tc.getCounter().get());
         tc.counter.set(50);
         assertTrue(tc.check());
-        assertEquals(0, tc.controler.getHead());
-        assertEquals(0, tc.controler.getArray()[0]);
-        assertEquals(0, tc.controler.getArray()[1]);
+        assertEquals(0, tc.freqCheck.getHead());
+        assertEquals(0, tc.freqCheck.getArray()[0]);
+        assertEquals(0, tc.freqCheck.getArray()[1]);
     }
 
     @Test
@@ -114,9 +116,9 @@ public class TimeCheckTest {
         assertEquals(1, tc.getCounter().get());
         tc.counter.set(50);
         assertFalse(tc.check());
-        assertEquals(1, tc.controler.getHead());
-        assertEquals(3, tc.controler.getArray()[0]);
-        assertEquals(0, tc.controler.getArray()[1]);
+        assertEquals(1, tc.freqCheck.getHead());
+        assertEquals(3, tc.freqCheck.getArray()[0]);
+        assertEquals(0, tc.freqCheck.getArray()[1]);
     }
 
 }

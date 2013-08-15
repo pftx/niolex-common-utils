@@ -51,6 +51,14 @@ public class TimeControlerTest {
         }
         assertFalse(tc.check("abc"));
         assertFalse(tc.check("abc"));
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.control.TimeControler#initTimeCheck(java.lang.String, int, int, int)}.
+     */
+    @Test(expected=IllegalStateException.class)
+    public void testInitTimeCheckException() {
+        TimeControler tc = new TimeControler();
         assertTrue(tc.check("abcd"));
     }
 
@@ -73,7 +81,6 @@ public class TimeControlerTest {
             assertTrue(tc.check("abc"));
         }
         assertTrue(tc.check("abc"));
-        assertTrue(tc.check("abcd"));
     }
 
 }
