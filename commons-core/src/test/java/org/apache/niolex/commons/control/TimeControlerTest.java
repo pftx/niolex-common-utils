@@ -19,6 +19,7 @@ package org.apache.niolex.commons.control;
 
 import static org.junit.Assert.*;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
@@ -72,11 +73,7 @@ public class TimeControlerTest {
         for (int i = 0; i < 20; ++i) {
             assertTrue(tc.check("abc"));
         }
-        long in = System.currentTimeMillis(), out;
-        do {
-            SystemUtil.sleep(1);
-            out = System.currentTimeMillis();
-        } while (out - in == 0);
+        ThreadUtil.sleepAtLeast(1);
         for (int i = 0; i < 100; ++i) {
             assertTrue(tc.check("abc"));
         }

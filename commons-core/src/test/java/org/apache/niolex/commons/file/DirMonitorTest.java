@@ -287,7 +287,7 @@ public class DirMonitorTest {
             }};
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.initWait(EventType.DELETE);
-        DirUtil.delete(TMP + "/dir-monitor", true);
+        while (!DirUtil.delete(TMP + "/dir-monitor", true)) ThreadUtil.sleepAtLeast(1);
         wait.waitForResult(2000);
         assertEquals(1, cnt.cnt());
         boolean b = monitor.removeListener(cli);

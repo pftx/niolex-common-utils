@@ -34,7 +34,7 @@ public class DemoLocker implements Locker {
     @Override
     public void read(int k) {
         readCnt += k;
-        ThreadUtil.sleep(k * 5);
+        ThreadUtil.sleepAtLeast(k * 5);
     }
 
     /**
@@ -44,7 +44,7 @@ public class DemoLocker implements Locker {
     @Override
     public void write(int k) {
         writeCnt += k;
-        ThreadUtil.sleep(k * 5);
+        ThreadUtil.sleepAtLeast(k * 5);
     }
 
     /**
@@ -55,7 +55,7 @@ public class DemoLocker implements Locker {
     @Syncer.Read
     public void ano1(int k) {
         readCnt += k * 2;
-        ThreadUtil.sleep(k * 5);
+        ThreadUtil.sleepAtLeast(k * 5);
     }
 
     /**
@@ -66,7 +66,7 @@ public class DemoLocker implements Locker {
     @Syncer.Write
     public void ano2(int k) {
         writeCnt += k * 2;
-        ThreadUtil.sleep(k * 5);
+        ThreadUtil.sleepAtLeast(k * 5);
     }
 
     /**

@@ -47,8 +47,8 @@ public class Notify {
     private final ZKConnector zkConn;
     private final String basePath;
 
-    private byte[] data;
-    private List<String> children;
+    private volatile byte[] data;
+    private volatile List<String> children;
 
     /**
      * @param basePath the ZK base path of this notify. It's fixed for one notify.

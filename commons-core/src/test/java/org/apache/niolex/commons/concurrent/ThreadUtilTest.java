@@ -65,4 +65,13 @@ public class ThreadUtilTest extends ThreadUtil {
         sleep(-1);
     }
 
+    @Test
+    public void testSleepAtLeast() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            long in = System.currentTimeMillis();
+            sleepAtLeast(1);
+            assertTrue(0 < (System.currentTimeMillis() - in));
+        }
+    }
+
 }

@@ -26,25 +26,13 @@ import org.apache.zookeeper.KeeperException;
  */
 public class ZKException extends RuntimeException {
 
-    public static enum Code {
-        INTERRUPT, NOAUTH, DISCONNECTED, OTHER, SYSTEMERROR, NONODE, NODEEXISTS;
-    }
-
     /**
      * Version UID
      */
     private static final long serialVersionUID = 6217415731238015041L;
 
-    private final Code code;
-
-    public ZKException(String message, Throwable cause, Code code) {
-        super(message, cause);
-        this.code = code;
-    }
-
-    public ZKException(String message, Code code) {
-        super(message);
-        this.code = code;
+    public static enum Code {
+        INTERRUPT, NOAUTH, DISCONNECTED, OTHER, SYSTEMERROR, NONODE, NODEEXISTS;
     }
 
     /**
@@ -83,6 +71,18 @@ public class ZKException extends RuntimeException {
             code = Code.INTERRUPT;
         }
         return new ZKException(message, e, code);
+    }
+
+    private final Code code;
+
+    public ZKException(String message, Throwable cause, Code code) {
+        super(message, cause);
+        this.code = code;
+    }
+
+    public ZKException(String message, Code code) {
+        super(message);
+        this.code = code;
     }
 
     /**

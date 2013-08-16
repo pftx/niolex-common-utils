@@ -46,8 +46,6 @@ public class ZKConnector {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ZKConnector.class);
 
-    protected ZooKeeper zk;
-
     private final String clusterAddress;
 
     private final int sessionTimeout;
@@ -55,6 +53,8 @@ public class ZKConnector {
     private final Set<WatcherItem> watcherSet = Collections.synchronizedSet(new HashSet<WatcherItem>());
 
     private byte[] auth;
+
+    protected ZooKeeper zk;
 
     /**
      * Construct a new ZKConnector and connect to ZK server.

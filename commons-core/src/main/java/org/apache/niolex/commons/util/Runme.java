@@ -31,7 +31,7 @@ public abstract class Runme extends Thread {
 	/**
 	 * Current working status
 	 */
-	private boolean isWorking = false;
+	private volatile boolean isWorking = false;
 
 	/**
 	 * Sleep interval between each run.

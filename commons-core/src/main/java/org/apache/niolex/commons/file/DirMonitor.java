@@ -123,7 +123,7 @@ public class DirMonitor extends FileMonitor implements FileMonitor.EventListener
      * @param type
      * @param a
      */
-    private void notifyChildrenListeners(EventType type, List<String> a) {
+    private synchronized void notifyChildrenListeners(EventType type, List<String> a) {
         for (EventListener li : list) {
             if (li instanceof ChildrenListener) {
                 ((ChildrenListener) li).childrenChange(type, a);

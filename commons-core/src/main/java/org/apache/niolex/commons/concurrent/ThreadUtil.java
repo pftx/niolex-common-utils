@@ -86,4 +86,17 @@ public class ThreadUtil {
         } catch (Exception e) {/*We Don't Care*/}
     }
 
+    /**
+     * Make the current thread sleep at least some time, do not care about the exception.
+     *
+     * @param milliseconds the time to sleep in milliseconds
+     */
+    public static final void sleepAtLeast(long milliseconds) {
+        long in = System.currentTimeMillis(), t = 0;
+        do {
+            sleep(milliseconds - t);
+            t = System.currentTimeMillis() - in;
+        } while (t < milliseconds);
+    }
+
 }

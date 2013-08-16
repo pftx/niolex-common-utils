@@ -21,8 +21,8 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.util.Runner;
-import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 /**
@@ -59,11 +59,7 @@ public class TimeCheckTest {
     public void sync(TimeCheck tc, CountDownLatch l) {
         synchronized (tc) {
             l.countDown();
-            long in = System.currentTimeMillis(), out;
-            do {
-                SystemUtil.sleep(1);
-                out = System.currentTimeMillis();
-            } while (out - in == 0);
+            ThreadUtil.sleepAtLeast(1);
             tc.lastCheckTime = System.currentTimeMillis();
         }
     }

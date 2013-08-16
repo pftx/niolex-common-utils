@@ -36,12 +36,12 @@ public class WaitOn<E> {
 	/**
 	 * The expected result.
 	 */
-	private E result;
+	private volatile E result;
 
 	/**
 	 * The unexpected exception.
 	 */
-	private Exception exc;
+	private volatile Exception exc;
 
 
 	/**

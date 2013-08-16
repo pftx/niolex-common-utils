@@ -31,7 +31,7 @@ import org.apache.niolex.commons.bean.Pair;
 public class Counter {
 
 	// The internal count.
-	private int cnt = 0;
+	private volatile int cnt = 0;
 
 	/**
 	 * Increment the current count.

@@ -32,8 +32,8 @@ public abstract class MultiPerformance {
     private final int threadsNumber;
     private final int innerIteration;
     private final int outerIteration;
-    private long max;
-    private long min;
+    private volatile long max;
+    private volatile long min;
     private AtomicLong total = new AtomicLong();
 
     /**
