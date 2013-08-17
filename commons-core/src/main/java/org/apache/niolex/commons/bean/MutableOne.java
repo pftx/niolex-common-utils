@@ -18,10 +18,7 @@
 package org.apache.niolex.commons.bean;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import org.apache.niolex.commons.internal.Synchronized;
 
 /**
  * A Mutable One is to store a mutable data, when data changed, Application can notify
@@ -36,10 +33,30 @@ import org.apache.niolex.commons.internal.Synchronized;
 public class MutableOne<T> {
 
     /**
+     * The listener interface for anyone want to be notified when data changed.
+     *
+     * @param <T>
+     * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+     * @version 1.0.5
+     * @since 2013-1-6
+     */
+    public static interface DataChangeListener<T> {
+
+        /**
+         * This method is invoked when data changed.
+         *
+         * @param oldData the old data
+         * @param newData the new data
+         */
+        public void onDataChange(T oldData, T newData);
+
+    }
+
+    /**
      * The listener list.
      */
-    private final List<DataChangeListener<T>> list =
-            Collections.synchronizedList(new ArrayList<DataChangeListener<T>>());
+    private final List<DataChangeListener<T>> list = new ArrayList<DataChangeListener<T>>();
+
     /**
      * The real data.
      */
@@ -67,7 +84,7 @@ public class MutableOne<T> {
      *
      * @param li the listener
      */
-    public void addListener(DataChangeListener<T> li) {
+    public synchronized void addListener(DataChangeListener<T> li) {
         list.add(li);
     }
 
@@ -77,8 +94,20 @@ public class MutableOne<T> {
      * @param li the listener
      * @return true if removed, false if not found
      */
-    public boolean removeListener(DataChangeListener<T> li) {
+    public synchronized boolean removeListener(DataChangeListener<T> li) {
         return list.remove(li);
+    }
+
+    /**
+     * Update the data and notify all the listeners if there is any.
+     *
+     * @param one the new data
+     */
+    public synchronized void updateData(T one) {
+        for (DataChangeListener<T> li : list) {
+            li.onDataChange(this.one, one);
+        }
+        this.one = one;
     }
 
     /**
@@ -88,35 +117,6 @@ public class MutableOne<T> {
      */
     public T data() {
         return one;
-    }
-
-    /**
-     * Update the data and notify all the listeners if there is any.
-     *
-     * @param one the new data
-     */
-    public void updateData(T one) {
-        this.one = one;
-        Synchronized.notifyListeners(list, one);
-    }
-
-    /**
-     * The listener interface for anyone want to be notified when data changed.
-     *
-     * @param <T>
-     * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
-     * @version 1.0.5
-     * @since 2013-1-6
-     */
-    public static interface DataChangeListener<T> {
-
-        /**
-         * This method is invoked when data changed.
-         *
-         * @param newData the new data
-         */
-        public void onDataChange(T newData);
-
     }
 
 }

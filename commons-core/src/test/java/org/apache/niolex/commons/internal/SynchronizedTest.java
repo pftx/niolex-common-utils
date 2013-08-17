@@ -21,10 +21,6 @@ package org.apache.niolex.commons.internal;
 import java.util.List;
 
 import org.apache.niolex.commons.bean.MutableOne.DataChangeListener;
-import org.apache.niolex.commons.concurrent.Blocker;
-import org.apache.niolex.commons.concurrent.WaitOn;
-import org.apache.niolex.commons.util.Runner;
-import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -36,42 +32,9 @@ import com.google.common.collect.Lists;
  */
 public class SynchronizedTest extends Synchronized {
 
-    final Blocker<String> blocker = new Blocker<String>();
-
-    public void lockOneSec(Object obj) {
-        synchronized (obj) {
-            blocker.release("s", "s");
-            SystemUtil.sleep(100);
-        }
-    }
-
-    @Test
-    public void testNotifyListeners() throws Exception {
-        List<DataChangeListener<String>> list = Lists.newArrayList();
-        list.add(new DataChangeListener<String>() {
-
-            @Override
-            public void onDataChange(String newData) {
-                System.out.println("PR\\" + newData);
-            }});
-        WaitOn<String> on = blocker.initWait("s");
-        Runner.run(this, "lockOneSec", list);
-        // Make sure the lock thread is running
-        on.waitForResult(100);
-        notifyListeners(list, "This will happen in 100 msec latter.");
-    }
-
     @Test
     public void testNotifyListenersWaitFor() throws Exception {
         final List<DataChangeListener<String>> list = Lists.newArrayList();
-        list.add(new DataChangeListener<String>() {
-
-            @Override
-            public void onDataChange(String newData) {
-                System.out.println("PR\\" + newData);
-                Runner.run(SynchronizedTest.this, "lockOneSec", list);
-                SystemUtil.sleep(10);
-            }});
         notifyListeners(list, "This will happen now.");
     }
 

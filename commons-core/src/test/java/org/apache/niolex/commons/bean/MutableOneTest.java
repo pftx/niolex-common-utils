@@ -19,6 +19,8 @@ package org.apache.niolex.commons.bean;
 
 import static org.junit.Assert.*;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.apache.niolex.commons.test.Counter;
 import org.apache.niolex.commons.util.Runner;
 import org.apache.niolex.commons.util.SystemUtil;
@@ -41,7 +43,7 @@ public class MutableOneTest {
         final Counter cnt = new Counter();
         MutableOne.DataChangeListener<String> li = new MutableOne.DataChangeListener<String>() {
             @Override
-            public void onDataChange(String one) {
+            public void onDataChange(String old, String one) {
                 System.out.println("New data -- " + one);
                 cnt.inc();
             }
@@ -63,7 +65,7 @@ public class MutableOneTest {
         final Counter cnt = new Counter();
         MutableOne.DataChangeListener<String> li = new MutableOne.DataChangeListener<String>() {
             @Override
-            public void onDataChange(String one) {
+            public void onDataChange(String old, String one) {
                 System.out.println("New data -- " + one);
                 cnt.inc();
             }
@@ -85,7 +87,7 @@ public class MutableOneTest {
         final Counter cnt = new Counter();
         MutableOne.DataChangeListener<String> li = new MutableOne.DataChangeListener<String>() {
             @Override
-            public void onDataChange(String one) {
+            public void onDataChange(String old, String one) {
                 System.out.println("New data -- " + one);
                 cnt.inc();
             }
@@ -108,7 +110,7 @@ public class MutableOneTest {
         final Counter cnt = new Counter();
         MutableOne.DataChangeListener<String> li = new MutableOne.DataChangeListener<String>() {
             @Override
-            public void onDataChange(String one) {
+            public void onDataChange(String old, String one) {
                 System.out.println("New data -- " + one);
                 cnt.inc();
             }
@@ -124,26 +126,28 @@ public class MutableOneTest {
 
     /**
      * Test method for {@link org.apache.niolex.commons.bean.MutableOne#updateData(java.lang.Object)}.
+     * @throws InterruptedException
      */
     @Test
-    public void testUpdateData() {
+    public void testUpdateData() throws InterruptedException {
         MutableOne<String> one = new MutableOne<String>("Hello W!");
         assertEquals("Hello W!", one.data());
         one.addListener(new MutableOne.DataChangeListener<String>() {
 
             @Override
-            public void onDataChange(String newData) {
+            public void onDataChange(String old, String newData) {
                 if (newData.startsWith("This")) {
+                    cl.countDown();
                     SystemUtil.sleep(100);
                 }
 
             }});
         Runner.run(this, "updateSleep", one);
-        SystemUtil.sleep(10);
+        cl.await();
         one.addListener(new MutableOne.DataChangeListener<String>() {
 
             @Override
-            public void onDataChange(String newData) {
+            public void onDataChange(String old, String newData) {
                 System.out.println("New data -- " + newData);
 
             }});
@@ -152,6 +156,8 @@ public class MutableOneTest {
         one.updateData("Not yet implemented");
         assertEquals("Not yet implemented", one.data());
     }
+
+    private CountDownLatch cl = new CountDownLatch(1);
 
     public void updateSleep(MutableOne<String> one) {
         one.updateData("This is sleep...");

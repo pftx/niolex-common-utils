@@ -220,7 +220,8 @@ public class DirMonitorTest {
             }};
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.initWait("s");
-        DirUtil.delete(TMP + "/dir-monitor/dir.txt", false);
+        while(!DirUtil.delete(TMP + "/dir-monitor/dir.txt", false))
+            ThreadUtil.sleepAtLeast(1);
         wait.waitForResult(1500);
         assertEquals(1, cnt.cnt());
         assertEquals(1, cld.cnt());

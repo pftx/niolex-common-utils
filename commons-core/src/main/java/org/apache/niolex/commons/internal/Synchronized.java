@@ -35,11 +35,6 @@ public class Synchronized {
      * @param one the new data
      */
     public static <T> void notifyListeners(List<DataChangeListener<T>> list, T one) {
-        synchronized (list) {
-            for (DataChangeListener<T> li : list) {
-                li.onDataChange(one);
-            }
-        }
     }
 
 }

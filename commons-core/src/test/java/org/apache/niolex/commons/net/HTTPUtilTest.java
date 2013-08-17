@@ -47,9 +47,9 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testGetHasEnc() throws Exception {
-        String s = get("http://www.baidu.com/");
+        String s = get("http://www.so.com/");
         assertTrue(s.length() > 1024);
-        assertTrue(s.contains("百度一下，你就知道"));
+        assertTrue(s.contains("可信任的搜索引擎"));
     }
 
     @Test
