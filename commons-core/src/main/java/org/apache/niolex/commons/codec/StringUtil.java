@@ -71,7 +71,7 @@ public abstract class StringUtil extends StringUtils {
      *
      * @see <a href="http://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
-    public static final Charset ISO8859_1 = Charset.forName(CharEncoding.US_ASCII);
+    public static final Charset ISO8859_1 = Charset.forName(CharEncoding.ISO_8859_1);
 
 	/**
 	 * Translate UTF8 encoded byte array to String.
