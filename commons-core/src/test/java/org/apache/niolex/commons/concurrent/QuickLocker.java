@@ -64,7 +64,7 @@ public class QuickLocker implements Locker {
      */
     @Override
     @Syncer.Read
-    public void ano1(int k) {
+    public void anoRead(int k) {
         readCnt += k;
         if (readCnt == k && sleep) ThreadUtil.sleep(40000);
     }
@@ -75,7 +75,7 @@ public class QuickLocker implements Locker {
      */
     @Override
     @Syncer.Write
-    public void ano2(int k) {
+    public void anoWrite(int k) {
         writeCnt += k;
         if (writeCnt == k && sleep) ThreadUtil.sleep(40000);
     }

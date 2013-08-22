@@ -1,5 +1,5 @@
 /**
- * PrintLocker.java
+ * LockerImpl.java
  *
  * Copyright 2013 the original author or authors.
  *
@@ -17,14 +17,39 @@
  */
 package org.apache.niolex.commons.concurrent;
 
-import org.apache.niolex.commons.util.Runner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2013-7-27
+ * @since 2013-8-22
  */
-public class PrintLocker implements Locker {
+public class LockerImpl implements Locker {
+
+    private AtomicInteger readCnt = new AtomicInteger(0);
+    private int writeCnt = 0;
+
+    private final CountDownLatch readLatch;
+    private final CountDownLatch writeLatch;
+    private final CountDownLatch anoReadLatch;
+    private final CountDownLatch anoWriteLatch;
+
+    /**
+     * Constructor
+     * @param readLatch
+     * @param writeLatch
+     * @param anoReadLatch
+     * @param anoWriteLatch
+     */
+    public LockerImpl(CountDownLatch readLatch, CountDownLatch writeLatch, CountDownLatch anoReadLatch,
+            CountDownLatch anoWriteLatch) {
+        super();
+        this.readLatch = readLatch;
+        this.writeLatch = writeLatch;
+        this.anoReadLatch = anoReadLatch;
+        this.anoWriteLatch = anoWriteLatch;
+    }
 
     /**
      * This is the override of super method.
@@ -32,9 +57,11 @@ public class PrintLocker implements Locker {
      */
     @Override
     public void read(int k) {
-        for (int i = 0; i < k; ++i) {
-            System.out.println("[" + Thread.currentThread().getName() + "] Read " + i);
-            ThreadUtil.sleep(500);
+        readCnt.addAndGet(k);
+        readLatch.countDown();
+        try {
+            writeLatch.await();
+        } catch (InterruptedException e) {
         }
     }
 
@@ -44,26 +71,40 @@ public class PrintLocker implements Locker {
      */
     @Override
     public void write(int k) {
-        for (int i = 0; i < k; ++i) {
-            System.out.println("[" + Thread.currentThread().getName() + "] Write " + i);
-            ThreadUtil.sleep(500);
+        writeCnt += k;
+        writeLatch.countDown();
+        try {
+            readLatch.await();
+        } catch (InterruptedException e) {
         }
     }
 
     /**
      * This is the override of super method.
-     * @see org.apache.niolex.commons.concurrent.Locker#ano1(int)
+     * @see org.apache.niolex.commons.concurrent.Locker#anoRead(int)
      */
     @Override
     public void anoRead(int k) {
+        readCnt.addAndGet(k);
+        anoReadLatch.countDown();
+        try {
+            anoWriteLatch.await();
+        } catch (InterruptedException e) {
+        }
     }
 
     /**
      * This is the override of super method.
-     * @see org.apache.niolex.commons.concurrent.Locker#ano2(int)
+     * @see org.apache.niolex.commons.concurrent.Locker#anoWrite(int)
      */
     @Override
     public void anoWrite(int k) {
+        writeCnt += k;
+        anoWriteLatch.countDown();
+        try {
+            anoReadLatch.await();
+        } catch (InterruptedException e) {
+        }
     }
 
     /**
@@ -72,7 +113,7 @@ public class PrintLocker implements Locker {
      */
     @Override
     public int getReadCnt() {
-        return 0;
+        return readCnt.get();
     }
 
     /**
@@ -81,24 +122,7 @@ public class PrintLocker implements Locker {
      */
     @Override
     public int getWriteCnt() {
-        return 0;
-    }
-
-    /**
-     * @param args
-     * @throws InterruptedException
-     */
-    public static void main(String[] args) throws InterruptedException {
-        Locker print = Syncer.syncByRegex(new PrintLocker(), "r.*", "w.*");
-        Runner.run(print, "read", 10);
-        Runner.run(print, "read", 10);
-        Runner.run(print, "read", 10);
-        ThreadUtil.sleep(1000);
-        Runner.run(print, "read", 10);
-        Thread t2 = Runner.run(print, "write", 10);
-        Thread t1 = Runner.run(print, "write", 10);
-        t1.join();
-        t2.join();
+        return writeCnt;
     }
 
 }

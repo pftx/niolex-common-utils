@@ -29,10 +29,10 @@ public interface Locker {
     public void write(int k);
 
     @Syncer.Read
-    public void ano1(int k);
+    public void anoRead(int k);
 
     @Syncer.Write
-    public void ano2(int k);
+    public void anoWrite(int k);
 
     public int getReadCnt();
 

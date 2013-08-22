@@ -428,4 +428,79 @@ public class StringUtilTest extends StringUtil {
         assertEquals(s, utf8);
     }
 
+    @Test
+    public void testRetrieve() throws Exception {
+        List<String> list = retrieve("[Main][Debug] This is very good.", '[', ']');
+        System.out.println("[retrieve]" + list);
+        assertEquals("[Main, Debug]", list.toString());
+    }
+
+    @Test
+    public void testRetrieveRecursive() throws Exception {
+        List<String> list = retrieve("[x[a]b]", '[', ']');
+        System.out.println("[retrieve]" + list);
+        assertEquals("[a]", list.toString());
+    }
+
+    @Test
+    public void testRetrieveRecursiveGo() throws Exception {
+        List<String> list = retrieve("x-MacThai [Mac[R]Thai][Lex] Mark it.", '[', ']');
+        System.out.println("[retrieve]" + list);
+        assertEquals("[R, Lex]", list.toString());
+    }
+
+    @Test
+    public void testRetrieve2() throws Exception {
+        List<String> list = retrieve("[Main][Debug] This is very good.", "[", "]");
+        System.out.println("[retrieve2]" + list);
+        assertEquals("[Main, Debug]", list.toString());
+    }
+
+    @Test
+    public void testRetrieve2Recursive() throws Exception {
+        List<String> list = retrieve("[x[a]b]", "[", "]");
+        System.out.println("[retrieve2]" + list);
+        assertEquals("[a]", list.toString());
+    }
+
+    @Test
+    public void testRetrieve2Recursive1() throws Exception {
+        List<String> list = retrieve("[x[a].b]", "[", "].");
+        System.out.println("[retrieve2]" + list);
+        assertEquals("[a]", list.toString());
+    }
+
+    @Test
+    public void testRetrieve2Recursive2() throws Exception {
+        List<String> list = retrieve("[x[.a]b]", "[.", "]");
+        System.out.println("[retrieve2]" + list);
+        assertEquals("[a]", list.toString());
+    }
+
+    @Test
+    public void testRetrieve2Re() throws Exception {
+        List<String> list = retrieve("<b>This is big font.</b><b>Cheer UP.</b>", "<b>", "</b>");
+        System.out.println("[retrieve2]" + list);
+        assertEquals("[This is big font., Cheer UP.]", list.toString());
+    }
+
+    @Test
+    public void testRetrieve2ReRecursive() throws Exception {
+        List<String> list = retrieve("<b>This is big font.<b>Cheer UP.</b></b><b>.", "<b>", "</b>");
+        System.out.println("[retrieve2]" + list);
+        assertEquals("[Cheer UP.]", list.toString());
+    }
+
+    @Test
+    public void testRetrieve2Fake() throws Exception {
+        List<String> list = retrieve("<a]nicea]", "<a]", "a]");
+        assertEquals("[nice]", list.toString());
+    }
+
+    @Test
+    public void testRetrieve2Fakef() throws Exception {
+        List<String> list = retrieve("<anice<a]", "<a", "<a]");
+        assertEquals("[nice]", list.toString());
+    }
+
 }

@@ -34,46 +34,35 @@ public class ConcSyncerTest {
     private static Locker anno = Syncer.syncByAnnotation(new QuickLocker(true));
 
     CountDownLatch rl = new CountDownLatch(1);
-    CountDownLatch wl = new CountDownLatch(2);
 
     public void read(int k) {
         rl.countDown();
         regex.read(k);
     }
 
-    public void write(int k) {
-        wl.countDown();
-        regex.write(k);
-    }
-
     @Test(timeout=500)
     public final void test1SyncByRegex() throws InterruptedException {
         Runner.run(this, "read", 130);
         rl.await();
-        ThreadUtil.sleep(10);
+        ThreadUtil.sleepAtLeast(10);
         for (int i = 0; i < 10; ++i) {
             regex.read(i);
         }
         assertEquals(175, regex.getReadCnt());
     }
 
-    public void ano1(int k) {
+    public void anoRead(int k) {
         rl.countDown();
-        anno.ano1(k);
-    }
-
-    public void ano2(int k) {
-        wl.countDown();
-        anno.ano2(k);
+        anno.anoRead(k);
     }
 
     @Test(timeout=500)
     public final void test3SyncByAnnotation() throws InterruptedException {
-        Runner.run(this, "ano1", 30);
+        Runner.run(this, "anoRead", 30);
         rl.await();
-        ThreadUtil.sleep(10);
+        ThreadUtil.sleepAtLeast(10);
         for (int i = 0; i < 10; ++i) {
-            anno.ano1(i);
+            anno.anoRead(i);
         }
         assertEquals(75, anno.getReadCnt());
     }

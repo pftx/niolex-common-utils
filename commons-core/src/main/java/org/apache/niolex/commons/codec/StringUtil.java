@@ -28,6 +28,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.niolex.commons.internal.IgnoreException;
 
+import com.google.common.collect.Lists;
+
 
 /**
  * Translate between string and bytes.
@@ -302,5 +304,66 @@ public abstract class StringUtil extends StringUtils {
 	    }
 	    return false;
 	}
+
+	/**
+	 * Retrieve the list of strings in the middle of left char and right char.
+	 * i.e. [Main][Debug] This is very good.
+	 * User can retrieve Main and Debug out of this message.
+	 * <br>
+	 * For "[x[a]b]" this kind of string, we will ignore the outer part and just
+	 * return "a".
+	 *
+	 * @param str the source string
+	 * @param left the left side character
+	 * @param right the right side character
+	 * @return the list of strings
+	 */
+	public static final List<String> retrieve(String str, char left, char right) {
+	    List<String> list = Lists.newArrayList();
+	    /**
+	     * We have two status here:
+	     * 0 - left not found, need left
+	     * 1 - left found, need right
+	     */
+	    int stat = 0;
+	    for (int i = 0, idx = 0; i < str.length(); ++i) {
+            if (str.charAt(i) == left) {
+                stat = 1;
+                idx = i + 1;
+	        } else if (stat == 1 && str.charAt(i) == right) {
+	            stat = 0;
+	            list.add(str.substring(idx, i));
+	        }
+	    }
+	    return list;
+	}
+
+	/**
+     * Retrieve the list of strings in the middle of left string and right string.
+     * i.e. [Main][Debug] This is very good.
+     * User can retrieve Main and Debug out of this message.
+     *
+     * @param str the source string
+     * @param left the left side string
+     * @param right the right side string
+     * @return the list of middle strings
+     */
+    public static final List<String> retrieve(String str, String left, String right) {
+        if (left.length() == 1 && right.length() == 1) {
+            return retrieve(str, left.charAt(0), right.charAt(0));
+        }
+        List<String> list = Lists.newArrayList();
+        int l, r = 0, ll = left.length(), rl = right.length();
+        while (true) {
+            l = str.indexOf(left, r) + ll;
+            if (l < ll) break;
+            r = str.indexOf(right, l);
+            if (r < 0) break;
+            l = str.lastIndexOf(left, r - ll) + ll;
+            list.add(str.substring(l, r));
+            r += rl;
+        }
+        return list;
+    }
 
 }

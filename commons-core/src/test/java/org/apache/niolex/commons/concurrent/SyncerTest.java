@@ -17,80 +17,61 @@
  */
 package org.apache.niolex.commons.concurrent;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.niolex.commons.test.OrderedRunner;
 import org.apache.niolex.commons.util.Runner;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2013-7-27
  */
-@RunWith(OrderedRunner.class)
 public class SyncerTest {
 
-    private static Locker regex = Syncer.syncByRegex(new DemoLocker(), "r.*", "w.*");
-    private static Locker anno = Syncer.syncByAnnotation(new DemoLocker());
+    private CountDownLatch rl = new CountDownLatch(2);
+    private CountDownLatch wl = new CountDownLatch(1);
 
-    CountDownLatch rl = new CountDownLatch(2);
-    CountDownLatch wl = new CountDownLatch(1);
-
-    public void read(int k) {
-        rl.countDown();
-        regex.read(k);
-    }
-
-    public void write(int k) {
-        wl.countDown();
-        regex.write(k);
-    }
+    private Locker regex = Syncer.syncByRegex(new LockerImpl(rl, wl, rl, wl), "r.*", "w.*");
+    private Locker anno = Syncer.syncByAnnotation(new LockerImpl(rl, wl, rl, wl));
 
     /**
      * Test method for {@link org.apache.niolex.commons.concurrent.Syncer#syncByRegex(java.lang.Object, java.lang.String, java.lang.String)}.
      * @throws InterruptedException
      */
     @Test
-    public final void test1SyncByRegex() throws InterruptedException {
-        Runner.run(this, "read", 130);
-        Runner.run(this, "read", 150);
+    public final void testSyncByRegexRead() throws InterruptedException {
+        Runner.run(regex, "read", 130);
+        Runner.run(regex, "read", 150);
         rl.await();
-        ThreadUtil.sleep(1);
-        Runner.run(regex, "ano2", 20);
-        ThreadUtil.sleep(10);
+        Runner.run(regex, "write", 20);
+        ThreadUtil.sleepAtLeast(20);
+        assertEquals(280, regex.getReadCnt());
+        assertEquals(0, regex.getWriteCnt());
+        Runner.run(regex, "anoWrite", 20);
+        wl.await();
+        ThreadUtil.sleepAtLeast(20);
         assertEquals(280, regex.getReadCnt());
         assertEquals(40, regex.getWriteCnt());
     }
 
     @Test
-    public final void test2SyncByRegexCache() throws InterruptedException {
-        Runner.run(this, "read", 130);
-        Runner.run(this, "read", 150);
-        rl.await();
-        ThreadUtil.sleep(1);
-        Runner.run(this, "write", 20);
+    public final void testSyncByRegexWrite() throws InterruptedException {
+        Runner.run(regex, "write", 20);
         wl.await();
-        ThreadUtil.sleep(10);
-        assertEquals(560, regex.getReadCnt());
-        assertEquals(40, regex.getWriteCnt());
-        regex.ano1(3);
-        regex.ano2(4);
-        assertEquals(566, regex.getReadCnt());
-        assertEquals(48, regex.getWriteCnt());
-    }
-
-    public void ano1(int k) {
-        rl.countDown();
-        anno.ano1(k);
-    }
-
-    public void ano2(int k) {
-        wl.countDown();
-        anno.ano2(k);
+        Runner.run(regex, "read", 130);
+        Runner.run(regex, "read", 150);
+        ThreadUtil.sleepAtLeast(20);
+        assertEquals(0, regex.getReadCnt());
+        assertEquals(20, regex.getWriteCnt());
+        Runner.run(regex, "anoRead", 15);
+        Runner.run(regex, "anoRead", 13);
+        rl.await();
+        ThreadUtil.sleepAtLeast(20);
+        assertEquals(308, regex.getReadCnt());
+        assertEquals(20, regex.getWriteCnt());
     }
 
     /**
@@ -98,59 +79,36 @@ public class SyncerTest {
      * @throws InterruptedException
      */
     @Test
-    public final void test3SyncByAnnotation() throws InterruptedException {
-        Runner.run(this, "ano1", 30);
-        Runner.run(this, "ano1", 50);
+    public final void testSyncByAnnotationR() throws InterruptedException {
+        Runner.run(anno, "anoRead", 15);
+        Runner.run(anno, "anoRead", 13);
         rl.await();
-        ThreadUtil.sleep(5);
-        Runner.run(anno, "write", 20);
-        ThreadUtil.sleep(10);
-        assertEquals(160, anno.getReadCnt());
-        assertEquals(20, anno.getWriteCnt());
-    }
-
-    @Test
-    public final void test4SyncByAnnotationCache() throws InterruptedException {
-        Runner.run(this, "ano1", 30);
-        Runner.run(this, "ano1", 50);
-        rl.await();
-        ThreadUtil.sleep(5);
-        Runner.run(this, "ano2", 20);
+        Runner.run(anno, "anoWrite", 20);
+        ThreadUtil.sleepAtLeast(20);
+        assertEquals(28, anno.getReadCnt());
+        assertEquals(0, anno.getWriteCnt());
+        Runner.run(anno, "write", 2);
         wl.await();
-        ThreadUtil.sleep(10);
-        assertEquals(320, anno.getReadCnt());
+        ThreadUtil.sleepAtLeast(20);
+        assertEquals(28, anno.getReadCnt());
+        assertEquals(22, anno.getWriteCnt());
+    }
+
+    @Test
+    public final void testSyncByAnnotationW() throws InterruptedException {
+        Runner.run(anno, "anoWrite", 20);
+        wl.await();
+        Runner.run(anno, "anoRead", 15);
+        Runner.run(anno, "anoRead", 13);
+        ThreadUtil.sleepAtLeast(20);
+        assertEquals(0, anno.getReadCnt());
         assertEquals(20, anno.getWriteCnt());
-        anno.read(6);
-        anno.write(3);
-        assertEquals(326, anno.getReadCnt());
-        assertEquals(23, anno.getWriteCnt());
-    }
-
-    /**
-     * Test method for {@link org.apache.niolex.commons.concurrent.Syncer#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])}.
-     */
-    @Test
-    public final void testInvoke() {
-        Locker l = Syncer.syncByAnnotation(new QuickLocker());
-        l.ano1(5);
-        l.ano2(6);
-        l.read(3);
-        l.write(7);
-        assertEquals(8, l.getReadCnt());
-        assertEquals(13, l.getWriteCnt());
-    }
-
-    @Test
-    public final void testInvokeRegex() {
-        Locker l = Syncer.syncByRegex(new QuickLocker(), "r.*", "w.*");
-        l.ano1(5);
-        l.ano2(6);
-        l.read(3);
-        l.write(7);
-        l.read(1);
-        l.write(4);
-        assertEquals(9, l.getReadCnt());
-        assertEquals(17, l.getWriteCnt());
+        Runner.run(anno, "read", 200);
+        Runner.run(anno, "read", 2);
+        Runner.run(anno, "anoWrite", 2);
+        ThreadUtil.sleepAtLeast(20);
+        assertEquals(230, anno.getReadCnt());
+        assertEquals(22, anno.getWriteCnt());
     }
 
 }
