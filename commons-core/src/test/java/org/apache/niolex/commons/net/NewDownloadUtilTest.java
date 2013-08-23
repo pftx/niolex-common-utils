@@ -161,8 +161,8 @@ public class NewDownloadUtilTest {
 
     @Test
     public void testDownloadFile() throws NetException {
-        byte[] data = downloadFile("http://down.360safe.com/360ent_shouyelist.exe", 922560);
-        byte[] local = FileUtil.getBinaryFileContentFromClassPath("360ent_shouyelist.ex.txt", getClass());
+        byte[] data = downloadFile("http://www.10086.cn/images/quickbg.gif", 9624);
+        byte[] local = FileUtil.getBinaryFileContentFromClassPath("quickbg.gif.txt", getClass());
         assertArrayEquals(local, data);
     }
 

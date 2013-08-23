@@ -99,7 +99,7 @@ public class RSAUtilTest {
 
     @Test
     public void testPublicEncription2() throws Exception {
-        byte[] data = FileUtil.getBinaryFileContentFromClassPath("nav.jpg.txt", NetExceptionTest.class);
+        byte[] data = FileUtil.getBinaryFileContentFromClassPath("quickbg.gif.txt", NetExceptionTest.class);
         byte[] encr = RSAUtil.encryptByPublicKey(data, publicKey);
         byte[] outp = RSAUtil.decryptByPrivateKey(encr, privateKey);
         myArrayEquals(data, outp);

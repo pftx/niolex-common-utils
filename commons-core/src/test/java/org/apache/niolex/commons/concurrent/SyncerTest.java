@@ -106,7 +106,7 @@ public class SyncerTest {
         Runner.run(anno, "read", 200);
         Runner.run(anno, "read", 2);
         Runner.run(anno, "anoWrite", 2);
-        ThreadUtil.sleepAtLeast(20);
+        ThreadUtil.sleepAtLeast(30);
         assertEquals(230, anno.getReadCnt());
         assertEquals(22, anno.getWriteCnt());
     }
