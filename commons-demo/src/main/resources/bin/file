@@ -1,0 +1,15 @@
+#!/bin/bash
+
+[ -z $1 ] && {
+  echo "Usage: `basename $0` file"
+  exit -1
+}
+i=1
+echo -------------------------
+while read line
+do
+  echo "$i $line"
+  let "i += 1"
+done <$1
+echo -------------------------
+#echo $file

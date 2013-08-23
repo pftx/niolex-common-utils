@@ -1,0 +1,4 @@
+#!/bin/sh
+#List all the programs under current user who opened TCP port.
+uid=`id -u`
+netstat -tlpnoe | awk '$7=='"${uid}"' || NR==2 {print $0}'

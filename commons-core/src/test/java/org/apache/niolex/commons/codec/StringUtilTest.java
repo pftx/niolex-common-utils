@@ -503,4 +503,10 @@ public class StringUtilTest extends StringUtil {
         assertEquals("[nice]", list.toString());
     }
 
+    @Test
+    public void testRetrieve2Same() throws Exception {
+        List<String> list = retrieve("aaIT's Amazing!aaNiceaa", "aa", "aa");
+        assertEquals("[IT's Amazing!]", list.toString());
+    }
+
 }
