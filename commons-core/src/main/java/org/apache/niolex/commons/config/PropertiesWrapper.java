@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 
 /**
@@ -242,38 +243,61 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * 从配置文件中读取布尔类型的配置
-     * 当且仅当配置为字符串"true"(忽略大小写)时，返回true,其他情况一概返回false
+     * CN://从配置文件中读取布尔类型的配置
+     * 当且仅当配置为字符串"true", "1", "on", "yes"(忽略大小写)时，返回true,其他情况一概返回false
+     * <br>
+     * EN://Read boolean configuration value from properties by this key. We will
+     * interpret "true", "1", "on", "yes"(case insensitive) as true, all others as false.
      *
      * @param key 待读取的配置的键
      * @return 待读取的配置的值，（请注意）如果配置不存在则返回false
      */
     public boolean getBoolean(String key) {
-        return Boolean.parseBoolean(this.getString(key));
+        String s = this.getString(key);
+        return s == null ? false : parseBoolean(s);
     }
 
     /**
-     * 从配置文件中读取布尔类型的配置
-     * 当且仅当配置为字符串"true"(忽略大小写)时，返回true,其他情况一概返回false
+     * CN://从配置文件中读取布尔类型的配置
+     * 当且仅当配置为字符串"true", "1", "on", "yes"(忽略大小写)时，返回true,其他情况一概返回false
+     * <br>
+     * EN://Read boolean configuration value from properties by this key. We will
+     * interpret "true", "1", "on", "yes"(case insensitive) as true, all others as false.
      *
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值
      * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
      */
     public boolean getBoolean(String key, String defaultValue) {
-        return Boolean.parseBoolean(this.getString(key, defaultValue));
+        String s = this.getString(key, defaultValue);
+        return s == null ? false : parseBoolean(s);
     }
 
     /**
-     * 从配置文件中读取布尔类型的配置
-     * 当且仅当配置为字符串"true"(忽略大小写)时，返回true,其他情况一概返回false
+     * CN://从配置文件中读取布尔类型的配置
+     * 当且仅当配置为字符串"true", "1", "on", "yes"(忽略大小写)时，返回true,其他情况一概返回false
+     * <br>
+     * EN://Read boolean configuration value from properties by this key. We will
+     * interpret "true", "1", "on", "yes"(case insensitive) as true, all others as false.
      *
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值
      * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
      */
     public boolean getBoolean(String key, boolean defaultValue) {
-        return Boolean.parseBoolean(this.getString(key, Boolean.toString(defaultValue)));
+        String s = this.getString(key);
+        return s == null ? defaultValue : parseBoolean(s);
+    }
+
+    /**
+     * Parse the boolean value from this parameter.
+     * We interpret "true", "1", "on", "yes"(case insensitive) as true, all others as false.
+     *
+     * @param s the input string
+     * @return the boolean value
+     */
+    public boolean parseBoolean(String s) {
+        return StringUtil.isIn(s, false, "true", "1", "on", "yes");
     }
 
     /**
@@ -290,7 +314,6 @@ public class PropertiesWrapper extends Properties {
 
     /**
      * 从配置文件中读取双精度类型的配置
-     * 当且仅当配置为字符串"true"(忽略大小写)时，返回true,其他情况一概返回false
      *
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值
@@ -302,7 +325,6 @@ public class PropertiesWrapper extends Properties {
 
     /**
      * 从配置文件中读取双精度类型的配置
-     * 当且仅当配置为字符串"true"(忽略大小写)时，返回true,其他情况一概返回false
      *
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值

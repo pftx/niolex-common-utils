@@ -359,12 +359,44 @@ public class PropertiesWrapperTest {
     }
 
     @Test
-    public void testGetBoolean01AllSeemsFalse() {
+    public void testGetBooleanNull() {
+        boolean hello = props.getBoolean("k");
+        Assert.assertEquals(false, hello);
+        hello = props.getBoolean("k", null);
+        Assert.assertEquals(false, hello);
+    }
+
+    @Test
+    public void testGetBoolean3asFalse() {
+        boolean hello = props.getBoolean("c");
+        Assert.assertEquals(false, hello);
+    }
+
+    @Test
+    public void testGetBooleanOnOff() {
+        boolean hello = props.getBoolean("on");
+        Assert.assertEquals(true, hello);
+        hello = props.getBoolean("off");
+        Assert.assertEquals(false, hello);
+    }
+
+    @Test
+    public void testGetBoolean01() {
         boolean hello = props.getBoolean("zzz", true);
         System.out.println("zzz => " + hello);
         Assert.assertEquals(false, hello);
         hello = props.getBoolean("yyy", "true");
         System.out.println("yyy => " + hello);
+        Assert.assertEquals(true, hello);
+    }
+
+    @Test
+    public void testGetBooleanYesNo() {
+        boolean hello = props.getBoolean("yes", true);
+        System.out.println("yes => " + hello);
+        Assert.assertEquals(true, hello);
+        hello = props.getBoolean("no", "true");
+        System.out.println("no => " + hello);
         Assert.assertEquals(false, hello);
     }
 
@@ -372,12 +404,6 @@ public class PropertiesWrapperTest {
     public void testGetBooleanInt() {
         boolean hello = false;
         hello = props.getBoolean("b");
-        Assert.assertEquals(false, hello);
-    }
-
-    @Test
-    public void testGetBooleanNull() {
-        boolean hello = props.getBoolean("k");
         Assert.assertEquals(false, hello);
     }
 

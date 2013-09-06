@@ -105,10 +105,9 @@ public class TimeCheck {
     }
 
     /**
-     * Check the time interval in a synchronized block, return zero if not available.
+     * Check the time interval in a synchronized block.
      *
      * @param time the current time stamp
-     * @return the count happened in the time interval
      */
     public synchronized void checkIntervalCnt(final long time) {
         if (time - lastCheckTime >= intervalTime) {

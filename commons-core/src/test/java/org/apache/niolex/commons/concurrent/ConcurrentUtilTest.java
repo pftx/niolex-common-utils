@@ -29,14 +29,13 @@ import org.junit.Test;
  * @version 1.0.5
  * @since 2012-12-20
  */
-public class ConcurrentUtilTest {
+public class ConcurrentUtilTest extends ConcurrentUtil {
 
     /**
      * Test method for {@link org.apache.niolex.commons.concurrent.ConcurrentUtil#initMap(java.util.concurrent.ConcurrentHashMap, java.lang.Object, java.lang.Object)}.
      */
     @Test
     public void testInitMap() {
-        new ConcurrentUtil() {};
         ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
         map.put("a", "bc");
         String v = ConcurrentUtil.initMap(map, "a", "de");

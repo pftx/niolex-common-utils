@@ -39,10 +39,6 @@ public class ConcurrentUtil {
      */
     public static final <K, V> V initMap(ConcurrentHashMap<K, V> map, K key, V newValue) {
         V oldValue = map.putIfAbsent(key, newValue);
-        if (oldValue == null) {
-            return newValue;
-        } else {
-            return oldValue;
-        }
+        return (oldValue == null) ? newValue : oldValue;
     }
 }

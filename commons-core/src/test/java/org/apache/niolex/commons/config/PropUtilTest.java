@@ -164,7 +164,7 @@ public class PropUtilTest {
         Assert.assertEquals(false, hello);
         hello = PropUtil.getBoolean("yyy", true);
         System.out.println("yyy => " + hello);
-        Assert.assertEquals(false, hello);
+        Assert.assertEquals(true, hello);
         hello = PropUtil.getBoolean("vvv", false);
         System.out.println("vvv => " + hello);
         Assert.assertEquals(true, hello);

@@ -43,7 +43,7 @@ import com.google.common.collect.Maps;
  *  Mark the method with @Read for acquiring read lock.
  *  Mark the method with @Write for acquiring write lock.
  *  All other methods will not be synchronized.
- *
+ * <br>
  * Regex match for method name:
  *  User input two regex expressions, one for read method name match, the other
  *  for write method name match. If a method match both, we prefer write lock.
@@ -87,7 +87,7 @@ public class Syncer implements InvocationHandler {
 
     /**
      * Decorate the host object by this Syncer using the regex patterns to match methods.
-     * <b>We are using Java proxy, only delegate on interface.</b>
+     * <b>We are using Java proxy technique, only delegate the interfaces.</b>
      *
      * @param host the host object for this decoration
      * @param readRegex the read regex
@@ -104,7 +104,7 @@ public class Syncer implements InvocationHandler {
 
     /**
      * Decorate the host object by this Syncer using the annotations to match methods.
-     * <b>We are using Java proxy, only delegate on interface.</b>
+     * <b>We are using Java proxy technique, only delegate the interfaces.</b>
      *
      * @param host the host object for this decoration
      * @return the decorated object

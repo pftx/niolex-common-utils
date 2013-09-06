@@ -46,6 +46,21 @@ public class RetainLinkedList<E> {
 	private final int retainSize;
 
 	/**
+	 * The size of this List.
+	 */
+	private final AtomicInteger size = new AtomicInteger(0);
+
+	/**
+	 * Lock the list head for delete item from head.
+	 */
+	private final ReentrantLock headLock = new ReentrantLock();
+
+	/**
+	 * Lock the list tail for add item.
+	 */
+	private final ReentrantLock tailLock = new ReentrantLock();
+
+	/**
 	 * The internal head, which is a stub to mark the head of this List.
 	 */
 	private final Link<E> head = new Link<E>();
@@ -61,24 +76,9 @@ public class RetainLinkedList<E> {
 	private transient Link<E> tail = head;
 
 	/**
-	 * The size of this List.
-	 */
-	private final AtomicInteger size = new AtomicInteger(0);
-
-	/**
 	 * The size between head and pointer
 	 */
 	private transient int headPointerSize = 0;
-
-	/**
-	 * Lock the list head for delete item from head.
-	 */
-	private final ReentrantLock headLock = new ReentrantLock();
-
-	/**
-	 * Lock the list tail for add item.
-	 */
-	private final ReentrantLock tailLock = new ReentrantLock();
 
 
 	/**
@@ -115,7 +115,7 @@ public class RetainLinkedList<E> {
 	 * available item, this method will return null.
 	 *
 	 * Old item will be removed automatically if the current
-	 * size if greater than the retainSize, otherwise the
+	 * size is greater than the retainSize, otherwise the
 	 * item will be retained in the retain buffer of this
 	 * list.
 	 *
@@ -165,6 +165,7 @@ public class RetainLinkedList<E> {
 				Link<E> tmp = head.next;
 				--headPointerSize;
 				head.next = tmp.next;
+				tmp.next = null; // Help GC
 				size.decrementAndGet();
 				return tmp.e;
 			}

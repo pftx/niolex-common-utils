@@ -39,7 +39,22 @@ import com.google.common.collect.Sets;
  * @version 1.0.0
  * @since 2012-5-31
  */
-public class CollectionUtilTest {
+public class CollectionUtilTest extends CollectionUtil {
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.collection.CollectionUtil#concat(java.util.Collection, E[])}.
+     */
+    @Test
+    public void testConcatCollectionElements2() {
+        List<String> dest = new ArrayList<String>(3);
+        dest.add("methods1");
+        dest.add("methods2");
+        dest.add("methods3");
+        dest = CollectionUtil.concat(dest, "Nice");
+        assertEquals(4, dest.size());
+        assertEquals("methods3", dest.get(2));
+        assertEquals("Nice", dest.get(3));
+    }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.collection.CollectionUtil#concat(java.util.Collection, E[])}.
@@ -59,40 +74,66 @@ public class CollectionUtilTest {
 	 * Test method for {@link org.apache.niolex.commons.collection.CollectionUtil#concat(E[])}.
 	 */
 	@Test
-	public void testConcatEArray() {
+	public void testConcatEArray2() {
+	    List<String> dest = CollectionUtil.concat("You", "Nice");
+	    assertEquals(2, dest.size());
+	    assertEquals("Nice", dest.get(1));
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.collection.CollectionUtil#concat(E[])}.
+	 */
+	@Test
+	public void testConcatEArray3() {
 		List<String> dest = CollectionUtil.concat("You", "Nice", "Meet");
 		assertEquals(3, dest.size());
 		assertEquals("Nice", dest.get(1));
+		assertEquals("Meet", dest.get(2));
 	}
 
 	@Test
-	public void testConcat() throws Exception {
+	public void testConcat2Collection() throws Exception {
 		List<String> dest = new ArrayList<String>(3);
 		dest.add("methods1");
 		dest.add("methods2");
 		dest.add("methods3");
-		List<String> dest2 = new ArrayList<String>(3);
+		List<String> dest2 = new ArrayList<String>(4);
 		dest2.add("methods21");
 		dest2.add("methods22");
 		dest2.add("methods23");
 		dest = CollectionUtil.concat(dest, dest2);
 		assertEquals(6, dest.size());
+		assertEquals("methods2", dest.get(1));
 		assertEquals("methods22", dest.get(4));
 	}
 
 	@Test
-	public void testConcatCollec() {
-		List<String> dest = new ArrayList<String>(3);
-		dest.add("methods1");
-		dest.add("methods2");
-		dest.add("methods3");
-		dest = CollectionUtil.concat("Nice", dest);
-		assertEquals(4, dest.size());
-		assertEquals("Nice", dest.get(0));
+    public void testConcat2Array() {
+	    Integer[] arr1 = new Integer[]{1, 3, 5};
+	    Integer[] arr2 = new Integer[]{2, 4, 6};
+	    List<Integer> dest = concat(arr1, arr2);
+	    assertEquals(6, dest.size());
+        assertEquals(3, dest.get(1).intValue());
+        assertEquals(4, dest.get(4).intValue());
+        // ---
+        List<Integer[]> dest2 = concat(arr1, arr2, arr1);
+        assertEquals(3, dest2.size());
+        assertTrue(arr1 == dest2.get(0));
 	}
 
 	@Test
-	public void testColec() {
+	public void testConcatElementToCollec() {
+		List<String> dest = new ArrayList<String>(3);
+		dest.add("methods1");
+		dest.add("methods3");
+		dest = CollectionUtil.concat("Nice", dest);
+		assertEquals(3, dest.size());
+		assertEquals("Nice", dest.get(0));
+		assertEquals("methods3", dest.get(2));
+	}
+
+	@Test
+	public void testCopyColec() {
 		List<String> dest = new ArrayList<String>(3);
 		dest.add("methods1");
 		dest.add("methods2");
@@ -105,7 +146,7 @@ public class CollectionUtilTest {
 	}
 
 	@Test
-	public void testColec0() {
+	public void testCopyColec0() {
 		List<String> dest = new ArrayList<String>(3);
 		List<String> ddest = CollectionUtil.copy(dest);
 		assertEquals(0, ddest.size());
@@ -171,7 +212,6 @@ public class CollectionUtilTest {
 
     @Test
     public void testIntersectionEmpty() {
-        new CollectionUtil(){};
         List<String> l = new ArrayList<String>(3);
         l.add("a");
         l.add("b");
@@ -267,6 +307,38 @@ public class CollectionUtilTest {
         col.put("Nice", "Girl");
         col.put("Happy", "Girl");
         assertFalse(CollectionUtil.isSingle(col));
+    }
+
+    @Test
+    public void testAddAll() {
+        List<String> l = new ArrayList<String>(3);
+        l.add("a");
+        l.add("b");
+        addAll(l, "c");
+        assertEquals("b", l.get(1));
+        assertEquals("c", l.get(2));
+        assertEquals(3, l.size());
+    }
+
+    @Test
+    public void testAddAll2() {
+        List<String> l = new ArrayList<String>(3);
+        l.add("a");
+        l.add("b");
+        addAll(l, "c", "f");
+        assertEquals("b", l.get(1));
+        assertEquals("c", l.get(2));
+        assertEquals("f", l.get(3));
+        assertEquals(4, l.size());
+    }
+
+    @Test
+    public void testAddAllEmpty() {
+        List<String> l = new ArrayList<String>(3);
+        l.add("a");
+        l.add("b");
+        addAll(l, new String[0]);
+        assertEquals(2, l.size());
     }
 
 }

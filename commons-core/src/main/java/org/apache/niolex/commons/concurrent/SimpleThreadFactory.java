@@ -53,7 +53,7 @@ public class SimpleThreadFactory implements ThreadFactory {
      */
     @Override
     public Thread newThread(Runnable r) {
-        return new Thread(threadGroup, r, threadGroupName + "@" + cnt++);
+        return new Thread(threadGroup, r, threadGroupName + "-" + cnt++);
     }
 
     /**

@@ -55,7 +55,7 @@ public class SimpleThreadFactoryTest {
         t.start();
         waitOn.waitForResult(100);
         assertEquals(t.getThreadGroup(), factory.getThreadGroup());
-        assertEquals(t.getName(), "thread-fac-test@0");
+        assertEquals(t.getName(), "thread-fac-test-0");
         assertEquals(1, factory.getThreadGroup().activeCount());
         waitOn = blocker.initWait("e");
         factory.getThreadGroup().interrupt();

@@ -34,76 +34,81 @@ public abstract class CollectionUtil {
 
 	/**
 	 * Concatenating all the parameters into one list.
-	 * @param src
+	 *
+	 * @param collection
 	 * @param args
 	 * @return the result
 	 */
-	public static final <E> List<E> concat(Collection<E> src, E ...args) {
-		List<E> dest = new ArrayList<E>(src.size() + args.length);
-		for (E e : src) {
-			dest.add(e);
-		}
-		for (E e : args) {
-			dest.add(e);
-		}
+	public static final <E> List<E> concat(Collection<E> collection, E ...args) {
+		List<E> dest = new ArrayList<E>(collection.size() + args.length);
+		dest.addAll(collection);
+		addAll(dest, args);
 		return dest;
 	}
 
 	/**
 	 * Concatenating all the parameters into one list.
+	 *
 	 * @param args
 	 * @return the result
 	 */
 	public static final <E> List<E> concat(E ...args) {
 		List<E> dest = new ArrayList<E>(args.length);
-		for (E e : args) {
-			dest.add(e);
-		}
+		addAll(dest, args);
 		return dest;
 	}
 
 	/**
 	 * Concatenating all the parameters into one list.
-	 * @param src
-	 * @param args
+	 *
+	 * @param collection1
+	 * @param collection2
 	 * @return the result
 	 */
-	public static final <E> List<E> concat(Collection<E> src, Collection<E> args) {
-		List<E> dest = new ArrayList<E>(src.size() + args.size());
-		for (E e : src) {
-			dest.add(e);
-		}
-		for (E e : args) {
-			dest.add(e);
-		}
+	public static final <E> List<E> concat(Collection<E> collection1, Collection<E> collection2) {
+		List<E> dest = new ArrayList<E>(collection1.size() + collection2.size());
+		dest.addAll(collection1);
+		dest.addAll(collection2);
 		return dest;
 	}
 
 	/**
 	 * Concatenating all the parameters into one list.
-	 * @param src
+	 *
+	 * @param array1
+	 * @param array2
+	 * @return the result
+	 */
+	public static final <E> List<E> concat(E[] array1, E[] array2) {
+	    List<E> dest = new ArrayList<E>(array1.length + array2.length);
+	    addAll(dest, array1);
+	    addAll(dest, array2);
+	    return dest;
+	}
+
+	/**
+	 * Concatenating all the parameters into one list.
+	 *
+	 * @param element
 	 * @param args
 	 * @return the result
 	 */
-	public static final <E> List<E> concat(E src, Collection<E> args) {
+	public static final <E> List<E> concat(E element, Collection<E> args) {
 		List<E> dest = new ArrayList<E>(1 + args.size());
-		dest.add(src);
-		for (E e : args) {
-			dest.add(e);
-		}
+		dest.add(element);
+		dest.addAll(args);
 		return dest;
 	}
 
 	/**
 	 * Make a copy of the parameter.
-	 * @param args
+	 *
+	 * @param args the collection to be copied
 	 * @return the result
 	 */
 	public static final <E> List<E> copy(Collection<E> args) {
 		List<E> dest = new ArrayList<E>(args.size());
-		for (E e : args) {
-			dest.add(e);
-		}
+		dest.addAll(args);
 		return dest;
 	}
 
@@ -115,7 +120,7 @@ public abstract class CollectionUtil {
 	 *
 	 * @param left
 	 * @param right
-	 * @return the Pair of left results.
+	 * @return the Pair of the results.
 	 */
 	public static final <E> Pair<List<E>, List<E>> intersection(Collection<E> left, Collection<E> right) {
 	    List<E> a = new ArrayList<E>(left);
@@ -167,6 +172,18 @@ public abstract class CollectionUtil {
      */
     public static boolean isSingle(Map<?, ?> map) {
         return (map != null && map.size() == 1);
+    }
+
+    /**
+     * Add all the elements in args into collection.
+     *
+     * @param collection the collection used to add elements
+     * @param args the elements to be added
+     */
+    public static final <E> void addAll(Collection<E> collection, E ...args) {
+        for (int i = 0; i < args.length; ++i) {
+            collection.add(args[i]);
+        }
     }
 
 }

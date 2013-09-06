@@ -137,9 +137,9 @@ public class Blocker<E> {
 	 */
 	public void releaseAll() {
 		Iterator<WaitOn<E>> iter = waitMap.values().iterator();
+		IllegalStateException e = new IllegalStateException("User triggered release all.");
 		while (iter.hasNext()) {
-			WaitOn<E> it = iter.next();
-			it.release(new IllegalStateException("User triggered release all."));
+			iter.next().release(e);
 		}
 		waitMap.clear();
 	}

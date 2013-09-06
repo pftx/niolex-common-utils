@@ -105,7 +105,7 @@ public abstract class PropUtil {
     }
 
     /**
-     * 从配置文件中读取字符串类型的配置
+     * 从配置文件中读取字符串类型的配置，不对字符串进行trim
      *
      * @param key 待读取的配置的键
      * @return 待读取的配置的值，如果配置不存在则返回null
@@ -115,7 +115,7 @@ public abstract class PropUtil {
     }
 
     /**
-     * 从配置文件中读取字符串类型的配置
+     * 从配置文件中读取字符串类型的配置，不对字符串进行trim
      *
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值
@@ -126,7 +126,7 @@ public abstract class PropUtil {
     }
 
     /**
-     * 从配置文件中读取字符串类型的配置
+     * 从配置文件中读取字符串类型的配置并对字符串进行trim
      *
      * @see #getProperty(String)
      * @param key 待读取的配置的键
@@ -137,7 +137,7 @@ public abstract class PropUtil {
     }
 
     /**
-     * 从配置文件中读取字符串类型的配置
+     * 从配置文件中读取字符串类型的配置并对字符串进行trim
      *
      * @see #getProperty(String, String)
      * @param key 待读取的配置的键
@@ -222,7 +222,7 @@ public abstract class PropUtil {
 
     /**
      * 从配置文件中读取布尔类型的配置
-     * 当且仅当配置为字符串"true"(忽略大小写)时，返回true,其他情况一概返回false
+     * 当且仅当配置为字符串"true", "1", "on", "yes"(忽略大小写)时，返回true,其他情况一概返回false
      *
      * @param key 待读取的配置的键
      * @return 待读取的配置的值，（请注意）如果配置不存在则返回false
@@ -233,7 +233,7 @@ public abstract class PropUtil {
 
     /**
      * 从配置文件中读取布尔类型的配置
-     * 当且仅当配置为字符串"true"(忽略大小写)时，返回true,其他情况一概返回false
+     * 当且仅当配置为字符串"true", "1", "on", "yes"(忽略大小写)时，返回true,其他情况一概返回false
      *
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值
@@ -245,7 +245,7 @@ public abstract class PropUtil {
 
     /**
      * 从配置文件中读取布尔类型的配置
-     * 当且仅当配置为字符串"true"(忽略大小写)时，返回true,其他情况一概返回false
+     * 当且仅当配置为字符串"true", "1", "on", "yes"(忽略大小写)时，返回true,其他情况一概返回false
      *
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值

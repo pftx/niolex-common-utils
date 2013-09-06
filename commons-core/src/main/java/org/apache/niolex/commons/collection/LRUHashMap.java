@@ -40,7 +40,7 @@ public class LRUHashMap<K, V> extends LinkedHashMap<K, V> {
 	 * @param maxSize the max map size
 	 */
 	public LRUHashMap(int maxSize) {
-		super((int)(maxSize * 1.4));
+		super((int)(maxSize * 1.4), 0.8F);
 		this.maxSize = maxSize;
 	}
 
