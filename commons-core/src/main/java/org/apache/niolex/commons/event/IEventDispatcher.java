@@ -27,12 +27,14 @@ public interface IEventDispatcher {
 
 	/**
 	 * Add an event listener who care this event.
+	 * @param eventType
 	 * @param eListener
 	 */
 	public void addListener(String eventType, EventListener<?> eListener);
 
 	/**
 	 * Remove the specified event listener.
+	 * @param eventType
 	 * @param eListener
 	 */
 	public void removeListener(String eventType, EventListener<?> eListener);

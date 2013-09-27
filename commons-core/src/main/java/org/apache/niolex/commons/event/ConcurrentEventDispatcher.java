@@ -26,7 +26,8 @@ import org.apache.niolex.commons.concurrent.ConcurrentUtil;
  * 支持并发的事件分发器实现。此实现是完全高并发的，不需要任何的外部锁机制。
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0, Date: 2012-6-26
+ * @version 1.0.0
+ * @since 2012-6-26
  */
 public class ConcurrentEventDispatcher implements IEventDispatcher {
 

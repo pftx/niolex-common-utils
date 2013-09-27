@@ -63,7 +63,7 @@ public class TimeCheckTest {
 
     @Test
     public void testTimeCheckCover() throws Exception {
-        TimeCheck tc = new TimeCheck(2, 2, 2);
+        TimeCheck tc = new TimeCheck(20, 2, 2);
         assertTrue(tc.check());
         tc.lastCheckStatus = false;
         assertFalse(tc.check());
@@ -71,7 +71,7 @@ public class TimeCheckTest {
         assertTrue(tc.check());
         assertFalse(tc.check());
         // ---
-        tc.lastCheckTime = System.currentTimeMillis() - 1;
+        tc.lastCheckTime = System.currentTimeMillis() - 10;
         tc.counter.set(3);
         tc.lastCheckStatus = true;
         CountDownLatch l = new CountDownLatch(1);
@@ -79,9 +79,9 @@ public class TimeCheckTest {
         l.await();
         assertTrue(tc.check());
         assertTrue(tc.lastCheckStatus);
-        // ---
         assertTrue(tc.lastCheckStatus());
         assertEquals(4, tc.getCounter().get());
+        // ---
         tc.counter.set(50);
         assertTrue(tc.check());
         assertEquals(0, tc.freqCheck.getHead());
@@ -91,7 +91,7 @@ public class TimeCheckTest {
 
     @Test
     public void testTimeCheckNormal() throws Exception {
-        TimeCheck tc = new TimeCheck(2, 2, 2);
+        TimeCheck tc = new TimeCheck(20, 2, 2);
         assertTrue(tc.check());
         tc.lastCheckStatus = false;
         assertFalse(tc.check());
@@ -99,14 +99,14 @@ public class TimeCheckTest {
         assertTrue(tc.check());
         assertFalse(tc.check());
         // ---
-        tc.lastCheckTime = System.currentTimeMillis() - 1;
+        tc.lastCheckTime = System.currentTimeMillis() - 10;
         tc.counter.set(3);
         tc.lastCheckStatus = true;
         assertTrue(tc.check());
         assertFalse(tc.lastCheckStatus);
-        // ---
         assertFalse(tc.lastCheckStatus());
         assertEquals(1, tc.getCounter().get());
+        // ---
         tc.counter.set(50);
         assertFalse(tc.check());
         assertEquals(1, tc.freqCheck.getHead());

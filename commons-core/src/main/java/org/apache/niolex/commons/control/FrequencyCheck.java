@@ -50,7 +50,7 @@ public class FrequencyCheck {
     private int currentNum;
 
     /**
-     * Create a FrequencyControler.
+     * Create a FrequencyCheck.
      *
      * @param splitCnt the total interval will be split by this count.
      * @param totalNum the total number.
