@@ -33,7 +33,7 @@ public class DirUtil {
     /**
      * Make Directories (including parent directories) if not exist.
      *
-     * @param pathname
+     * @param pathname the file path name
      * @return true if Directory exist or successfully created, false otherwise.
      */
     public static final boolean mkdirsIfAbsent(String pathname) {
@@ -47,7 +47,7 @@ public class DirUtil {
     /**
      * Check whether the pathname is a directory or not.
      *
-     * @param pathname
+     * @param pathname the file path name
      * @return true if it is a Directory, false if it's not or this pathname not exist.
      */
     public static final boolean isDir(String pathname) {

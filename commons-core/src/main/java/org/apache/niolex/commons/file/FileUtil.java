@@ -67,11 +67,11 @@ public abstract class FileUtil {
      *
      * @param pathname the file path and name
      * @param content the string to store
-     * @param charsetName the charset to use
+     * @param charset the charset to use
      * @return true if file store success
      */
-    public static boolean setCharacterFileContentToFileSystem(String pathname, String content, Charset charsetName) {
-        return setBinaryFileContentToFileSystem(pathname, content.getBytes(charsetName));
+    public static boolean setCharacterFileContentToFileSystem(String pathname, String content, Charset charset) {
+        return setBinaryFileContentToFileSystem(pathname, content.getBytes(charset));
     }
 
     /**
