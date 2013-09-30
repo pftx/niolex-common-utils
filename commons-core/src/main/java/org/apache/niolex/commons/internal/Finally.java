@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
+ * Do things in the finally block.
+ *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2013-6-14
