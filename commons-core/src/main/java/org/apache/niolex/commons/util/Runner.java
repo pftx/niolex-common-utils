@@ -19,6 +19,7 @@ package org.apache.niolex.commons.util;
 
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang.ClassUtils;
 import org.apache.niolex.commons.reflect.MethodUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +46,20 @@ public class Runner {
 			public void run() {
 				try {
 				    Method[] ms = MethodUtil.getMethods(host, methodName);
-					Method m = ms[0];
-					m.setAccessible(true);
-					m.invoke(host, args);
+				    // Prepare ARGS class.
+				    Class<?>[] argsTypes = new Class<?>[args.length];
+				    for (int i = 0; i < args.length; ++i) {
+				        argsTypes[i] = args[i].getClass();
+				    }
+				    // Check all methods to find the correct one.
+					for (Method m : ms) {
+					    if (!ClassUtils.isAssignable(argsTypes, m.getParameterTypes(), true)) {
+					        continue;
+					    }
+					    m.setAccessible(true);
+					    m.invoke(host, args);
+					    break;
+					}
 				} catch (Exception e) {
 					LOG.warn("Error occured in Runner#run method.", e);
 				}

@@ -35,7 +35,8 @@ import com.esotericsoftware.reflectasm.FieldAccess;
 public abstract class FastFieldUtil {
 
     /**
-     * 获取一个Java类定义的所有属性
+     * En: Retrieve all the non-private fields defined in this class.<br>
+     * Cn: 获取一个Java类定义的所有属性
      *
      * @param clazz 需要获取属性的Java类
      * @return 所有属性的数组
@@ -46,7 +47,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 获取一个Java类所对应的属性操作类
+     * En: Get the field access objected for this class.<br>
+     * Cn: 获取一个Java类所对应的属性操作类
      *
      * @param clazz 需要获取属性的Java类
      * @return 所对应的属性操作类
@@ -57,7 +59,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 获取一个Java对象中指定属性的值
+     * En: Get the field value of the specified field name.<br>
+     * Cn: 获取一个Java对象中指定属性的值
      *
      * @param <T> 该属性的返回类型，方法中将按照该类型进行强制类型转换
      * @param fieldName 需要获取的值的属性名称
@@ -71,7 +74,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
+     * En: Set the field value of the specified field name.<br>
+     * Cn: 设置一个Java对象中指定属性的值
      *
      * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
@@ -83,7 +87,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
+     * En: Set the field value of the specified field name.<br>
+     * Cn: 设置一个Java对象中指定属性的值
      *
      * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
@@ -96,7 +101,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
+     * En: Set the field value of the specified field name.<br>
+     * Cn: 设置一个Java对象中指定属性的值
      *
      * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
@@ -109,7 +115,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
+     * En: Set the field value of the specified field name.<br>
+     * Cn: 设置一个Java对象中指定属性的值
      *
      * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
@@ -122,7 +129,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
+     * En: Set the field value of the specified field name.<br>
+     * Cn: 设置一个Java对象中指定属性的值
      *
      * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
@@ -135,7 +143,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
+     * En: Set the field value of the specified field name.<br>
+     * Cn: 设置一个Java对象中指定属性的值
      *
      * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
@@ -148,7 +157,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
+     * En: Set the field value of the specified field name.<br>
+     * Cn: 设置一个Java对象中指定属性的值
      *
      * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
@@ -161,7 +171,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
+     * En: Set the field value of the specified field name.<br>
+     * Cn: 设置一个Java对象中指定属性的值
      *
      * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
@@ -174,7 +185,8 @@ public abstract class FastFieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
+     * En: Set the field value of the specified field name.<br>
+     * Cn: 设置一个Java对象中指定属性的值
      *
      * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象

@@ -27,8 +27,8 @@ public abstract class TidyUtil {
 	/**
 	 * Remove the prefix at every line, from the input string.
 	 *
-	 * @param str
-	 * @param prefix
+	 * @param str the input lines, separated by "\n"
+	 * @param prefix the prefix end index
 	 * @return the result
 	 */
 	public static final String removePrefix(String str, int prefix) {

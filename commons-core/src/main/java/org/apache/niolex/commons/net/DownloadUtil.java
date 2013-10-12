@@ -36,8 +36,12 @@ import org.apache.niolex.commons.stream.StreamUtil;
 import org.apache.niolex.commons.test.Check;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
- * Download file from HTTP, FTP URL
+ * Download file from HTTP, FTP URL.<br>
+ * We have an internal buffer cache for speed up file download for those servers do not
+ * provide file size. If you are not in this case, please call {@link #setUseThreadLocalCache(boolean)}
+ * with parameter <code>false</code>.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -89,7 +93,7 @@ public abstract class DownloadUtil {
 	 * @param strUrl
 	 *            The Url to be downloaded.
 	 * @param maxFileSize
-     *            Max file size in BYTE.
+     *            Max file size in BYTEs.
 	 * @return The file content as byte array.
 	 * @throws NetException
 	 */
@@ -222,7 +226,7 @@ public abstract class DownloadUtil {
 	 *
 	 * @param strUrl The Url to be downloaded.
 	 * @param contentLength The content Length from HTTP header.
-	 * @param maxFileSize Max file size in BYTE.
+	 * @param maxFileSize Max file size in BYTEs.
 	 * @throws NetException
 	 */
 	public static void validateContentLength(final String strUrl, final int contentLength, final int maxFileSize) throws NetException {

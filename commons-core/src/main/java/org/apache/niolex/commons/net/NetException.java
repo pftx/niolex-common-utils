@@ -18,7 +18,7 @@
 package org.apache.niolex.commons.net;
 
 /**
- * The Exception throws from the DownloadUtil
+ * The Exception throws from the network related Utilities.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0

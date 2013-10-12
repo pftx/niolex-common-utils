@@ -29,6 +29,11 @@ import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.util.Runme;
 
 /**
+ * Store system info in this class.
+ * User can all {@link #refreshSystemInfo()} to refresh the internal statistics
+ * manually, or call {@link #autoRefresh(int)} to refresh automatically at
+ * specified interval.<br>
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2012-7-26

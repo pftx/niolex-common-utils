@@ -27,51 +27,8 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-7-12
  */
-public class RunnerTest implements Runnable {
+public class RunnerTest extends Runner implements Runnable {
 	private Counter c = new Counter();
-
-	public void runme() {
-		c.inc();
-	}
-
-	public void runmeOther(int time) {
-		while (time-- > 0)
-			c.inc();
-	}
-
-	public void runmeOtherEx(int time, Exception e) throws Exception {
-		while (time-- > 0)
-			c.inc();
-		throw e;
-	}
-
-	/**
-	 * Test method for {@link org.apache.niolex.commons.util.Runner#run(java.lang.Object, java.lang.String, java.lang.Object[])}.
-	 * @throws InterruptedException
-	 */
-	@Test
-	public void testRunObjectStringObjectArray() throws InterruptedException {
-		Runner.run(this, "runme").join();
-		Runner.run(this, "runmeOther", 3).join();
-		assertEquals(4, c.cnt());
-	}
-
-	/**
-	 * Test method for {@link org.apache.niolex.commons.util.Runner#run(java.lang.Runnable)}.
-	 * @throws InterruptedException
-	 */
-	@Test
-	public void testRunRunnable() throws InterruptedException {
-		Runner.run(this).join();
-		assertEquals(3, c.cnt());
-	}
-
-	@Test
-	public void testRun()
-	 throws Exception {
-		Runner.run(this, "runmeOtherEx", 2, new Exception("K")).join();
-		assertEquals(2, c.cnt());
-	}
 
 	/**
 	 * Override super method
@@ -79,7 +36,73 @@ public class RunnerTest implements Runnable {
 	 */
 	@Override
 	public void run() {
-		c.inc();c.inc();c.inc();
+	    c.inc();c.inc();c.inc();
+	}
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.util.Runner#run(java.lang.Runnable)}.
+     * @throws InterruptedException
+     */
+    @Test
+    public void testRunRunnable() throws InterruptedException {
+        c.set(0);
+        Runner.run(this).join();
+        assertEquals(3, c.cnt());
+    }
+
+	public void runme() {
+		c.inc();
+	}
+
+	public void runme(String str) {
+	    int time = str.length();
+	    while (time-- > 0)
+	        c.inc();
+	}
+
+	public void runme(long time) {
+		while (time-- > 0)
+			c.inc();
+	}
+
+	public void runme(int time, Exception e) throws Exception {
+		while (time-- > 0)
+			c.inc();
+		throw e;
+	}
+
+    @Test
+    public void testRunMethodEx() throws Exception {
+        c.set(0);
+        Runner.run(this, "runme", 2, new Exception("K")).join();
+        assertEquals(2, c.cnt());
+    }
+
+    @Test
+    public void testRunMethod() throws Exception {
+        c.set(0);
+        Runner.run(this, "runme", "ab").join();
+        assertEquals(2, c.cnt());
+    }
+
+    @Test
+    public void testRunMethodNotFound() throws Exception {
+        c.set(0);
+        Runner.run(this, "run", 2, new Exception("K")).join();
+        assertEquals(0, c.cnt());
+    }
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.util.Runner#run(java.lang.Object, java.lang.String, java.lang.Object[])}.
+	 * @throws InterruptedException
+	 */
+	@Test
+	public void testRunObject() throws InterruptedException {
+	    c.set(0);
+		Runner.run(this, "runme").join();
+		assertEquals(1, c.cnt());
+		Runner.run(this, "runme", 3).join();
+		assertEquals(4, c.cnt());
 	}
 
 }

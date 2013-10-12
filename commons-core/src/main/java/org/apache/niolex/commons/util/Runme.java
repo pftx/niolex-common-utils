@@ -25,6 +25,7 @@ import org.apache.niolex.commons.concurrent.ThreadUtil;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-6-28
+ * @see org.apache.niolex.commons.util.Runner
  */
 public abstract class Runme extends Thread {
 
@@ -72,8 +73,8 @@ public abstract class Runme extends Thread {
 		while (isWorking) {
 			try {
 				runMe();
-				Thread.sleep(sleepInterval);
 			} catch (Exception e) {}
+			ThreadUtil.sleep(sleepInterval);
 		}
 	}
 

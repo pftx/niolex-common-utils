@@ -47,7 +47,8 @@ import com.esotericsoftware.reflectasm.MethodAccess;
 public class FastMethodUtil {
 
     /**
-     * 获取一个Java类定义的所有非私有方法
+     * En: Retrieve all the non-private methods defined in this class.<br>
+     * Cn: 获取一个Java类定义的所有非私有方法
      *
      * @param clazz 需要获取的类
      * @return 所有方法数组
@@ -60,7 +61,8 @@ public class FastMethodUtil {
     }
 
     /**
-     * 获取一个Java类所对应的方法操作类
+     * En: Get the method access object of this class.<br>
+     * Cn: 获取一个Java类所对应的方法操作类
      *
      * @param clazz 需要获取的类
      * @return 所对应的方法操作类
@@ -70,7 +72,8 @@ public class FastMethodUtil {
     }
 
     /**
-     * 在指定Java对象上调用指定的方法
+     * En: Invoke this method on the host object.<br>
+     * Cn: 在指定Java对象上调用指定的方法
      *
      * @param methodName 需要调用的方法
      * @param host 用来调用指定方法的对象

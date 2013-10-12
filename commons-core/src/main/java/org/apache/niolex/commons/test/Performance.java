@@ -30,7 +30,6 @@ public abstract class Performance {
 	private final int outerIteration;
 	private long max;
 	private long min;
-	private long total, in, cu;
 
 	/**
 	 * Create a Performance class.
@@ -60,6 +59,7 @@ public abstract class Performance {
 			run();
 		}
 
+		long total, in, cu;
 		/**
 		 * The real thing begin now.
 		 */

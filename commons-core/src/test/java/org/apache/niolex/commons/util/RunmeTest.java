@@ -32,6 +32,8 @@ import org.junit.Test;
 public class RunmeTest {
 
 	/**
+	 * Test run me without initial sleep.
+	 *
 	 * Test method for {@link org.apache.niolex.commons.util.Runme#start()}.
 	 */
 	@Test
@@ -42,9 +44,9 @@ public class RunmeTest {
 			public void runMe() {
 				au.incrementAndGet();
 			}};
-		me.setSleepInterval(100);
+		me.setSleepInterval(30);
 		me.start();
-		Thread.sleep(120);
+		Thread.sleep(45);
 		assertEquals(2, au.intValue());
 		me.stopMe();
 		me.interrupt();
@@ -54,27 +56,25 @@ public class RunmeTest {
 	 * Test method for {@link org.apache.niolex.commons.util.Runme#start()}.
 	 */
 	@Test
-	public void testInitSleep() throws Throwable {
-		final AtomicInteger au = new AtomicInteger(0);
+	public void testRunmeException() throws Throwable {
 		Runme me = new Runme(){
 			@Override
 			public void runMe() {
-				au.incrementAndGet();
+			    throw new NullPointerException("abc");
 			}};
-		me.setSleepInterval(1000000);
-		me.setInitialSleep(true);
+		me.setSleepInterval(30);
+		me.setInitialSleep(false);
 		me.start();
-		Thread.sleep(10);
-		assertTrue(2 > au.intValue());
+		Thread.sleep(45);
 		me.stopMe();
 		me.interrupt();
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.util.Runme#start()}.
+	 * Test method for {@link org.apache.niolex.commons.util.Runme#run()}.
 	 */
 	@Test
-	public void testInitSleepGo() throws Throwable {
+	public void testStopMeInitSleepGo() throws Throwable {
 		final AtomicInteger au = new AtomicInteger(0);
 		Runme me = new Runme(){
 			@Override

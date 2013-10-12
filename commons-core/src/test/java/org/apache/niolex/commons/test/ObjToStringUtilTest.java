@@ -20,8 +20,11 @@ package org.apache.niolex.commons.test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
+
+import com.google.common.collect.Maps;
 
 
 /**
@@ -81,5 +84,14 @@ public class ObjToStringUtilTest {
         t.setNext(null);
         t.cleanAge();
         System.out.println("{t,t,t} => " + ObjToStringUtil.objToString(q));
+    }
+
+    @Test
+    public void testMap() {
+        Map<String, String> map = Maps.newHashMap();
+        map.put("a", "1");
+        map.put("b", "2");
+        map.put("author", "Xie, Jiyun");
+        System.out.println("{map} => " + ObjToStringUtil.objToString(map));
     }
 }

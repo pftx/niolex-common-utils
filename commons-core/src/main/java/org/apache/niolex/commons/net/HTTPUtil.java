@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * This is a simple HTTP util for GET and POST requests.
+ * This is a simple HTTP utility for GET and POST requests.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -112,7 +112,8 @@ public abstract class HTTPUtil {
     }
 
     /**
-     * Infer the charset from HTTP response headers, or from the body
+     * Infer the charset from HTTP response headers, or from the body if needed.
+     *
      * @param headers the HTTP response headers
      * @param body the HTTP response body
      * @return the inferred charset

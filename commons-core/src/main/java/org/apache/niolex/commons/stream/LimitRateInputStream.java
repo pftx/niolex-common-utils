@@ -30,7 +30,7 @@ import org.apache.niolex.commons.util.SystemUtil;
  */
 public class LimitRateInputStream extends InputStream {
 
-    // We check when we received every 1K for rate.
+    // We check when we received every 10K for rate.
     private static final int CHECK_SIZE_THRESHOLD = 10240;
     private final InputStream delegate;
     // The rate of 1 Byte/Nanosecond.
@@ -43,8 +43,7 @@ public class LimitRateInputStream extends InputStream {
     /**
      * Create a LimitRateInputStream with the given rate
      * @param delegate
-     * @param rate
-     *            MB/s
+     * @param rate MB/s
      */
     public LimitRateInputStream(InputStream delegate, double rate) {
         super();

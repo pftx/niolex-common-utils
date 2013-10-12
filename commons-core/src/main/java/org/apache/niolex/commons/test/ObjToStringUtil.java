@@ -39,7 +39,7 @@ import org.apache.niolex.commons.reflect.FieldUtil;
  *   ...
  * ]
  *
- * This class is for test-using only, not all cases are covered.
+ * This class is for test-using only, we are not sure that all cases are covered.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  *

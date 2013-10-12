@@ -25,7 +25,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
- * Translate between string and Date.
+ * Translate between string and Date Time.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2010-11-18$

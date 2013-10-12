@@ -43,7 +43,6 @@ import org.apache.commons.lang.reflect.MethodUtils;
  * 在指定Java对象上调用指定的方法
  *
  *
- * @used 暂无项目使用
  * @category niolex-common-utils -> 公共库 -> 反射处理
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -139,6 +138,7 @@ public class MethodUtil extends MethodUtils {
 
     /**
      * 获取一个Java类指定名字和方法签名的方法
+     *
      * @param clazz 需要获取的类
      * @param name 指定方法的名字
      * @param parameterTypes 指定方法的签名

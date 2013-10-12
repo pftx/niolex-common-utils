@@ -28,7 +28,7 @@ import org.apache.commons.lang.ClassUtils;
  *
  * 目前提供的功能如下：
  * 1. public static final Field[] getFields(Class<?> clazz)
- * 获取一个Java类所有定义的属性
+ * 获取一个Java类定义的所有属性
  *
  * 2. public static final Field[] getFields(Class<?> clazz, Class<?> filter)
  * 获取一个Java类所有指定类型的属性
@@ -42,7 +42,6 @@ import org.apache.commons.lang.ClassUtils;
  * 5. public static final void setFieldValue(Field f, Object host, * value)
  * 设置一个Java对象中指定属性的值
  *
- * @used 暂无项目使用
  * @category niolex-common-utils -> 公共库 -> 反射处理
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -50,7 +49,7 @@ import org.apache.commons.lang.ClassUtils;
 public abstract class FieldUtil {
 
     /**
-     * 获取一个Java类所有定义的属性
+     * 获取一个Java类定义的所有属性
      *
      * @param clazz 需要获取属性的Java类
      * @return 所有属性的数组

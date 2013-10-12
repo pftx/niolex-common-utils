@@ -23,7 +23,7 @@ import java.util.UUID;
 import org.apache.commons.lang.RandomStringUtils;
 
 /**
- * Generate mock datas, for unit test like things.
+ * Generate mock DATAs, for unit test like things.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -37,7 +37,7 @@ public abstract class MockUtil {
      * Generate a random int uniformly distributed int value between 0 (inclusive) and the specified value
      * (exclusive), drawn from the inner random number generator's sequence.
      *
-     * @param max
+     * @param max exclusive
      * @return the result
      */
     public static final int randInt(int max) {
@@ -48,8 +48,8 @@ public abstract class MockUtil {
      * Generate a random int uniformly distributed int value between <code>from (inclusive)</code> and <code>to</code>
      * (exclusive), drawn from the inner random number generator's sequence.
      *
-     * @param from
-     * @param to
+     * @param from inclusive
+     * @param to exclusive
      * @return the result
      */
     public static final int randInt(int from, int to) {

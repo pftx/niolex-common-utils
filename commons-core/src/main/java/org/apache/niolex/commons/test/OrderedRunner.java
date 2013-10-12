@@ -53,7 +53,7 @@ public class OrderedRunner extends BlockJUnit4ClassRunner {
 		List<FrameworkMethod> lst = super.computeTestMethods();
 		List<FrameworkMethod> cpy = new ArrayList<FrameworkMethod>(lst);
 
-		Collections.sort(cpy, new AlphabeticalOrder());
+		Collections.sort(cpy, AlphabeticalOrder.INSTANCE);
 
 		return cpy;
 	}
@@ -67,6 +67,8 @@ public class OrderedRunner extends BlockJUnit4ClassRunner {
 	 * @since 2012-8-14
 	 */
 	public static class AlphabeticalOrder implements Comparator<FrameworkMethod> {
+
+	    public static final AlphabeticalOrder INSTANCE = new AlphabeticalOrder();
 
 	    /**
 	     * Override super method

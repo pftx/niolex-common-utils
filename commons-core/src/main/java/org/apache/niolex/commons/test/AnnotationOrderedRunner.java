@@ -33,7 +33,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 
 /**
- * Run all the test cases marked by this runner in the order specified by annotation.
+ * Run all the test cases marked by this runner in the order specified by the annotation value.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0

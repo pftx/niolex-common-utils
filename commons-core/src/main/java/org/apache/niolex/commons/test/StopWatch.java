@@ -52,6 +52,7 @@ public class StopWatch {
 
 	/**
 	 * Construct a new Stop Watch.
+	 *
 	 * @param distributionInterval The interval to calculate distribution.
 	 */
 	public StopWatch(int distributionInterval) {
@@ -62,7 +63,7 @@ public class StopWatch {
 	/**
 	 * Begin the time calculation.
 	 *
-	 * @param printDirectly Whether to print rps directly into console.
+	 * @param printDirectly Whether to print RPS directly into console.
 	 */
 	public void begin(final boolean printDirectly) {
 		startTime = System.currentTimeMillis();
