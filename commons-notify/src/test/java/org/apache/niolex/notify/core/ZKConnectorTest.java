@@ -18,16 +18,23 @@
 package org.apache.niolex.notify.core;
 
 
+import static org.junit.Assert.assertFalse;
+
+import org.apache.niolex.commons.test.AnnotationOrderedRunner;
+import org.apache.niolex.commons.test.AnnotationOrderedRunner.Order;
 import org.apache.niolex.notify.AppTest;
+import org.apache.zookeeper.WatchedEvent;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2013-7-5
  */
+@RunWith(AnnotationOrderedRunner.class)
 public class ZKConnectorTest {
 
     private static ZKConnector ZKC;
@@ -48,90 +55,154 @@ public class ZKConnectorTest {
         ZKC.close();
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testZKConnector() throws Exception {
-        ;
-        System.out.println("not yet implemented");
+        new ZKConnector(AppTest.URL, 1);
     }
 
     @Test
     public void testAddAuthInfo() throws Exception {
-        System.out.println("not yet implemented");
+        ZKC.addAuthInfo("LEX", "password");
     }
 
-    @Test
-    public void testReconnect() throws Exception {
-        System.out.println("not yet implemented");
-    }
-
-    @Test
+    @Test(expected=ZKException.class)
     public void testSubmitWatcher() throws Exception {
-        System.out.println("not yet implemented");
+        RecoverableWatcher wat = new RecoverableWatcher() {
+
+            @Override
+            public void process(WatchedEvent event) {
+                System.out.println("WatchedEvent " + event);
+            }
+
+            @Override
+            public void reconnected(String path) {
+                System.out.println("reconnected " + path);
+            }};
+        ZKC.submitWatcher("/a/b/cv", wat, false);
     }
 
     @Test
     public void testDoWatch() throws Exception {
-        System.out.println("not yet implemented");
+        Object r = ZKC.getChildren("/");
+        System.out.println("/[] = " + r);
     }
 
-    @Test
+    @Test(expected=ZKException.class)
     public void testGetData() throws Exception {
-        System.out.println("not yet implemented");
+        ZKC.getData("/a/b/c");
     }
 
-    @Test
+    @Test(expected=ZKException.class)
     public void testGetChildren() throws Exception {
-        System.out.println("not yet implemented");
+        ZKC.getChildren("/a/b/c");
     }
 
     @Test
     public void testExists() throws Exception {
-        System.out.println("not yet implemented");
+        assertFalse(ZKC.exists("/a/b/c"));
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testCreateNodeString() throws Exception {
-        System.out.println("not yet implemented");
+        assertFalse(ZKC.exists("a/b/c"));
     }
 
-    @Test
+    @Test(expected=ZKException.class)
     public void testCreateNodeStringByteArray() throws Exception {
-        System.out.println("not yet implemented");
+        ZKC.createNode("/a/b/c", new byte[] {1, 2, 3});
     }
 
     @Test
     public void testCreateNodeIfAbsentString() throws Exception {
-        System.out.println("not yet implemented");
+        ZKC.createNodeIfAbsent("/notify");
     }
 
-    @Test
+    @Test(expected=ZKException.class)
     public void testCreateNodeIfAbsentStringByteArray() throws Exception {
-        System.out.println("not yet implemented");
+        assertFalse(ZKC.createNodeIfAbsent("/a/b/c", new byte[] {1, 2, 3}));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testUpdateNodeDataE() throws Exception {
+        ZKC.updateNodeData("tify/zkc/tmp", "not".getBytes());
     }
 
     @Test
+    @Order(0)
     public void testMakeSurePathExists() throws Exception {
-        System.out.println("not yet implemented");
+        ZKC.makeSurePathExists("/notify/zkc/tmp");
+    }
+
+    String path = null;
+    int cnt = 0;
+
+    RecoverableWatcher watC = new NotifyChildrenWatcher(ZKC,
+            new Notify(ZKC, "/notify/zkc/tmp"));
+    RecoverableWatcher watD = new NotifyDataWatcher(ZKC,
+            new Notify(ZKC, "/notify/zkc/tmp"));
+
+    @Order(1)
+    public void testSubmit() throws Exception {
+        RecoverableWatcher wat = new RecoverableWatcher() {
+
+            @Override
+            public void process(WatchedEvent event) {
+                System.out.println("WatchedEvent " + event);
+                ++cnt;
+            }
+
+            @Override
+            public void reconnected(String path) {
+                System.out.println("reconnected " + path);
+            }};
+        ZKC.submitWatcher("/notify/zkc/tmp", wat, true);
+        ZKC.submitWatcher("/notify/zkc/tmp", watC, true);
     }
 
     @Test
+    @Order(2)
     public void testCreateNodeStringByteArrayBooleanBoolean() throws Exception {
-        System.out.println("not yet implemented");
+        ZKC.createNode("/notify/zkc/tmp/T1322", null, true, false);
+        ZKC.createNode("/notify/zkc/tmp/T1323", null, true, true);
     }
 
     @Test
+    @Order(3)
     public void testDoCreateNode() throws Exception {
-        System.out.println("not yet implemented");
+        ZKC.createNode("/notify/zkc/tmp/P12", null, false, false);
+        path = ZKC.createNode("/notify/zkc/tmp/P13", null, false, true);
     }
 
     @Test
+    @Order(4)
+    public void testReconnect() throws Exception {
+        ZKC.close();
+        ZKC.close();
+        ZKC.reconnect();
+        watC.reconnected("/notify/zkc/tmp");
+        watD.reconnected("/notify/zkc/tmp");
+    }
+
+    @Test
+    @Order(5)
     public void testUpdateNodeData() throws Exception {
-        System.out.println("not yet implemented");
+        ZKC.updateNodeData("/notify/zkc/tmp", "not".getBytes());
     }
 
     @Test
+    @Order(6)
+    public void testCreateNodeIfAbsent() throws Exception {
+        ZKC.createNodeIfAbsent("/notify/zkc/tmp/P13", null);
+    }
+
+    @Test
+    @Order(7)
     public void testDeleteNode() throws Exception {
-        System.out.println("not yet implemented");
+        try {ZKC.deleteNode(path);} catch(Exception e){}
+        try {ZKC.deleteNode("/notify/zkc/tmp/P13");} catch(Exception e){}
+        try {ZKC.deleteNode("/notify/zkc/tmp/P12");} catch(Exception e){}
+        try {ZKC.deleteNode("/notify/zkc/tmp");} catch(Exception e){}
+        try {ZKC.deleteNode("/notify/zkc");} catch(Exception e){}
     }
 
 }

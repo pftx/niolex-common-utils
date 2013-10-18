@@ -34,6 +34,8 @@ public class WatcherItem {
     private final boolean isChildren;
 
     /**
+     * Create a new WatcherItem.
+     *
      * @param path
      * @param wat
      * @param isChildren

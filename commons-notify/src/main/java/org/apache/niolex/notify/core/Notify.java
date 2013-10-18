@@ -51,6 +51,8 @@ public class Notify {
     private volatile List<String> children;
 
     /**
+     * Create a new notify under this bash path.
+     *
      * @param basePath the ZK base path of this notify. It's fixed for one notify.
      */
     public Notify(ZKConnector zkConn, String basePath) {
@@ -86,7 +88,7 @@ public class Notify {
     /**
      * Delete the property specified by this key.
      *
-     * @param key
+     * @param key the property key
      * @return true if deleted, false if not found.
      */
     public boolean deleteProperty(String key) {
@@ -96,7 +98,7 @@ public class Notify {
     /**
      * Delete the property specified by this key.
      *
-     * @param key
+     * @param key the property key
      * @return true if deleted, false if not found.
      */
     public synchronized boolean deleteProperty(byte[] key) {
@@ -216,8 +218,8 @@ public class Notify {
     /**
      * We will not fire property change on property delete.
      *
-     * @param a
-     * @param b
+     * @param a the new property key
+     * @param b the new property value
      */
     private void firePropertyChange(byte[] a, byte[] b) {
         synchronized (list) {

@@ -1,6 +1,6 @@
 /**
  * ByteArray.java
- * 
+ *
  * Copyright 2012 Niolex, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,18 +20,22 @@ package org.apache.niolex.notify;
 import java.util.Arrays;
 
 /**
+ * Encapsulate raw byte array, to support hash map. Implement {@link #hashCode()}
+ * and {@link #equals(Object)} inside.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
  * @since 2012-12-27
  */
 public class ByteArray {
-    
+
     public final byte[] array;
     public final int hashCode;
-    
+
     /**
-     * @param array
+     * The only constructor.
+     *
+     * @param array the byte array to be encapsulated
      */
     public ByteArray(byte[] array) {
         if (array == null) {
@@ -40,7 +44,7 @@ public class ByteArray {
         this.array = array;
         this.hashCode = Arrays.hashCode(array);
     }
-    
+
     /**
      * Override super method
      * @see java.lang.Object#hashCode()
@@ -49,7 +53,7 @@ public class ByteArray {
     public int hashCode() {
         return hashCode;
     }
-    
+
     /**
      * Override super method
      * @see java.lang.Object#equals(java.lang.Object)

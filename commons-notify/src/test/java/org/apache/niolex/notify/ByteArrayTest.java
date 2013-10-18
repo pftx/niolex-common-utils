@@ -50,6 +50,17 @@ public class ByteArrayTest {
      * Test method for {@link org.apache.niolex.notify.ByteArray#equals(java.lang.Object)}.
      */
     @Test
+    public void testEquals() {
+        byte[] a = "Hello World!".getBytes();
+        ByteArray t1 = new ByteArray(a);
+        byte t2 = 3;
+        assertNotEquals(t1, t2);
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.notify.ByteArray#equals(java.lang.Object)}.
+     */
+    @Test
     public void testEqualsObject() {
         byte[] a = "Hello World!".getBytes();
         byte[] b = "Hello World!".getBytes();
@@ -57,6 +68,19 @@ public class ByteArrayTest {
         ByteArray t1 = new ByteArray(a);
         ByteArray t2 = new ByteArray(b);
         assertEquals(t1, t2);
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.notify.ByteArray#equals(java.lang.Object)}.
+     */
+    @Test
+    public void testNotEquals() {
+        byte[] a = "Hello World!".getBytes();
+        byte[] b = "Hello World@".getBytes();
+        assertFalse(b.equals(a));
+        ByteArray t1 = new ByteArray(a);
+        ByteArray t2 = new ByteArray(b);
+        assertNotEquals(t1, t2);
     }
 
     @Test(expected=IllegalArgumentException.class)

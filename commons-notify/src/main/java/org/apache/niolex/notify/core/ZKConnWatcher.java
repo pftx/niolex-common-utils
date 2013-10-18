@@ -38,7 +38,9 @@ public class ZKConnWatcher implements Watcher {
     private final CountDownLatch latch;
 
 	/**
-     * @param conn
+	 * The constructor.
+	 *
+     * @param conn the zookeeper connector
      * @param latch use it to count down when connected.
      */
     public ZKConnWatcher(ZKConnector conn, CountDownLatch latch) {

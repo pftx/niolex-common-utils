@@ -32,7 +32,7 @@ public class ZKException extends RuntimeException {
     private static final long serialVersionUID = 6217415731238015041L;
 
     public static enum Code {
-        INTERRUPT, NOAUTH, DISCONNECTED, OTHER, SYSTEMERROR, NONODE, NODEEXISTS;
+        INTERRUPT, NO_AUTH, DISCONNECTED, OTHER, SYSTEM_ERROR, NO_NODE, NODE_EXISTS;
     }
 
     /**
@@ -52,19 +52,19 @@ public class ZKException extends RuntimeException {
             switch (ke.code()) {
                 case NOAUTH:
                 case AUTHFAILED:
-                    code = Code.NOAUTH;
+                    code = Code.NO_AUTH;
                     break;
                 case SYSTEMERROR:
-                    code = Code.SYSTEMERROR;
+                    code = Code.SYSTEM_ERROR;
                     break;
                 case CONNECTIONLOSS:
                     code = Code.DISCONNECTED;
                     break;
                 case NONODE:
-                    code = Code.NONODE;
+                    code = Code.NO_NODE;
                     break;
                 case NODEEXISTS:
-                    code = Code.NODEEXISTS;
+                    code = Code.NODE_EXISTS;
                     break;
             }
         } else if (e instanceof InterruptedException) {

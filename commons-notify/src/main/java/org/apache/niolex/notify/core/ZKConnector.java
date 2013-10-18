@@ -121,6 +121,8 @@ public class ZKConnector {
     protected void reconnect() {
         while (true) {
             try {
+                // Close it first to ensure there will be no more than one connection.
+                close();
                 connectToZookeeper();
                 if (auth != null) {
                     this.zk.addAuthInfo("digest", auth);
@@ -146,7 +148,10 @@ public class ZKConnector {
      */
     public void close() {
         try {
-            this.zk.close();
+            if (this.zk != null) {
+                this.zk.close();
+                this.zk = null;
+            }
         } catch (Exception e) {
             LOG.info("Failed to close ZK connection.", e);
         }
@@ -164,10 +169,10 @@ public class ZKConnector {
      *  when watch children, return List<String>
      * If user use other types as return type, a ClassCastException will throw.
      *
-     * @param path
-     * @param wat
-     * @param isChildren
-     * @return the current data
+     * @param path the zookeeper path you want to watch
+     * @param wat the watcher
+     * @param isChildren is watch children or node data
+     * @return the current result
      */
     @SuppressWarnings("unchecked")
     public <T> T submitWatcher(String path, RecoverableWatcher wat, boolean isChildren) {
@@ -292,7 +297,7 @@ public class ZKConnector {
             }
         } catch (ZKException e) {
             // The node may already exist.
-            if (e.getCode() != ZKException.Code.NODEEXISTS) {
+            if (e.getCode() != ZKException.Code.NODE_EXISTS) {
                 throw e;
             }
         }
@@ -315,7 +320,7 @@ public class ZKConnector {
                 createNode(path, null, false, false);
             } catch (ZKException e) {
                 // The node may already exist.
-                if (e.getCode() != ZKException.Code.NODEEXISTS) {
+                if (e.getCode() != ZKException.Code.NODE_EXISTS) {
                     throw e;
                 }
             }

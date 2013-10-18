@@ -8,7 +8,7 @@ import org.apache.niolex.notify.core.ZKException;
 import org.apache.niolex.notify.core.ZKConnector;
 
 /**
- * The entrance of notify-core. User can create an instance of this class and use it,
+ * The entrance of commons-notify. User can create an instance of this class and use it,
  * or use the static style, init the global instance, and use it by static method
  * {@link #instance()}
  *
@@ -26,8 +26,8 @@ public class App extends ZKConnector {
     /**
      * Init the global instance only once.
      *
-     * @param clusterAddress
-     * @param sessionTimeout
+     * @param clusterAddress the zookeeper cluster address
+     * @param sessionTimeout the zookeeper connection session timeout in milliseconds
      * @throws IOException
      */
     public synchronized static void init(String clusterAddress, int sessionTimeout) throws IOException {
@@ -50,8 +50,8 @@ public class App extends ZKConnector {
     /**
      * Construct a new App and connect to ZK server.
      *
-     * @param clusterAddress
-     * @param sessionTimeout
+     * @param clusterAddress the zookeeper cluster address
+     * @param sessionTimeout the zookeeper connection session timeout in milliseconds
      * @throws IOException
      */
     public App(String clusterAddress, int sessionTimeout) throws IOException {
@@ -59,7 +59,7 @@ public class App extends ZKConnector {
     }
 
     /**
-     * Get a Notify to represent this path.
+     * Get a Notify to represent this path. Will return null if the path not exist.
      *
      * @param path the path of notify
      * @return null if not found, a Notify instance otherwise
