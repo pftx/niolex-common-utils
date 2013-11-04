@@ -56,7 +56,7 @@ public class BeanServerTest {
 		@Override
 		public void invoke(OutputStream out, String[] args) throws IOException {
 			System.out.println("I am invoked.");
-			out.write(StringUtil.strToAsciiByte("I am invoked." + ConnectionWorker.END_LINE));
+			out.write(StringUtil.strToAsciiByte("I am invoked." + ConnectionWorker.endl()));
 		}
 
 		public String getMsg() {
@@ -98,7 +98,7 @@ public class BeanServerTest {
 	 */
 	@Test
 	public void testPutIfAbsent() {
-		Object o = beanS.putIfAbsent("fail", "Not yet implemented");
+		Object o = beanS.putIfAbsent("fail2", "Not yet implemented");
 		assertNull(o);
 	}
 

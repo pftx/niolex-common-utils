@@ -19,6 +19,7 @@ package org.apache.niolex.commons.reflect;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.ClassUtils;
@@ -139,6 +140,65 @@ public abstract class FieldUtil {
             throw e;
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("Failed to access the field.", e);
+        }
+    }
+
+    /**
+     * Set the field with correct value parsing from the string value.
+     * 自动从string类型解析需要的类型并设置一个Java对象中指定属性的值
+     *
+     * @param f 需要设置的值的属性定义
+     * @param o 用来设置指定属性的值的对象
+     * @param value 指定属性的值
+     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
+     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
+     * @throws UnsupportedOperationException 如果我们无法支持这个属性的类型
+     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     */
+    public static final void setFieldWithCorrectValue(Field f, Object o, String value)
+            throws IllegalArgumentException, IllegalAccessException {
+        f.setAccessible(true);
+        Class<?> type = f.getType();
+        if (type == String.class) {
+            f.set(o, value);
+        } else if (type == Date.class) {
+            Date d = new Date(Long.parseLong(value));
+            f.set(o, d);
+        } else if (type == Integer.class) {
+            f.set(o, Integer.parseInt(value));
+        } else if (type == int.class) {
+            f.setInt(o, Integer.parseInt(value));
+        } else if (type == Long.class) {
+            f.set(o, Long.parseLong(value));
+        } else if (type == long.class) {
+            f.setLong(o, Long.parseLong(value));
+        } else if (type == Short.class) {
+            f.set(o, Short.parseShort(value));
+        } else if (type == short.class) {
+            f.setShort(o, Short.parseShort(value));
+        } else if (type == Byte.class) {
+            f.set(o, Byte.parseByte(value));
+        } else if (type == byte.class) {
+            f.setByte(o, Byte.parseByte(value));
+        } else if (type == Boolean.class) {
+            f.set(o, Boolean.parseBoolean(value));
+        } else if (type == boolean.class) {
+            f.setBoolean(o, Boolean.parseBoolean(value));
+        } else if (type == Character.class) {
+            f.set(o, value.charAt(0));
+        } else if (type == char.class) {
+            f.setChar(o, value.charAt(0));
+        } else if (type == Double.class) {
+            f.set(o, Double.parseDouble(value));
+        } else if (type == double.class) {
+            f.setDouble(o, Double.parseDouble(value));
+        } else if (type == Float.class) {
+            f.set(o, Float.parseFloat(value));
+        } else if (type == float.class) {
+            f.setFloat(o, Float.parseFloat(value));
+        } else {
+            throw new UnsupportedOperationException("The Field Type [" + type.getSimpleName()
+                    + "] Is Not Supported.");
         }
     }
 

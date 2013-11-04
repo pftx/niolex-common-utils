@@ -17,12 +17,14 @@
  */
 package org.apache.niolex.commons.remote;
 
+import static org.apache.niolex.commons.remote.ConnectionWorker.endl;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.util.Date;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.reflect.FieldUtil;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
@@ -38,7 +40,6 @@ public abstract class Executer {
 
 	// can reuse, share globally
     private static final ObjectMapper mapper;
-    public static String END_LINE = "\n";
 
     static {
     	/**
@@ -52,15 +53,16 @@ public abstract class Executer {
 
 	/**
 	 * Execute the command on the object.
-	 * @param o
-	 * @param out
-	 * @param args The command line parsed from client input.
-	 * It's of the following format:
+	 *
+	 * @param o the target object
+	 * @param out the output stream
+	 * @param args The command line parsed from client input
+	 * It's of the following format:<pre>
 	 * Index	Explain
 	 * 0		Command Name
 	 * 1		Object Path
 	 * 2		Extension Argument 1 (Optional)
-	 * 3		Extension Argument 2 (Optional)
+	 * 3		Extension Argument 2 (Optional)</pre>
 	 */
 	public abstract void execute(Object o, OutputStream out, String[] args) throws IOException;
 
@@ -81,7 +83,7 @@ public abstract class Executer {
 		 */
 		@Override
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
-			String s = mapper.writeValueAsString(o) + END_LINE;
+			String s = mapper.writeValueAsString(o) + endl();
 			out.write(StringUtil.strToUtf8Byte(s));
 		}
 
@@ -106,11 +108,11 @@ public abstract class Executer {
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
 			Field[] fields = o.getClass().getDeclaredFields();
 			StringBuilder sb = new StringBuilder();
-			sb.append("All Fields Of ").append(o.getClass().getSimpleName()).append(END_LINE);
+			sb.append("All Fields Of ").append(o.getClass().getSimpleName()).append(endl());
 			for (Field f : fields) {
-				sb.append("    ").append(f.getName()).append(END_LINE);
+				sb.append("    ").append(f.getName()).append(endl());
 			}
-			sb.append("---").append(END_LINE);
+			sb.append("---").append(endl());
 			out.write(StringUtil.strToUtf8Byte(sb.toString()));
 		}
 
@@ -133,61 +135,20 @@ public abstract class Executer {
 		 */
 		@Override
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
-			Field[] fields = o.getClass().getDeclaredFields();
 			if (args.length != 4) {
-				out.write(StringUtil.strToAsciiByte("Invalid Command." + END_LINE));
+				out.write(StringUtil.strToAsciiByte("Invalid Command." + endl()));
 				return;
 			}
-			String fieldName = args[2];
-			String value = args[3];
-			boolean found = false;
-			for (Field f : fields) {
-				if (f.getName().equals(fieldName)) {
-					found = true;
-					Class<?> type = f.getType();
-					f.setAccessible(true);
-					try {
-						if (type == String.class) {
-							f.set(o, value);
-						} else if (type == Date.class) {
-							Date d = new Date(Long.parseLong(value));
-							f.set(o, d);
-						} else if (type == Integer.class) {
-							f.set(o, Integer.parseInt(value));
-						} else if (type == Boolean.class) {
-							f.set(o, Boolean.parseBoolean(value));
-						} else if (type == Long.class) {
-							f.set(o, Long.parseLong(value));
-						} else if (type == int.class) {
-							f.setInt(o, Integer.parseInt(value));
-						} else if (type == long.class) {
-							f.setLong(o, Long.parseLong(value));
-						} else if (type == boolean.class) {
-							f.setBoolean(o, Boolean.parseBoolean(value));
-						} else if (type == short.class) {
-							f.setShort(o, Short.parseShort(value));
-						} else if (type == byte.class) {
-							f.setByte(o, Byte.parseByte(value));
-						} else if (type == char.class) {
-							f.setChar(o, value.charAt(0));
-						} else if (type == double.class) {
-							f.setDouble(o, Double.parseDouble(value));
-						} else if (type == float.class) {
-							f.setFloat(o, Float.parseFloat(value));
-						} else {
-							out.write(StringUtil.strToAsciiByte("This Field Type " + type.getSimpleName()
-									+ " Is Not Supported." + END_LINE));
-							return;
-						}
-						out.write(StringUtil.strToAsciiByte("Set Field Success." + END_LINE));
-					} catch (Exception e) {
-						out.write(StringUtil.strToAsciiByte("Failed to Set Field:" + e.getMessage() + "." + END_LINE));
-					}
-					break;
-				}
-			}
-			if (!found) {
-				out.write(StringUtil.strToAsciiByte("Field Not Found." + END_LINE));
+			try {
+    			Field f = FieldUtil.getField(o.getClass(), args[2]);
+    			FieldUtil.setFieldWithCorrectValue(f, o, args[3]);
+    			out.write(StringUtil.strToAsciiByte("Set Field Success." + endl()));
+			} catch (NoSuchFieldException e) {
+			    out.write(StringUtil.strToAsciiByte("Field Not Found." + endl()));
+			} catch (UnsupportedOperationException e) {
+			    out.write(StringUtil.strToAsciiByte(e.getMessage() + endl()));
+			} catch (Exception e) {
+			    out.write(StringUtil.strToAsciiByte("Failed to Set Field:" + e.getMessage() + "." + endl()));
 			}
 		}
 
@@ -218,11 +179,11 @@ public abstract class Executer {
 			} else {
 				sb.append("Target ").append(o.getClass().getSimpleName());
 				sb.append(" Is not Allowed to Invoke.");
-				sb.append(END_LINE);
+				sb.append(endl());
 				out.write(StringUtil.strToUtf8Byte(sb.toString()));
 				return;
 			}
-			sb.append("---Invoke Success---").append(END_LINE);
+			sb.append("---Invoke Success---").append(endl());
 			out.write(StringUtil.strToUtf8Byte(sb.toString()));
 		}
 
@@ -246,13 +207,13 @@ public abstract class Executer {
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
 			if (o instanceof Monitor) {
 				if (args.length < 3) {
-					out.write(StringUtil.strToUtf8Byte("Please specify the Key to Monitor." + END_LINE));
+					out.write(StringUtil.strToUtf8Byte("Please specify the Key to Monitor." + endl()));
 					return;
 				}
 				String parameter = args.length > 3 ? args[3] : "default";
 				((Monitor) o).doMonitor(out, args[2], parameter);
 			} else {
-				out.write(StringUtil.strToUtf8Byte("Object not Monitor." + END_LINE));
+				out.write(StringUtil.strToUtf8Byte("Object is not a Monitor." + endl()));
 			}
 		}
 

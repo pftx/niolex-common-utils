@@ -34,12 +34,12 @@ public interface Invokable {
 	 *
 	 * @param out The output stream is for write invoke result.
 	 * @param args The arguments from remote client.
-	 * It's of the following format:
+	 * It's of the following format:<pre>
 	 * Index	Explain
 	 * 0		Command Name
 	 * 1		Object Path
 	 * 2		Extension Argument 1 (Optional)
-	 * 3		Extension Argument 2 (Optional)
+	 * 3		Extension Argument 2 (Optional)</pre>
 	 * @throws IOException
 	 */
 	public void invoke(OutputStream out, String[] args) throws IOException;

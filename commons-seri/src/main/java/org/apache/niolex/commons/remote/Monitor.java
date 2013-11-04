@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.remote;
 
+import static org.apache.niolex.commons.remote.ConnectionWorker.endl;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
@@ -71,7 +73,7 @@ public class Monitor implements Runnable {
 	/**
 	 * The internal working status.
 	 */
-	private boolean isWorking;
+	private volatile boolean isWorking;
 
 	/**
 	 * Constructs a new monitor with the specified max old items.
@@ -96,8 +98,7 @@ public class Monitor implements Runnable {
 	public void addValue(String key, int value) {
 		CircularList<MonItem> set = dataMap.get(key);
 		if (set == null) {
-		    CircularList<MonItem> newset = new CircularList<MonItem>(maxOldItems);
-		    set = ConcurrentUtil.initMap(dataMap, key, newset);
+		    set = ConcurrentUtil.initMap(dataMap, key, new CircularList<MonItem>(maxOldItems));
 		}
 		MonItem e = new MonItem(value);
 		set.add(e);
@@ -123,8 +124,8 @@ public class Monitor implements Runnable {
                 // Process all the real time connections.
                 if (!q.que.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(q.key).append(',').append(q.time).append(',').append(q.value);
-                    sb.append(Executer.END_LINE);
+                    sb.append(q.key).append('[').append(q.time).append("]=").append(q.value);
+                    sb.append('\n');
                     byte[] arr = StringUtil.strToUtf8Byte(sb.toString());
                     Iterator<OutputStream> iter = q.que.iterator();
                     while (iter.hasNext()) {
@@ -142,26 +143,32 @@ public class Monitor implements Runnable {
     }
 
 	/**
-	 * A connection wait to monitor the status of the specified key.
+	 * A connection use this method to monitor the status of the specified key.
 	 *
 	 * @param out the output stream to write results.
 	 * @param key the key to monitor
-	 * @param parameter the parameter, with the following options:
+	 * @param parameter the parameter, with the following options:<pre>
 	 * Option	Meaning
 	 * Watch	Watch the historical and real time statistics.
 	 * Real		Only need the real time statistics.
-	 * History	(Default)Only need the history statistics.
+	 * History	(Default)Only need the historical statistics.</pre>
 	 */
 	public void doMonitor(OutputStream out, String key, String parameter) throws IOException {
-		if (parameter.charAt(0) == 'w' || parameter.charAt(0) == 'W') {
-			printHistorical(out, key);
-			attachReadTime(out, key);
-			return;
-		} else if (parameter.charAt(0) == 'r' || parameter.charAt(0) == 'R') {
-			attachReadTime(out, key);
-			return;
-		}
-		printHistorical(out, key);
+	    switch (parameter.charAt(0)) {
+	        case 'w':
+	        case 'W':
+	            // Watch the historical [and] real time statistics.
+	            printHistorical(out, key);
+	        case 'r':
+	        case 'R':
+	            // Only need the real time statistics.
+	            attachReadTime(out, key);
+	            break;
+            default:
+                // (Default)Only need the historical statistics.
+                printHistorical(out, key);
+                break;
+	    }
 	}
 
 	/**
@@ -173,13 +180,13 @@ public class Monitor implements Runnable {
 	private void printHistorical(OutputStream out, String key) throws IOException {
 		CircularList<MonItem> set = dataMap.get(key);
 		if (set == null) {
-			out.write(StringUtil.strToUtf8Byte("The Key not found in Monitor." + Executer.END_LINE));
+			out.write(StringUtil.strToUtf8Byte("The Key not found in Monitor." + endl()));
 		} else {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < set.size(); ++i) {
 				MonItem item = set.get(i);
 				sb.append(key).append('[').append(DateTimeUtil.formatDate2DateTimeStr(item.time));
-				sb.append(']').append('=').append(item.value).append(Executer.END_LINE);
+				sb.append(']').append('=').append(item.value).append(endl());
 			}
 			out.write(StringUtil.strToUtf8Byte(sb.toString()));
 		}
@@ -235,9 +242,9 @@ public class Monitor implements Runnable {
 	 */
 	public static class QueItem {
 	    final String key;
-	    final ConcurrentLinkedQueue<OutputStream> que;
 	    final long time;
 	    final int value;
+	    final ConcurrentLinkedQueue<OutputStream> que;
 
         public QueItem(String key, MonItem e, ConcurrentLinkedQueue<OutputStream> que) {
             super();

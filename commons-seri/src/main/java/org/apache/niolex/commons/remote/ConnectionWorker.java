@@ -28,10 +28,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.reflect.FieldUtil;
 import org.apache.niolex.commons.remote.Path.Type;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +47,8 @@ import org.slf4j.LoggerFactory;
 public class ConnectionWorker implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(ConnectionWorker.class);
 	private static final Map<String, Executer> COMMAND_MAP = new HashMap<String, Executer>();
+	private static final ThreadLocal<String> ENDL_HOLDER = new InheritableThreadLocal<String>();
 	private static String AUTH_INFO = null;
-	public static String END_LINE = "\n";
 
 	// Add all executers here.
 	static {
@@ -57,70 +59,84 @@ public class ConnectionWorker implements Runnable {
 		COMMAND_MAP.put("mon", new Executer.InvoMonitor());
 	}
 
-	// Scan input stream.
-	private final Scanner scan;
-	private final OutputStream out;
-	private final Socket sock;
-	private final ConcurrentHashMap<String, Object> beanMap;
-	private boolean isAuth = false;
-
-
 	/**
 	 * Add a custom command to worker.
 	 *
-	 * @param key
-	 * @param value
+	 * @param key the command key
+	 * @param value the command executer
 	 * @return the previous value associated with key, or null if there was no mapping for key.
 	 */
 	public static final Object addCommand(String key, Executer value) {
-		return COMMAND_MAP.put(key, value);
+	    return COMMAND_MAP.put(key, value);
+	}
+
+	/**
+	 * Get the end line character for this current connection.
+	 *
+	 * @return The end line character
+	 */
+	public static String endl() {
+	    return ENDL_HOLDER.get();
 	}
 
 	/**
 	 * Set authentication info to worker.
 	 *
-	 * @param s
+	 * @param s the authentication string
 	 */
 	public static final void setAuthInfo(String s) {
-		AUTH_INFO = s;
+	    AUTH_INFO = s;
 	}
 
+	// Scan input stream.
+	private final Scanner scan;
+	private final OutputStream out;
+	private final Socket sock;
+	private final AtomicInteger connNum;
+	private final ConcurrentHashMap<String, Object> beanMap;
+	private boolean isAuth = false;
+
 	/**
-	 * @param socket
-	 * @param map
+	 * The main Constructor.
+	 *
+	 * @param socket the socket to work with
+	 * @param map the global bean map
+	 * @param connectionNumber the connection number counter
 	 * @throws IOException
 	 */
-	public ConnectionWorker(Socket socket, ConcurrentHashMap<String, Object> map) throws IOException {
+	public ConnectionWorker(Socket socket, ConcurrentHashMap<String, Object> map, AtomicInteger connectionNumber) throws IOException {
 		scan = new Scanner(socket.getInputStream(), "UTF-8");
 		out = socket.getOutputStream();
 		sock = socket;
+		connNum = connectionNumber;
 		beanMap = map;
 		LOG.info("Remote client [{}] connected.", socket.getRemoteSocketAddress());
 	}
 
 	/**
+	 * The main work loop.
+	 *
 	 * Override super method
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
 	public void run() {
+	    ENDL_HOLDER.set("\n");
 		try {
 			execute();
-		} catch (IOException e) {
+		} catch (Exception e) {
 		} finally {
 			scan.close();
-			try {
-				out.close();
-			} catch (IOException e) {}
-			try {
-				sock.close();
-			} catch (IOException e) {}
+			SystemUtil.close(out);
+			SystemUtil.close(sock);
+			connNum.decrementAndGet();
 		}
 		LOG.info("Remote client [{}] disconnected.", sock.getRemoteSocketAddress());
 	}
 
 	/**
-	 * Execute the command.
+	 * Execute the command here.
+	 * The main work is to find the correct target object and execute the command on it.
 	 *
 	 * @throws IOException
 	 */
@@ -135,45 +151,43 @@ public class ConnectionWorker implements Runnable {
 			final String comm = args[0].toLowerCase();
 			// Change End Of Line
 			if (comm.startsWith("win")) {
-				END_LINE = "\r\n";
-				Executer.END_LINE = "\r\n";
-				out.write(StringUtil.strToAsciiByte("End Line Changed." + END_LINE));
+				ENDL_HOLDER.set("\r\n");
+				out.write(StringUtil.strToAsciiByte("End Line Changed." + endl()));
 				continue;
 			}
 			if (comm.startsWith("lin")) {
-				END_LINE = "\n";
-				Executer.END_LINE = "\n";
-				out.write(StringUtil.strToAsciiByte("End Line Changed." + END_LINE));
+				ENDL_HOLDER.set("\n");
+				out.write(StringUtil.strToAsciiByte("End Line Changed." + endl()));
 				continue;
 			}
 			// Quit
 			if ("quit".equals(comm) || "exit".equals(comm)) {
-				out.write(StringUtil.strToAsciiByte("Goodbye." + END_LINE));
+				out.write(StringUtil.strToAsciiByte("Goodbye." + endl()));
 				break;
 			}
 			// Auth
 			if ("auth".equals(comm)) {
 				if (AUTH_INFO == null || (args.length == 2 && AUTH_INFO.equals(args[1]))) {
-					out.write(StringUtil.strToAsciiByte("Authenticate Success." + END_LINE));
+					out.write(StringUtil.strToAsciiByte("Authenticate Success." + endl()));
 					isAuth = true;
 				} else {
-					out.write(StringUtil.strToAsciiByte("Authenticate failed." + END_LINE));
+					out.write(StringUtil.strToAsciiByte("Authenticate failed." + endl()));
 				}
 				continue;
 			}
 			if (AUTH_INFO != null && !isAuth) {
-				out.write(StringUtil.strToAsciiByte("Please authenticate." + END_LINE));
+				out.write(StringUtil.strToAsciiByte("Please authenticate." + endl()));
 				continue;
 			}
 			// Invalid command.
 			if (!COMMAND_MAP.containsKey(comm) || args.length < 2 || args[1].length() == 0) {
-				out.write(StringUtil.strToAsciiByte("Invalid Command." + END_LINE));
+				out.write(StringUtil.strToAsciiByte("Invalid Command." + endl()));
 				continue;
 			}
 			// Parse tree.
 			Path path = Path.parsePath(args[1]);
 			if (path.getType() == Type.INVALID) {
-				out.write(StringUtil.strToAsciiByte(path.getName() + "^" + END_LINE));
+				out.write(StringUtil.strToAsciiByte(path.getName() + "^" + endl()));
 				continue;
 			}
 			Object parent = beanMap.get(path.getName());
@@ -184,6 +198,7 @@ public class ConnectionWorker implements Runnable {
 				// Navigate into bean according to the path.
 				String name = path.getName();
 				try {
+				    // For (pathIdx == 1) we already get parent from bean map.
 					if (pathIdx != 1) {
 						Field f = FieldUtil.getField(parent.getClass(), name);
 						f.setAccessible(true);
@@ -191,7 +206,7 @@ public class ConnectionWorker implements Runnable {
 					}
 				} catch (Exception e) {
 					out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-							+ pathIdx + "." + name + END_LINE));
+							+ pathIdx + "." + name + endl()));
 					break;
 				}
 				switch(path.getType()) {
@@ -202,7 +217,7 @@ public class ConnectionWorker implements Runnable {
 						Collection<? extends Object> os = (Collection<?>) parent;
 						if (os.size() <= idx) {
 							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-									+ pathIdx + "." + name + " Array Out of Bound." + END_LINE));
+									+ pathIdx + "." + name + " Array Out of Bound." + endl()));
 							break Outter;
 						}
 						Iterator<? extends Object> iter = os.iterator();
@@ -213,13 +228,13 @@ public class ConnectionWorker implements Runnable {
 					} else if (parent.getClass().isArray()) {
 						if (Array.getLength(parent) <= idx) {
 							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-									+ pathIdx + "." + name + " Array Out of Bound." + END_LINE));
+									+ pathIdx + "." + name + " Array Out of Bound." + endl()));
 							break Outter;
 						}
 						parent = Array.get(parent, idx);
 					} else {
 						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-								+ pathIdx + "." + name + " Not Array." + END_LINE));
+								+ pathIdx + "." + name + " Not Array." + endl()));
 						break Outter;
 					}
 					break;
@@ -229,7 +244,7 @@ public class ConnectionWorker implements Runnable {
 						Map<? extends Object, ? extends Object> map = (Map<?, ?>) parent;
 						if (map.size() == 0) {
 							out.write(StringUtil.strToAsciiByte("Map at "
-									+ pathIdx + "." + name + " Is Empty." + END_LINE));
+									+ pathIdx + "." + name + " Is Empty." + endl()));
 							break Outter;
 						}
 						Object key = map.keySet().iterator().next();
@@ -242,18 +257,27 @@ public class ConnectionWorker implements Runnable {
 								parent = map.get(idx);
 							} catch (Exception e) {
 								out.write(StringUtil.strToAsciiByte("Invalid Map Key at "
-										+ pathIdx + "." + name + END_LINE));
+										+ pathIdx + "." + name + endl()));
 								break Outter;
 							}
+						} else if (key instanceof Long) {
+						    try {
+						        long lkey = Long.parseLong(realKey);
+						        parent = map.get(lkey);
+						    } catch (Exception e) {
+						        out.write(StringUtil.strToAsciiByte("Invalid Map Key at "
+						                + pathIdx + "." + name + endl()));
+						        break Outter;
+						    }
 						} else {
 							out.write(StringUtil.strToAsciiByte("This Map Key Type "
 									+ key.getClass().getSimpleName() + " at "
-									+ pathIdx + "." + name + " Is Not Supported." + END_LINE));
+									+ pathIdx + "." + name + " Is Not Supported." + endl()));
 							break Outter;
 						}
 					} else {
 						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-								+ pathIdx + "." + name + " Not Map." + END_LINE));
+								+ pathIdx + "." + name + " Not Map." + endl()));
 						break Outter;
 					}
 					break;
@@ -262,7 +286,7 @@ public class ConnectionWorker implements Runnable {
 				path = path.next();
 			}
 			if (parent == null) {
-				out.write(StringUtil.strToAsciiByte("Path Not Found." + END_LINE));
+				out.write(StringUtil.strToAsciiByte("Path Not Found." + endl()));
 				continue;
 			}
 			if (path != null) {

@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.remote;
 
+import static org.apache.niolex.commons.remote.ConnectionWorker.endl;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -74,7 +76,7 @@ public class OSInfo implements Invokable {
 	 */
 	@Override
 	public void invoke(OutputStream out, String[] args) throws IOException {
-		final String endLine = ConnectionWorker.END_LINE;
+		final String endLine = endl();
 		StringBuilder sb = new StringBuilder();
 		sb.append("----------------").append(osName).append(' ').append(osArch);
 		sb.append(' ').append(osVersion).append("----------------").append(endLine);

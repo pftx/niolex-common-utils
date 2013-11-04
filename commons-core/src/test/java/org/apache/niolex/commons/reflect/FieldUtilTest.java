@@ -19,6 +19,7 @@ package org.apache.niolex.commons.reflect;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -167,11 +168,182 @@ public class FieldUtilTest {
 
     @Test
     public void testValueFloat() throws Exception {
-    	Field field = FieldUtil.getField(FieldTestBean.class, "tax");
+        Field field = FieldUtil.getField(FieldTestBean.class, "tax");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldValue(field, bean, 312314.3134F);
+        Float fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(fieldValue, 312314.3134F, 0.0001F);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueS() throws Exception {
+    	Field field = FieldUtil.getField(FieldTestBean.class, "strName");
     	FieldTestBean bean = new FieldTestBean();
-    	FieldUtil.setFieldValue(field, bean, 312314.3134F);
-    	Float fieldValue = FieldUtil.getFieldValue(field, bean);
-    	Assert.assertEquals(fieldValue, 312314.3134F, 0.0001F);
+    	FieldUtil.setFieldWithCorrectValue(field, bean, "312314.3134F");
+    	String fieldValue = FieldUtil.getFieldValue(field, bean);
+    	Assert.assertEquals("312314.3134F", fieldValue);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueDate() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "time");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "152531425");
+        Date fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(152531425, fieldValue.getTime());
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueIL() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "age");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "65");
+        Integer fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(65, fieldValue.intValue());
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueI() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "intLevel");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "34");
+        int fieldValue = field.getInt(bean);
+        Assert.assertEquals(34, fieldValue);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueLL() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "logno");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "871658278165");
+        Long fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(871658278165l, fieldValue.longValue());
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueL() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "empno");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "348281128282");
+        long fieldValue = field.getLong(bean);
+        Assert.assertEquals(348281128282l, fieldValue);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueSIL() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "dfijd");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "5151");
+        Short fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(5151, fieldValue.shortValue());
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueSI() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "veridk");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "13241");
+        short fieldValue = field.getShort(bean);
+        Assert.assertEquals(13241, fieldValue);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueBL() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "unused");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "-66");
+        Byte fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(-66, fieldValue.byteValue());
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueB() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "resvered");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "94");
+        byte fieldValue = field.getByte(bean);
+        Assert.assertEquals(94, fieldValue);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueBOOL() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "flag");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "true");
+        Boolean fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(true, fieldValue.booleanValue());
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueBOO() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "gender");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "true");
+        boolean fieldValue = field.getBoolean(bean);
+        Assert.assertEquals(true, fieldValue);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueCL() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "grade");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "S");
+        Character fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals('S', fieldValue.charValue());
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueC() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "chdier");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "x");
+        char fieldValue = field.getChar(bean);
+        Assert.assertEquals('x', fieldValue);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueDL() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "sal");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "9831091209843.4109434");
+        Double fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(fieldValue, 9831091209843.4109434, 0.000000000001);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueD() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "earned");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "8382389324.134901341309");
+        double fieldValue = field.getDouble(bean);
+        Assert.assertEquals(fieldValue, 8382389324.134901341309, 0.000000000001);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueFL() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "remain");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "98496131.161691");
+        Float fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(fieldValue, 98496131.161691f, 0.0000001f);
+    }
+
+    @Test
+    public void testSetFieldWithCorrectValueF() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "tax");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "8165.948651");
+        float fieldValue = field.getFloat(bean);
+        Assert.assertEquals(fieldValue, 8165.948651f, 0.0000001f);
+    }
+
+    @Test(expected=UnsupportedOperationException.class)
+    public void testSetFieldWithCorrectValueNS() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "obj");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.setFieldWithCorrectValue(field, bean, "8165.948651");
+        Float fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(fieldValue, 8165.948651f, 0.0000001f);
     }
 
 }

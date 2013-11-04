@@ -22,16 +22,20 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.niolex.commons.stream.StreamUtil;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 /**
- * This class will export beans to remote telnet, you can get, list and set properties.
+ * This class will export beans to remote telnet, you can get, list and set properties.<br>
+ * We provided invoke directive for execute methods also.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.0
+ * @version 1.0.1
  * @since 2012-7-25
  */
 public class BeanServer implements Runnable {
@@ -49,14 +53,16 @@ public class BeanServer implements Runnable {
 
 	/**
      * If the specified key is not already associated with a value, associate it with the given value. This is equivalent to
-     *
+     * <pre>
      *   if (!map.containsKey(key))
      *       return map.put(key, value);
      *   else
-     *       return map.get(key);
+     *       return map.get(key);</pre>
      *
      * except that the action is performed atomically.
      *
+     * @param key key with which the specified value is associated
+     * @param value value to be associated with the specified key
      * @return the previous value associated with the specified key,
      *         or <tt>null</tt> if there was no mapping for the key
      * @throws NullPointerException if the specified key or value is null
@@ -68,7 +74,7 @@ public class BeanServer implements Runnable {
 	/**
 	 * Removes the key (and its corresponding value) from this map. This method does nothing if the key is not in the map.
 	 *
-	 * @param key
+	 * @param key key with which the specified value is associated
 	 * @return the previous value associated with key, or null if there was no mapping for key
 	 */
 	public Object remove(Object key) {
@@ -77,16 +83,16 @@ public class BeanServer implements Runnable {
 
 	/**
 	 * Replaces the entry for a key only if currently mapped to a given value. This is equivalent to
-	 *
+	 * <pre>
 	 *    if (map.containsKey(key) && map.get(key).equals(oldValue)) {
 	 *        map.put(key, newValue);
 	 *        return true;
-	 *    } else return false;
+	 *    } else return false;</pre>
 	 * except that the action is performed atomically.
 	 *
-	 * @param key
-	 * @param oldValue
-	 * @param newValue
+	 * @param key key with which the specified value is associated
+	 * @param oldValue value expected to be associated with the specified key
+	 * @param newValue value to be associated with the specified key
 	 * @return true if the value is replaced
 	 */
 	public boolean replace(String key, Object oldValue, Object newValue) {
@@ -101,7 +107,7 @@ public class BeanServer implements Runnable {
 	public boolean start() {
 		try {
             listenerSocket = new ServerSocket(port);
-            // Setting the timeout for accept method. Avoid can not be shuting
+            // Setting the timeout for accept method. Avoid can not be shutting
             // down since blocking thread when waiting accept.
             listenerSocket.setSoTimeout(10000);
             // Start Listening
@@ -119,22 +125,31 @@ public class BeanServer implements Runnable {
 
 	/**
 	 * Stop this bean server.
+	 * This method will return immediately, but the server will continue be up for a few seconds.
 	 */
 	public void stop() {
 		isListening = false;
 	}
 
 	/**
-	 * Do the socket listening, process connection.
+	 * Do the socket listening, process connection. We accept at most 10 connections.
 	 *
 	 * Override super method
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+	    final AtomicInteger connectionNumber = new AtomicInteger();
         while (isListening) {
             try {
                 Socket socket = listenerSocket.accept();
-                ConnectionWorker connection = new ConnectionWorker(socket, map);
+                // We accept at most 10 connections.
+                if (connectionNumber.incrementAndGet() > 10) {
+                    connectionNumber.decrementAndGet();
+                    StreamUtil.writeString(socket.getOutputStream(), "Too many connections.\n");
+                    SystemUtil.close(socket);
+                    continue;
+                }
+                ConnectionWorker connection = new ConnectionWorker(socket, map, connectionNumber);
                 Thread c = new Thread(connection, "BeanServer.ConnectionWorker");
                 c.setDaemon(true);
                 c.start();
@@ -148,7 +163,8 @@ public class BeanServer implements Runnable {
 	}
 
 	/**
-	 * Set the port to listen to.
+	 * Set the port for Bean Server to listen to.
+	 *
 	 * @param port
 	 */
 	public void setPort(int port) {

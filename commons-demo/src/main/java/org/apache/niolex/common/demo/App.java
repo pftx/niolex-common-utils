@@ -3,6 +3,7 @@ package org.apache.niolex.common.demo;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.UUID;
 
 import org.apache.niolex.commons.util.SystemUtil;
@@ -24,6 +25,7 @@ public abstract class App extends HttpURLConnection
     }
 
     public static void main(String[] args) {
+        System.out.println((new Date()).getTime());
         System.out.println("\n**** Test system property");
         String fileName = SystemUtil.getSystemProperty("ConfigClient.configurationFile", "config-client-properties",
                 "config.client.property.file");
