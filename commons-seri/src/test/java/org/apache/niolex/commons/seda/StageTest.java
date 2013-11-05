@@ -21,8 +21,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.niolex.commons.seda.Message.RejectType;
+import org.apache.niolex.commons.bean.One;
+import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.seda.RejectMessage.RejectType;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -41,6 +44,20 @@ public class StageTest {
 		dispatcher.clear();
 	}
 
+    @Test
+    public void testStageString() throws Exception {
+        Stage<TInput> s = new Stage<TInput>("not yet implemented"){
+
+            @Override
+            protected void process(TInput in, Dispatcher dispatcher) {
+                System.out.println("x get input with tag " + (in.getTag() == 0 ? in.hashCode() : in.getTag()));
+            }};
+        assertEquals("not yet implemented", s.getStageName());
+        s.addInput(new TInput(3));
+        s.shutdown();
+        assertEquals(0, s.getInputSize());
+    }
+
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seda.Stage#Stage(java.lang.String)}.
 	 */
@@ -48,11 +65,12 @@ public class StageTest {
 	public final void testShutdownSend() {
 		SleepStage ss = new SleepStage("abc", dispatcher);
 		ss.shutdown();
+		ss = spy(ss);
 		TInput in = mock(TInput.class);
 		ss.addInput(in);
 		ArgumentCaptor<RejectType> cap = ArgumentCaptor.forClass(RejectType.class);
-		verify(in).reject(cap.capture(), eq("abc"), eq(dispatcher));
-		assertEquals(Message.RejectType.STAGE_SHUTDOWN, cap.getValue());
+		verify(ss).reject(cap.capture(), eq("abc"), eq(in));
+		assertEquals(RejectType.STAGE_SHUTDOWN, cap.getValue());
 		assertEquals(ss.getInputSize(), 0);
 	}
 
@@ -65,14 +83,18 @@ public class StageTest {
 	 */
 	@Test
 	public final void testProcessError() throws InterruptedException {
-		SleepStage ss = new SleepStage("abc", dispatcher);
-		TInput in = mock(TInput.class);
+	    TInput in = mock(TInput.class);
+	    final One<RejectType> one = One.create(null);
+		SleepStage ss = new SleepStage("abc", dispatcher){
+		    @Override
+		    public void reject(RejectType type, Object info, Message msg) {
+		        one.a = type;
+		    }
+		};
 		when(in.getTag()).thenReturn(65432);
 		ss.addInput(in);
 		Thread.sleep(100);
-		ArgumentCaptor<RejectType> cap = ArgumentCaptor.forClass(RejectType.class);
-		verify(in).reject(cap.capture(), anyObject(), eq(dispatcher));
-		assertEquals(Message.RejectType.PROCESS_ERROR, cap.getValue());
+		assertEquals(RejectType.PROCESS_ERROR, one.a);
 		assertEquals(ss.getInputSize(), 0);
 		ss.shutdown();
 	}
@@ -98,10 +120,18 @@ public class StageTest {
 	 */
 	@Test
 	public final void testDropMessage() throws Exception {
-		SleepStage ss = new SleepStage("abc", dispatcher);
+		Stage<Message> ss = new Stage<Message>("abc", new LinkedBlockingQueue<Message>(), dispatcher,
+		        1, 1, 200){
+
+            @Override
+            protected void process(Message in, Dispatcher dispatcher) {
+                ThreadUtil.sleep(1);
+            }};
 		TInput in = mock(TInput.class);
+		RejectMessage r = new RejectMessage(RejectType.USER_REJECT, "By Drop Message", in);
 		for (int i = 0; i < 20000; ++i) {
 			ss.addInput(in);
+			ss.addInput(r);
 		}
 		Field f = Stage.class.getDeclaredField("lastAdjustTime");
 		System.out.println(f);
@@ -113,6 +143,7 @@ public class StageTest {
 		System.out.println(ss.getInputSize());
 		a -= ss.getInputSize();
 		assertTrue(a > 10000);
+		ss.dropMessage(-2);
 		ss.shutdown();
 	}
 

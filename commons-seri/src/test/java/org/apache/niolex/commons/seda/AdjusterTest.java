@@ -54,6 +54,8 @@ public class AdjusterTest {
 		Thread.sleep(30);
 		adj.stopAdjust();
 		verify(s, atLeast(1)).adjustThreadPool();
+		// stop again.
+		adj.stopAdjust();
 	}
 
 	/**
@@ -65,10 +67,10 @@ public class AdjusterTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.seda.Adjuster#run()}.
+	 * Test method for {@link org.apache.niolex.commons.seda.Adjuster#getAdjustInterval()}.
 	 */
 	@Test
-	public final void testRun() {
+	public final void testGetAdjustInterval() {
 		adj.setAdjustInterval(1230);
 		assertEquals(adj.getAdjustInterval(), 1230);
 	}

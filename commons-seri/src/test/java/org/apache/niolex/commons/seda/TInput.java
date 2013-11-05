@@ -22,7 +22,7 @@ package org.apache.niolex.commons.seda;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-16$
  */
-public class TInput extends Message {
+public class TInput implements Message {
 
 	private int tag;
 
@@ -33,12 +33,6 @@ public class TInput extends Message {
 	public TInput(int tag) {
 		super();
 		this.tag = tag;
-	}
-
-	@Override
-	public void reject(RejectType type, Object info, Dispatcher dispatcher) {
-		if (type != RejectType.STAGE_BUSY)
-			System.out.println("x get rejected by " + type);
 	}
 
 	public int getTag() {

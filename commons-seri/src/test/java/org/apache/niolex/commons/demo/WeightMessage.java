@@ -25,7 +25,7 @@ import org.apache.niolex.commons.test.StopWatch.Stop;
  * @version 1.0.0
  * @since 2013-7-30
  */
-public class WeightMessage extends Message {
+public class WeightMessage implements Message {
 
     private final int weight;
     private Stop start;

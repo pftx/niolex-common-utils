@@ -20,7 +20,12 @@ package org.apache.niolex.commons.seda;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.seda.RejectMessage.RejectType;
+
 /**
+ * A test stage, for test and demo usage.
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-16$
  */
@@ -34,11 +39,6 @@ public class SleepStage extends Stage<TInput> {
 		this.sleepTime = sleepTime;
 	}
 
-	/**
-     * Constructor
-     * @param stageName
-     * @param maxTolerableDelay
-     */
     public SleepStage(String stageName, int maxTolerableDelay, long sleepTime) {
         super(stageName, maxTolerableDelay);
         this.sleepTime = sleepTime;
@@ -64,10 +64,14 @@ public class SleepStage extends Stage<TInput> {
 		if (in.getTag() == 65432) {
 			throw new RuntimeException("We need it.");
 		}
-		try {
-			Thread.sleep(sleepTime);
-		} catch (InterruptedException e) {}
+		ThreadUtil.sleep(sleepTime);
 	}
+
+	@Override
+    public void reject(RejectType type, Object info, Message msg) {
+        if (type != RejectType.STAGE_BUSY)
+            System.out.println("x get rejected by " + type);
+    }
 
 	public int getProcessedCount() {
 		return cnt.get();
@@ -76,4 +80,5 @@ public class SleepStage extends Stage<TInput> {
 	public Worker getWorker() {
 		return new Worker();
 	}
+
 }

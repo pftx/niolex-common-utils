@@ -18,50 +18,11 @@
 package org.apache.niolex.commons.seda;
 
 /**
- * This is the basic class for all the messages flow through the seda system.
+ * This is the marker interface for all the messages flow through the seda system.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-15$
  */
-public abstract class Message {
-
-	/**
-	 * The message rejection event type.
-	 *
-	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
-	 * @version 1.0.5, $Date: 2012-11-16$
-	 */
-	public static enum RejectType {
-		PROCESS_ERROR,
-		USER_REJECT,
-		STAGE_SHUTDOWN,
-		STAGE_BUSY;
-	}
-
-	/**
-	 * Reject this message from a stage. This means this message will not get
-	 * processed correctly. User need to deal with it.
-	 * <br>
-	 * The default implementation will dispatch this message to the reject handler with
-	 * an instance of {@link RejectMessage}, user need to add his own reject handler to
-	 * deal with this message by register a stage with the name
-	 * "org.apache.niolex.commons.seda.RejectMessage", or this message will be ignored.
-	 * <br>
-	 * User can override this method, but dealing this method need to be fast and
-	 * effective, do not take too much time from the rejection thread.
-	 *
-	 * @param type the reject type
-	 * @param info the related rejection information, explained in detail:
-	 *     When reject type is:
-	 *         PROCESS_ERROR then info is an instance of Throwable
-	 *         USER_REJECT then info is defined by user application
-	 *         STAGE_SHUTDOWN then info is the stage name
-	 *         STAGE_BUSY then info is a reference to the stage object
-	 *     User can use this parameter accordingly.
-	 * @param dispatcher the dispatcher used to dispatch this message
-	 */
-	public void reject(RejectType type, Object info, Dispatcher dispatcher) {
-		dispatcher.dispatch(new RejectMessage(type, info, this));
-	}
+public interface Message {
 
 }

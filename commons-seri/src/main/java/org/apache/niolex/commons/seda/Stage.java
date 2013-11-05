@@ -25,6 +25,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.seda.RejectMessage.RejectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,8 @@ public abstract class Stage<Input extends Message> {
 	 * The minimum adjust interval in milliseconds.
 	 */
 	protected static final int MIN_ADJUST_INTERVAL = 1000;
+
+	protected static final int DROP_MSG_COEFFICIENT = 2;
 
 	/**
 	 * The name of this stage.
@@ -73,7 +77,7 @@ public abstract class Stage<Input extends Message> {
 	 * <br>
 	 * If the time to process current queue size exceeds this number, we will add
 	 * more threads into the thread pool. If the time to process current queue size
-	 * exceeds 2 times this number, we will start to drop messages.
+	 * exceeds {@value #DROP_MSG_COEFFICIENT} times this number, we will start to drop messages.
 	 */
 	protected final int maxTolerableDelay;
 
@@ -139,9 +143,12 @@ public abstract class Stage<Input extends Message> {
      * 1 for add threads
      */
     protected int lastAdjustStatus;
+    static final int SUBTRACT   = -1;
+    static final int NO_OP      =  0;
+    static final int ADD        =  1;
 
 	/**
-	 * Create a Stage with all default parameters.
+	 * Create a Stage with some default parameters.
 	 *
 	 * We will initialize this stage with the following parameters:
 	 * use LinkedBlockingQueue for inputQueue
@@ -161,6 +168,22 @@ public abstract class Stage<Input extends Message> {
      *
      * We will initialize this stage with the following parameters:
      * use LinkedBlockingQueue for inputQueue
+     * use 1 for minPoolSize
+     * use 100 for maxPoolSize
+     * use 1000ms for maxTolerableDelay
+     *
+     * @param stageName the name of this stage.
+     * @param dispatcher the dispatcher used to dispatch output.
+     */
+    public Stage(String stageName, Dispatcher dispatcher) {
+        this(stageName, new LinkedBlockingQueue<Input>(), dispatcher, 1, 100, 1000);
+    }
+
+	/**
+     * Create a Stage with some default parameters.
+     *
+     * We will initialize this stage with the following parameters:
+     * use LinkedBlockingQueue for inputQueue
      * use default instance of Dispatcher for dispatcher
      * use 1 for minPoolSize
      * use 100 for maxPoolSize
@@ -169,7 +192,7 @@ public abstract class Stage<Input extends Message> {
      * @param maxTolerableDelay The maximum tolerable delay in milliseconds.
      * If the time to process current queue size exceeds this number, we will add
      * more threads into the thread pool. If the time to process current queue size
-     * exceeds 2 times this number, we will start to drop messages.
+     * exceeds {@value #DROP_MSG_COEFFICIENT} times this number, we will start to drop messages.
      */
 	public Stage(String stageName, int maxTolerableDelay) {
         this(stageName, new LinkedBlockingQueue<Input>(), Dispatcher.getInstance(), 1, 100, maxTolerableDelay);
@@ -177,9 +200,6 @@ public abstract class Stage<Input extends Message> {
 
 	/**
 	 * Create a Stage with these parameters you passed in.
-	 *
-	 * When the queue exceeds 4 times adjustFactor, we will start to reject messages.
-	 * User can change this behavior by override the method {@link #dropMessage(int)}
 	 *
 	 * @param stageName the name of this stage.
 	 * @param inputQueue the input queue user want to use.
@@ -189,7 +209,8 @@ public abstract class Stage<Input extends Message> {
 	 * @param maxTolerableDelay The maximum tolerable delay in milliseconds.
      * If the time to process current queue size exceeds this number, we will add
      * more threads into the thread pool. If the time to process current queue size
-     * exceeds 2 times this number, we will start to drop messages.
+     * exceeds {@value #DROP_MSG_COEFFICIENT} times this number, we will start to drop messages.
+     * User can change this behavior by override the method {@link #dropMessage(int)}
 	 */
 	public Stage(String stageName, BlockingQueue<Input> inputQueue, Dispatcher dispatcher,
 			int minPoolSize, int maxPoolSize, int maxTolerableDelay) {
@@ -229,7 +250,7 @@ public abstract class Stage<Input extends Message> {
 		/**
 		 * The current worker working status.
 		 */
-		private boolean isWorking = true;
+		private volatile boolean isWorking = true;
 
 		/**
 		 * All the threads inside thread pool will run this method.
@@ -262,8 +283,8 @@ public abstract class Stage<Input extends Message> {
 				} catch (Throwable t) {
 					// Reject the message if it's not null.
 					if (in != null) {
-						LOG.error("Error occured when process message in stage [{}]:", stageName, t);
-						in.reject(Message.RejectType.PROCESS_ERROR, t, dispatcher);
+						LOG.error("Error occured when process message in stage [{}].", stageName, t);
+						reject(RejectType.PROCESS_ERROR, t, in);
 					}
 				} finally {
 					if (inTime != 0) {
@@ -388,11 +409,11 @@ public abstract class Stage<Input extends Message> {
 		}
 		// Check drop message if necessary.
 		int dropSize = 0;
-		// The max queue size is 2 times the max messages we can process in the max tolerable delay.
-		int maxQueueSize = (int)(2 * maxTolerableDelay * processRate * currentPoolSize);
+		// The max queue size is {@value #DROP_MSG_COEFFICIENT} times the max messages we can process in the max tolerable delay.
+		int maxQueueSize = (int)(DROP_MSG_COEFFICIENT * maxTolerableDelay * processRate * currentPoolSize);
 		if (currentQueueSize >  maxQueueSize) {
-			// Too many messages, we will drop some of them.
-			dropSize = dropMessage(maxQueueSize / 4);
+			// Too many messages, we will drop some of them, leave only half of our capacity.
+			dropSize = dropMessage(maxQueueSize / (DROP_MSG_COEFFICIENT * 2));
 			LOG.info("Too many messages in stage [{}], we droped {} messages.", stageName, dropSize);
 		}
 		// Reset the last queue size.
@@ -403,27 +424,72 @@ public abstract class Stage<Input extends Message> {
 	}
 
     /**
-     * We will call this method when the input queue size is greater than 4 times adjustFactor.
+     * We will call this method when the input queue size is greater than {@value #DROP_MSG_COEFFICIENT}
+     * times the max messages we can process in the max tolerable delay.
+     * <br>
+     * The default implementation will dispatch this message to the reject handler with
+     * an instance of {@link RejectMessage}, user need to add his own reject handler to
+     * deal with this message by register a stage with the name
+     * "org.apache.niolex.commons.seda.RejectMessage", or this message will be ignored.
+     * <br><b>
+     * The stage dealing the rejected messages need to be fast and effective, do not take too much time
+     * from the rejection thread pool, or that stage will reject messages, too. Which will form an
+     * infinite loop.
+     * </b><br>
      * User can override this method to change the default behavior.
      *
-     * @return the number of messages to be dropped.
+     * @param leaveCnt the number of messages to be dropped
+     * @return the number of messages been dropped.
      */
     protected int dropMessage(int leaveCnt) {
         int size = inputQueue.size() - leaveCnt;
+        int rejectCnt = 0;
         Input in;
-        for (int i = 0; i < size; ++i) {
-            in = inputQueue.poll();
-            if (in != null) {
-                in.reject(Message.RejectType.STAGE_BUSY, this, dispatcher);
-            } else {
-                return i;
+        try {
+            for (int i = 0; i < size; ++i) {
+                in = inputQueue.poll();
+                if (in != null) {
+                    if (in instanceof RejectMessage) {
+                        ++rejectCnt;
+                    } else {
+                        reject(RejectType.STAGE_BUSY, this, in);
+                    }
+                } else {
+                    return i;
+                }
+            }
+            return size;
+        } finally {
+            if (rejectCnt > 0) {
+                LOG.warn("#{} RejectMessage droped from stage [{}], this probably means bad program design.",
+                        rejectCnt, stageName);
             }
         }
-        return size;
+    }
+
+    /**
+     * Reject this message from the stage. This means this message will not get
+     * processed correctly. User need to deal with it.
+     * <br>
+     * User can override this method to change the default behavior.
+     *
+     * @param type the reject type
+     * @param info the related rejection information, explained in detail:<pre>
+     *     When reject type is:
+     *         PROCESS_ERROR then info is an instance of Throwable
+     *         USER_REJECT then info is defined by user application
+     *         STAGE_SHUTDOWN then info is the stage name
+     *         STAGE_BUSY then info is a reference to the stage object
+     *     User can use this parameter accordingly.</pre>
+     * @param msg the message been rejected
+     */
+    protected void reject(RejectType type, Object info, Message msg) {
+        dispatcher.dispatch(new RejectMessage(type, info, msg));
     }
 
 	/**
 	 * Adjust the thread pool size.
+	 * <br>
 	 * User can override this method to provide their own implementation.
 	 *
 	 * @param consumeRate the data consume rate in CNT/millisecond
@@ -462,7 +528,7 @@ public abstract class Stage<Input extends Message> {
 		    while (addNumber-- > 0 && currentPoolSize < maxPoolSize) {
 	            addThread();
 	        }
-	        lastAdjustStatus = 1;
+	        lastAdjustStatus = ADD;
 		} else if (thisStatus < -0.8) {
 		    // We will need subtract threads here.
 		    int subNumber = (int) (thisStatus - 0.2);
@@ -472,9 +538,9 @@ public abstract class Stage<Input extends Message> {
 		    while (subNumber++ < 0 && currentPoolSize > minPoolSize) {
 	            subtractThread();
 	        }
-	        lastAdjustStatus = -1;
+	        lastAdjustStatus = SUBTRACT;
 		} else {
-		    lastAdjustStatus = 0;
+		    lastAdjustStatus = NO_OP;
 		}
 	}
 
@@ -488,11 +554,9 @@ public abstract class Stage<Input extends Message> {
 			// We sleep as most 5 seconds.
 			int i = 500;
 			while (i-- > 0) {
-				try {
-					Thread.sleep(10);
-					if (inputQueue.size() == 0)
-						break;
-				} catch (InterruptedException e) {}
+				ThreadUtil.sleep(10);
+				if (inputQueue.size() == 0)
+					break;
 			}
 			ListIterator<Worker> it = workerList.listIterator();
 			// Signal all threads try to terminate.
@@ -522,7 +586,7 @@ public abstract class Stage<Input extends Message> {
 		if (stageStatus < SHUTDOWN) {
 			inputQueue.add(in);
 		} else {
-			in.reject(Message.RejectType.STAGE_SHUTDOWN, stageName, dispatcher);
+			reject(RejectType.STAGE_SHUTDOWN, stageName, in);
 		}
 	}
 

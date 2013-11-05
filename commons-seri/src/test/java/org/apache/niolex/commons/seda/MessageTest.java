@@ -19,7 +19,7 @@ package org.apache.niolex.commons.seda;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.niolex.commons.seda.Message.RejectType;
+import org.apache.niolex.commons.seda.RejectMessage.RejectType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ public class MessageTest {
 
 	Dispatcher disp = new Dispatcher();
 	RejectMessage inp;
-	Stage<RejectMessage> stage = new Stage<RejectMessage>(RejectMessage.class.toString()) {
+	Stage<RejectMessage> stage = new Stage<RejectMessage>(RejectMessage.class.getName(), disp) {
 
 		@Override
 		public void addInput(RejectMessage in) {
@@ -43,8 +43,8 @@ public class MessageTest {
 		}
 
 	};
-	Message in = new Message() {
-	};
+
+	Message in = new Message() {};
 
 	@Before
 	public void add() {
@@ -56,26 +56,26 @@ public class MessageTest {
 	 */
 	@Test
 	public final void testReject1() {
-		in.reject(RejectType.PROCESS_ERROR, in, disp);
+	    stage.reject(RejectType.PROCESS_ERROR, in, in);
 		assertEquals(RejectType.PROCESS_ERROR, inp.getType());
 	}
 
 	@Test
 	public final void testReject2() {
-		in.reject(RejectType.STAGE_BUSY, in, disp);
-		assertEquals(in, inp.getInfo());
+	    stage.reject(RejectType.STAGE_BUSY, "Good Reject", in);
+		assertEquals("Good Reject", inp.getInfo());
 	}
 
 	@Test
 	public final void testReject3() {
-		in.reject(RejectType.STAGE_SHUTDOWN, in, disp);
+	    stage.reject(RejectType.STAGE_SHUTDOWN, RejectType.STAGE_BUSY, in);
 		assertEquals(in, inp.getRejected());
 		assertEquals(RejectType.STAGE_SHUTDOWN.toString(), "STAGE_SHUTDOWN");
 	}
 
 	@Test
 	public final void testReject4() {
-		in.reject(RejectType.USER_REJECT, in, disp);
+	    stage.reject(RejectType.USER_REJECT, in, in);
 		assertEquals(RejectType.valueOf("USER_REJECT"), RejectType.USER_REJECT);
 	}
 

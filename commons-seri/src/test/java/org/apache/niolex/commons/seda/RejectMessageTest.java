@@ -31,6 +31,8 @@ public class RejectMessageTest {
 	}
 
 	/**
+	 * A test scenario.
+	 *
 	 * @param args
 	 * @throws InterruptedException
 	 */

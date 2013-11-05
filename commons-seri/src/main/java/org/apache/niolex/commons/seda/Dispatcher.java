@@ -151,7 +151,7 @@ public class Dispatcher {
 	 * @throws ClassCastException If this message can not be processed by the corresponding stage.
 	 */
 	public <T extends Message> boolean dispatch(T msg) {
-		return dispatch(msg.getClass().toString(), msg);
+		return dispatch(msg.getClass().getName(), msg);
 	}
 
 	/**

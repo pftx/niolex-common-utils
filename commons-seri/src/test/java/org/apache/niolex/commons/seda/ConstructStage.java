@@ -19,6 +19,8 @@ package org.apache.niolex.commons.seda;
 
 import java.util.Map;
 
+import org.apache.niolex.commons.seda.RejectMessage.RejectType;
+
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2012-11-17$
@@ -44,7 +46,7 @@ public class ConstructStage extends SleepStage {
 	protected void process(TInput in, Dispatcher dispatcher) {
 		String tag = consMap.get(in.getTag());
 		if (tag == null) {
-			in.reject(Message.RejectType.USER_REJECT, "No way to dispatch.", dispatcher);
+			reject(RejectType.USER_REJECT, "No way to dispatch.", in);
 		}
 		dispatcher.dispatch(tag, in);
 	}

@@ -49,12 +49,7 @@ public class DispatcherTest {
 		consMap.put("s20", "S20");
 		disp.register(new ConstructStage("C1", consMap));
 		System.out.println(TInput.class.toString());
-		disp.register(new ConstructStage(TInput.class.toString(), consMap));
-	}
-
-	@Test
-	public final void testZ() {
-		disp.clear();
+		disp.register(new ConstructStage(TInput.class.getName(), consMap));
 	}
 
 	/**
@@ -62,8 +57,8 @@ public class DispatcherTest {
 	 */
 	@Test
 	public final void testGetStage() {
-		SleepStage sl = disp.getStage("S10");
-		assertEquals("S10", sl.getStageName());
+	    SleepStage sl = disp.getStage("S10");
+	    assertEquals("S10", sl.getStageName());
 	}
 
 	/**
@@ -72,6 +67,12 @@ public class DispatcherTest {
 	@Test
 	public final void testConstruction() {
 		disp.construction();
+	}
+
+	@Test
+	public void testStartAdjust() throws Exception {
+	    disp.startAdjust(1024);
+	    disp.startAdjust(2048);
 	}
 
 	/**
@@ -102,5 +103,16 @@ public class DispatcherTest {
 		int k = disp.getAllStages().size();
 		assertEquals(4, k);
 	}
+
+	@Test
+	public void testYShutdown() throws Exception {
+	    disp.shutdown();
+	    disp.shutdown();
+	}
+
+    @Test
+    public final void testZClear() {
+        disp.clear();
+    }
 
 }

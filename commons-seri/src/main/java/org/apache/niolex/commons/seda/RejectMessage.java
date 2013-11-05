@@ -23,7 +23,20 @@ package org.apache.niolex.commons.seda;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2012-11-18$
  */
-public class RejectMessage extends Message {
+public class RejectMessage implements Message {
+
+    /**
+     * The message rejection event type.
+     *
+     * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+     * @version 1.0.5, $Date: 2012-11-16$
+     */
+    public static enum RejectType {
+        PROCESS_ERROR,
+        USER_REJECT,
+        STAGE_SHUTDOWN,
+        STAGE_BUSY;
+    }
 
 	/**
 	 * The reject type
@@ -31,13 +44,13 @@ public class RejectMessage extends Message {
 	private final RejectType type;
 
 	/**
-	 * The information send along with rejection, explained in detail:
+	 * The information send along with rejection, explained in detail:<pre>
      *     When reject type is:
      *         PROCESS_ERROR then info is an instance of Throwable
      *         USER_REJECT then info is defined by user application
      *         STAGE_SHUTDOWN then info is the stage name
      *         STAGE_BUSY then info is a reference to the stage object
-     *     User can use this parameter accordingly.
+     *     User can use this parameter accordingly.</pre>
 	 */
 	private final Object info;
 
@@ -68,13 +81,13 @@ public class RejectMessage extends Message {
 	}
 
 	/**
-	 * @return the information send along with rejection, explained in detail:
+	 * @return the information send along with rejection, explained in detail:<pre>
      *     When reject type is:
      *         PROCESS_ERROR then info is an instance of Throwable
      *         USER_REJECT then info is defined by user application
      *         STAGE_SHUTDOWN then info is the stage name
      *         STAGE_BUSY then info is a reference to the stage object
-     *     User can use this parameter accordingly.
+     *     User can use this parameter accordingly.</pre>
 	 */
 	public Object getInfo() {
 		return info;

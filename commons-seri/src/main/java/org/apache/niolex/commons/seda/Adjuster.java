@@ -55,7 +55,7 @@ public class Adjuster implements Runnable {
 	private int adjustInterval = 1000;
 
 	/**
-	 * Add a new stage to adjuster.
+	 * Add a new stage to the adjuster.
 	 *
 	 * @param s the stage need to be adjusted.
 	 */
