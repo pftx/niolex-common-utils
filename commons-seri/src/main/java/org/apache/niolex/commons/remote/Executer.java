@@ -51,6 +51,18 @@ public abstract class Executer {
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    /**
+     * Write the string to the output stream and flush the output stream.
+     *
+     * @param out the output stream
+     * @param s the string to be written
+     * @throws IOException
+     */
+    protected static void writeAndFlush(OutputStream out, String s) throws IOException {
+        out.write(StringUtil.strToAsciiByte(s));
+        out.flush();
+    }
+
 	/**
 	 * Execute the command on the object.
 	 *
@@ -83,8 +95,7 @@ public abstract class Executer {
 		 */
 		@Override
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
-			String s = mapper.writeValueAsString(o) + endl();
-			out.write(StringUtil.strToUtf8Byte(s));
+			writeAndFlush(out, mapper.writeValueAsString(o) + endl());
 		}
 
 	}
@@ -113,7 +124,7 @@ public abstract class Executer {
 				sb.append("    ").append(f.getName()).append(endl());
 			}
 			sb.append("---").append(endl());
-			out.write(StringUtil.strToUtf8Byte(sb.toString()));
+			writeAndFlush(out, sb.toString());
 		}
 
 	}
@@ -136,19 +147,19 @@ public abstract class Executer {
 		@Override
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
 			if (args.length != 4) {
-				out.write(StringUtil.strToAsciiByte("Invalid Command." + endl()));
+			    writeAndFlush(out, "Invalid Command." + endl());
 				return;
 			}
 			try {
     			Field f = FieldUtil.getField(o.getClass(), args[2]);
     			FieldUtil.setFieldWithCorrectValue(f, o, args[3]);
-    			out.write(StringUtil.strToAsciiByte("Set Field Success." + endl()));
+    			writeAndFlush(out, "Set Field Success." + endl());
 			} catch (NoSuchFieldException e) {
-			    out.write(StringUtil.strToAsciiByte("Field Not Found." + endl()));
+			    writeAndFlush(out, "Field Not Found." + endl());
 			} catch (UnsupportedOperationException e) {
-			    out.write(StringUtil.strToAsciiByte(e.getMessage() + endl()));
+			    writeAndFlush(out, e.getMessage() + endl());
 			} catch (Exception e) {
-			    out.write(StringUtil.strToAsciiByte("Failed to Set Field:" + e.getMessage() + "." + endl()));
+			    writeAndFlush(out, "Failed to Set Field:" + e.getMessage() + "." + endl());
 			}
 		}
 
@@ -180,11 +191,11 @@ public abstract class Executer {
 				sb.append("Target ").append(o.getClass().getSimpleName());
 				sb.append(" Is not Allowed to Invoke.");
 				sb.append(endl());
-				out.write(StringUtil.strToUtf8Byte(sb.toString()));
+				writeAndFlush(out, sb.toString());
 				return;
 			}
 			sb.append("---Invoke Success---").append(endl());
-			out.write(StringUtil.strToUtf8Byte(sb.toString()));
+			writeAndFlush(out, sb.toString());
 		}
 
 	}
@@ -207,13 +218,13 @@ public abstract class Executer {
 		public void execute(Object o, OutputStream out, String[] args) throws IOException {
 			if (o instanceof Monitor) {
 				if (args.length < 3) {
-					out.write(StringUtil.strToUtf8Byte("Please specify the Key to Monitor." + endl()));
+					writeAndFlush(out, "Please specify the Key to Monitor." + endl());
 					return;
 				}
 				String parameter = args.length > 3 ? args[3] : "default";
 				((Monitor) o).doMonitor(out, args[2], parameter);
 			} else {
-				out.write(StringUtil.strToUtf8Byte("Object is not a Monitor." + endl()));
+				writeAndFlush(out, "Object is not a Monitor." + endl());
 			}
 		}
 

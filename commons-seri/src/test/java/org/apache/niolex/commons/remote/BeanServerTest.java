@@ -17,10 +17,12 @@
  */
 package org.apache.niolex.commons.remote;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,19 +30,23 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.test.AnnotationOrderedRunner;
 import org.apache.niolex.commons.test.Benchmark;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.test.SystemInfo;
 import org.apache.niolex.commons.test.Benchmark.Bean;
 import org.apache.niolex.commons.test.Benchmark.Group;
 import org.apache.niolex.commons.util.Runme;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2012-7-25
  */
+@RunWith(AnnotationOrderedRunner.class)
 public class BeanServerTest {
 	BeanServer beanS = new BeanServer();
 
@@ -152,5 +158,43 @@ public class BeanServerTest {
 	public void testSetPort() {
 		beanS.setPort(1234);
 	}
+
+    @Test
+    @AnnotationOrderedRunner.Order(1)
+    public void testStart() throws Exception {
+        beanS.setPort(8373);
+        beanS.start();
+    }
+
+    @Test
+    @AnnotationOrderedRunner.Order(2)
+    public void testRun() throws Exception {
+        Socket[] socArr = new Socket[10];
+        for (int i = 0; i < 10; ++i) {
+            Socket so = new Socket();
+            so.connect(new InetSocketAddress("localhost", 8373), 1000);
+            socArr[i] = so;
+        }
+        Socket so = new Socket();
+        try {
+            so.connect(new InetSocketAddress("localhost", 8373), 1000);
+        } finally {
+            byte[] b = new byte[200];
+            int k = so.getInputStream().read(b);
+            String s = new String(b, 0, k, StringUtil.US_ASCII);
+            System.out.println("x get result: " + s);
+            assertEquals("Too many connections.\n", s);
+        }
+        SystemUtil.close(so);
+        for (int i = 0; i < 10; ++i) {
+            SystemUtil.close(socArr[i]);
+        }
+    }
+
+    @Test
+    @AnnotationOrderedRunner.Order(3)
+    public void testStop() throws Exception {
+        beanS.stop();
+    }
 
 }

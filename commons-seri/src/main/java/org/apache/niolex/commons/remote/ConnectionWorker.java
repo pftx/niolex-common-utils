@@ -153,42 +153,42 @@ public class ConnectionWorker implements Runnable {
 			// Change End Of Line
 			if (comm.startsWith("win")) {
 				ENDL_HOLDER.set("\r\n");
-				out.write(StringUtil.strToAsciiByte("End Line Changed." + endl()));
+				writeAndFlush("End Line Changed.");
 				continue;
 			}
 			if (comm.startsWith("lin")) {
 				ENDL_HOLDER.set("\n");
-				out.write(StringUtil.strToAsciiByte("End Line Changed." + endl()));
+				writeAndFlush("End Line Changed.");
 				continue;
 			}
 			// Quit
 			if ("quit".equals(comm) || "exit".equals(comm)) {
-				out.write(StringUtil.strToAsciiByte("Goodbye." + endl()));
+				writeAndFlush("Goodbye.");
 				break;
 			}
 			// Auth
 			if ("auth".equals(comm)) {
 				if (AUTH_INFO == null || (args.length == 2 && AUTH_INFO.equals(args[1]))) {
-					out.write(StringUtil.strToAsciiByte("Authenticate Success." + endl()));
+					writeAndFlush("Authenticate Success.");
 					isAuth = true;
 				} else {
-					out.write(StringUtil.strToAsciiByte("Authenticate failed." + endl()));
+					writeAndFlush("Authenticate Failed.");
 				}
 				continue;
 			}
 			if (AUTH_INFO != null && !isAuth) {
-				out.write(StringUtil.strToAsciiByte("Please authenticate." + endl()));
+				writeAndFlush("Please authenticate.");
 				continue;
 			}
 			// Invalid command.
 			if (!COMMAND_MAP.containsKey(comm) || args.length < 2 || args[1].length() == 0) {
-				out.write(StringUtil.strToAsciiByte("Invalid Command." + endl()));
+				writeAndFlush("Invalid Command.");
 				continue;
 			}
 			// Parse tree.
 			Path path = Path.parsePath(args[1]);
 			if (path.getType() == Type.INVALID) {
-				out.write(StringUtil.strToAsciiByte(path.getName() + "^" + endl()));
+				writeAndFlush(path.getName() + "^");
 				continue;
 			}
 			Object parent = beanMap.get(path.getName());
@@ -206,8 +206,7 @@ public class ConnectionWorker implements Runnable {
 						parent = f.get(parent);
 					}
 				} catch (Exception e) {
-					out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-							+ pathIdx + "." + name + endl()));
+					writeAndFlush("Invalid Path started at " + pathIdx + "." + name);
 					break;
 				}
 				switch(path.getType()) {
@@ -217,8 +216,8 @@ public class ConnectionWorker implements Runnable {
 					if (parent instanceof Collection<?>) {
 						Collection<? extends Object> os = (Collection<?>) parent;
 						if (os.size() <= idx) {
-							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-									+ pathIdx + "." + name + " Array Out of Bound." + endl()));
+							writeAndFlush("Invalid Path started at "
+									+ pathIdx + "." + name + " Array Out of Bound.");
 							break Outter;
 						}
 						Iterator<? extends Object> iter = os.iterator();
@@ -228,14 +227,14 @@ public class ConnectionWorker implements Runnable {
 						parent = iter.next();
 					} else if (parent.getClass().isArray()) {
 						if (Array.getLength(parent) <= idx) {
-							out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-									+ pathIdx + "." + name + " Array Out of Bound." + endl()));
+							writeAndFlush("Invalid Path started at "
+									+ pathIdx + "." + name + " Array Out of Bound.");
 							break Outter;
 						}
 						parent = Array.get(parent, idx);
 					} else {
-						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-								+ pathIdx + "." + name + " Not Array." + endl()));
+						writeAndFlush("Invalid Path started at "
+								+ pathIdx + "." + name + " Not Array.");
 						break Outter;
 					}
 					break;
@@ -244,8 +243,8 @@ public class ConnectionWorker implements Runnable {
 					if (parent instanceof Map<?, ?>) {
 						Map<? extends Object, ? extends Object> map = (Map<?, ?>) parent;
 						if (map.size() == 0) {
-							out.write(StringUtil.strToAsciiByte("Map at "
-									+ pathIdx + "." + name + " Is Empty." + endl()));
+							writeAndFlush("Map at "
+									+ pathIdx + "." + name + " Is Empty.");
 							break Outter;
 						}
 						Object key = map.keySet().iterator().next();
@@ -257,8 +256,7 @@ public class ConnectionWorker implements Runnable {
 								idx = Integer.parseInt(realKey);
 								parent = map.get(idx);
 							} catch (Exception e) {
-								out.write(StringUtil.strToAsciiByte("Invalid Map Key at "
-										+ pathIdx + "." + name + endl()));
+								writeAndFlush("Invalid Map Key at " + pathIdx + "." + name);
 								break Outter;
 							}
 						} else if (key instanceof Long) {
@@ -266,19 +264,18 @@ public class ConnectionWorker implements Runnable {
 						        long lkey = Long.parseLong(realKey);
 						        parent = map.get(lkey);
 						    } catch (Exception e) {
-						        out.write(StringUtil.strToAsciiByte("Invalid Map Key at "
-						                + pathIdx + "." + name + endl()));
+						        writeAndFlush("Invalid Map Key at " + pathIdx + "." + name);
 						        break Outter;
 						    }
 						} else {
-							out.write(StringUtil.strToAsciiByte("This Map Key Type "
+							writeAndFlush("This Map Key Type "
 									+ key.getClass().getSimpleName() + " at "
-									+ pathIdx + "." + name + " Is Not Supported." + endl()));
+									+ pathIdx + "." + name + " Is Not Supported.");
 							break Outter;
 						}
 					} else {
-						out.write(StringUtil.strToAsciiByte("Invalid Path started at "
-								+ pathIdx + "." + name + " Not Map." + endl()));
+						writeAndFlush("Invalid Path started at "
+								+ pathIdx + "." + name + " Not Map.");
 						break Outter;
 					}
 					break;
@@ -287,7 +284,7 @@ public class ConnectionWorker implements Runnable {
 				path = path.next();
 			}
 			if (parent == null) {
-				out.write(StringUtil.strToAsciiByte("Path Not Found." + endl()));
+			    writeAndFlush("Path Not Found.");
 				continue;
 			}
 			if (path != null) {
@@ -297,6 +294,18 @@ public class ConnectionWorker implements Runnable {
 			ex.execute(parent, out, args);
 		}
 
+	}
+
+	/**
+	 * Write the string to the output stream and automatically add an end line character at the
+	 * end of the string, then flush the output stream.
+	 *
+	 * @param s the string to be written
+	 * @throws IOException
+	 */
+	protected void writeAndFlush(String s) throws IOException {
+	    out.write(StringUtil.strToAsciiByte(s + endl()));
+	    out.flush();
 	}
 
 }
