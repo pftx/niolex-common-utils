@@ -22,6 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.apache.niolex.commons.util.Const;
+
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
@@ -36,6 +38,8 @@ import com.dyuproject.protostuff.runtime.RuntimeSchema;
  */
 public class ProtoStuffUtil {
 
+    private static final int BUF_SIZE = 8 * Const.K;
+
 	/**
 	 * Serialize one object using protocol stuff.
 	 *
@@ -45,7 +49,7 @@ public class ProtoStuffUtil {
 	@SuppressWarnings("unchecked")
     public static final <T> byte[] seriOne(T o) {
 	    Schema<T> schema = (Schema<T>) RuntimeSchema.getSchema(o.getClass());
-	    LinkedBuffer buffer = LinkedBuffer.allocate(4096);
+	    LinkedBuffer buffer = LinkedBuffer.allocate(BUF_SIZE);
 	    return ProtostuffIOUtil.toByteArray(o, schema, buffer);
 	}
 
@@ -80,8 +84,8 @@ public class ProtoStuffUtil {
 	 */
 	@SuppressWarnings("unchecked")
     public static final byte[] seriMulti(Object[] params) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		LinkedBuffer buffer = LinkedBuffer.allocate(4096);
+		ByteArrayOutputStream out = new ByteArrayOutputStream(BUF_SIZE * 2);
+		LinkedBuffer buffer = LinkedBuffer.allocate(BUF_SIZE);
 		try {
     		for (int i = 0; i < params.length; ++i) {
     		    Schema<Object> schema = (Schema<Object>) RuntimeSchema.getSchema(params[i].getClass());

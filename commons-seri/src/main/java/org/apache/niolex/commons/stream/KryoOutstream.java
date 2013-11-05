@@ -37,7 +37,7 @@ public class KryoOutstream {
 	/**
 	 * Create a simple kryo by this output stream.
 	 *
-	 * @param out
+	 * @param out the output stream
 	 */
 	public KryoOutstream(OutputStream out) {
 		this(new Kryo(), out);
@@ -46,8 +46,8 @@ public class KryoOutstream {
 	/**
 	 * Create a kryo outstream directly.
 	 *
-	 * @param kryo
-	 * @param out
+	 * @param kryo the kryo instance
+	 * @param out the output stream
 	 */
 	public KryoOutstream(Kryo kryo, OutputStream out) {
 		super();
@@ -55,12 +55,11 @@ public class KryoOutstream {
 		this.outp = new Output(out);
 	}
 
-
 	/**
 	 * Write this object into the internal output stream, this method will not
 	 * close that stream. You can call it repeatedly.
 	 *
-	 * @param o
+	 * @param o the object
 	 */
 	public void writeObject(Object o) {
 		kryo.writeObject(outp, o);

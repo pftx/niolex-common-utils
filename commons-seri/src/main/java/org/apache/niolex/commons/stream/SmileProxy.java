@@ -27,7 +27,7 @@ import org.codehaus.jackson.type.TypeReference;
 
 /**
  * This is the proxy to read multiple objects from one input stream.
- * Please use this class instead of @see SmileUtil
+ * Please use this class instead of {@link SmileUtil}
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -42,7 +42,7 @@ public class SmileProxy {
 	/**
 	 * Create a proxy using this input stream.
 	 *
-	 * @param in
+	 * @param in the input stream
 	 * @throws IOException
 	 */
 	public SmileProxy(InputStream in) throws IOException {

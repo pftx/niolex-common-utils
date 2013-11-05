@@ -27,7 +27,7 @@ import org.codehaus.jackson.type.TypeReference;
 
 /**
  * This is the proxy to read multiple objects from one input stream.
- * Please use this class instead of @see JacksonUtil
+ * Please use this class instead of {@link JacksonUtil}
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -42,7 +42,7 @@ public class JsonProxy {
 	/**
 	 * Create a proxy using this input stream.
 	 *
-	 * @param in
+	 * @param in the input stream
 	 * @throws IOException
 	 */
 	public JsonProxy(InputStream in) throws IOException {

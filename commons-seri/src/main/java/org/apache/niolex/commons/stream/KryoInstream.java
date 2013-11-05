@@ -36,7 +36,8 @@ public class KryoInstream {
 
 	/**
 	 * Create a simple kryo by this input stream.
-	 * @param in
+	 *
+	 * @param in the input stream
 	 */
 	public KryoInstream(InputStream in) {
 		this(new Kryo(), in);
@@ -44,8 +45,9 @@ public class KryoInstream {
 
 	/**
 	 * Create a kryo instream directly.
-	 * @param kryo
-	 * @param in
+	 *
+	 * @param kryo the kryo instance
+	 * @param in the input stream
 	 */
 	public KryoInstream(Kryo kryo, InputStream in) {
 		super();

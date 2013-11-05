@@ -70,6 +70,7 @@ public class ProtoUtil {
 
 	/**
 	 * Parse delimited one object of type <code>type</code> from the input stream.
+	 *
 	 * @param input
 	 * @param type
 	 * @return the object
@@ -109,7 +110,7 @@ public class ProtoUtil {
 	/**
 	 * Serialize one object using protocol buffer.
 	 *
-	 * @param o
+	 * @param o the object to serialize
 	 * @return the byte array
 	 */
 	public static final byte[] seriOne(Object o) {

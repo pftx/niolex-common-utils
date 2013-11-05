@@ -76,7 +76,8 @@ public class ConnectionWorker implements Runnable {
 	 * @return The end line character
 	 */
 	public static String endl() {
-	    return ENDL_HOLDER.get();
+	    String endl = ENDL_HOLDER.get();
+	    return endl == null ? "\n" : endl;
 	}
 
 	/**
