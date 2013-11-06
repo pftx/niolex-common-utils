@@ -17,8 +17,7 @@
  */
 package org.apache.niolex.commons.mail;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -56,9 +55,10 @@ public class EmailProxyTest {
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.mail.EmailProxy#sendEmail(java.lang.String, boolean)}.
+	 * @throws Exception
 	 */
 	@Test
-	public final void testSendEmail() {
+	public final void testSendEmail() throws Exception {
 		emailProxy.setEncoding("utf-8");
 		emailProxy.setFrom("xiejiyun@gmail.com");
 		emailProxy.setTo("xiejiyun@gmail.com, abc@163.com");
@@ -66,7 +66,6 @@ public class EmailProxyTest {
 		boolean r = emailProxy.sendEmail("This is a general test message.", false);
 		ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
 		verify(mailSender).send(captor.capture());
-		System.out.println(captor.getValue());
 		assertTrue(r);
 	}
 
@@ -95,7 +94,7 @@ public class EmailProxyTest {
 		List<String> tos = new ArrayList<String>();
 		tos.add("xiejiyun@gmail.com");
 		tos.add("abc@163.com");
-		emailProxy.setTo(tos );
+		emailProxy.setTo(tos);
 		emailProxy.sendEmail("This is a general test message.", false);
 		ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
 		verify(mailSender).send(captor.capture());

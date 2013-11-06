@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 
-
 /**
  * 能够发送邮件的代理类
  *
@@ -44,7 +43,7 @@ public class EmailProxy {
      * Send an ordinary email with no attachment.
      *
      * @param text the email body
-     * @param isHtml whether the body is email or not
+     * @param isHtml whether the body is HTML or not
      * @return true if success, false otherwise
      */
     public boolean sendEmail(String text, boolean isHtml) {

@@ -38,17 +38,17 @@ import com.google.common.collect.Lists;
  * EmailUtil是一个利用Spring Email框架进行同步发送邮件的工具类
  *
  * 目前提供的功能如下：
- *
+ * <pre>
  * 1. public static void sendMail(
  *              String from,
- *              List tos,
+ *              List<String> tos,
  *              String title,
  *              String text,
  *              List<File> attachments,
  *              String priority,
  *              boolean isHtml,
  *              String encoding
- * );
+ * );</pre>
  * 同步发送指定参数的邮件
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
@@ -69,10 +69,10 @@ public class EmailUtil {
     /**
      * Send a HTML email to this person.
      *
-     * @param from
-     * @param to
-     * @param title
-     * @param text
+     * @param from the email sender
+     * @param to the email receiver
+     * @param title the email title
+     * @param text the email body
      * @throws MailException
      * @throws MessagingException
      */
@@ -84,11 +84,11 @@ public class EmailUtil {
      * Send an email
      * 同步发送指定参数的邮件
      *
-     * @param from email sender
-     * @param tos email receiver
-     * @param title email title
-     * @param text email body
-     * @param attachments a List<Pair<String, InputStreamSource>> attachements
+     * @param from the email sender
+     * @param tos the email receiver list
+     * @param title the email title
+     * @param text the email body
+     * @param attachments a List<File> attachements
      * @param priority priority from 1-5 higher - lower
      * @param isHtml is the text in html format or not
      * @param encoding the encoding of email, i.e. "GBK"、"UTF-8"
@@ -120,6 +120,8 @@ public class EmailUtil {
      *            邮件发送人
      * @param tos
      *            邮件收件人
+     * @param ccs
+     *            邮件抄送人
      * @param title
      *            邮件标题
      * @param text
