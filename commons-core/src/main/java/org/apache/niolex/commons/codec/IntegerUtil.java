@@ -104,6 +104,40 @@ public abstract class IntegerUtil {
 	}
 
 	/**
+	 * Parse the double value from the string formatted by {@link #formatSize(double)}
+	 *
+	 * @param str the string to be parsed.
+	 * @return the double value represented by the string argument.
+	 * @throws NumberFormatException if the string does not contain a parsable double.
+	 */
+	public static final double fromSize(String str) {
+	    final int len = str.length();
+	    str = str.toUpperCase();
+	    double size = 0;
+	    switch(str.charAt(len - 1)) {
+	        case 'T':
+	            size = Const.T;
+	            break;
+	        case 'G':
+	            size = Const.G;
+                break;
+            case 'M':
+                size = Const.M;
+                break;
+            case 'K':
+                size = Const.K;
+                break;
+            default:
+                size = 1;
+                break;
+	    }
+	    if (size != 1.0) {
+	        str = str.substring(0, len - 1);
+	    }
+	    return size * Double.parseDouble(str);
+	}
+
+	/**
      * Check whether the target is in the argument array.
      *
      * @param target the target need be checked

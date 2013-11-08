@@ -180,6 +180,29 @@ public class IntegerUtilTest {
     }
 
     @Test
+    public void testFromSize() throws Exception {
+        assertEquals(IntegerUtil.fromSize("123"), 123, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1K"), 1024, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1.0009765625k"), 1025, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1.002K"), 1026.048, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1.01K"), 1034.24, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1.018K"), 1042.432, 0.0000001);
+        // -- M
+        assertEquals(IntegerUtil.fromSize("1M"), 1048576, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1.8M"), 1887436.8, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1.01049041748046875M"), 1059576, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1.96M"), 2055208.96, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("2.97M"), 3114270.72, 0.0000001);
+        // -- G
+        assertEquals(IntegerUtil.fromSize("1G"), 1073741824, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1.83G"), 1964947537.92, 0.0000001);
+        // -- T
+        assertEquals(IntegerUtil.fromSize("1T"), 1099511627776L, 0.0000001);
+        assertEquals(IntegerUtil.fromSize("1.82T"), 2001111627776L, 1E8);
+        assertEquals(IntegerUtil.fromSize("1.67T"), 1836123616061L, 1e8);
+    }
+
+    @Test
     public void testIsIn() throws Exception {
         assertFalse(IntegerUtil.isIn(5, 6));
         assertTrue(IntegerUtil.isIn(5, 6, 7, 5));
