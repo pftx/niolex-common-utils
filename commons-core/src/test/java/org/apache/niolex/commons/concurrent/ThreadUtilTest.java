@@ -20,6 +20,8 @@ package org.apache.niolex.commons.concurrent;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.Test;
 
 /**
@@ -67,11 +69,88 @@ public class ThreadUtilTest extends ThreadUtil {
 
     @Test
     public void testSleepAtLeast() throws Exception {
-        for (int i = 0; i < 10; i++) {
-            long in = System.currentTimeMillis();
-            sleepAtLeast(1);
-            assertTrue(0 < (System.currentTimeMillis() - in));
+        final CountDownLatch c1 = new CountDownLatch(1);
+        final Thread t1 = new Thread("Makr-Lex") {
+
+            /**
+             * This is the override of super method.
+             * @see java.lang.Thread#run()
+             */
+            @Override
+            public void run() {
+                c1.countDown();
+                ThreadUtil.sleepAtLeast(100);
+            }
+
+        };
+        t1.start();
+        c1.await();
+        for (int i = 0; i < 20; i++) {
+            t1.interrupt();
+            ThreadUtil.sleepAtLeast(1);
         }
+    }
+
+    @Test
+    public void testJoin() throws Exception {
+        final CountDownLatch c1 = new CountDownLatch(1);
+        final Thread t1 = new Thread("Makr-Lex") {
+
+            /**
+             * This is the override of super method.
+             * @see java.lang.Thread#run()
+             */
+            @Override
+            public void run() {
+                c1.countDown();
+                ThreadUtil.sleep(50000);
+            }
+
+        };
+        t1.start();
+        c1.await();
+        final CountDownLatch c2 = new CountDownLatch(1);
+        final Thread t2 = new Thread("Makr-Lex") {
+            @Override
+            public void run() {
+                c2.countDown();
+                ThreadUtil.join(t1);
+            }
+        };
+        t2.start();
+        c2.await();
+        t1.interrupt();
+    }
+
+    @Test
+    public void testJoinInterupt() throws Exception {
+        final CountDownLatch c1 = new CountDownLatch(1);
+        final Thread t1 = new Thread("Makr-Lex") {
+
+            /**
+             * This is the override of super method.
+             * @see java.lang.Thread#run()
+             */
+            @Override
+            public void run() {
+                c1.countDown();
+                ThreadUtil.sleep(50000);
+            }
+
+        };
+        t1.start();
+        c1.await();
+        final CountDownLatch c2 = new CountDownLatch(1);
+        final Thread t2 = new Thread("Makr-Lex") {
+            @Override
+            public void run() {
+                c2.countDown();
+                ThreadUtil.join(t1);
+            }
+        };
+        t2.start();
+        c2.await();
+        t2.interrupt();
     }
 
 }

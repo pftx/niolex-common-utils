@@ -99,4 +99,15 @@ public class ThreadUtil {
         } while (t < milliseconds);
     }
 
+    /**
+     * Waits for this thread to die.
+     *
+     * @param thread the thread to wait for.
+     */
+    public static final void join(Thread thread) {
+        try {
+            thread.join();
+        } catch (Exception e) {/*We Don't Care*/}
+    }
+
 }
