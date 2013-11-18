@@ -49,6 +49,7 @@ public class Blowfish2Coder extends BaseCoder {
 
     /**
      * 初始化密钥和IV参数
+     *
      * @param key
      * @throws Exception
      */

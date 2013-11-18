@@ -62,14 +62,14 @@ public class IgnoreException {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             // iterate them
             while (interfaces.hasMoreElements()) {
-                NetworkInterface ifc = interfaces.nextElement();
-                if (!isNetworkInterfaceUp(ifc)) {
+                NetworkInterface nFace = interfaces.nextElement();
+                if (!isNetworkInterfaceUp(nFace)) {
                     // If it's down, there is nothing we can do.
                     continue;
                 }
-                Enumeration<InetAddress> addressesOfAnInterface = ifc.getInetAddresses();
-                while (addressesOfAnInterface.hasMoreElements()) {
-                    InetAddress address = addressesOfAnInterface.nextElement();
+                Enumeration<InetAddress> addresses = nFace.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress address = addresses.nextElement();
                     set.add(address);
                 }
             }
@@ -82,12 +82,12 @@ public class IgnoreException {
     /**
      * Test whether the network interface is up or not.
      *
-     * @param ifc the network interface to test
+     * @param netFace the network interface to test
      * @return true if it's up
      */
-    public static boolean isNetworkInterfaceUp(NetworkInterface ifc) {
+    public static boolean isNetworkInterfaceUp(NetworkInterface netFace) {
         try {
-            return ifc.isUp();
+            return netFace.isUp();
         } catch (Exception e) {
             /*We Don't Care*/
             return false;

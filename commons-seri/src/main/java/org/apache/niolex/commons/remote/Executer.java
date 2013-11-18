@@ -151,10 +151,9 @@ public abstract class Executer {
 				return;
 			}
 			try {
-    			Field f = FieldUtil.getField(o.getClass(), args[2]);
-    			FieldUtil.setFieldWithCorrectValue(f, o, args[3]);
+    			FieldUtil.setValueAutoConvert(o, args[2], args[3]);
     			writeAndFlush(out, "Set Field Success." + endl());
-			} catch (NoSuchFieldException e) {
+			} catch (IllegalArgumentException e) {
 			    writeAndFlush(out, "Field Not Found." + endl());
 			} catch (UnsupportedOperationException e) {
 			    writeAndFlush(out, e.getMessage() + endl());

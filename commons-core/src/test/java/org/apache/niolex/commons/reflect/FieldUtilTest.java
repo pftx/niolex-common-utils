@@ -25,7 +25,49 @@ import org.junit.Assert;
 import org.junit.Test;
 
 
-public class FieldUtilTest {
+public class FieldUtilTest extends FieldUtil {
+
+    @Test
+    public void testGetValue() throws Exception {
+        FieldTestBean bean = new FieldTestBean();
+        setValue(bean, "earned", 92831221.302902);
+        Double d = getValue(bean, "earned");
+        Assert.assertEquals(92831221.302902, d.doubleValue(), 0.000001);
+    }
+
+    @Test
+    public void testSetValueAutoConvert() throws Exception {
+        FieldTestBean bean = new FieldTestBean();
+        setValueAutoConvert(bean, "earned", "92831221.302902");
+        Double d = getValue(bean, "earned");
+        Assert.assertEquals(92831221.302902, d.doubleValue(), 0.000001);
+    }
+
+    @Test
+    public void testSetValueAutoConvertEnh() throws Exception {
+        FieldTestBean bean = new FieldTestBean();
+        setValueAutoConvert(bean, "earned", "9.2831221302902e7");
+        Double d = getValue(bean, "earned");
+        Assert.assertEquals(92831221.302902, d.doubleValue(), 0.000001);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSetValueAutoConvertEx() throws Exception {
+        FieldTestBean bean = new FieldTestBean();
+        setValueAutoConvert(bean, "earn", "9.2831221302902e7");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSetValue() throws Exception {
+        FieldTestBean bean = new FieldTestBean();
+        setValue(bean, "earnedIntx", 92831221.302902);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetValueEx() throws Exception {
+        FieldTestBean bean = new FieldTestBean();
+        getValue(bean, "earn");
+    }
 
     @Test
     public void testFields() throws Exception {
@@ -78,6 +120,13 @@ public class FieldUtilTest {
 
         Integer intBeanLevel = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(intBeanLevel.intValue(), 5);
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testUnsafeSetFieldValue() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "intId");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.unsafeSetFieldValue(field, bean, 3322);
     }
 
     @Test
@@ -176,172 +225,181 @@ public class FieldUtilTest {
     }
 
     @Test
-    public void testSetFieldWithCorrectValueS() throws Exception {
+    public void testSetFieldValueAutoConvertS() throws Exception {
     	Field field = FieldUtil.getField(FieldTestBean.class, "strName");
     	FieldTestBean bean = new FieldTestBean();
-    	FieldUtil.setFieldWithCorrectValue(field, bean, "312314.3134F");
+    	FieldUtil.setFieldValueAutoConvert(field, bean, "312314.3134F");
     	String fieldValue = FieldUtil.getFieldValue(field, bean);
     	Assert.assertEquals("312314.3134F", fieldValue);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueDate() throws Exception {
+    public void testSetFieldValueAutoConvertDate() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "time");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "152531425");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "152531425");
         Date fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(152531425, fieldValue.getTime());
     }
 
     @Test
-    public void testSetFieldWithCorrectValueIL() throws Exception {
+    public void testSetFieldValueAutoConvertIL() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "age");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "65");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "65");
         Integer fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(65, fieldValue.intValue());
     }
 
     @Test
-    public void testSetFieldWithCorrectValueI() throws Exception {
+    public void testSetFieldValueAutoConvertI() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "intLevel");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "34");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "34");
         int fieldValue = field.getInt(bean);
         Assert.assertEquals(34, fieldValue);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueLL() throws Exception {
+    public void testSetFieldValueAutoConvertLL() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "logno");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "871658278165");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "871658278165");
         Long fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(871658278165l, fieldValue.longValue());
     }
 
     @Test
-    public void testSetFieldWithCorrectValueL() throws Exception {
+    public void testSetFieldValueAutoConvertL() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "empno");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "348281128282");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "348281128282");
         long fieldValue = field.getLong(bean);
         Assert.assertEquals(348281128282l, fieldValue);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueSIL() throws Exception {
+    public void testSetFieldValueAutoConvertSIL() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "dfijd");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "5151");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "5151");
         Short fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(5151, fieldValue.shortValue());
     }
 
     @Test
-    public void testSetFieldWithCorrectValueSI() throws Exception {
+    public void testSetFieldValueAutoConvertSI() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "veridk");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "13241");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "13241");
         short fieldValue = field.getShort(bean);
         Assert.assertEquals(13241, fieldValue);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueBL() throws Exception {
+    public void testSetFieldValueAutoConvertBL() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "unused");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "-66");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "-66");
         Byte fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(-66, fieldValue.byteValue());
     }
 
     @Test
-    public void testSetFieldWithCorrectValueB() throws Exception {
+    public void testSetFieldValueAutoConvertB() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "resvered");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "94");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "94");
         byte fieldValue = field.getByte(bean);
         Assert.assertEquals(94, fieldValue);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueBOOL() throws Exception {
+    public void testSetFieldValueAutoConvertBOOL() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "flag");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "true");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "true");
         Boolean fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(true, fieldValue.booleanValue());
     }
 
     @Test
-    public void testSetFieldWithCorrectValueBOO() throws Exception {
+    public void testSetFieldValueAutoConvertBOO() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "gender");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "true");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "true");
         boolean fieldValue = field.getBoolean(bean);
         Assert.assertEquals(true, fieldValue);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueCL() throws Exception {
+    public void testSetFieldValueAutoConvertCL() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "grade");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "S");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "S");
         Character fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals('S', fieldValue.charValue());
     }
 
     @Test
-    public void testSetFieldWithCorrectValueC() throws Exception {
+    public void testSetFieldValueAutoConvertC() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "chdier");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "x");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "x");
         char fieldValue = field.getChar(bean);
         Assert.assertEquals('x', fieldValue);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueDL() throws Exception {
+    public void testSetFieldValueAutoConvertDL() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "sal");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "9831091209843.4109434");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "9831091209843.4109434");
         Double fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(fieldValue, 9831091209843.4109434, 0.000000000001);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueD() throws Exception {
+    public void testSetFieldValueAutoConvertD() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "earned");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "8382389324.134901341309");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "8382389324.134901341309");
         double fieldValue = field.getDouble(bean);
         Assert.assertEquals(fieldValue, 8382389324.134901341309, 0.000000000001);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueFL() throws Exception {
+    public void testSetFieldValueAutoConvertFL() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "remain");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "98496131.161691");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "98496131.161691");
         Float fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(fieldValue, 98496131.161691f, 0.0000001f);
     }
 
     @Test
-    public void testSetFieldWithCorrectValueF() throws Exception {
+    public void testSetFieldValueAutoConvertF() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "tax");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "8165.948651");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "8165.948651");
         float fieldValue = field.getFloat(bean);
         Assert.assertEquals(fieldValue, 8165.948651f, 0.0000001f);
     }
 
     @Test(expected=UnsupportedOperationException.class)
-    public void testSetFieldWithCorrectValueNS() throws Exception {
+    public void testSetFieldValueAutoConvertNS() throws Exception {
         Field field = FieldUtil.getField(FieldTestBean.class, "obj");
         FieldTestBean bean = new FieldTestBean();
-        FieldUtil.setFieldWithCorrectValue(field, bean, "8165.948651");
+        FieldUtil.setFieldValueAutoConvert(field, bean, "8165.948651");
+        Float fieldValue = FieldUtil.getFieldValue(field, bean);
+        Assert.assertEquals(fieldValue, 8165.948651f, 0.0000001f);
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testSetFieldValueAutoConvertIS() throws Exception {
+        Field field = FieldUtil.getField(FieldTestBean.class, "sal");
+        FieldTestBean bean = new FieldTestBean();
+        FieldUtil.unsafeSetFieldValueAutoConvert(field, bean, "8165.948651");
         Float fieldValue = FieldUtil.getFieldValue(field, bean);
         Assert.assertEquals(fieldValue, 8165.948651f, 0.0000001f);
     }
