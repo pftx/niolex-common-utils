@@ -230,10 +230,10 @@ public class HTTPUtilTest extends HTTPUtil {
     @Test
     public void testHTTPNuLLHeader() throws Exception {
         if (SystemUtil.defined("download", "download.http")) return;
-        byte[] body = doHTTP("http://www.360.cn/", null, null, 5000, 3000, false).b;
+        byte[] body = doHTTP("http://view.163.com/", null, null, 5000, 3000, false).b;
         String s = StringUtil.gbkByteToStr(body);
         assertTrue(s.length() > 1024);
-        assertTrue(s.contains("360安全中心"));
+        assertTrue(s.contains("网易评论频道是网易新闻中心一个包含有另一面"));
     }
 
     @Test

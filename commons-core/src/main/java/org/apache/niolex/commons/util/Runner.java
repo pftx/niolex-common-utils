@@ -17,9 +17,6 @@
  */
 package org.apache.niolex.commons.util;
 
-import java.lang.reflect.Method;
-
-import org.apache.commons.lang.ClassUtils;
 import org.apache.niolex.commons.reflect.MethodUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,30 +33,16 @@ public class Runner {
 	/**
 	 * Run the given method in that object once.
 	 *
-	 * @param host
-	 * @param methodName
-	 * @param args The argument of the given method.
-	 * @return The thread which is used to run this method.
+	 * @param host the host object
+	 * @param methodName the method name
+	 * @param args the arguments of the given method
+	 * @return the thread used to run this method
 	 */
 	public static Thread run(final Object host, final String methodName, final Object ...args) {
-		Thread t = new Thread(){
+		Thread t = new Thread("Runner"){
 			public void run() {
 				try {
-				    Method[] ms = MethodUtil.getMethods(host, methodName);
-				    // Prepare ARGS class.
-				    Class<?>[] argsTypes = new Class<?>[args.length];
-				    for (int i = 0; i < args.length; ++i) {
-				        argsTypes[i] = args[i].getClass();
-				    }
-				    // Check all methods to find the correct one.
-					for (Method m : ms) {
-					    if (!ClassUtils.isAssignable(argsTypes, m.getParameterTypes(), true)) {
-					        continue;
-					    }
-					    m.setAccessible(true);
-					    m.invoke(host, args);
-					    break;
-					}
+				    MethodUtil.invokeMethod(host, methodName, args);
 				} catch (Exception e) {
 					LOG.warn("Error occured in Runner#run method.", e);
 				}
@@ -72,11 +55,11 @@ public class Runner {
 	/**
 	 * Run the given runnable once.
 	 *
-	 * @param run
-	 * @return The thread which is used to run this method.
+	 * @param run the runnable
+	 * @return the thread used to run this method
 	 */
 	public static Thread run(Runnable run) {
-		Thread t = new Thread(run);
+		Thread t = new Thread(run, "Runner");
 		t.start();
 		return t;
 	}

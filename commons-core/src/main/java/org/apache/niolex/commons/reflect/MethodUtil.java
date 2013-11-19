@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 
 /**
@@ -241,9 +242,16 @@ public class MethodUtil {
     public static final Object invokeMethod(Object host, String methodName, Class<?>[] parameterTypes,
             Object... args) throws IllegalArgumentException, IllegalAccessException,
             InvocationTargetException {
-        Method m = getMethod(host, methodName, parameterTypes);
-        m.setAccessible(true);
-        return m.invoke(host, args);
+        Method[] mArr = getMethods(host, methodName);
+        // Check all methods to find the correct one.
+        for (Method m : mArr) {
+            if (!ClassUtils.isAssignable(parameterTypes, m.getParameterTypes(), true)) {
+                continue;
+            }
+            m.setAccessible(true);
+            return m.invoke(host, args);
+        }
+        throw new ItemNotFoundException("Method not found.", null);
     }
 
     /**

@@ -112,6 +112,23 @@ public class MethodUtilTest extends MethodUtil {
         Assert.assertEquals(ret, "niolex-common-utils");
     }
 
+    @Test
+    public void testInvokeMethodObjAotuCast() throws Throwable {
+        MethodTestBean host = new MethodTestBean("lex");
+        Object ret = MethodUtil.invokeMethod(host, "echoName", (byte)6);
+        Assert.assertEquals(ret, "lex");
+
+        ret = MethodUtil.invokeMethod(host, "echoName", "God Like", (short)9);
+        Assert.assertEquals(ret, "God Like");
+    }
+
+    @Test(expected=ItemNotFoundException.class)
+    public void testInvokeMethodNotFound() throws Throwable {
+        MethodTestBean host = new MethodTestBean("lex");
+        Object ret = MethodUtil.invokeMethod(host, "echoName", true);
+        Assert.assertEquals(ret, "lex");
+    }
+
     public static interface Inter {
         public void find(int k);
     }
@@ -130,7 +147,11 @@ public class MethodUtilTest extends MethodUtil {
         }
 
         public int cool() {
-            return coo;
+            return coo * joke();
+        }
+
+        private int joke() {
+            return 6;
         }
     }
 
@@ -161,8 +182,7 @@ public class MethodUtilTest extends MethodUtil {
     @Test
     public void testInvokeMethodStringObjectObjectArray() throws Exception {
         Object obj = new Con();
-        Class<?>[] params = new Class<?>[] {int.class, int.class};
-        Object res = MethodUtil.invokeMethod(obj, "find", params, 921, 83);
+        Object res = MethodUtil.invokeMethod(obj, "find", 921, 83);
         Assert.assertEquals(76443, res);
     }
 
@@ -171,6 +191,20 @@ public class MethodUtilTest extends MethodUtil {
         MethodTestBean host = new MethodTestBean("niolex-common-utils");
         Object ret = MethodUtil.invokePublicMethod(host, "echoName", "Xie, Jiyun", 8334);
         Assert.assertEquals(ret, "Xie, Jiyun");
+    }
+
+    @Test
+    public void testInvokePrivateMethod() throws Exception {
+        Object obj = new Con();
+        Object res = MethodUtil.invokeMethod(obj, "joke");
+        Assert.assertEquals(6, res);
+    }
+
+    @Test(expected=NoSuchMethodException.class)
+    public void testInvokePrivateMethodFalse() throws Exception {
+        Object obj = new Con();
+        Object res = MethodUtil.invokePublicMethod(obj, "joke");
+        Assert.assertEquals(6, res);
     }
 
 }
