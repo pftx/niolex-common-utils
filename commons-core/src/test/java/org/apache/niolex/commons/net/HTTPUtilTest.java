@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 import com.google.common.base.Charsets;
@@ -40,6 +41,7 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testGetWithoutEnc() throws Exception {
+        if (SystemUtil.defined("download", "download.http")) return;
         String s = get("http://www.zju.edu.cn/");
         assertTrue(s.length() > 1024);
         assertTrue(s.contains("浙江大学"));
@@ -47,6 +49,7 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testGetHasEnc() throws Exception {
+        if (SystemUtil.defined("download", "download.http")) return;
         String s = get("http://www.so.com/");
         assertTrue(s.length() > 1024);
         assertTrue(s.contains("可信任的搜索引擎"));
@@ -165,6 +168,7 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testGetStringParam() throws Exception {
+        if (SystemUtil.defined("download", "download.http")) return;
         Map<String, String> params = Maps.newHashMap();
         params.put("wd", "谢佶芸");
         String s = get("http://www.baidu.com/baidu", params);
@@ -174,6 +178,7 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testGet() throws Exception {
+        if (SystemUtil.defined("download", "download.http")) return;
         Map<String, String> params = Maps.newHashMap();
         params.put("list", "sh000001");
         String s = get("http://hq.sinajs.cn/", params);
@@ -224,7 +229,8 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testHTTPNuLLHeader() throws Exception {
-        byte[] body = doHTTP("http://www.360.cn/", null, null, 3000, 3000, false).b;
+        if (SystemUtil.defined("download", "download.http")) return;
+        byte[] body = doHTTP("http://www.360.cn/", null, null, 5000, 3000, false).b;
         String s = StringUtil.gbkByteToStr(body);
         assertTrue(s.length() > 1024);
         assertTrue(s.contains("360安全中心"));

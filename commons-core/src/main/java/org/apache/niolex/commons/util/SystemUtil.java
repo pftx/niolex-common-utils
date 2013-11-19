@@ -79,6 +79,16 @@ public class SystemUtil {
 	}
 
 	/**
+	 * Check whether the specified system properties defined or not.
+	 *
+	 * @param args the specified property keys
+	 * @return true if defined, false otherwise
+	 */
+	public static final boolean defined(String ...args) {
+	    return getSystemProperty(args) != null;
+	}
+
+	/**
 	 * Get the root cause from the exception chain.
 	 *
 	 * @param e the exception

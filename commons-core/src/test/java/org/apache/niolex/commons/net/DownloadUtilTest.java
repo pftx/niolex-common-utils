@@ -11,6 +11,7 @@ import org.apache.niolex.commons.net.DownloadUtil;
 import org.apache.niolex.commons.net.NetException.ExCode;
 import org.apache.niolex.commons.test.StopWatch;
 import org.apache.niolex.commons.test.StopWatch.Stop;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -46,6 +47,7 @@ public class DownloadUtilTest {
 
 	@Test
 	public final void testDownloadFileNormal() throws Exception, Throwable {
+	    if (SystemUtil.defined("download", "download.http")) return;
 		byte[] con = downloadFile("http://img01.51jobcdn.com/im/2009/logo/logo2009.gif",
 						3000, 3000, 3000, false);
 		System.out.println("SL " + con.length);
@@ -67,6 +69,7 @@ public class DownloadUtilTest {
 
 	@Test
 	public final void testDownloadFileOK() throws Exception, Throwable {
+	    if (SystemUtil.defined("download", "download.http")) return;
 		byte[] con = downloadFile("http://file.ipinyou.com.cn/material/1336702985302-b/index.html#2288|17680|1336702985302",
 						10000, 10000, 10000, false);
 		Assert.assertEquals(7299, con.length);

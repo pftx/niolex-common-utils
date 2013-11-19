@@ -31,7 +31,7 @@ import com.esotericsoftware.reflectasm.MethodAccess;
  * @version 1.0.0
  * @since 2012-7-23
  */
-public class FastMethodUtilTest {
+public class FastMethodUtilTest extends FastMethodUtil {
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.reflect.FastMethodUtil#getMethods(java.lang.Class)}.
@@ -60,11 +60,10 @@ public class FastMethodUtilTest {
 	@Test
 	public void testInvokeMethod() {
 		MethodTestBean host = new MethodTestBean("niolex-common-utils");
-        Object ret = FastMethodUtil.invokeMethod("echoName", host, "Xie, Jiyun");
+        Object ret = FastMethodUtil.invokeMethod(host, "echoName", "Xie, Jiyun");
         Assert.assertEquals(ret, "Xie, Jiyun");
-        ret = FastMethodUtil.invokeMethod("echoName", host);
+        ret = FastMethodUtil.invokeMethod(host, "echoName");
         Assert.assertEquals(ret, "niolex-common-utils");
-        new FastMethodUtil();
 	}
 
 
@@ -76,8 +75,8 @@ public class FastMethodUtilTest {
      */
     @Test
     public void testInvokeMethodMore() throws NoSuchMethodException, IllegalAccessException, Exception {
-        MethodTestBean host = new MethodTestBean("niolex-common-utils");
-        Object ret = MethodUtil.invokeMethod("echoName", host, "Lex", 66);
+        MethodTestBean host = new MethodTestBean("Lex");
+        Object ret = FastMethodUtil.invokeMethod(host, "echoName", (Object[]) null);
         Assert.assertEquals(ret, "Lex");
     }
 

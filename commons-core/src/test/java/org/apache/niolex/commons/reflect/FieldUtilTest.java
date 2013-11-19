@@ -51,19 +51,19 @@ public class FieldUtilTest extends FieldUtil {
         Assert.assertEquals(92831221.302902, d.doubleValue(), 0.000001);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=ItemNotFoundException.class)
     public void testSetValueAutoConvertEx() throws Exception {
         FieldTestBean bean = new FieldTestBean();
         setValueAutoConvert(bean, "earn", "9.2831221302902e7");
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=ItemNotFoundException.class)
     public void testSetValue() throws Exception {
         FieldTestBean bean = new FieldTestBean();
         setValue(bean, "earnedIntx", 92831221.302902);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=ItemNotFoundException.class)
     public void testGetValueEx() throws Exception {
         FieldTestBean bean = new FieldTestBean();
         getValue(bean, "earn");

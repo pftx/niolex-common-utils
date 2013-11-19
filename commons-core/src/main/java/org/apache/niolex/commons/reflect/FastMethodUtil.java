@@ -20,12 +20,12 @@ package org.apache.niolex.commons.reflect;
 import com.esotericsoftware.reflectasm.MethodAccess;
 
 /**
+ * Cn: FastMethodUtil是一个通过Reflect ASM来操作Java方法的工具类
+ * 注意！本类只能操作public/protected/package修饰的方法，私有方法请通过MethodUtil操作
+ * <br>
  * En: FastMethodUtil using Reflect ASM to operate on Java bean to achieve high speed.
  * Notion! This utility can only operate on public/protected/package methods. For other
  * private methods, please use {@link org.apache.niolex.commons.reflect.MethodUtil}
- * <br>
- * Cn: FastMethodUtil是一个通过Reflect ASM来操作Java方法的工具类
- * 注意！本类只能操作public/protected/package修饰的方法，私有方法请通过MethodUtil操作
  *
  * 目前提供的功能如下：
  * 1. public static final String[] getMethods(Class<?> clazz)
@@ -37,9 +37,6 @@ import com.esotericsoftware.reflectasm.MethodAccess;
  * 3. public static final Object invokeMethod(String methodName, Object host, Object[] args)
  * 在指定Java对象上调用指定的方法
  *
- *
- * @used 暂无项目使用
- * @category niolex-common-utils -> 公共库 -> 反射处理
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @see org.apache.niolex.commons.reflect.MethodUtil
@@ -75,14 +72,14 @@ public class FastMethodUtil {
      * En: Invoke this method on the host object.<br>
      * Cn: 在指定Java对象上调用指定的方法
      *
-     * @param methodName 需要调用的方法
      * @param host 用来调用指定方法的对象
+     * @param methodName 需要调用的方法
      * @param args 用来调用指定方法的参数，如果指定方法不使用参数，则不输入
      * @return 调用指定的方法的返回值如果接口方法的声明返回类型是基本类型，则此值一定
      * 是相应基本包装对象类的实例；否则，它一定是可分配到声明返回类型的类型。如果此值为 null则
      * 接口方法的返回类型是void或者接口方法返回了null
      */
-    public static final Object invokeMethod(String methodName, Object host, Object... args) {
+    public static final Object invokeMethod(Object host, String methodName, Object... args) {
     	MethodAccess access = MethodAccess.get(host.getClass());
     	if (args != null && args.length != 0) {
     		Class<?>[] clazz = new Class<?>[args.length];
@@ -93,4 +90,5 @@ public class FastMethodUtil {
     	}
         return access.invoke(host, methodName, args);
     }
+
 }

@@ -112,9 +112,7 @@ public class NewDownloadUtilTest {
 
     @Test
     public void testDownloadFtp() throws NetException {
-        if (SystemUtil.getSystemProperty("download.ftp") != null) {
-            return;
-        }
+        if (SystemUtil.defined("download", "download.ftp")) return;
         byte[] data = downloadFile(FTP);
         assertEquals(1049902, data.length);
     }
@@ -161,6 +159,7 @@ public class NewDownloadUtilTest {
 
     @Test
     public void testDownloadFile() throws NetException {
+        if (SystemUtil.defined("download", "download.http")) return;
         byte[] data = downloadFile("http://www.10086.cn/images/quickbg.gif", 9624);
         byte[] local = FileUtil.getBinaryFileContentFromClassPath("quickbg.gif.txt", getClass());
         assertArrayEquals(local, data);

@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.Closeable;
@@ -31,7 +31,7 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-8-1
  */
-public class SystemUtilTest {
+public class SystemUtilTest extends SystemUtil {
 
 	@Test
 	public void testSleep() throws Exception {
@@ -40,7 +40,6 @@ public class SystemUtilTest {
 
 	@Test
 	public void testSleepErr() throws Exception {
-		new SystemUtil() {};
 		SystemUtil.sleep(-1);
 	}
 
@@ -84,6 +83,12 @@ public class SystemUtilTest {
     public void testGetSystemPropertyNull() throws Exception {
         String s = SystemUtil.getSystemProperty("evn.home", "usr.home");
         System.out.println("home = " + s);
+    }
+
+    @Test
+    public void testDefined() throws Exception {
+        assertTrue(defined("evn.home", "java.class.path"));
+        assertFalse(defined("evn.home", "jdk.version"));
     }
 
     @Test

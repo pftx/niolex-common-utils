@@ -29,7 +29,6 @@ import java.lang.reflect.Proxy;
  * 1. public static final <T> T newProxyInstance(Object host, ProxyHandler h)
  * 动态创建一个对象的Java代理,请注意用来创建代理的Java对象必须是面向接口的，否则无法成功创建代理
  *
- * @category niolex-common-utils -> 公共库 -> 反射处理
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */
@@ -46,8 +45,7 @@ public class ProxyUtil {
      * 2. public void invokeAfter(Object proxy, Method method, Object[] args, Object ret)
      * 在代理对象的每一个方法调用的后面做一些处理
      *
-     * @used ProxyUtil
-     * @category niolex-common-utils -> 公共库 -> 反射处理
+     * @see ProxyUtil
      * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
      * @version 1.0.0
      */
@@ -99,8 +97,7 @@ public class ProxyUtil {
  * ProxyStub是一个在ProxyUtil内部来动态创建Java对象的代理的工具类
  * 请忽略该类
  *
- * @used ProxyUtil
- * @category niolex-common-utils -> 公共库 -> 反射处理
+ * @see ProxyUtil
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */

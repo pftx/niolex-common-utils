@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.reflect.FieldUtil;
+import org.apache.niolex.commons.reflect.ItemNotFoundException;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
@@ -153,7 +154,7 @@ public abstract class Executer {
 			try {
     			FieldUtil.setValueAutoConvert(o, args[2], args[3]);
     			writeAndFlush(out, "Set Field Success." + endl());
-			} catch (IllegalArgumentException e) {
+			} catch (ItemNotFoundException e) {
 			    writeAndFlush(out, "Field Not Found." + endl());
 			} catch (UnsupportedOperationException e) {
 			    writeAndFlush(out, e.getMessage() + endl());

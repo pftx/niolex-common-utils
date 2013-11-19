@@ -1,6 +1,14 @@
 package org.apache.niolex.commons.reflect;
 
-public class MethodTestBean {
+interface Echo {
+    public String echoName();
+}
+
+interface EchoName extends Echo {
+    public String echoName(String strName);
+}
+
+public class MethodTestBean implements EchoName {
     private String strName;
 
     public MethodTestBean(String strName) {
@@ -33,3 +41,4 @@ public class MethodTestBean {
         return "MethodTestBean";
     }
 }
+

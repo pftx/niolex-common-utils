@@ -25,7 +25,7 @@ import java.util.List;
 import org.apache.commons.lang.ClassUtils;
 
 /**
- * FieldUtil is a utility class help programmer access object fields.
+ * FieldUtil is a utility class help programmers access object fields.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -39,7 +39,7 @@ public abstract class FieldUtil {
      * @param host the host object
      * @param fieldName the field name
      * @return the field value
-     * @throws IllegalArgumentException if field not found
+     * @throws ItemNotFoundException if field not found
      * @throws SecurityException if access this field is refused
      */
     @SuppressWarnings("unchecked")
@@ -47,7 +47,7 @@ public abstract class FieldUtil {
         try {
             return (T) safeGetFieldValue(getField(host.getClass(), fieldName), host);
         } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("Field not found in host.", e);
+            throw new ItemNotFoundException("Field not found in host.", e);
         }
     }
 
@@ -57,14 +57,14 @@ public abstract class FieldUtil {
      * @param host the host object
      * @param fieldName the field name
      * @param value the new field value to set
-     * @throws IllegalArgumentException if field not found
+     * @throws ItemNotFoundException if field not found
      * @throws SecurityException if access this field is refused
      */
     public static final void setValue(Object host, String fieldName, Object value) {
         try {
             setFieldValue(getField(host.getClass(), fieldName), host, value);
         } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("Field not found in host.", e);
+            throw new ItemNotFoundException("Field not found in host.", e);
         }
     }
 
@@ -75,7 +75,7 @@ public abstract class FieldUtil {
      * @param host the host object
      * @param fieldName the field name
      * @param value the new field value to set
-     * @throws IllegalArgumentException if field not found
+     * @throws ItemNotFoundException if field not found
      * @throws SecurityException if access this field is refused
      * @throws UnsupportedOperationException if we can not support this field type
      */
@@ -83,7 +83,7 @@ public abstract class FieldUtil {
         try {
             setFieldValueAutoConvert(getField(host.getClass(), fieldName), host, value);
         } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("Field not found in host.", e);
+            throw new ItemNotFoundException("Field not found in host.", e);
         }
     }
 
@@ -194,7 +194,7 @@ public abstract class FieldUtil {
      * @param host 用来设置指定属性的值的对象
      * @param value 指定属性的值
      * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
+     * @throws IllegalStateException 如果指定的属性无法进行反射操作
      * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
      */
     public static final void setFieldValue(Field f, Object host, Object value) {
