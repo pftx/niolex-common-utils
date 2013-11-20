@@ -43,6 +43,7 @@ public class ThreadUtilTest extends ThreadUtil {
 
     @Test
     public void testGetAllThreadsInGroup() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
         Thread t = new Thread("Makr-Lex") {
 
             /**
@@ -51,14 +52,16 @@ public class ThreadUtilTest extends ThreadUtil {
              */
             @Override
             public void run() {
-                ThreadUtil.sleep(50);
+                latch.countDown();
+                ThreadUtil.sleep(500);
             }
 
         };
         t.start();
-        sleep(5);
+        latch.await();
         String r = "MainThreads " + getAllThreadsInGroup(Thread.currentThread().getThreadGroup(), -99);
         System.out.println(r);
+        t.interrupt();
         assertTrue(r.contains("Makr-Lex"));
     }
 

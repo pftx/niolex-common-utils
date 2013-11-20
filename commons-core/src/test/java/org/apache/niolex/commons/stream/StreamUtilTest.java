@@ -17,17 +17,18 @@
  */
 package org.apache.niolex.commons.stream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import org.apache.niolex.commons.test.MockUtil;
 import org.junit.Test;
 
 /**
@@ -63,7 +64,7 @@ public class StreamUtilTest {
 	 * Test method for {@link org.apache.niolex.commons.stream.StreamUtil#closeStream(java.io.OutputStream)}.
 	 */
 	@Test
-	public void testCloseStreamOutputStream() {
+	public void testCloseStream() {
 		OutputStream out = null;
 		StreamUtil.closeStream(out);
 		out = new PipedOutputStream();
@@ -74,14 +75,32 @@ public class StreamUtilTest {
 	 * Test method for {@link org.apache.niolex.commons.stream.StreamUtil#closeStream(java.io.OutputStream)}.
 	 */
 	@Test
-	public void testCloseStreamOutputStreamError() throws IOException {
+	public void testCloseStreamError() throws IOException {
 	    OutputStream out = mock(OutputStream.class);
         doThrow(new IOException("Just 4 test")).when(out).close();
-        StreamUtil.closeStream(out);
+        assertNotNull(StreamUtil.closeStream(out));
 	}
 
 	@Test
-	public void testWriteStringOutputStream() throws IOException {
+	public void testReadData() throws Exception {
+	    byte[] buf = MockUtil.randByteArray(20);
+	    byte[] data = new byte[20];
+        InputStream in = new ByteArrayInputStream(buf);
+        StreamUtil.readData(in, data);
+        assertArrayEquals(buf, data);
+	}
+
+	@Test
+	public void testReadDataIF() throws Exception {
+	    byte[] buf = MockUtil.randByteArray(6);
+        byte[] data = new byte[20];
+        InputStream in = new ByteArrayInputStream(buf);
+        int s = StreamUtil.readData(in, data);
+        assertEquals(6, s);
+	}
+
+	@Test
+	public void testWriteString() throws IOException {
 		PipedOutputStream out = null;
 		StreamUtil.closeStream(out);
 		out = new PipedOutputStream();
@@ -94,7 +113,7 @@ public class StreamUtilTest {
 	}
 
 	@Test
-	public void testWriteStringOutputStreamError() throws IOException {
+	public void testWriteStringError() throws IOException {
 	    OutputStream out = mock(OutputStream.class);
         doThrow(new IOException("Just 4 test")).when(out).write(any(byte[].class));
 	    StreamUtil.writeString(out, "This is so good");

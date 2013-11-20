@@ -32,7 +32,7 @@ import org.apache.niolex.commons.concurrent.ThreadUtil;
 public class SystemUtil {
 
 	/**
-	 * Safely close the Closeable, without throwing the exception.
+	 * Safely close the Closeable, without throwing any exception.
 	 *
 	 * @param cl the object you want to close.
 	 * @return null if success, the exception if exception occurred.
@@ -47,7 +47,7 @@ public class SystemUtil {
 	}
 
 	/**
-	 * Safely close the Socket, without throwing the exception.
+	 * Safely close the Socket, without throwing any exception.
 	 *
 	 * @param cl the socket you want to close.
 	 * @return null if success, the exception if exception occurred.

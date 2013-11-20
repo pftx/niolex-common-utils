@@ -17,10 +17,13 @@
  */
 package org.apache.niolex.commons.stream;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,29 +37,31 @@ public class StreamUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(StreamUtil.class);
 
 	/**
-	 * Close the specified input stream. It's OK to be null.
-	 * @param s
+	 * Close the specified stream. It's OK the parameter be null.
+	 *
+	 * @param s the stream to be closed
 	 */
-	public static final void closeStream(InputStream s) {
-		try {
-            if (s != null)
-                s.close();
-        } catch (Exception ie) {
-            LOG.info("Failed to close stream - " + ie.getMessage());
-        }
+	public static final Exception closeStream(Closeable s) {
+		return SystemUtil.close(s);
 	}
 
 	/**
-	 * Close the specified output stream. It's OK to be null.
-	 * @param s
+	 * Read data from the input stream and put them into the byte array.
+	 *
+	 * @param in the input stream
+	 * @param data the byte array to put data
+	 * @return the number of bytes read from input stream
 	 */
-	public static final void closeStream(OutputStream s) {
-		try {
-			if (s != null)
-				s.close();
-		} catch (Exception ie) {
-			LOG.info("Failed to close stream - " + ie.getMessage());
-		}
+	public static final int readData(InputStream in, byte[] data) throws IOException {
+	    int dataPos = 0, length = data.length;
+        int count = 0;
+        while ((count = in.read(data, dataPos, length - dataPos)) >= 0) {
+            dataPos += count;
+            if (dataPos == length) {
+                break;
+            }
+        }
+        return dataPos;
 	}
 
 	/**
