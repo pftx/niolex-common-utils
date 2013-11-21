@@ -147,7 +147,7 @@ public abstract class DownloadUtil {
 		    LOG.info(e.getMessage());
 		    throw e;
 		} catch (Exception e) {
-		    String msg = "Failed to download file " + strUrl + " msg=" + e.getMessage();
+		    String msg = "Failed to download file " + strUrl + " msg=" + e.toString();
 		    LOG.warn(msg);
 	        throw new NetException(NetException.ExCode.IOEXCEPTION, msg, e);
 		} finally {

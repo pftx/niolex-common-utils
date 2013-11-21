@@ -129,7 +129,7 @@ public abstract class KeyUtil {
         System.arraycopy(secretKey, 0, keyBytes, ivLength, keyLength);
 
         String curKey = Base64Util.byteToBase64(keyBytes);
-        LOG.info("The generate key is: {}", curKey);
+        LOG.debug("The generate key is: {}", curKey);
         return curKey;
     }
 

@@ -72,8 +72,8 @@ public class StreamUtil {
 	public static final void writeString(OutputStream out, String s) {
 		try {
 			out.write(StringUtil.strToUtf8Byte(s));
-		} catch (Exception ie) {
-			LOG.info("Failed to write string to stream - " + ie.getMessage());
+		} catch (Exception e) {
+			LOG.info("Failed to write string to stream - {}.", e.toString());
 		}
 	}
 

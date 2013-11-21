@@ -115,10 +115,10 @@ public class BeanServer implements Runnable {
             Thread s = new Thread(this, "BeanServer");
             s.setDaemon(true);
             s.start();
-            LOG.info("BeanServer started at port " + port);
+            LOG.info("BeanServer started at port {}.", port);
             return true;
         } catch (IOException e) {
-            LOG.error("Can not start the bean server", e);
+            LOG.error("Can not start the bean server.", e);
         }
 		return false;
 	}

@@ -107,7 +107,7 @@ public class DESCoder extends BaseCoder {
             i = i < 0 ? l : i;
             return encoded.substring(0, i) + '-' + (l - i);
         } catch (Exception e) {
-            LOG.warn("Error occured when encode the string array: {}.", e.getMessage());
+            LOG.warn("Error occured when encode the string array: {}.", e.toString());
         }
         return "";
     }
@@ -129,7 +129,7 @@ public class DESCoder extends BaseCoder {
                 sb.append('=');
             return new String(decrypt(Base64Util.base64toByte(sb.toString())), ENC);
         } catch (Exception e) {
-            LOG.warn("Error occured when decode the string: {}.", e.getMessage());
+            LOG.warn("Error occured when decode the string: {}.", e.toString());
         }
         return "";
     }
