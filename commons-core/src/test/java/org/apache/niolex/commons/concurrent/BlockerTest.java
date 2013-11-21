@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.niolex.commons.test.Counter;
+import org.apache.niolex.commons.util.Runner;
+import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
 
@@ -55,24 +57,11 @@ public class BlockerTest {
 	@Test
 	public void testInitWait() throws Exception {
 		final WaitOn<Integer> on = blocker.initWait(blocker);
-		final Counter c = new Counter();
-		Thread t = new Thread() {
-			public void run() {
-				try {
-					int k = on.waitForResult(100);
-					assertEquals(156, k);
-					c.inc();
-				} catch (Exception e) {
-					e.printStackTrace();
-					assertFalse(true);
-				}
-			}
-		};
-		Thread.sleep(10);
-		t.start();
+		One<Integer> retVal = One.create(0);
+		Thread w = Runner.run(retVal , on, "waitForResult", 1000);
 		blocker.release(blocker, 156);
-		t.join();
-		assertEquals(1, c.cnt());
+		w.join();
+		assertEquals(156, retVal.a.intValue());
 	}
 
 	/**
@@ -87,12 +76,10 @@ public class BlockerTest {
 			public void run() {
 				try {
 				    cl.countDown();
-					int k = blocker.waitForResult("man", 200);
+					int k = blocker.waitForResult("man", 1000);
 					assertEquals(1546, k);
 					c.inc();
 				} catch (Exception e) {
-					e.printStackTrace();
-					assertFalse(true);
 				}
 			}
 		};
@@ -110,8 +97,19 @@ public class BlockerTest {
 	 */
 	@Test
 	public void testReleaseObjectE() {
-		blocker.release("implemented", 89);
-		blocker.release("concurrent", new Exception("J"));
+		assertFalse(blocker.release("implemented", 89));
+		assertFalse(blocker.release("concurrent", new Exception("J")));
+	}
+
+	/**
+	 * Test method for {@link org.apache.niolex.commons.concurrent.Blocker#release(java.lang.Object, java.lang.Object)}.
+	 */
+	@Test
+	public void testReleaseObjectExist() {
+	    blocker.init("implemented");
+	    blocker.init("concurrent");
+	    assertTrue(blocker.release("implemented", 89));
+	    assertTrue(blocker.release("concurrent", new Exception("J")));
 	}
 
 	/**
@@ -119,7 +117,7 @@ public class BlockerTest {
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testReleaseObjectException() throws InterruptedException {
+	public void testReleaseWithException() throws InterruptedException {
 		final Counter c = new Counter();
 		final WaitOn<Integer> on = blocker.initWait("man");
 		Thread t = new Thread() {
@@ -141,8 +139,7 @@ public class BlockerTest {
 	}
 
 	@Test(expected=IllegalStateException.class)
-	public void testReleaseAll()
-	 throws Exception {
+	public void testReleaseAll() throws Exception {
 		blocker.init("a");
 		blocker.init("b");
 		WaitOn<Integer> k = blocker.initWait("c");

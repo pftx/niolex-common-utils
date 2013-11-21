@@ -19,6 +19,7 @@ package org.apache.niolex.commons.util;
 
 import static org.junit.Assert.*;
 
+import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.test.Counter;
 import org.junit.Test;
 
@@ -50,8 +51,9 @@ public class RunnerTest extends Runner implements Runnable {
         assertEquals(3, c.cnt());
     }
 
-	public void runme() {
+	public int runme() {
 		c.inc();
+		return 1;
 	}
 
 	public void runme(String str) {
@@ -60,9 +62,10 @@ public class RunnerTest extends Runner implements Runnable {
 	        c.inc();
 	}
 
-	public void runme(long time) {
+	public int runme(long time) {
 		while (time-- > 0)
 			c.inc();
+		return 2;
 	}
 
 	public void runme(int time, Exception e) throws Exception {
@@ -74,8 +77,10 @@ public class RunnerTest extends Runner implements Runnable {
     @Test
     public void testRunMethodEx() throws Exception {
         c.set(0);
-        Runner.run(this, "runme", 2, new Exception("K")).join();
+        One<Integer> one = new One<Integer>();
+        Runner.run(one, this, "runme", 2, new Exception("K")).join();
         assertEquals(2, c.cnt());
+        assertNull(one.a);
     }
 
     @Test
@@ -99,10 +104,13 @@ public class RunnerTest extends Runner implements Runnable {
 	@Test
 	public void testRunObject() throws InterruptedException {
 	    c.set(0);
-		Runner.run(this, "runme").join();
+	    One<Integer> one = new One<Integer>();
+		Runner.run(one, this, "runme").join();
 		assertEquals(1, c.cnt());
-		Runner.run(this, "runme", 3).join();
+		assertEquals(1, one.a.intValue());
+		Runner.run(one, this, "runme", 3).join();
 		assertEquals(4, c.cnt());
+		assertEquals(2, one.a.intValue());
 	}
 
 }

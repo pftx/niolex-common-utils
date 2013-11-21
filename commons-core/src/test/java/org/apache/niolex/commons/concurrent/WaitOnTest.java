@@ -22,6 +22,9 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.niolex.commons.bean.One;
+import org.apache.niolex.commons.util.Runner;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,27 +45,37 @@ public class WaitOnTest {
 	}
 
 	/**
+     * Test method for {@link org.apache.niolex.commons.concurrent.WaitOn#waitForResult(long)}.
+     * @throws Exception
+     */
+    @Test
+    public void testWaitForResultDirect() throws Exception {
+        waitOn.release("Direct-Result");
+        assertEquals("Direct-Result", waitOn.waitForResult(5));
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.concurrent.WaitOn#waitForResult(long)}.
+     * @throws Exception
+     */
+    @Test(expected=DecoderException.class)
+    public void testWaitForResultEx() throws Exception {
+        waitOn.release(new DecoderException("I am here to meet you!"));
+        assertEquals("Direct-Result", waitOn.waitForResult(5));
+    }
+
+	/**
 	 * Test method for {@link org.apache.niolex.commons.concurrent.WaitOn#waitForResult(long)}.
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testWaitForResult1() throws InterruptedException {
-		Thread t = new Thread() {
-			public void run() {
-				try {
-					String s = waitOn.waitForResult(200);
-					System.out.println(s);
-					assertEquals("Good", s);
-				} catch (Exception e) {
-					e.printStackTrace();
-					assertFalse(true);
-				}
-			}
-		};
-		Thread.sleep(10);
-		t.start();
-		waitOn.release("Good");
-		t.join();
+	public void testWaitForResultNormal() throws InterruptedException {
+	    One<String> retVal = One.create("N/A");
+        Thread w = Runner.run(retVal , waitOn, "waitForResult", 1000);
+        Thread.sleep(10);
+        waitOn.release("Good");
+        w.join();
+        assertEquals("Good", retVal.a);
 	}
 
 	/**

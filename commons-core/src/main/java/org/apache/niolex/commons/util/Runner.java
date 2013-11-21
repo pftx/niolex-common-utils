@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.util;
 
+import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.reflect.MethodUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class Runner {
 	private static final Logger LOG = LoggerFactory.getLogger(Runner.class);
 
 	/**
-	 * Run the given method in that object once.
+	 * Run the given method in the specified object in a new thread.
 	 *
 	 * @param host the host object
 	 * @param methodName the method name
@@ -39,10 +40,25 @@ public class Runner {
 	 * @return the thread used to run this method
 	 */
 	public static Thread run(final Object host, final String methodName, final Object ...args) {
+	    return run(new One<Object>(), host, methodName, args);
+	}
+
+	/**
+     * Run the given method in the specified object in a new thread.
+     *
+     * @param retVal the bean to store the return value of the given method
+     * @param host the host object
+     * @param methodName the method name
+     * @param args the arguments of the given method
+     * @return the thread used to run this method
+     */
+	public static <T> Thread run(final One<T> retVal, final Object host, final String methodName,
+	        final Object ...args) {
 		Thread t = new Thread("Runner"){
-			public void run() {
+			@SuppressWarnings("unchecked")
+            public void run() {
 				try {
-				    MethodUtil.invokeMethod(host, methodName, args);
+				    retVal.a = (T) MethodUtil.invokeMethod(host, methodName, args);
 				} catch (Exception e) {
 					LOG.warn("Error occured in Runner#run method.", e);
 				}
@@ -53,7 +69,7 @@ public class Runner {
 	}
 
 	/**
-	 * Run the given runnable once.
+	 * Run the given runnable in a new thread.
 	 *
 	 * @param run the runnable
 	 * @return the thread used to run this method

@@ -98,9 +98,9 @@ public class DirMonitorTest {
 
             @Override
             public void notify(EventType type, long happenTime) {
-                blocker.release("s", "");
                 if (type == EventType.UPDATE) cnt.inc();
                 System.out.println(type + " " + happenTime);
+                blocker.release("s", "");
             }
 
             @Override
