@@ -19,6 +19,7 @@ package org.apache.niolex.commons.concurrent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.niolex.commons.collection.CollectionUtil;
 
@@ -102,12 +103,31 @@ public class ThreadUtil {
     /**
      * Waits for this thread to die.
      *
-     * @param thread the thread to wait for.
+     * @param thread the thread to wait for
+     * @return true if success, false if interrupted
      */
-    public static final void join(Thread thread) {
+    public static final boolean join(Thread thread) {
         try {
             thread.join();
-        } catch (Exception e) {/*We Don't Care*/}
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Wait for the latch count down to zero.
+     *
+     * @param latch the latch to wait for
+     * @return true if success, false if interrupted
+     */
+    public static final boolean waitFor(CountDownLatch latch) {
+        try {
+            latch.await();
+            return true;
+        } catch (InterruptedException e) {
+            return false;
+        }
     }
 
 }

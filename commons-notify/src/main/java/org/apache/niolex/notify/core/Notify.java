@@ -31,6 +31,8 @@ import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.notify.ByteArray;
 import org.apache.niolex.notify.NotifyListener;
+import org.apache.niolex.zookeeper.core.ZKConnector;
+import org.apache.niolex.zookeeper.watcher.CommonRecoverableWatcher;
 
 /**
  * The core class of this notify framework. Watch the changes of node data and node properties.
@@ -40,7 +42,7 @@ import org.apache.niolex.notify.NotifyListener;
  * @version 1.0.5
  * @since 2012-12-27
  */
-public class Notify {
+public class Notify implements CommonRecoverableWatcher.Listener {
 
     private final Map<ByteArray, byte[]> properties = new HashMap<ByteArray, byte[]>();
     private final List<NotifyListener> list = Collections.synchronizedList(new ArrayList<NotifyListener>());
@@ -59,11 +61,10 @@ public class Notify {
         super();
         this.zkConn = zkConn;
         this.basePath = basePath;
-        this.data = zkConn.submitWatcher(basePath, new NotifyDataWatcher(zkConn, this), false);
+        //this.data = zkConn.submitWatcher(basePath, new NotifyDataWatcher(zkConn, this));
         this.children = Collections.emptyList();
-        List<String> list = zkConn.submitWatcher(basePath,
-                new NotifyChildrenWatcher(zkConn, this), true);
-        this.onChildrenChange(list);
+        //List<String> list = zkConn.submitWatcher(basePath, new NotifyChildrenWatcher(zkConn, this));
+        //this.onChildrenChange(list);
     }
 
     /**

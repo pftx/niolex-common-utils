@@ -15,19 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.niolex.notify.core;
+package org.apache.niolex.zookeeper.core;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-
-import org.apache.niolex.commons.test.MockUtil;
-import org.apache.niolex.commons.util.SystemUtil;
-import org.apache.niolex.notify.AppTest;
-import org.apache.niolex.notify.NotifyListener;
 import org.apache.zookeeper.KeeperException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -37,52 +29,6 @@ import org.junit.Test;
  * @since 2013-3-13
  */
 public class ZKExceptionTest {
-
-    private static NotifyListener LI = new NotifyListener() {
-
-        @Override
-        public void onPropertyChange(byte[] key, byte[] value) {
-            System.out.println("[on] [" + new String(key) +
-                    "] ==> " + new String(value));
-        }
-
-        @Override
-        public void onDataChange(byte[] data) {
-            System.out.println("[on]DataChange ==> " + new String(data));
-        }
-    };
-
-    private static Notify notify;
-
-    @BeforeClass
-    public static void setUp() throws IOException {
-        notify = AppTest.APP.getNotify("/notify/test/tmp");
-        notify.addListener(LI);
-    }
-
-    @AfterClass
-    public static void shutdown() {
-        SystemUtil.sleep(100);
-        notify.removeListener(LI);
-    }
-
-    /**
-     * Test method for {@link org.apache.niolex.notify.core.ZKException#getCode()}.
-     */
-    @Test
-    public void testUpdateData() {
-        notify.updateData(MockUtil.randUUID());
-        SystemUtil.sleep(20);
-        notify.updateData(MockUtil.randByteArray(8));
-    }
-
-    /**
-     * Test method for {@link org.apache.niolex.notify.core.ZKException#getMessage()}.
-     */
-    @Test
-    public void testUpdateProperty() {
-        notify.replaceProperty("permkey", MockUtil.randUUID());
-    }
 
     @Test(expected=IllegalArgumentException.class)
     public void testMakeInstance() throws Exception {
@@ -125,6 +71,13 @@ public class ZKExceptionTest {
     }
 
     @Test
+    public void testGetCode5() throws Exception {
+        ZKException zk = ZKException.makeInstance("DISCONNECTED", KeeperException.create(KeeperException.Code.NONODE));
+        assertEquals(zk.getCode(), ZKException.Code.NO_NODE);
+        System.out.println(zk.getMessage());
+    }
+
+    @Test
     public void testZKExceptionMessage() throws Exception {
         ZKException zk = new ZKException("not yet implemented", ZKException.Code.SYSTEM_ERROR);
         assertEquals(zk.getCode(), ZKException.Code.SYSTEM_ERROR);
@@ -134,6 +87,18 @@ public class ZKExceptionTest {
     public void testGetMessage() throws Exception {
         ZKException zk = ZKException.makeInstance("not yet implemented", KeeperException.create(KeeperException.Code.NOAUTH));
         assertEquals(zk.getCode(), ZKException.Code.NO_AUTH);
+    }
+
+    @Test
+    public void testGetMessage2() throws Exception {
+        ZKException zk = ZKException.makeInstance("not yet implemented", KeeperException.create(KeeperException.Code.AUTHFAILED));
+        assertEquals(zk.getCode(), ZKException.Code.NO_AUTH);
+    }
+
+    @Test
+    public void testGetMessage3() throws Exception {
+        ZKException zk = ZKException.makeInstance("not yet implemented", KeeperException.create(KeeperException.Code.APIERROR));
+        assertEquals(zk.getCode(), ZKException.Code.OTHER);
     }
 
 }

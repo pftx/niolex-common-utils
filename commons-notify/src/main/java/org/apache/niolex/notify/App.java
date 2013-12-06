@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.niolex.notify.core.Notify;
-import org.apache.niolex.notify.core.ZKException;
-import org.apache.niolex.notify.core.ZKConnector;
+import org.apache.niolex.zookeeper.core.ZKConnector;
+import org.apache.niolex.zookeeper.core.ZKException;
 
 /**
  * The entrance of commons-notify. User can create an instance of this class and use it,
@@ -84,7 +84,7 @@ public class App extends ZKConnector {
      * Close the connection to ZK server.
      *
      * Override super method
-     * @see org.apache.niolex.notify.core.ZKConnector#close()
+     * @see org.apache.niolex.zookeeper.core.ZKConnector#close()
      */
     public void close() {
         super.close();

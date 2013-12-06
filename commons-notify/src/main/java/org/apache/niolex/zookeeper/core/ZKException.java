@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.notify.core;
+package org.apache.niolex.zookeeper.core;
 
 import org.apache.zookeeper.KeeperException;
 
@@ -31,12 +31,20 @@ public class ZKException extends RuntimeException {
      */
     private static final long serialVersionUID = 6217415731238015041L;
 
+    /**
+     * The exception Code.
+     *
+     * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
+     * @version 1.0.0
+     * @since 2013-12-6
+     */
     public static enum Code {
         INTERRUPT, NO_AUTH, DISCONNECTED, OTHER, SYSTEM_ERROR, NO_NODE, NODE_EXISTS;
     }
 
     /**
-     * Make an instance of ZKException
+     * Make an instance of ZKException. If the exception is an instance of
+     * RuntimeException, we throw it directly.
      *
      * @param message The message you want to say.
      * @param e The nested exception.

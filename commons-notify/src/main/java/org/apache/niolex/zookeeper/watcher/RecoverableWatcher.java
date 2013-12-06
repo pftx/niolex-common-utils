@@ -1,6 +1,6 @@
 /**
  * RecoverableWatcher.java
- * 
+ *
  * Copyright 2013 Niolex, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.niolex.notify.core;
+package org.apache.niolex.zookeeper.watcher;
 
 import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooKeeper;
 
 /**
  * The interface extends the standard ZK watcher, and add a new
@@ -28,13 +29,31 @@ import org.apache.zookeeper.Watcher;
  * @since 2013-3-13
  */
 public interface RecoverableWatcher extends Watcher {
-    
+
+    /**
+     * The watcher type. We have two types:<pre>
+     *  DATA        - watch node data
+     *  CHILDREN    - watch node children
+     * <pre>
+     * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
+     * @version 1.0.0
+     * @since 2013-12-5
+     */
+    public static enum Type {
+        DATA, CHILDREN;
+    }
+
     /**
      * The connection with ZK expired and reconnected. So watcher
      * need to attache it to the new connection.
-     * 
+     *
      * @param path the path to watch
      */
-    public void reconnected(String path);
+    public void reconnected(ZooKeeper zk, String path);
+
+    /**
+     * @return the type of this watcher
+     */
+    public Type getType();
 
 }

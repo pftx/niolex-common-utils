@@ -15,19 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.niolex.notify.core;
+package org.apache.niolex.zookeeper.core;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.collection.CollectionUtil;
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.util.SystemUtil;
+import org.apache.niolex.zookeeper.watcher.RecoverableWatcher;
+import org.apache.niolex.zookeeper.watcher.WatcherHolder;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
@@ -42,26 +45,48 @@ import org.slf4j.LoggerFactory;
  * @author Xie, Jiyun
  * @version 1.0.0, Date: 2012-6-10
  */
-public class ZKConnector {
+public class ZKConnector implements Watcher {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ZKConnector.class);
 
+    /**
+     * Store all the watchers here.
+     */
+    private final WatcherHolder watcherHolder = new WatcherHolder();
+
+    /**
+     * The zookeeper cluster address.
+     */
     private final String clusterAddress;
 
+    /**
+     * The zookeeper connection session timeout.
+     */
     private final int sessionTimeout;
 
-    private final Set<WatcherItem> watcherSet = Collections.synchronizedSet(new HashSet<WatcherItem>());
-
+    /**
+     * The zookeeper authentication information.
+     */
     private byte[] auth;
 
+    /**
+     * The latch to wait for connected.
+     */
+    private CountDownLatch latch;
+
+    /**
+     * The internal zookeeper instance.
+     */
     protected ZooKeeper zk;
 
     /**
      * Construct a new ZKConnector and connect to ZK server.
+     * We will wait until get connected in this method.
      *
      * @param clusterAddress the zookeeper cluster servers address list
      * @param sessionTimeout the session timeout in microseconds
-     * @throws IOException
+     * @throws IOException in cases of network failure
+     * @throws IllegalArgumentException if sessionTimeout is too small
      */
     public ZKConnector(String clusterAddress, int sessionTimeout) throws IOException {
         super();
@@ -78,24 +103,41 @@ public class ZKConnector {
      *
      * @throws IOException
      */
-    private void connectToZookeeper() throws IOException {
+    protected synchronized void connectToZookeeper() throws IOException {
+        if (connected()) {
+            return;
+        }
+        // Close it first to ensure there will be no more than one connection.
+        close();
         // Use this to sync for connected event.
-        CountDownLatch latch = new CountDownLatch(1);
-        this.zk = new ZooKeeper(clusterAddress, sessionTimeout, new ZKConnWatcher(this, latch));
-        waitForConnectedTillDeath(latch);
+        latch = new CountDownLatch(1);
+        this.zk = new ZooKeeper(clusterAddress, sessionTimeout, this);
+        waitForConnectedTillDeath();
     }
 
     /**
      * Wait for zookeeper to be connected, if can not connect, wait forever.
      *
-     * @param latch
+     * @param latch the latch to wait for
      */
-    private void waitForConnectedTillDeath(CountDownLatch latch) {
-        while (true) {
-            try {
-                latch.await();
-                return;
-            } catch (InterruptedException e) {}
+    public void waitForConnectedTillDeath() {
+        while (!ThreadUtil.waitFor(latch)) {}
+    }
+
+    /**
+     * Override super method
+     * @see org.apache.zookeeper.Watcher#process(org.apache.zookeeper.WatchedEvent)
+     */
+    @Override
+    public void process(WatchedEvent event) {
+        LOG.info("ZK Connection status changed to: {}.", event.getState());
+        switch (event.getState()) {
+            case SyncConnected:
+                latch.countDown();
+                break;
+            case Expired:
+                reconnect();
+                break;
         }
     }
 
@@ -103,8 +145,8 @@ public class ZKConnector {
      * Add authenticate info for this client.
      * 添加client的权限认证信息
      *
-     * @param username
-     * @param password
+     * @param username the user name of this client
+     * @param password the password of this client
      */
     public void addAuthInfo(String username, String password) {
         auth = StringUtil.strToUtf8Byte(username + ":" + password);
@@ -116,27 +158,28 @@ public class ZKConnector {
     // ========================================================================
 
     /**
+     * @return the connection status
+     */
+    public boolean connected() {
+        return zk != null && (zk.getState() == ZooKeeper.States.CONNECTED);
+    }
+
+    /**
      * Try to reconnect to zookeeper cluster, do not call this method, we will use it when necessary.
      */
     protected void reconnect() {
         while (true) {
             try {
-                // Close it first to ensure there will be no more than one connection.
-                close();
                 connectToZookeeper();
                 if (auth != null) {
                     this.zk.addAuthInfo("digest", auth);
                 }
-                // Re add all the watcher.
-                synchronized (watcherSet) {
-                    for (WatcherItem item : watcherSet) {
-                        item.getWat().reconnected(item.getPath());
-                    }
-                }
+                // Notify watchers.
+                watcherHolder.reconnected(this.zk);
                 break;
             } catch (Exception e) {
                 // We don't care, we will retry again and again.
-                LOG.error("Error occured when reconnect, system will retry.", e);
+                LOG.warn("Error occured when reconnect - {}, system will retry.", e.toString());
                 SystemUtil.sleep(sessionTimeout / 3);
             }
         }
@@ -153,6 +196,7 @@ public class ZKConnector {
                 this.zk = null;
             }
         } catch (Exception e) {
+            this.zk = null;
             LOG.info("Failed to close ZK connection.", e);
         }
     }
@@ -170,33 +214,36 @@ public class ZKConnector {
      * If user use other types as return type, a ClassCastException will throw.
      *
      * @param path the zookeeper path you want to watch
-     * @param wat the watcher
-     * @param isChildren is watch children or node data
+     * @param recoWatcher the recoverable watcher
      * @return the current result
+     * @throws ZKException if failed to do watch
+     * @throws ClassCastException if can not cast the return type to user specified type
      */
     @SuppressWarnings("unchecked")
-    public <T> T submitWatcher(String path, RecoverableWatcher wat, boolean isChildren) {
-        WatcherItem item = new WatcherItem(path, wat, isChildren);
-        Object r = doWatch(item);
-        // Add this item to the list, so the system will
+    public <T> T submitWatcher(String path, RecoverableWatcher recoWatcher) {
+        Object r = doWatch(path, recoWatcher);
+        // Add this item to the watcher set, so the system will
         // recover them after reconnected.
-        watcherSet.add(item);
+        watcherHolder.add(path, recoWatcher);
         return (T) r;
     }
 
     /**
-     * Do real watch. Please use submitWatcher instead. This method is for internal use.
+     * Do real watch. Please use {@link #submitWatcher(String, RecoverableWatcher)} instead.
+     * This method is for internal use.
      *
      * @param item the item to do watch
      * @return the current data in Zookeeper
+     * @throws ZKException if failed to do watch
      */
-    protected Object doWatch(WatcherItem item) {
+    protected Object doWatch(String path, RecoverableWatcher recoWatcher) {
         try {
-            if (item.isChildren()) {
-                return this.zk.getChildren(item.getPath(), item.getWat());
-            } else {
-                Stat st = new Stat();
-                return this.zk.getData(item.getPath(), item.getWat(), st);
+            switch (recoWatcher.getType()) {
+                case CHILDREN:
+                    return this.zk.getChildren(path, recoWatcher);
+                case DATA:
+                default:
+                    return this.zk.getData(path, recoWatcher, new Stat());
             }
         } catch (Exception e) {
             throw ZKException.makeInstance("Failed to do Watch.", e);
@@ -208,6 +255,7 @@ public class ZKConnector {
      *
      * @param path the specified path
      * @return the node data
+     * @throws ZKException if failed to get data
      */
     public byte[] getData(String path) {
         try {
@@ -222,6 +270,7 @@ public class ZKConnector {
      *
      * @param path the specified path
      * @return the node children
+     * @throws ZKException if failed to get children
      */
     public List<String> getChildren(String path) {
         try {
@@ -236,6 +285,7 @@ public class ZKConnector {
      *
      * @param path the specified path
      * @return true if the node exists, false otherwise
+     * @throws ZKException if failed to check exists
      */
     public boolean exists(String path) {
         try {
@@ -253,7 +303,7 @@ public class ZKConnector {
      * Create node without data.
      *
      * @param path the node path
-     * @throws ZKException
+     * @throws ZKException if failed to create node
      */
     public void createNode(String path) {
         createNode(path, null, false, false);
@@ -264,7 +314,7 @@ public class ZKConnector {
      *
      * @param path the node path
      * @param data the node data
-     * @throws ZKException
+     * @throws ZKException if failed to create node
      */
     public void createNode(String path, byte[] data) {
         createNode(path, data, false, false);
@@ -275,7 +325,7 @@ public class ZKConnector {
      *
      * @param path the node path
      * @return true if a node created here, false if already exists
-     * @throws ZKException
+     * @throws ZKException if failed to create node
      */
     public boolean createNodeIfAbsent(String path) {
         return createNodeIfAbsent(path, null);
@@ -287,7 +337,7 @@ public class ZKConnector {
      * @param path the node path
      * @param data the node data
      * @return true if a node created here, false if already exists
-     * @throws ZKException
+     * @throws ZKException if failed to create node
      */
     public boolean createNodeIfAbsent(String path, byte[] data) {
         try {
@@ -308,6 +358,7 @@ public class ZKConnector {
      * Make sure that the specified path exists. We will create any parent path if necessary.
      *
      * @param path the specified path
+     * @throws ZKException if failed to check exists or make path
      */
     public void makeSurePathExists(String path) {
         if (!exists(path)) {
@@ -335,7 +386,7 @@ public class ZKConnector {
      * @param isTmp whether the node is a temporary node or not
      * @param isSequential whether the node is a sequential node or not
      * @return the actual path of the created node
-     * @throws ZKException
+     * @throws ZKException if failed to create node
      */
     public String createNode(String path, byte[] data, boolean isTmp, boolean isSequential) {
         try {
@@ -383,7 +434,7 @@ public class ZKConnector {
      *
      * @param path the node path
      * @param data the new node data
-     * @throws ZKException
+     * @throws ZKException if failed to update node data
      */
     public void updateNodeData(String path, byte[] data) {
         try {
@@ -395,10 +446,10 @@ public class ZKConnector {
 
     /**
      * Delete a node from zookeeper.
-     * This is very critical, so we only open this method for subclasses.
+     * This is very critical, so we only open this method as protected.
      *
      * @param path the node path
-     * @throws ZKException
+     * @throws ZKException if failed to delete the node
      */
     protected void deleteNode(String path) {
         try {
@@ -406,6 +457,24 @@ public class ZKConnector {
         } catch (Exception e) {
             throw ZKException.makeInstance("Failed to delete Node.", e);
         }
+    }
+
+    /**
+     * Delete the specified node and all of it's children from zookeeper.
+     * This is very critical, so we only open this method as protected.
+     *
+     * @param path the tree root path
+     * @throws ZKException if failed to delete the tree
+     */
+    protected void deleteTree(String path) {
+        List<String> list = getChildren(path);
+        if (!CollectionUtil.isEmpty(list)) {
+            // Recursively delete all the children.
+            for (String name : list) {
+                deleteTree(path + "/" + name);
+            }
+        }
+        deleteNode(path);
     }
 
 }
