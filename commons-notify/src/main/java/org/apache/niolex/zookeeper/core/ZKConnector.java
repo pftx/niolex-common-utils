@@ -159,10 +159,17 @@ public class ZKConnector implements Watcher {
     // ========================================================================
 
     /**
-     * @return the connection status
+     * @return the connection status.
      */
     public boolean connected() {
         return zk != null && (zk.getState() == ZooKeeper.States.CONNECTED);
+    }
+
+    /**
+     * @return the current zookeeper.
+     */
+    public ZooKeeper zooKeeper() {
+        return zk;
     }
 
     /**
@@ -176,7 +183,7 @@ public class ZKConnector implements Watcher {
                     this.zk.addAuthInfo("digest", auth);
                 }
                 // Notify watchers.
-                watcherHolder.reconnected(this.zk);
+                watcherHolder.reconnected();
                 break;
             } catch (Exception e) {
                 // We don't care, we will retry again and again.
@@ -215,8 +222,8 @@ public class ZKConnector implements Watcher {
      * @throws ZKException if failed to do watch
      */
     public byte[] watchData(String path, ZKListener listn) {
-        RecoverableWatcher recoWatcher = new CommonRecoverableWatcher(zk,
-                RecoverableWatcher.Type.DATA, listn);
+        RecoverableWatcher recoWatcher = new CommonRecoverableWatcher(this,
+                RecoverableWatcher.Type.DATA, listn, path);
         return submitWatcher(path, recoWatcher);
     }
 
@@ -229,8 +236,8 @@ public class ZKConnector implements Watcher {
      * @throws ZKException if failed to do watch
      */
     public List<String> watchChildren(String path, ZKListener listn) {
-        RecoverableWatcher recoWatcher = new CommonRecoverableWatcher(zk,
-                RecoverableWatcher.Type.CHILDREN, listn);
+        RecoverableWatcher recoWatcher = new CommonRecoverableWatcher(this,
+                RecoverableWatcher.Type.CHILDREN, listn, path);
         return submitWatcher(path, recoWatcher);
     }
 
@@ -253,7 +260,7 @@ public class ZKConnector implements Watcher {
         Object r = doWatch(path, recoWatcher);
         // Add this item to the watcher set, so the system will
         // recover them after reconnected.
-        watcherHolder.add(path, recoWatcher);
+        watcherHolder.add(recoWatcher);
         return (T) r;
     }
 

@@ -18,7 +18,6 @@
 package org.apache.niolex.zookeeper.watcher;
 
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 
 /**
  * The interface extends the standard ZK watcher, and add a new
@@ -46,10 +45,8 @@ public interface RecoverableWatcher extends Watcher {
     /**
      * The connection with ZK expired and reconnected. So watcher
      * need to attache it to the new connection.
-     *
-     * @param path the path to watch
      */
-    public void reconnected(ZooKeeper zk, String path);
+    public void reconnected();
 
     /**
      * @return the type of this watcher

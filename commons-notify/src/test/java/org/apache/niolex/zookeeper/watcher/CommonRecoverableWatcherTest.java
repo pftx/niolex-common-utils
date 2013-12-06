@@ -24,6 +24,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import org.apache.niolex.zookeeper.core.ZKConnector;
 import org.apache.niolex.zookeeper.core.ZKListener;
 import org.apache.niolex.zookeeper.watcher.RecoverableWatcher.Type;
 import org.apache.zookeeper.WatchedEvent;
@@ -46,6 +47,7 @@ public class CommonRecoverableWatcherTest {
     CommonRecoverableWatcher wcl;
     CommonRecoverableWatcher wda;
     ZKListener listn;
+    ZKConnector zkc;
     ZooKeeper zk;
 
     /**
@@ -53,10 +55,12 @@ public class CommonRecoverableWatcherTest {
      */
     @Before
     public void setUp() throws Exception {
+        zkc = mock(ZKConnector.class);
         zk = mock(ZooKeeper.class);
+        when(zkc.zooKeeper()).thenReturn(zk);
         listn = mock(ZKListener.class);
-        wcl = new CommonRecoverableWatcher(zk, Type.CHILDREN, listn);
-        wda = new CommonRecoverableWatcher(zk, Type.DATA, listn);
+        wcl = new CommonRecoverableWatcher(zkc, Type.CHILDREN, listn, "/a/ab/cc");
+        wda = new CommonRecoverableWatcher(zkc, Type.DATA, listn, "/a/ab/cc");
     }
 
     @Test
@@ -122,7 +126,7 @@ public class CommonRecoverableWatcherTest {
     @Test
     public void testReconnectedEx() throws Exception {
         doThrow(new InterruptedException("exxx")).when(zk).getChildren(any(String.class), any(Watcher.class));
-        wcl.reconnected(zk, "/a/b/c");
+        wcl.reconnected();
         verify(listn, never()).onDataChange(any(byte[].class));
         verify(listn, never()).onChildrenChange(any(List.class));
         verify(zk, never()).getData(any(String.class), any(Watcher.class), any(Stat.class));
@@ -132,7 +136,7 @@ public class CommonRecoverableWatcherTest {
     @Test
     public void testReconnectedaEx() throws Exception {
         doThrow(new InterruptedException("exxx")).when(zk).getData(any(String.class), any(Watcher.class), any(Stat.class));
-        wda.reconnected(zk, "/a/b/c");
+        wda.reconnected();
         verify(listn, never()).onDataChange(any(byte[].class));
         verify(listn, never()).onChildrenChange(any(List.class));
         verify(zk, times(1)).getData(any(String.class), any(Watcher.class), any(Stat.class));
@@ -141,7 +145,7 @@ public class CommonRecoverableWatcherTest {
 
     @Test
     public void testGetType() throws Exception {
-        wcl.reconnected(zk, "/a/b/c");
+        wcl.reconnected();
         verify(listn, never()).onDataChange(any(byte[].class));
         verify(listn, times(1)).onChildrenChange(any(List.class));
         verify(zk, never()).getData(any(String.class), any(Watcher.class), any(Stat.class));
@@ -151,7 +155,7 @@ public class CommonRecoverableWatcherTest {
 
     @Test
     public void testGetTypea() throws Exception {
-        wda.reconnected(zk, "/a/b/c");
+        wda.reconnected();
         verify(listn, times(1)).onDataChange(any(byte[].class));
         verify(listn, never()).onChildrenChange(any(List.class));
         verify(zk, times(1)).getData(any(String.class), any(Watcher.class), any(Stat.class));

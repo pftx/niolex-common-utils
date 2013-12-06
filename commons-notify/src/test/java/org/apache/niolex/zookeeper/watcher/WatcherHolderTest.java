@@ -18,10 +18,8 @@
 package org.apache.niolex.zookeeper.watcher;
 
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import org.apache.zookeeper.ZooKeeper;
 import org.junit.Test;
 
 /**
@@ -36,30 +34,9 @@ public class WatcherHolderTest {
 
     @Test
     public void testReconnected() throws Exception {
-        h.add("abc", recoWatcher);
-        ZooKeeper zk = mock(ZooKeeper.class);
-        h.reconnected(zk);
-        verify(recoWatcher, times(1)).reconnected(zk, "abc");
-    }
-
-    @Test
-    public void testAdd() throws Exception {
-        WatcherItem a = new WatcherItem("abc", recoWatcher);
-        WatcherItem b = new WatcherItem("abd", recoWatcher);
-        WatcherItem c = new WatcherItem("abc", recoWatcher);
-        assertNotEquals(a.hashCode(), b.hashCode());
-        assertNotEquals(a, b);
-        assertEquals(a.hashCode(), c.hashCode());
-        assertEquals(a, c);
-    }
-
-    @Test
-    public void testEquals() throws Exception {
-        WatcherItem a = new WatcherItem("abc", recoWatcher);
-        WatcherItem b = new WatcherItem("abc", mock(RecoverableWatcher.class));
-        assertNotEquals(a, null);
-        assertNotEquals(a, b);
-        assertNotEquals(a, "not yet implemented");
+        h.add(recoWatcher);
+        h.reconnected();
+        verify(recoWatcher, times(1)).reconnected();
     }
 
 }

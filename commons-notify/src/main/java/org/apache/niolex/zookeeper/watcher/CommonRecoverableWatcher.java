@@ -19,10 +19,10 @@ package org.apache.niolex.zookeeper.watcher;
 
 import java.util.List;
 
+import org.apache.niolex.zookeeper.core.ZKConnector;
 import org.apache.niolex.zookeeper.core.ZKListener;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +39,11 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
     protected static final Logger LOG = LoggerFactory.getLogger(CommonRecoverableWatcher.class);
 
     /**
+     * The zookeeper connector.
+     */
+    private final ZKConnector zkc;
+
+    /**
      * The watch type.
      */
     private final Type type;
@@ -49,22 +54,24 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
     private final ZKListener listn;
 
     /**
-     * The zookeeper.
+     * The watch path.
      */
-    private ZooKeeper zk;
+    private final String path;
 
     /**
      * Construct a common recoverable watcher with the specified parameters.
      *
-     * @param zk the zookeeper to be used
+     * @param zkc the zookeeper connector to be used
      * @param type the watch type
      * @param listn the data or children change listener
+     * @param path the path to be watched
      */
-    public CommonRecoverableWatcher(ZooKeeper zk, Type type, ZKListener listn) {
+    public CommonRecoverableWatcher(ZKConnector zkc, Type type, ZKListener listn, String path) {
         super();
-        this.zk = zk;
+        this.zkc = zkc;
         this.type = type;
         this.listn = listn;
+        this.path = path;
     }
 
     /**
@@ -74,33 +81,31 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
     @Override
     public void process(WatchedEvent event) {
         if (type == Type.CHILDREN && event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
-            childrenCHanged(event.getPath());
+            childrenCHanged();
         } else if (type == Type.DATA && event.getType() == Watcher.Event.EventType.NodeDataChanged) {
-            dataChanged(event.getPath());
+            dataChanged();
         }
     }
 
     /**
      * This is the override of super method.
-     * @see org.apache.niolex.zookeeper.watcher.RecoverableWatcher#reconnected(org.apache.zookeeper.ZooKeeper, java.lang.String)
+     * @see org.apache.niolex.zookeeper.watcher.RecoverableWatcher#reconnected(java.lang.String)
      */
     @Override
-    public void reconnected(ZooKeeper zk, String path) {
-        // Replace the zookeeper.
-        this.zk = zk;
+    public void reconnected() {
         if (type == Type.CHILDREN) {
-            childrenCHanged(path);
+            childrenCHanged();
         } else {
-            dataChanged(path);
+            dataChanged();
         }
     }
 
     /**
      * Data changed.
      */
-    private void dataChanged(String path) {
+    private void dataChanged() {
         try {
-            byte[] data = zk.getData(path, this, new Stat());
+            byte[] data = zkc.zooKeeper().getData(path, this, new Stat());
             listn.onDataChange(data);
         } catch (Exception e) {
             LOG.error("Failed to watch Data.", e);
@@ -110,9 +115,9 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
     /**
      * Children changed.
      */
-    private void childrenCHanged(String path) {
+    private void childrenCHanged() {
         try {
-            List<String> list = zk.getChildren(path, this);
+            List<String> list = zkc.zooKeeper().getChildren(path, this);
             listn.onChildrenChange(list);
         } catch (Exception e) {
             LOG.error("Failed to watch Children.", e);

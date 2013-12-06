@@ -25,7 +25,6 @@ import org.apache.niolex.commons.test.AnnotationOrderedRunner.Order;
 import org.apache.niolex.notify.AppTest;
 import org.apache.niolex.zookeeper.watcher.RecoverableWatcher;
 import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.ZooKeeper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -73,8 +72,8 @@ public class ZKConnectorTest {
         }
 
         @Override
-        public void reconnected(ZooKeeper zk, String path) {
-            System.out.println("reconnected " + path);
+        public void reconnected() {
+            System.out.println("reconnected.");
         }
 
         @Override
@@ -90,8 +89,8 @@ public class ZKConnectorTest {
         }
 
         @Override
-        public void reconnected(ZooKeeper zk, String path) {
-            System.out.println("reconnected " + path);
+        public void reconnected() {
+            System.out.println("reconnected.");
         }
 
         @Override

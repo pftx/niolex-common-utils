@@ -53,6 +53,7 @@ public class Notify implements ZKListener {
     /**
      * Create a new notify under this bash path.
      *
+     * @param zkConn the ZK connector.
      * @param basePath the ZK base path of this notify. It's fixed for one notify.
      */
     public Notify(ZKConnector zkConn, String basePath) {

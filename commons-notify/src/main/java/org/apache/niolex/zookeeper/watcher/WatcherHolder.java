@@ -20,9 +20,6 @@ package org.apache.niolex.zookeeper.watcher;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.niolex.commons.test.Check;
-import org.apache.zookeeper.ZooKeeper;
-
 /**
  * The container to holder all the watchers in zookeeper connector.
  *
@@ -33,92 +30,24 @@ import org.apache.zookeeper.ZooKeeper;
 public class WatcherHolder {
 
     // The watcher set.
-    Set<WatcherItem> watcherSet = new HashSet<WatcherItem>();
+    Set<RecoverableWatcher> watcherSet = new HashSet<RecoverableWatcher>();
 
     /**
      * Re add all the watcher to this zookeeper.
-     *
-     * @param zk the new zookeeper
      */
-    public synchronized void reconnected(ZooKeeper zk) {
-        for (WatcherItem item : watcherSet) {
-            item.getWat().reconnected(zk, item.getPath());
+    public synchronized void reconnected() {
+        for (RecoverableWatcher recoWatcher : watcherSet) {
+            recoWatcher.reconnected();
         }
     }
 
     /**
      * Add this watcher into the holder.
      *
-     * @param path the watch path
      * @param recoWatcher the watcher
      */
-    public synchronized void add(String path, RecoverableWatcher recoWatcher) {
-        watcherSet.add(new WatcherItem(path, recoWatcher));
-    }
-
-}
-
-/**
- * The item to save watcher information, used when reconnect.
- *
- * @author Xie, Jiyun
- */
-class WatcherItem {
-
-    /**
-     * The path to watch.
-     */
-    private final String path;
-
-    private final RecoverableWatcher wat;
-
-    /**
-     * Create a new WatcherItem.
-     *
-     * @param path
-     * @param wat
-     */
-    public WatcherItem(String path, RecoverableWatcher wat) {
-        super();
-        Check.notNull(path, "path should not be null.");
-        Check.notNull(wat, "watcher should not be null.");
-        this.path = path;
-        this.wat = wat;
-    }
-
-    /**
-     * @return the path
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * @return the watcher
-     */
-    public RecoverableWatcher getWat() {
-        return wat;
-    }
-
-    /**
-     * This is the override of super method.
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return 31 * path.hashCode() + wat.hashCode();
-    }
-
-    /**
-     * This is the override of super method.
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof WatcherItem))
-            return false;
-        WatcherItem other = (WatcherItem) obj;
-        return path.equals(other.path) && wat.equals(other.wat);
+    public synchronized void add(RecoverableWatcher recoWatcher) {
+        watcherSet.add(recoWatcher);
     }
 
 }

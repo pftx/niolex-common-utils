@@ -134,7 +134,7 @@ public class ZKConnectorExceTest {
         Field watcherHolderF = FieldUtil.getField(ZKConnector.class, "watcherHolder");
         WatcherHolder watcherOld = FieldUtil.getFieldValue(watcherHolderF, ZKC);
         WatcherHolder watcher = mock(WatcherHolder.class);
-        doThrow(new RuntimeException("Lex-xeL")).when(watcher).reconnected(any(ZooKeeper.class));
+        doThrow(new RuntimeException("Lex-xeL")).when(watcher).reconnected();
         FieldUtil.setFieldValue(watcherHolderF, ZKC, watcher);
         FieldUtil.setFieldValue(FieldUtil.getField(ZKConnector.class, "sessionTimeout"), ZKC, 3);
         Thread t = Runner.run(ZKC, "reconnect");
