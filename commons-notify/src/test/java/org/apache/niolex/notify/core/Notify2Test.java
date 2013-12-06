@@ -23,7 +23,6 @@ import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.apache.niolex.notify.AppTest;
 import org.apache.niolex.notify.Notify;
-import org.apache.niolex.notify.NotifyListener;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,7 +34,7 @@ import org.junit.Test;
  */
 public class Notify2Test {
 
-    private static NotifyListener LI = new NotifyListener() {
+    private static Notify.Listener LI = new Notify.Listener() {
 
         @Override
         public void onPropertyChange(byte[] key, byte[] value) {

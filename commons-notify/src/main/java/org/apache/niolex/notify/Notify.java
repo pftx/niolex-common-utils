@@ -42,8 +42,34 @@ import org.apache.niolex.zookeeper.core.ZKListener;
  */
 public class Notify implements ZKListener {
 
+    /**
+     * Listen to the changes from Notify.
+     *
+     * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
+     * @version 1.0.0
+     * @since 2013-12-6
+     */
+    public static interface Listener {
+
+        /**
+         * The data of notify changed.
+         *
+         * @param data the new data
+         */
+        public void onDataChange(byte[] data);
+
+        /**
+         * One property of notify changed. We will not notify property deletion.
+         *
+         * @param key the property key
+         * @param value the property value
+         */
+        public void onPropertyChange(byte[] key, byte[] value);
+
+    }
+
     private final Map<ByteArray, byte[]> properties = new HashMap<ByteArray, byte[]>();
-    private final List<NotifyListener> list = new ArrayList<NotifyListener>();
+    private final List<Listener> list = new ArrayList<Listener>();
     private final ZKConnector zkConn;
     private final String basePath;
 
@@ -154,7 +180,7 @@ public class Notify implements ZKListener {
      *
      * @param listener element to be appended to this notify
      */
-    public synchronized void addListener(NotifyListener listener) {
+    public synchronized void addListener(Listener listener) {
         list.add(listener);
     }
 
@@ -164,7 +190,7 @@ public class Notify implements ZKListener {
      * @param listener element to be removed from this notify, if present
      * @return true if success, false if not found.
      */
-    public synchronized boolean removeListener(NotifyListener listener) {
+    public synchronized boolean removeListener(Listener listener) {
         return list.remove(listener);
     }
 
@@ -176,7 +202,7 @@ public class Notify implements ZKListener {
      */
     public synchronized void onDataChange(byte[] data) {
         this.data = data;
-        for (NotifyListener li : list) {
+        for (Listener li : list) {
             li.onDataChange(data);
         }
     }
@@ -220,7 +246,7 @@ public class Notify implements ZKListener {
      * @param b the new property value
      */
     private synchronized void firePropertyChange(byte[] a, byte[] b) {
-        for (NotifyListener li : list) {
+        for (Listener li : list) {
             li.onPropertyChange(a, b);
         }
     }

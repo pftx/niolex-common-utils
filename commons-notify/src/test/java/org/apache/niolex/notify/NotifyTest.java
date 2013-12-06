@@ -40,7 +40,7 @@ import org.junit.Test;
  */
 public class NotifyTest {
 
-    private static NotifyListener LI = new NotifyListener() {
+    private static Notify.Listener LI = new Notify.Listener() {
 
         @Override
         public void onPropertyChange(byte[] key, byte[] value) {
@@ -89,6 +89,16 @@ public class NotifyTest {
         Notify notify = App.instance().getNotify("/notify/test/tmp");
         boolean b = notify.deleteProperty("tmpkey");
         System.out.println("DeleteProperty res " + b);
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.notify.Notify#deleteProperty(byte[])}.
+     */
+    @Test
+    public void testDeletePropertyNotFound() {
+        Notify notify = App.instance().getNotify("/notify/test/tmp");
+        boolean b = notify.deleteProperty("tmpkey-lex-22");
+        assertFalse(b);
     }
 
     /**
