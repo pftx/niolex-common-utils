@@ -3,7 +3,6 @@ package org.apache.niolex.notify;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.niolex.notify.core.Notify;
 import org.apache.niolex.zookeeper.core.ZKConnector;
 import org.apache.niolex.zookeeper.core.ZKException;
 

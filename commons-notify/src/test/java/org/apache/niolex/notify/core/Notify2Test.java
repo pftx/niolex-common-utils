@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.apache.niolex.notify.AppTest;
+import org.apache.niolex.notify.Notify;
 import org.apache.niolex.notify.NotifyListener;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

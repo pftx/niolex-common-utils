@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
-import org.apache.niolex.zookeeper.watcher.CommonRecoverableWatcher.Listener;
+import org.apache.niolex.zookeeper.core.ZKListener;
 import org.apache.niolex.zookeeper.watcher.RecoverableWatcher.Type;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -45,7 +45,7 @@ public class CommonRecoverableWatcherTest {
 
     CommonRecoverableWatcher wcl;
     CommonRecoverableWatcher wda;
-    Listener listn;
+    ZKListener listn;
     ZooKeeper zk;
 
     /**
@@ -54,7 +54,7 @@ public class CommonRecoverableWatcherTest {
     @Before
     public void setUp() throws Exception {
         zk = mock(ZooKeeper.class);
-        listn = mock(Listener.class);
+        listn = mock(ZKListener.class);
         wcl = new CommonRecoverableWatcher(zk, Type.CHILDREN, listn);
         wda = new CommonRecoverableWatcher(zk, Type.DATA, listn);
     }

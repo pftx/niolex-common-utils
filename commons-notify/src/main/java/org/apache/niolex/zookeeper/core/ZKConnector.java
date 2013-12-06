@@ -25,6 +25,7 @@ import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.util.SystemUtil;
+import org.apache.niolex.zookeeper.watcher.CommonRecoverableWatcher;
 import org.apache.niolex.zookeeper.watcher.RecoverableWatcher;
 import org.apache.niolex.zookeeper.watcher.WatcherHolder;
 import org.apache.zookeeper.CreateMode;
@@ -204,6 +205,34 @@ public class ZKConnector implements Watcher {
     // ========================================================================
     // Watch/Read related operations
     // ========================================================================
+
+    /**
+     * Attach a watcher to the data of the specified path.
+     *
+     * @param path the zookeeper path you want to watch
+     * @param listn the zookeeper listener
+     * @return the current result
+     * @throws ZKException if failed to do watch
+     */
+    public byte[] watchData(String path, ZKListener listn) {
+        RecoverableWatcher recoWatcher = new CommonRecoverableWatcher(zk,
+                RecoverableWatcher.Type.DATA, listn);
+        return submitWatcher(path, recoWatcher);
+    }
+
+    /**
+     * Attach a watcher to the children of the specified path.
+     *
+     * @param path the zookeeper path you want to watch
+     * @param listn the zookeeper listener
+     * @return the current result
+     * @throws ZKException if failed to do watch
+     */
+    public List<String> watchChildren(String path, ZKListener listn) {
+        RecoverableWatcher recoWatcher = new CommonRecoverableWatcher(zk,
+                RecoverableWatcher.Type.CHILDREN, listn);
+        return submitWatcher(path, recoWatcher);
+    }
 
     /**
      * Attach a watcher to the path you want to watch.
@@ -446,12 +475,11 @@ public class ZKConnector implements Watcher {
 
     /**
      * Delete a node from zookeeper.
-     * This is very critical, so we only open this method as protected.
      *
      * @param path the node path
      * @throws ZKException if failed to delete the node
      */
-    protected void deleteNode(String path) {
+    public void deleteNode(String path) {
         try {
             zk.delete(path, -1);
         } catch (Exception e) {
@@ -461,12 +489,11 @@ public class ZKConnector implements Watcher {
 
     /**
      * Delete the specified node and all of it's children from zookeeper.
-     * This is very critical, so we only open this method as protected.
      *
      * @param path the tree root path
      * @throws ZKException if failed to delete the tree
      */
-    protected void deleteTree(String path) {
+    public void deleteTree(String path) {
         List<String> list = getChildren(path);
         if (!CollectionUtil.isEmpty(list)) {
             // Recursively delete all the children.

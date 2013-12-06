@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.niolex.notify.core;
+package org.apache.niolex.notify;
 
 import static org.junit.Assert.*;
 
@@ -26,9 +26,8 @@ import java.util.List;
 import org.apache.niolex.commons.util.DateTimeUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.apache.niolex.notify.App;
-import org.apache.niolex.notify.AppTest;
 import org.apache.niolex.notify.ByteArray;
-import org.apache.niolex.notify.NotifyListener;
+import org.apache.niolex.notify.Notify;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -75,7 +74,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#updateData(byte[])}.
+     * Test method for {@link org.apache.niolex.notify.Notify#updateData(byte[])}.
      */
     @Test
     public void testUpdateData() {
@@ -83,7 +82,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#deleteProperty(byte[])}.
+     * Test method for {@link org.apache.niolex.notify.Notify#deleteProperty(byte[])}.
      */
     @Test
     public void testDeleteProperty() {
@@ -93,7 +92,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#replaceProperty(byte[], byte[])}.
+     * Test method for {@link org.apache.niolex.notify.Notify#replaceProperty(byte[], byte[])}.
      */
     @Test
     public void testReplaceProperty() {
@@ -103,7 +102,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#onDataChange(byte[])}.
+     * Test method for {@link org.apache.niolex.notify.Notify#onDataChange(byte[])}.
      */
     @Test
     public void testOnDataChange() {
@@ -112,7 +111,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#onChildrenChange(java.util.List)}.
+     * Test method for {@link org.apache.niolex.notify.Notify#onChildrenChange(java.util.List)}.
      */
     @Test
     public void testOnChildrenChange() {
@@ -125,7 +124,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#getProperty(byte[])}.
+     * Test method for {@link org.apache.niolex.notify.Notify#getProperty(byte[])}.
      */
     @Test
     public void testGetPropertyBytes() {
@@ -135,7 +134,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#getProperty(org.apache.niolex.notify.ByteArray)}.
+     * Test method for {@link org.apache.niolex.notify.Notify#getProperty(org.apache.niolex.notify.ByteArray)}.
      */
     @Test
     public void testGetPropertyByteArray() {
@@ -145,7 +144,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#getProperty(org.apache.niolex.notify.ByteArray)}.
+     * Test method for {@link org.apache.niolex.notify.Notify#getProperty(org.apache.niolex.notify.ByteArray)}.
      */
     @Test
     public void testGetPropertyByteArrayStr() {
@@ -155,7 +154,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#getProperty(org.apache.niolex.notify.ByteArray)}.
+     * Test method for {@link org.apache.niolex.notify.Notify#getProperty(org.apache.niolex.notify.ByteArray)}.
      */
     @Test
     public void testGetPropertyByteArrayStrNull() {
@@ -165,7 +164,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#getData()}.
+     * Test method for {@link org.apache.niolex.notify.Notify#getData()}.
      */
     @Test
     public void testGetData() {
@@ -175,7 +174,7 @@ public class NotifyTest {
     }
 
     /**
-     * Test method for {@link org.apache.niolex.notify.core.Notify#getProperties()}.
+     * Test method for {@link org.apache.niolex.notify.Notify#getProperties()}.
      */
     @Test
     public void testGetProperties() {

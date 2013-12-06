@@ -19,6 +19,7 @@ package org.apache.niolex.zookeeper.watcher;
 
 import java.util.List;
 
+import org.apache.niolex.zookeeper.core.ZKListener;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
@@ -38,31 +39,6 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
     protected static final Logger LOG = LoggerFactory.getLogger(CommonRecoverableWatcher.class);
 
     /**
-     * The data or children change listener.
-     *
-     * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
-     * @version 1.0.0
-     * @since 2013-12-6
-     */
-    public static interface Listener {
-
-        /**
-         * Data changed in zookeeper.
-         *
-         * @param data the new data
-         */
-        public void onDataChange(byte[] data);
-
-        /**
-         * Children changed in zookeeper.
-         *
-         * @param list the new children list
-         */
-        public void onChildrenChange(List<String> list);
-
-    }
-
-    /**
      * The watch type.
      */
     private final Type type;
@@ -70,7 +46,7 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
     /**
      * The data or children change listener.
      */
-    private final Listener listn;
+    private final ZKListener listn;
 
     /**
      * The zookeeper.
@@ -84,7 +60,7 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
      * @param type the watch type
      * @param listn the data or children change listener
      */
-    public CommonRecoverableWatcher(ZooKeeper zk, Type type, Listener listn) {
+    public CommonRecoverableWatcher(ZooKeeper zk, Type type, ZKListener listn) {
         super();
         this.zk = zk;
         this.type = type;

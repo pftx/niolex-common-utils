@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.niolex.notify.core;
+package org.apache.niolex.notify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,10 +29,8 @@ import org.apache.niolex.commons.bean.Pair;
 import org.apache.niolex.commons.codec.KVBase64Util;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
-import org.apache.niolex.notify.ByteArray;
-import org.apache.niolex.notify.NotifyListener;
 import org.apache.niolex.zookeeper.core.ZKConnector;
-import org.apache.niolex.zookeeper.watcher.CommonRecoverableWatcher;
+import org.apache.niolex.zookeeper.core.ZKListener;
 
 /**
  * The core class of this notify framework. Watch the changes of node data and node properties.
@@ -42,10 +40,10 @@ import org.apache.niolex.zookeeper.watcher.CommonRecoverableWatcher;
  * @version 1.0.5
  * @since 2012-12-27
  */
-public class Notify implements CommonRecoverableWatcher.Listener {
+public class Notify implements ZKListener {
 
     private final Map<ByteArray, byte[]> properties = new HashMap<ByteArray, byte[]>();
-    private final List<NotifyListener> list = Collections.synchronizedList(new ArrayList<NotifyListener>());
+    private final List<NotifyListener> list = new ArrayList<NotifyListener>();
     private final ZKConnector zkConn;
     private final String basePath;
 
@@ -61,10 +59,10 @@ public class Notify implements CommonRecoverableWatcher.Listener {
         super();
         this.zkConn = zkConn;
         this.basePath = basePath;
-        //this.data = zkConn.submitWatcher(basePath, new NotifyDataWatcher(zkConn, this));
+        this.data = zkConn.watchData(basePath, this);
         this.children = Collections.emptyList();
-        //List<String> list = zkConn.submitWatcher(basePath, new NotifyChildrenWatcher(zkConn, this));
-        //this.onChildrenChange(list);
+        List<String> list = zkConn.watchChildren(basePath, this);
+        this.onChildrenChange(list);
     }
 
     /**
@@ -155,7 +153,7 @@ public class Notify implements CommonRecoverableWatcher.Listener {
      *
      * @param listener element to be appended to this notify
      */
-    public void addListener(NotifyListener listener) {
+    public synchronized void addListener(NotifyListener listener) {
         list.add(listener);
     }
 
@@ -165,7 +163,7 @@ public class Notify implements CommonRecoverableWatcher.Listener {
      * @param listener element to be removed from this notify, if present
      * @return true if success, false if not found.
      */
-    public boolean removeListener(NotifyListener listener) {
+    public synchronized boolean removeListener(NotifyListener listener) {
         return list.remove(listener);
     }
 
@@ -175,12 +173,10 @@ public class Notify implements CommonRecoverableWatcher.Listener {
      *
      * @param data the new data
      */
-    protected void onDataChange(byte[] data) {
+    public synchronized void onDataChange(byte[] data) {
         this.data = data;
-        synchronized (list) {
-            for (NotifyListener li : list) {
-                li.onDataChange(data);
-            }
+        for (NotifyListener li : list) {
+            li.onDataChange(data);
         }
     }
 
@@ -190,7 +186,7 @@ public class Notify implements CommonRecoverableWatcher.Listener {
      *
      * @param list the new children list
      */
-    protected void onChildrenChange(List<String> list) {
+    public void onChildrenChange(List<String> list) {
         Pair<List<String>,List<String>> pair = CollectionUtil.intersection(this.children, list);
         for (String s : pair.a) {
             // All the delete item.
@@ -222,11 +218,9 @@ public class Notify implements CommonRecoverableWatcher.Listener {
      * @param a the new property key
      * @param b the new property value
      */
-    private void firePropertyChange(byte[] a, byte[] b) {
-        synchronized (list) {
-            for (NotifyListener li : list) {
-                li.onPropertyChange(a, b);
-            }
+    private synchronized void firePropertyChange(byte[] a, byte[] b) {
+        for (NotifyListener li : list) {
+            li.onPropertyChange(a, b);
         }
     }
 

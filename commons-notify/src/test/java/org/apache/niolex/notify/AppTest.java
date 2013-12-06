@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
-import org.apache.niolex.notify.core.Notify;
 import org.junit.Test;
 
 /**
