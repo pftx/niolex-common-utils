@@ -30,6 +30,12 @@ import org.junit.Test;
  */
 public class ZKExceptionTest {
 
+    @Test
+    public void testEnum() {
+        assertEquals(ZKException.Code.NO_AUTH.toString(), "NO_AUTH");
+        assertEquals(ZKException.Code.OTHER, ZKException.Code.valueOf("OTHER"));
+    }
+
     @Test(expected=IllegalArgumentException.class)
     public void testMakeInstance() throws Exception {
         ZKException.makeInstance("not yet implemented", new IllegalArgumentException("Abc"));
