@@ -142,6 +142,14 @@ public class ZKConnectorTest {
         ZKC.getData("/notify/zkc/tmp");
     }
 
+    @Test
+    @Order(4)
+    public void testGetDataAsStr() throws Exception {
+        ZKC.createNode("/notify/zkc/tmp/A12", "See Lex Here!需要中文");
+        String s = ZKC.getDataAsStr("/notify/zkc/tmp/A12");
+        assertEquals("See Lex Here!需要中文", s);
+    }
+
     @Order(5)
     @Test
     public void testGetChildren() throws Exception {

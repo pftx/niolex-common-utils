@@ -65,7 +65,7 @@ public class Elector extends ZKConnector implements ZKListener {
     }
 
     /**
-     * The election base path.
+     * The election base path. This path is guaranteed not end with "/"
      */
     private final String basePath;
 
@@ -75,46 +75,74 @@ public class Elector extends ZKConnector implements ZKListener {
     private final Listener listn;
 
     /**
-     * The self node path.
+     * The absolute path of the self node path.
      */
     private volatile String selfPath;
 
     /**
-     * The current leader path.
+     * The current leader absolute path.
      */
     private volatile String leaderPath;
 
     /**
-     * Create a new Elector under this bash path.
+     * Create a new Elector under this bash path.<br>
+     * User need to call {@link #register(String)} to register this node if he
+     * want to elect the leader.
      *
      * @param clusterAddress the zookeeper cluster servers address list
      * @param sessionTimeout the session timeout in microseconds
      * @param basePath the ZK base path of this elector
-     * @param address the address of this node
      * @param listn the leader change listener
      * @throws IOException in cases of network failure
      * @throws IllegalArgumentException if sessionTimeout is too small
      */
     public Elector(String clusterAddress, int sessionTimeout,
-            String basePath, String address, Listener listn) throws IOException {
+            String basePath, Listener listn) throws IOException {
         super(clusterAddress, sessionTimeout);
-        if (!basePath.endsWith("/")) {
-            basePath += "/";
+        if (basePath.endsWith("/")) {
+            basePath = basePath.substring(0, basePath.length() - 1);
         }
         this.basePath = basePath;
         this.listn = listn;
-        register(address);
-        this.onChildrenChange(watchChildren(basePath, this));
     }
 
     /**
-     * Register this address to the election.
+     * Register this address to the election. Please note that we can only
+     * manage one address here. So do not call this method multiple times.
      *
-     * @param address the address
+     * @param address the address of this node
+     * @return true if this address is registered, false if this elector already has another address
      */
-    protected void register(String address) {
-        selfPath = this.createNode(basePath + "Elector-", StringUtil.strToUtf8Byte(address), true, true);
+    public synchronized boolean register(String address) {
+        if (selfPath != null) {
+            return false;
+        }
+        selfPath = this.createNode(basePath + "/Elector-", StringUtil.strToUtf8Byte(address), true, true);
         LOG.info("A new Elector join with path: {}.", selfPath);
+        this.onChildrenChange(watchChildren(basePath, this));
+        return true;
+    }
+
+    /**
+     * Give up the current node. That means we don't want to elect the leader any more.
+     *
+     * @return true if give up success, false if not registered
+     */
+    public synchronized boolean giveUp() {
+        if (selfPath == null) {
+            return false;
+        }
+        this.deleteNode(selfPath);
+        LOG.info("The current node: {} now given up.", selfPath);
+        selfPath = null;
+        return true;
+    }
+
+    /**
+     * @return the current node zoopeeker path
+     */
+    public synchronized String getCurrentPath() {
+        return selfPath;
     }
 
     /**
@@ -136,18 +164,18 @@ public class Elector extends ZKConnector implements ZKListener {
             return;
         }
         Collections.sort(list);
-        String leader = list.get(0);
+        // The absolute leader path.
+        String leader = basePath + "/" + list.get(0);
         if (leader.equals(leaderPath)) {
             return;
         } else {
             if (leader.equals(selfPath)) {
-                listn.runAsLeader();
                 LOG.info("The current node is now run as the leader.");
+                listn.runAsLeader();
             } else {
-                byte[] data = this.getData(basePath + leader);
-                String address = StringUtil.utf8ByteToStr(data);
-                listn.leaderChange(address);
+                String address = this.getDataAsStr(leader);
                 LOG.info("The leader address is changed to: {}.", address);
+                listn.leaderChange(address);
             }
             leaderPath = leader;
         }

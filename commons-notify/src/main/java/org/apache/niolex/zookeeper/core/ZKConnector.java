@@ -302,6 +302,17 @@ public class ZKConnector implements Watcher {
     }
 
     /**
+     * Get the node data of the specified path as UTF8 string.
+     *
+     * @param path the specified path
+     * @return the node data as UTF8 string
+     * @throws ZKException if failed to get data
+     */
+    public String getDataAsStr(String path) {
+        return StringUtil.utf8ByteToStr(getData(path));
+    }
+
+    /**
      * Get the node children of the specified path.
      *
      * @param path the specified path
@@ -346,7 +357,18 @@ public class ZKConnector implements Watcher {
     }
 
     /**
-     * Create node.
+     * Create node with string data saved as UTF8.
+     *
+     * @param path the node path
+     * @param data the node data
+     * @throws ZKException if failed to create node
+     */
+    public void createNode(String path, String data) {
+        createNode(path, StringUtil.strToUtf8Byte(data), false, false);
+    }
+
+    /**
+     * Create node with byte array data.
      *
      * @param path the node path
      * @param data the node data

@@ -18,10 +18,18 @@
 package org.apache.niolex.election;
 
 
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.reflect.FieldUtil;
+import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.notify.AppTest;
-import org.apache.niolex.zookeeper.core.ZKConnector;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,16 +43,27 @@ public class ElectorTest {
 
     private static Elector EL;
     private static String BS = "/election/zkc/tmp";
-    private static Elector.Listener LI = mock(Elector.Listener.class);
+    private static Elector.Listener LI = new Elector.Listener() {
+
+        @Override
+        public void leaderChange(String address) {
+            System.out.println("New leader address: " + address);
+        }
+
+        @Override
+        public void runAsLeader() {
+            System.out.println("Current Node Now run as Leader.");
+
+        }};
+    private Elector.Listener mocLi;
 
     /**
      * @throws java.lang.Exception
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        ZKConnector zkc = new ZKConnector(AppTest.URL, 10000);
-        zkc.makeSurePathExists(BS);
-        EL = new Elector(AppTest.URL, 10000, BS, "localhost:1000", LI);
+        EL = new Elector(AppTest.URL, 10000, BS, LI);
+        EL.makeSurePathExists(BS);
     }
 
     /**
@@ -52,26 +71,78 @@ public class ElectorTest {
      */
     @Before
     public void setUp() throws Exception {
+        mocLi = mock(Elector.Listener.class);
+        EL.register("localhost:" + MockUtil.randInt(1000, 10000));
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        EL.giveUp();
     }
 
     @Test
     public void testElector() throws Exception {
-        System.out.println("not yet implemented");
+        Elector el = new Elector(AppTest.URL, 10000, BS + "/", mocLi);
+        el.register("中国人");
+        verify(mocLi, times(1)).leaderChange(anyString());
+        assertTrue(EL.giveUp());
+        ThreadUtil.sleepAtLeast(100);
+
+        verify(mocLi, times(1)).runAsLeader();
+        verify(mocLi, times(1)).leaderChange(anyString());
     }
 
     @Test
     public void testRegister() throws Exception {
-        System.out.println("not yet implemented");
+        assertFalse(EL.register("any-str"));
+    }
+
+    @Test
+    public void testGiveUp() throws Exception {
+        assertTrue(EL.giveUp());
+        assertFalse(EL.giveUp());
+        assertNull(EL.getCurrentPath());
+    }
+
+    @Test
+    public void testGetCurrentPath() throws Exception {
+        assertTrue(EL.getCurrentPath().startsWith(BS));
     }
 
     @Test
     public void testOnDataChange() throws Exception {
-        System.out.println("not yet implemented");
+        EL.onDataChange(null);
     }
 
     @Test
     public void testOnChildrenChange() throws Exception {
-        System.out.println("not yet implemented");
+        EL.onChildrenChange(null);
+        Elector el = new Elector(AppTest.URL, 10000, BS + "/", mocLi);
+        el.createNode(BS + "/good-girl", "1st".getBytes(), true, false);
+        el.createNode(BS + "/good-boy", "2nd".getBytes(), true, false);
+        el.createNode(BS + "/bad-girl", "3rd".getBytes(), true, false);
+        List<String> list = new ArrayList<String>();
+        list.add("good-girl");
+        list.add("good-boy");
+        list.add("bad-girl");
+        el.onChildrenChange(list);
+        verify(mocLi, times(0)).runAsLeader();
+        verify(mocLi, times(1)).leaderChange("3rd");
+
+        list.remove(0);
+        el.onChildrenChange(list);
+        verify(mocLi, times(0)).runAsLeader();
+        verify(mocLi, times(1)).leaderChange("3rd");
+        verify(mocLi, times(1)).leaderChange("2nd");
+        verify(mocLi, times(0)).leaderChange("1st");
+
+        FieldUtil.setValue(el, "selfPath", BS + "/fake-p");
+        list.add("fake-p");
+        el.onChildrenChange(list);
+        verify(mocLi, times(1)).runAsLeader();
+        verify(mocLi, times(1)).leaderChange("3rd");
+        verify(mocLi, times(1)).leaderChange("2nd");
+        verify(mocLi, times(0)).leaderChange("1st");
     }
 
 }
