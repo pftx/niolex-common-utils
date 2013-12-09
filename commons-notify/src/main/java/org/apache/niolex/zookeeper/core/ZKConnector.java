@@ -118,8 +118,6 @@ public class ZKConnector implements Watcher {
 
     /**
      * Wait for zookeeper to be connected, if can not connect, wait forever.
-     *
-     * @param latch the latch to wait for
      */
     public void waitForConnectedTillDeath() {
         while (!ThreadUtil.waitFor(latch)) {}
@@ -268,7 +266,8 @@ public class ZKConnector implements Watcher {
      * Do real watch. Please use {@link #submitWatcher(String, RecoverableWatcher)} instead.
      * This method is for internal use.
      *
-     * @param item the item to do watch
+     * @param path the path to be watched
+     * @param recoWatcher the recoverable watcher
      * @return the current data in Zookeeper
      * @throws ZKException if failed to do watch
      */

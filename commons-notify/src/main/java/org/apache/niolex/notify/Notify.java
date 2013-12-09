@@ -196,7 +196,6 @@ public class Notify implements ZKListener {
 
     /**
      * Fired when the data of this notify changed.
-     * This method is invoked from {@link org.apache.niolex.notify.core.NotifyDataWatcher}
      *
      * @param data the new data
      */
@@ -209,7 +208,6 @@ public class Notify implements ZKListener {
 
     /**
      * Fired when the children of this notify changed.
-     * This method is invoked from {@link org.apache.niolex.notify.core.NotifyChildrenWatcher}
      *
      * @param list the new children list
      */

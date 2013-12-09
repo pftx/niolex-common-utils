@@ -89,7 +89,7 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
 
     /**
      * This is the override of super method.
-     * @see org.apache.niolex.zookeeper.watcher.RecoverableWatcher#reconnected(java.lang.String)
+     * @see org.apache.niolex.zookeeper.watcher.RecoverableWatcher#reconnected()
      */
     @Override
     public void reconnected() {
