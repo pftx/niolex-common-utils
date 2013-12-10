@@ -17,11 +17,17 @@
  */
 package org.apache.niolex.commons.test;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
+import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.file.FileUtil;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
@@ -36,13 +42,12 @@ import com.google.common.collect.Maps;
 @SuppressWarnings("unused")
 class ObjToStringUtilTestBean {
     private static final int IXI = 393;
-    private String strName = "Xie, Jiyun";
+    private String strName;
     private int intId = 8575;
     private int intLevel = 60903;
     private Integer[] age = {1, 3, 5, 7};
     private ObjToStringUtilTestBean next = null;
     private String[] tag = {"But", "As", "Main"};
-    private Object qq = new Object();
     private List<String> list = Collections.emptyList();
 
     public void setNext(ObjToStringUtilTestBean next) {
@@ -63,27 +68,54 @@ class ObjToStringUtilTestBean {
 
 }
 
-public class ObjToStringUtilTest {
+public class ObjToStringUtilTest extends ObjToStringUtil {
 
     @Test
     public void testInit() {
-        new ObjToStringUtil() {};
+        Object o;
+        o = (new int[1]);
+        assertFalse(o instanceof Object[]);
+        o = (new Integer[1]);
+        assertTrue(o instanceof Object[]);
+        o = new String[0];
+        assertTrue(o instanceof Object[]);
     }
 
     @Test
-    public void testArray() {
-        ObjToStringUtilTestBean t = new ObjToStringUtilTestBean("Xie, Jiyun");
-        ObjToStringUtilTestBean p = new ObjToStringUtilTestBean("commons-Core");
-        t.setNext(p);
-        p.setNext(t);
-        System.out.println("t => " + ObjToStringUtil.objToString(t));
-        List<ObjToStringUtilTestBean> q = new ArrayList<ObjToStringUtilTestBean>();
-        q.add(t);
-        q.add(t);
-        q.add(t);
-        t.setNext(null);
-        t.cleanAge();
-        System.out.println("{t,t,t} => " + ObjToStringUtil.objToString(q));
+    public void testBytes() {
+        byte[] bytes = new byte[] {-1, -2, -3, -66, 127, 35, 98};
+        String s = objToString(bytes);
+        assertEquals("(7)[fffefdbe7f2362]", s);
+    }
+
+    @Test
+    public void testInts() {
+        int[] bytes = new int[] {-1, -2, -3, -66, 127, 35, 98};
+        String s = objToString(bytes).replace(LINE_SP, "");
+        assertEquals("(7)[  0 => -1  1 => -2  2 => -3  3 => -66  4 => 127  5 => 35  6 => 98]", s);
+    }
+
+    @Test
+    public void testArray0() {
+        String s = objToString(new Object[0]);
+        assertEquals("(0)[]", s);
+    }
+
+    @Test
+    public void testObjectNull() {
+        String s = objToString(new Object[]{null}).replace(LINE_SP, "");
+        assertEquals("(1)[  0 => null]", s);
+    }
+
+    @Test
+    public void testObjectQueue() {
+        Queue<ObjToStringUtilTestBean> q = new LinkedList<ObjToStringUtilTestBean>();
+        q.add(new ObjToStringUtilTestBean("Lex"));
+        q.add(new ObjToStringUtilTestBean("Joy"));
+        q.add(new ObjToStringUtilTestBean("Jen"));
+        String s = objToString(q).replace(LINE_SP, "\n");
+        String e = FileUtil.getCharacterFileContentFromClassPath("queue.txt", ObjToStringUtilTest.class, StringUtil.UTF_8);
+        assertEquals(e, s);
     }
 
     @Test
@@ -92,6 +124,27 @@ public class ObjToStringUtilTest {
         map.put("a", "1");
         map.put("b", "2");
         map.put("author", "Xie, Jiyun");
-        System.out.println("{map} => " + ObjToStringUtil.objToString(map));
+        String s = objToString(map).replace(LINE_SP, "#");
+        String e = "{#  author=Xie, Jiyun#  b=2#  a=1#}";
+        assertEquals(e, s);
     }
+
+    @Test
+    public void testMap0() {
+        Map<String, String> map = Maps.newHashMap();
+        String s = objToString(map).replace(LINE_SP, "#");
+        String e = "{}";
+        assertEquals(e, s);
+    }
+
+    @Test
+    public void testObject() {
+        ObjToStringUtilTestBean t = new ObjToStringUtilTestBean("Xie, Jiyun");
+        ObjToStringUtilTestBean p = new ObjToStringUtilTestBean("commons-Core");
+        t.setNext(p);
+        p.setNext(t);
+        t.cleanAge();
+        System.out.println("t => " + ObjToStringUtil.objToString(t));
+    }
+
 }

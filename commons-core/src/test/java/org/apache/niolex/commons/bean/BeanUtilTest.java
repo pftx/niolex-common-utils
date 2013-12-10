@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 
 import java.util.Map;
 
+import org.apache.niolex.commons.util.Const;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
@@ -35,7 +36,8 @@ public class BeanUtilTest extends BeanUtil {
 
     @Test
     public void testToString() throws Exception {
-        assertEquals("{,  i=123,  name=A,  b=true,  num=321,  fmt=0.0,  any=null,}", toString(new A()).replaceAll("\n", ","));
+        assertEquals("{,  i=123,  name=A,  b=true,  num=321,  fmt=0.0,  any=null,}",
+                toString(new A()).replaceAll(Const.LINE_SP, ","));
     }
 
     @Test

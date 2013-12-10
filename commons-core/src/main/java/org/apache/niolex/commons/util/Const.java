@@ -51,4 +51,9 @@ public interface Const {
      */
     long T = 1024L * G;
 
+    /**
+     * The new line separator of the current platform.
+     */
+    String LINE_SP = System.getProperty("line.separator");
+
 }
