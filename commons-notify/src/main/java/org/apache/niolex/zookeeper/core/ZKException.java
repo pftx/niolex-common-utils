@@ -20,7 +20,7 @@ package org.apache.niolex.zookeeper.core;
 import org.apache.zookeeper.KeeperException;
 
 /**
- * The RuntimeException thrown in commons notify framework.
+ * The RuntimeException thrown in the commons framework of zookeeper wrapper.
  *
  * @author Xie, Jiyun
  */
