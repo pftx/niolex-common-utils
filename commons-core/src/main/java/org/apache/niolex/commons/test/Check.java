@@ -30,6 +30,7 @@ public class Check extends Validate {
 
     /**
      * Check that a equals b, otherwise we throw IllegalArgumentException
+     *
      * @param a
      * @param b
      * @param msg
@@ -40,6 +41,7 @@ public class Check extends Validate {
 
     /**
      * Check that a equals b, otherwise we throw IllegalArgumentException
+     *
      * @param a
      * @param b
      * @param msg
@@ -52,6 +54,7 @@ public class Check extends Validate {
 
     /**
      * Check that a less than b, otherwise we throw IllegalArgumentException
+     *
      * @param a
      * @param b
      * @param msg
@@ -62,12 +65,39 @@ public class Check extends Validate {
 
     /**
      * Check that a less than b, otherwise we throw IllegalArgumentException
+     *
      * @param a
      * @param b
      * @param msg
      */
     public static void lessThan(int a, int b, String msg) {
         if (a >= b) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
+    /**
+     * Check that a <= b <= c, otherwise we throw IllegalArgumentException
+     *
+     * @param a
+     * @param b
+     * @param c
+     * @param msg
+     */
+    public static void bt(int a, int b, int c, String msg) {
+        between(a, b, c, msg);
+    }
+
+    /**
+     * Check that a <= b <= c, otherwise we throw IllegalArgumentException
+     *
+     * @param a
+     * @param b
+     * @param c
+     * @param msg
+     */
+    public static void between(int a, int b, int c, String msg) {
+        if (b > c || a > b) {
             throw new IllegalArgumentException(msg);
         }
     }

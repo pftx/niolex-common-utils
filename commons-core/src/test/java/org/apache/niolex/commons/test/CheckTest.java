@@ -83,4 +83,32 @@ public class CheckTest {
         lessThan(5, 4, "not yet implemented");
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void testBt1() throws Exception {
+        bt(3, 6, 5, "not yet implemented");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBt2() throws Exception {
+        bt(3, 2, 5, "not yet implemented");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBt3() throws Exception {
+        bt(7, 6, 5, "not yet implemented");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBt4() throws Exception {
+        bt(6, 6, 5, "not yet implemented");
+    }
+
+    @Test
+    public void testBetween() throws Exception {
+        bt(6, 6, 6, "not yet implemented");
+        between(6, 6, 7, "not yet implemented");
+        between(6, 7, 7, "not yet implemented");
+        between(6, 7, 8, "not yet implemented");
+    }
+
 }
