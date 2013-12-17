@@ -172,6 +172,7 @@ public class ZKConnectorTest {
     @Order(7)
     public void testCreateNodeString() throws Exception {
         ZKC.createNode("/notify/zkc/tmp/CRN001");
+        assertNull(ZKC.getDataAsStr("/notify/zkc/tmp/CRN001"));
     }
 
     @Test
@@ -214,6 +215,13 @@ public class ZKConnectorTest {
     @Order(17)
     public void testUpdateNodeData() throws Exception {
         ZKC.updateNodeData("/notify/zkc/tmp", "not".getBytes());
+    }
+
+    @Test
+    @Order(18)
+    public void testUpdateNodeDataStr() throws Exception {
+        ZKC.updateNodeData("/notify/zkc/tmp", "安装和调试");
+        assertEquals("安装和调试", ZKC.getDataAsStr("/notify/zkc/tmp"));
     }
 
     @Test(expected=IllegalArgumentException.class)

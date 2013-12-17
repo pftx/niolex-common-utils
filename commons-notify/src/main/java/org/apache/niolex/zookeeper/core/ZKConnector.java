@@ -308,7 +308,8 @@ public class ZKConnector implements Watcher {
      * @throws ZKException if failed to get data
      */
     public String getDataAsStr(String path) {
-        return StringUtil.utf8ByteToStr(getData(path));
+        byte[] data = getData(path);
+        return data == null ? null : StringUtil.utf8ByteToStr(data);
     }
 
     /**
@@ -484,6 +485,17 @@ public class ZKConnector implements Watcher {
     protected String doCreateNode(String path, byte[] data, CreateMode createMode)
             throws KeeperException, InterruptedException {
         return zk.create(path, data, Ids.OPEN_ACL_UNSAFE, createMode);
+    }
+
+    /**
+     * Update data of a node.
+     *
+     * @param path the node path
+     * @param data the new node data
+     * @throws ZKException if failed to update node data
+     */
+    public void updateNodeData(String path, String data) {
+        updateNodeData(path, StringUtil.strToUtf8Byte(data));
     }
 
     /**
