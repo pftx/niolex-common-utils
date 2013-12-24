@@ -56,8 +56,7 @@ public class ZKException extends RuntimeException {
         }
         Code code = Code.OTHER;
         if (e instanceof KeeperException) {
-            KeeperException ke = (KeeperException) e;
-            switch (ke.code()) {
+            switch (((KeeperException) e).code()) {
                 case NOAUTH:
                 case AUTHFAILED:
                     code = Code.NO_AUTH;

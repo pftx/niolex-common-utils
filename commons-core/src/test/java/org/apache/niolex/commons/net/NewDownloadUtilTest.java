@@ -68,7 +68,7 @@ public class NewDownloadUtilTest {
         start.stop();
     }
 
-    final static String URL = "http://service.baidu.com/static/images/nav.jpg";
+    final static String URL = "http://fe.bdimg.com/tangram/2.0.2.5.js";
     final static String FTP = "ftp://ftp:ftp@ftp.speed.hinet.net/test_001m.zip";
     final static String SMALL = NewDownloadUtilTest.class.getResource("Small.txt").toExternalForm();
     final static String JAR = Logger.class.getResource("Logger.class").toExternalForm();
@@ -86,7 +86,7 @@ public class NewDownloadUtilTest {
 
     @Test(expected=NetException.class)
     public void testUnusualDownloadLargeFile() throws Exception {
-        byte[] local = FileUtil.getBinaryFileContentFromClassPath("nav.jpg.txt", getClass());
+        byte[] local = FileUtil.getBinaryFileContentFromClassPath("2.0.2.5.js.txt", getClass());
         InputStream in = new ByteArrayInputStream(local);
         try {
             unusualDownload(URL, in, 512, true);
@@ -99,7 +99,7 @@ public class NewDownloadUtilTest {
     @Test
     public void testDownload() throws NetException {
         byte[] data = downloadFile(URL);
-        byte[] local = FileUtil.getBinaryFileContentFromClassPath("nav.jpg.txt", getClass());
+        byte[] local = FileUtil.getBinaryFileContentFromClassPath("2.0.2.5.js.txt", getClass());
         assertArrayEquals(local, data);
     }
 

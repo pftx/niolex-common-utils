@@ -114,6 +114,8 @@ public class ZKConnectorExceTest {
         ZKC.process(event);
         event = new WatchedEvent(EventType.NodeCreated, KeeperState.Disconnected, "/a/ab/cc");
         ZKC.process(event);
+        event = new WatchedEvent(EventType.NodeCreated, KeeperState.AuthFailed, "/a/ab/cc");
+        ZKC.process(event);
     }
 
     @Test

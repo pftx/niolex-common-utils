@@ -205,24 +205,6 @@ public class HTTPUtilTest extends HTTPUtil {
     }
 
     @Test(expected=NetException.class)
-    public void testIOE() throws Exception {
-        Map<String, String> params = Maps.newHashMap();
-        params.put("wd", "谢佶芸");
-        params.put("ie", "gb2312");
-        params.put("inputT", "18400");
-        params.put("rsv_bp", "0");
-        params.put("rsv_spt", "3");
-        params.put("rsv_sug", "0");
-        params.put("rsv_sug1", "8");
-        params.put("rsv_sug3", "11");
-        params.put("rsv_sug4", "624");
-        params.put("tn", "baidu");
-        params.put("wd", "commons-core");
-        String s = post("http://www.baidu.com/s", params);
-        System.out.println(s);
-    }
-
-    @Test(expected=NetException.class)
     public void testHTTP() throws Exception {
         doHTTP("ftp://ftp:ftp@ftp.speed.hinet.net/test_001m.zip", null, true);
     }

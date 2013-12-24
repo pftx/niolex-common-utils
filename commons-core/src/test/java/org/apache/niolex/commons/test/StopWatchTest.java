@@ -174,7 +174,8 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testGetMin() {
-		assertTrue(sw.getMin() == 10);
+		assertTrue(sw.getMin() >= 10);
+		assertTrue(sw.getMin() <= 15);
 	}
 
 	/**
