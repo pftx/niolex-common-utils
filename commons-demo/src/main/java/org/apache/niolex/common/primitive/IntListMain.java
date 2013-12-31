@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 import org.apache.commons.collections.primitives.ArrayIntList;
 import org.apache.commons.collections.primitives.IntList;
-import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.test.StopWatch;
 import org.apache.niolex.commons.test.StopWatch.Stop;
 
@@ -41,7 +40,7 @@ public class IntListMain {
 		for (int i = 0; i < 1000; ++i) {
 			Stop s = w.start();
 			for (int j = 0; j < 10000; ++j) {
-				inList.add(MockUtil.randInt(1239087231));
+				inList.add(j);
 			}
 			s.stop();
 		}
@@ -53,7 +52,7 @@ public class IntListMain {
 		for (int i = 0; i < 1000; ++i) {
 			Stop s = w.start();
 			for (int j = 0; j < 10000; ++j) {
-				oList.add(MockUtil.randInt(1239087231));
+				oList.add(j);
 			}
 			s.stop();
 		}
