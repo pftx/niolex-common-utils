@@ -71,8 +71,8 @@ public class FinallyTest extends Finally {
         ThreadUtil.sleep(80);
     }
 
-    private Method r = MethodUtil.getMethods(getClass(), "readTest")[0];
-    private Method w = MethodUtil.getMethods(getClass(), "writeTest")[0];
+    private Method r = MethodUtil.getMethod(getClass(), "readTest");
+    private Method w = MethodUtil.getMethod(getClass(), "writeTest");
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private Blocker<String> blocker = new Blocker<String>();
 

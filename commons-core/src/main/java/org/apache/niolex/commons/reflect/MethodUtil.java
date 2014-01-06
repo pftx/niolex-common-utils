@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.apache.niolex.commons.collection.CollectionUtil;
 
@@ -50,7 +49,8 @@ public class MethodUtil {
      *
      * @param clazz the class to be used
      * @return the list contains all the methods
-     * @throws SecurityException a security manager is present and the reflection is rejected
+     * @throws SecurityException if a security manager is present and the reflection is rejected
+     * @see #getAllMethodsIncludeInterfaces(Class)
      */
     public static final List<Method> getAllMethods(Class<?> clazz) {
         List<Method> outList = new ArrayList<Method>();
@@ -62,57 +62,36 @@ public class MethodUtil {
     }
 
     /**
-     * 获取一个Java类所有指定名字的方法
-     * Retrieve all the methods with the specified name from this class.
-     *
-     * @param clazz 需要获取的类
-     * @param name 指定方法的名字
-     * @return 指定名字的方法的数组
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     */
-    public static final Method[] getMethods(Class<?> clazz, String name) {
-        List<Method> outList = new ArrayList<Method>();
-        getMethods(outList, clazz, name);
-        return outList.toArray(new Method[outList.size()]);
-    }
-
-    /**
-     * 获取一个Java类所有指定名字的方法
-     * Retrieve all the methods with the specified name from this class.
-     *
-     * @param outList 用来存放结果的列表
-     * @param clazz 需要获取的类
-     * @param name 指定方法的名字
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     */
-    public static final void getMethods(List<Method> outList, Class<?> clazz, String name) {
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (name.equals(m.getName())) {
-                outList.add(m);
-            }
-        }
-    }
-
-    /**
-     * 获取一个Java对象的所有类型和接口
      * Retrieve all the [class]/[super class]/[interfaces] of this object.
      *
-     * @param obj 需要获取类型的对象
-     * @return 类型集合
+     * @param obj the object to be used
+     * @return the set contains all the types
      */
     public static final Collection<Class<?>> getAllTypes(Object obj) {
+        return getAllTypes(obj.getClass());
+    }
+
+
+    /**
+     * Retrieve all the [class]/[super class]/[interfaces] of this class.
+     *
+     * @param clazz the class to be used
+     * @return the set contains all the types
+     * @throws SecurityException if a security manager is present and the reflection is rejected
+     */
+    public static final Collection<Class<?>> getAllTypes(Class<?> clazz) {
         // Store all the classes and interfaces here.
         HashSet<Class<?>> clsSet = new HashSet<Class<?>>();
-        getAllTypes(obj.getClass(), clsSet);
+        getAllTypes(clazz, clsSet);
         return clsSet;
     }
 
     /**
-     * 获取一个Java类型的所有父类和接口
-     * Retrieve all the [class]/[super class]/[interfaces] of this object.
+     * Retrieve all the [class]/[super class]/[interfaces] of this class.
      *
-     * @param cls 需要获取类型的类
-     * @param clsSet 类型集合
+     * @param cls the class to be used
+     * @param clsSet the set used to store all the types
+     * @throws SecurityException if a security manager is present and the reflection is rejected
      */
     public static final void getAllTypes(Class<?> cls, HashSet<Class<?>> clsSet) {
         if (cls != null && !clsSet.contains(cls)) {
@@ -125,84 +104,146 @@ public class MethodUtil {
     }
 
     /**
-     * 获取一个Java对象中所有指定名字的方法.我们会递归的获取所有父类和接口的方法
-     * Retrieve all the methods with the specified name from this object. We will
-     * recursively iterate all the methods in super class and interfaces.
+     * Retrieve all the methods of this class and it's super classes and all of it's interfaces.
      *
-     * @param obj 需要获取方法的对象
-     * @param name 指定方法的名字
-     * @return 指定名字的方法的数组
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param clazz the class to be used
+     * @return the list contains all the methods
+     * @throws SecurityException if a security manager is present and the reflection is rejected
+     * @see #getAllMethods(Class)
      */
-    public static final Collection<Method> getAllMethods(Object obj, String name) {
+    public static final List<Method> getAllMethodsIncludeInterfaces(Class<?> clazz) {
         List<Method> outList = new ArrayList<Method>();
-
-        Collection<Class<?>> clsSet = getAllTypes(obj);
-        // Start to find methods.
-        for (Class<?> cl : clsSet) {
-            getMethods(outList, cl, name);
+        for (Class<?> type : getAllTypes(clazz)) {
+            CollectionUtil.addAll(outList, type.getDeclaredMethods());
         }
-
         return outList;
     }
 
     /**
-     * 获取一个Java类指定名字和方法签名的方法
-     * Retrieve the method with the specified name and parameter types from this class.
+     * Retrieve all the methods of this class, don't get super methods and interface methods.
      *
-     * @param clazz 需要获取的类
-     * @param name 指定方法的名字
-     * @param parameterTypes 指定方法的签名
-     * @return 指定名字和签名的方法
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     * @throws ItemNotFoundException 如果该类当中不存在这样的方法
+     * @param clazz the class to be used
+     * @return the list contains all the methods
+     * @throws SecurityException if a security manager is present and the reflection is rejected
+     * @see #getAllMethods(Class)
+     * @see #getAllMethodsIncludeInterfaces(Class)
+     */
+    public static final List<Method> getMethods(Class<?> clazz) {
+        List<Method> outList = new ArrayList<Method>();
+        CollectionUtil.addAll(outList, clazz.getDeclaredMethods());
+        return outList;
+    }
+
+    /**
+     * The interface used to filter methods.
+     *
+     * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
+     * @version 1.0.0
+     * @since 2014-1-6
+     */
+    public static interface Filter {
+
+        /**
+         * Test whether we should include interface methods.
+         *
+         * @return true if include interfaces, false otherwise
+         */
+        public boolean isIncludeInterfaces();
+
+        /**
+         * Test whether we should include super methods.
+         *
+         * @return true if include super, false otherwise
+         */
+        public boolean isIncludeSuper();
+
+        /**
+         * Test whether this method is valid for return.
+         *
+         * @param m the method to be tested
+         * @return true if valid, false otherwise
+         */
+        public boolean isValid(Method m);
+
+    }
+
+    /**
+     * Retrieve all the methods with the specified filter.
+     *
+     * @param clazz the class to be used
+     * @param filter the filter used to filter methods
+     * @return the list contains all the methods which satisfy the filter
+     * @throws SecurityException if a security manager is present and the reflection is rejected
+     */
+    public static final List<Method> getMethods(Class<?> clazz, Filter filter) {
+        List<Method> raw = null;
+        if (filter.isIncludeInterfaces()) {
+            raw = getAllMethodsIncludeInterfaces(clazz);
+        } else if (filter.isIncludeSuper()) {
+            raw = getAllMethods(clazz);
+        } else {
+            raw = getMethods(clazz);
+        }
+        List<Method> outList = new ArrayList<Method>();
+        for (Method m : raw) {
+            if (filter.isValid(m)) {
+                outList.add(m);
+            }
+        }
+        return outList;
+    }
+
+    /**
+     * Retrieve all the methods with the specified method name from this object class and
+     * all of it's super classes.
+     *
+     * @param clazz the class to be used
+     * @param filter the filter used to filter methods
+     * @return the list contains all the methods which satisfy the filter
+     * @throws SecurityException if a security manager is present and the reflection is rejected
+     */
+    public static final List<Method> getMethods(Object obj, String methodName) {
+        return getMethods(obj.getClass(), MethodFilter.create().includeSuper()
+                .methodName(methodName));
+    }
+
+    /**
+     * Retrieve the method with the specified name and parameter types from this class.
+     * If this method is not found, we will try to look at it from the super class too.
+     *
+     * @param clazz the class to be used for reflection
+     * @param name the method name
+     * @param parameterTypes the method parameter types
+     * @return the method if found
+     * @throws SecurityException if a security manager is present and the reflection is rejected
+     * @throws ItemNotFoundException if method not found in this class and all of it's super classes
      */
     public static final Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
         try {
             return clazz.getDeclaredMethod(name, parameterTypes);
         } catch (NoSuchMethodException e) {
-            throw new ItemNotFoundException("Method not found.", e);
+            clazz = clazz.getSuperclass();
+            if (clazz != null) {
+                return getMethod(clazz, name, parameterTypes);
+            } else {
+                throw new ItemNotFoundException("Method not found.", e);
+            }
         }
     }
 
     /**
-     * 获取一个Java对象指定名字和方法签名的方法
-     * Retrieve the method with the specified name and parameter types from this object. We will
-     * recursively iterate all the methods in super class and interfaces and return if we find one.
+     * Invoke this method on the specified host object.
+     * If it's a static method, the host object could be null.
      *
-     * @param obj 需要获取方法的对象
-     * @param name 指定方法的名字
-     * @param parameterTypes 指定方法的签名
-     * @return 指定名字和签名的方法
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     * @throws ItemNotFoundException 如果该对象当中不存在这样的方法
+     * @param host the host object
+     * @param m the method to be invoked
+     * @param args the parameters used to invoke method
+     * @return the result of invoking the method
+     * @throws IllegalArgumentException if the arguments are not correct for the method
+     * @throws IllegalAccessException if the method can not be accessed
+     * @throws InvocationTargetException if exception was thrown from the method
      */
-    public static final Method getMethod(Object obj, String name, Class<?>... parameterTypes) {
-        Collection<Class<?>> clsSet = getAllTypes(obj);
-        // Start to find method.
-        for (Class<?> cl : clsSet) {
-            try {
-                return cl.getDeclaredMethod(name, parameterTypes);
-            } catch (NoSuchMethodException e) {}
-        }
-        throw new ItemNotFoundException("Method not found.", null);
-    }
-
-    /**
-     * 在指定Java对象上调用指定的方法
-     * Invoke this method on the host.
-     *
-     * @param m 需要调用的方法
-     * @param host 用来调用指定方法的对象
-     * @param args 用来调用指定方法的参数，如果指定方法不使用参数，则不输入
-     * @return 调用指定的方法的返回值如果接口方法的声明返回类型是基本类型，则此值一定
-     * 是相应基本包装对象类的实例；否则，它一定是可分配到声明返回类型的类型。如果此值为 null则
-     * 接口方法的返回类型是void或者接口方法返回了null
-     * @throws IllegalArgumentException 假如输入的参数和方法的参数签名不匹配
-     * @throws IllegalAccessException 假如该方法不能被访问
-     * @throws InvocationTargetException 假如该方法在执行过程中抛出了异常
-     */
-    public static final Object invokeMethod(Method m, Object host, Object... args)
+    public static final Object invokeMethod(Object host, Method m, Object... args)
             throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         m.setAccessible(true);
         return m.invoke(host, args);
@@ -256,10 +297,10 @@ public class MethodUtil {
             Object... args) throws IllegalArgumentException, IllegalAccessException,
             InvocationTargetException {
         // Check all methods to find the correct one.
-        for (Method m : getAllMethods(host, methodName)) {
-            if (!ClassUtils.isAssignable(parameterTypes, m.getParameterTypes(), true)) {
-                continue;
-            }
+        List<Method> methods = getMethods(host.getClass(), MethodFilter.create().includeSuper()
+                .methodName(methodName).parameterTypes(parameterTypes));
+        if (methods.size() > 0) {
+            Method m = methods.get(0);
             m.setAccessible(true);
             return m.invoke(host, args);
         }
