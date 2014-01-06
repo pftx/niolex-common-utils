@@ -27,9 +27,14 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.apache.niolex.commons.collection.CollectionUtil;
 
 /**
  * MethodUtil is a utility class help programmers call methods reflectively.
+ * <br>
+ * Please remember that:
+ * When pass in an object, we will try to find the method in super class, otherwise
+ * only find in this class.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -37,15 +42,23 @@ import org.apache.commons.lang.reflect.MethodUtils;
 public class MethodUtil {
 
     /**
-     * 获取一个Java类定义的所有方法
-     * Retrieve all the methods of this class.
+     * Retrieve all the methods of this class and it's super classes.
+     * <p>
+     * We don't get methods of interfaces, because every method in a interface must have
+     * the real definition in the classes.
+     * </p>
      *
-     * @param clazz 需要获取的类
-     * @return 所有方法数组
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param clazz the class to be used
+     * @return the list contains all the methods
+     * @throws SecurityException a security manager is present and the reflection is rejected
      */
-    public static final Method[] getMethods(Class<?> clazz) {
-        return clazz.getDeclaredMethods();
+    public static final List<Method> getAllMethods(Class<?> clazz) {
+        List<Method> outList = new ArrayList<Method>();
+        do {
+            CollectionUtil.addAll(outList, clazz.getDeclaredMethods());
+            clazz = clazz.getSuperclass();
+        } while (clazz != null);
+        return outList;
     }
 
     /**
@@ -121,7 +134,7 @@ public class MethodUtil {
      * @return 指定名字的方法的数组
      * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
      */
-    public static final Method[] getMethods(Object obj, String name) {
+    public static final Collection<Method> getAllMethods(Object obj, String name) {
         List<Method> outList = new ArrayList<Method>();
 
         Collection<Class<?>> clsSet = getAllTypes(obj);
@@ -130,7 +143,7 @@ public class MethodUtil {
             getMethods(outList, cl, name);
         }
 
-        return outList.toArray(new Method[outList.size()]);
+        return outList;
     }
 
     /**
@@ -242,9 +255,8 @@ public class MethodUtil {
     public static final Object invokeMethod(Object host, String methodName, Class<?>[] parameterTypes,
             Object... args) throws IllegalArgumentException, IllegalAccessException,
             InvocationTargetException {
-        Method[] mArr = getMethods(host, methodName);
         // Check all methods to find the correct one.
-        for (Method m : mArr) {
+        for (Method m : getAllMethods(host, methodName)) {
             if (!ClassUtils.isAssignable(parameterTypes, m.getParameterTypes(), true)) {
                 continue;
             }

@@ -32,6 +32,31 @@ import java.util.TimeZone;
  */
 public abstract class DateTimeUtil {
 
+    /**
+     * The long data time format.
+     */
+    public static final String LONG_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+
+    /**
+     * The date time format.
+     */
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * The date only format.
+     */
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
+
+    /**
+     * The short date format.
+     */
+    public static final String SHORT_FORMAT = "yyyyMMdd";
+
+    /**
+     * The time format.
+     */
+    public static final String TIME_FORMAT = "HH:mm:ss";
+
     // One second specified in milliseconds.
     public static final int SECOND = 1000;
 
@@ -68,7 +93,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2LongStr(Date date) {
-        SimpleDateFormat s = getDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat s = getDateFormat(LONG_FORMAT);
         return s.format(date);
     }
 
@@ -78,7 +103,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2LongStr(long date) {
-        SimpleDateFormat s = getDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat s = getDateFormat(LONG_FORMAT);
         return s.format(new Date(date));
     }
 
@@ -96,7 +121,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2DateTimeStr(Date date) {
-        SimpleDateFormat s = getDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat s = getDateFormat(DATE_TIME_FORMAT);
         return s.format(date);
     }
 
@@ -106,7 +131,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2DateTimeStr(long date) {
-        SimpleDateFormat s = getDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat s = getDateFormat(DATE_TIME_FORMAT);
         return s.format(new Date(date));
     }
 
@@ -124,7 +149,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2DateStr(Date date) {
-        SimpleDateFormat s = getDateFormat("yyyy-MM-dd");
+        SimpleDateFormat s = getDateFormat(DATE_FORMAT);
         return s.format(date);
     }
 
@@ -134,7 +159,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2DateStr(long date) {
-        SimpleDateFormat s = getDateFormat("yyyy-MM-dd");
+        SimpleDateFormat s = getDateFormat(DATE_FORMAT);
         return s.format(new Date(date));
     }
 
@@ -152,7 +177,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2TimeStr(Date date) {
-        SimpleDateFormat s = getDateFormat("HH:mm:ss");
+        SimpleDateFormat s = getDateFormat(TIME_FORMAT);
         return s.format(date);
     }
 
@@ -162,7 +187,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2TimeStr(long date) {
-        SimpleDateFormat s = getDateFormat("HH:mm:ss");
+        SimpleDateFormat s = getDateFormat(TIME_FORMAT);
         return s.format(new Date(date));
     }
 
@@ -180,7 +205,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2ShortStr(Date date) {
-        SimpleDateFormat s = getDateFormat("yyyyMMdd");
+        SimpleDateFormat s = getDateFormat(SHORT_FORMAT);
         return s.format(date);
     }
 
@@ -190,7 +215,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2ShortStr(long date) {
-    	SimpleDateFormat s = getDateFormat("yyyyMMdd");
+    	SimpleDateFormat s = getDateFormat(SHORT_FORMAT);
     	return s.format(new Date(date));
     }
 
@@ -199,22 +224,22 @@ public abstract class DateTimeUtil {
     // /////////////////////////////////////////////////////////////////////////////////////
 
     public static final Date parseDateFromLongStr(String date) throws ParseException {
-        SimpleDateFormat s = getDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat s = getDateFormat(LONG_FORMAT);
         return s.parse(date);
     }
 
     public static final Date parseDateFromDateTimeStr(String date) throws ParseException {
-        SimpleDateFormat s = getDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat s = getDateFormat(DATE_TIME_FORMAT);
         return s.parse(date);
     }
 
     public static final Date parseDateFromDateStr(String date) throws ParseException {
-        SimpleDateFormat s = getDateFormat("yyyy-MM-dd");
+        SimpleDateFormat s = getDateFormat(DATE_FORMAT);
         return s.parse(date);
     }
 
     public static final Date parseDateFromShortStr(String date) throws ParseException {
-        SimpleDateFormat s = getDateFormat("yyyyMMdd");
+        SimpleDateFormat s = getDateFormat(SHORT_FORMAT);
         return s.parse(date);
     }
 

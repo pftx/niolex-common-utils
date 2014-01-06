@@ -196,7 +196,7 @@ public abstract class ObjToStringUtil implements Const {
         for (Field f : o.getClass().getDeclaredFields()) {
             if (f.isSynthetic() || (f.getModifiers() & Modifier.STATIC) > 0)
                 continue;
-            printObjectItem(f.getName(), FieldUtil.safeGetFieldValue(f, o), sb, indentation);
+            printObjectItem(f.getName(), FieldUtil.getFieldValue(o, f), sb, indentation);
         }
         printObjectEnd(sb, indentation);
     }

@@ -19,6 +19,7 @@ package org.apache.niolex.commons.reflect;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Assert;
@@ -29,9 +30,15 @@ import org.junit.Test;
 
 public class MethodUtilTest extends MethodUtil {
 
+
     @Test
-    public void testMethods() throws Throwable {
-        Method[] arr = MethodUtil.getMethods(MethodTestBean.class);
+    public void testAllMethodsInterface() throws Throwable {
+        List<Method> list = getAllMethods(EchoName.class);
+        System.out.println(list);
+    }
+    @Test
+    public void testAllMethods() throws Throwable {
+        List<Method> arr = MethodUtil.getAllMethods(MethodTestBean.class);
         Assert.assertTrue(arr.length >= 5);
     }
 
@@ -48,10 +55,10 @@ public class MethodUtilTest extends MethodUtil {
     }
 
     @Test
-    public void testGetMethods() throws Exception {
+    public void testGetAllMethods() throws Exception {
         MethodTestBean t = new MethodTestBean("Lex");
-        Method[] arr = MethodUtil.getMethods(t, "echoName");
-        Assert.assertEquals(arr.length, 6);
+        Collection<Method> arr = MethodUtil.getAllMethods(t, "echoName");
+        Assert.assertEquals(arr.size(), 6);
     }
 
     @Test
@@ -166,18 +173,18 @@ public class MethodUtilTest extends MethodUtil {
     }
 
     @Test
-    public void testGetMethodsObjectString() throws Exception {
-        Object obj = new Con();
-        Method[] arr = MethodUtil.getMethods(obj, "find");
-        Assert.assertEquals(arr.length, 5);
-    }
+        public void testGetAllMethodsObjectString() throws Exception {
+            Object obj = new Con();
+            Collection<Method> arr = MethodUtil.getAllMethods(obj, "find");
+            Assert.assertEquals(arr.size(), 5);
+        }
 
     @Test
-    public void testGetMethodsObjectStringArrayList() throws Exception {
-        List<Method> outLst = new ArrayList<Method>();
-        Method[] arr = MethodUtil.getMethods(outLst, "toArray");
-        Assert.assertEquals(arr.length, 8);
-    }
+        public void testGetAllMethodsObjectStringArrayList() throws Exception {
+            List<Method> outLst = new ArrayList<Method>();
+            Collection<Method> arr = MethodUtil.getAllMethods(outLst, "toArray");
+            Assert.assertEquals(arr.size(), 8);
+        }
 
     @Test
     public void testInvokeMethodStringObjectObjectArray() throws Exception {

@@ -90,11 +90,11 @@ public class RetainLinkedListTest {
         other.add("world!");
         RetainLinkedList<String> list = new RetainLinkedList<String>(3);
         Field field = FieldUtil.getField(RetainLinkedList.class, "headPointerSize");
-        FieldUtil.setFieldValue(field, list, 5);
+        FieldUtil.setFieldValue(list, field, 5);
         // ---
         field = FieldUtil.getField(RetainLinkedList.class, "pointer");
-        Object ppt = FieldUtil.getFieldValue(field, other);
-        FieldUtil.setFieldValue(field, list, ppt);
+        Object ppt = FieldUtil.getFieldValue(other, field);
+        FieldUtil.setFieldValue(list, field, ppt);
         list.handleNext();
     }
 
@@ -128,7 +128,7 @@ public class RetainLinkedListTest {
     public void testHandleRetainCover() throws Exception {
         RetainLinkedList<String> list = new RetainLinkedList<String>(3);
         Field field = FieldUtil.getField(RetainLinkedList.class, "headPointerSize");
-        FieldUtil.setFieldValue(field, list, 2);
+        FieldUtil.setFieldValue(list, field, 2);
         list.handleRetain();
     }
 
@@ -260,7 +260,7 @@ public class RetainLinkedListTest {
     public void testAdd() throws Exception {
         RetainLinkedList<String> list = new RetainLinkedList<String>(3);
         Field field = FieldUtil.getField(RetainLinkedList.class, "tail");
-        FieldUtil.setFieldValue(field, list, null);
+        FieldUtil.setFieldValue(list, field, null);
         list.add("hello");
     }
 

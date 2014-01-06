@@ -63,13 +63,13 @@ public abstract class FastFieldUtil {
      * Cn: 获取一个Java对象中指定属性的值
      *
      * @param <T> 该属性的返回类型，方法中将按照该类型进行强制类型转换
-     * @param fieldName 需要获取的值的属性名称
      * @param host 用来获取指定属性的值的对象
+     * @param fieldName 需要获取的值的属性名称
      * @return 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
     @SuppressWarnings("unchecked")
-    public static final <T> T getFieldValue(String fieldName, Object host) {
+    public static final <T> T getFieldValue(Object host, String fieldName) {
         return (T) getFieldAccess(host.getClass()).get(host, fieldName);
     }
 
@@ -77,12 +77,12 @@ public abstract class FastFieldUtil {
      * En: Set the field value of the specified field name.<br>
      * Cn: 设置一个Java对象中指定属性的值
      *
-     * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
+     * @param fieldName 需要设置的值的属性
      * @param value 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
-    public static final void setFieldValue(String fieldName, Object host, Object value) {
+    public static final void setFieldValue(Object host, String fieldName, Object value) {
     	getFieldAccess(host.getClass()).set(host, fieldName, value);
     }
 
@@ -90,12 +90,12 @@ public abstract class FastFieldUtil {
      * En: Set the field value of the specified field name.<br>
      * Cn: 设置一个Java对象中指定属性的值
      *
-     * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
+     * @param fieldName 需要设置的值的属性
      * @param value 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
-    public static final void setFieldValue(String fieldName, Object host, boolean value) {
+    public static final void setFieldValue(Object host, String fieldName, boolean value) {
     	FieldAccess access = FieldAccess.get(host.getClass());
     	access.setBoolean(host, access.getIndex(fieldName), value);
     }
@@ -104,12 +104,12 @@ public abstract class FastFieldUtil {
      * En: Set the field value of the specified field name.<br>
      * Cn: 设置一个Java对象中指定属性的值
      *
-     * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
+     * @param fieldName 需要设置的值的属性
      * @param value 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
-    public static final void setFieldValue(String fieldName, Object host, byte value) {
+    public static final void setFieldValue(Object host, String fieldName, byte value) {
     	FieldAccess access = FieldAccess.get(host.getClass());
     	access.setByte(host, access.getIndex(fieldName), value);
     }
@@ -118,12 +118,12 @@ public abstract class FastFieldUtil {
      * En: Set the field value of the specified field name.<br>
      * Cn: 设置一个Java对象中指定属性的值
      *
-     * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
+     * @param fieldName 需要设置的值的属性
      * @param value 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
-    public static final void setFieldValue(String fieldName, Object host, char value) {
+    public static final void setFieldValue(Object host, String fieldName, char value) {
     	FieldAccess access = FieldAccess.get(host.getClass());
     	access.setChar(host, access.getIndex(fieldName), value);
     }
@@ -132,12 +132,12 @@ public abstract class FastFieldUtil {
      * En: Set the field value of the specified field name.<br>
      * Cn: 设置一个Java对象中指定属性的值
      *
-     * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
+     * @param fieldName 需要设置的值的属性
      * @param value 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
-    public static final void setFieldValue(String fieldName, Object host, double value) {
+    public static final void setFieldValue(Object host, String fieldName, double value) {
     	FieldAccess access = FieldAccess.get(host.getClass());
     	access.setDouble(host, access.getIndex(fieldName), value);
     }
@@ -146,12 +146,12 @@ public abstract class FastFieldUtil {
      * En: Set the field value of the specified field name.<br>
      * Cn: 设置一个Java对象中指定属性的值
      *
-     * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
+     * @param fieldName 需要设置的值的属性
      * @param value 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
-    public static final void setFieldValue(String fieldName, Object host, float value) {
+    public static final void setFieldValue(Object host, String fieldName, float value) {
     	FieldAccess access = FieldAccess.get(host.getClass());
     	access.setFloat(host, access.getIndex(fieldName), value);
     }
@@ -160,12 +160,12 @@ public abstract class FastFieldUtil {
      * En: Set the field value of the specified field name.<br>
      * Cn: 设置一个Java对象中指定属性的值
      *
-     * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
+     * @param fieldName 需要设置的值的属性
      * @param value 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
-    public static final void setFieldValue(String fieldName, Object host, int value) {
+    public static final void setFieldValue(Object host, String fieldName, int value) {
     	FieldAccess access = FieldAccess.get(host.getClass());
     	access.setInt(host, access.getIndex(fieldName), value);
     }
@@ -174,12 +174,12 @@ public abstract class FastFieldUtil {
      * En: Set the field value of the specified field name.<br>
      * Cn: 设置一个Java对象中指定属性的值
      *
-     * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
+     * @param fieldName 需要设置的值的属性
      * @param value 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
-    public static final void setFieldValue(String fieldName, Object host, long value) {
+    public static final void setFieldValue(Object host, String fieldName, long value) {
     	FieldAccess access = FieldAccess.get(host.getClass());
     	access.setLong(host, access.getIndex(fieldName), value);
     }
@@ -188,12 +188,12 @@ public abstract class FastFieldUtil {
      * En: Set the field value of the specified field name.<br>
      * Cn: 设置一个Java对象中指定属性的值
      *
-     * @param fieldName 需要设置的值的属性
      * @param host 用来设置指定属性的值的对象
+     * @param fieldName 需要设置的值的属性
      * @param value 指定属性的值
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
-    public static final void setFieldValue(String fieldName, Object host, short value) {
+    public static final void setFieldValue(Object host, String fieldName, short value) {
     	FieldAccess access = FieldAccess.get(host.getClass());
     	access.setShort(host, access.getIndex(fieldName), value);
     }

@@ -48,7 +48,7 @@ public class StopWatchTest {
 		} catch (Exception e) {}
 		sw.begin(true);
 		Field f = FieldUtil.getField(StopWatch.class, "startTime");
-		FieldUtil.setFieldValue(f, sw, System.currentTimeMillis() - 1580);
+		FieldUtil.setFieldValue(sw, f, System.currentTimeMillis() - 1580);
 	}
 
 	/**
@@ -61,15 +61,15 @@ public class StopWatchTest {
 		Stop s1 = sw.start();
 		Field f = FieldUtil.getField(Stop.class, "startTime");
         long value = System.currentTimeMillis() - 10;
-        FieldUtil.setFieldValue(f, s, value);
-        FieldUtil.setFieldValue(f, s1, value);
+        FieldUtil.setFieldValue(s, f, value);
+        FieldUtil.setFieldValue(s1, f, value);
 		s.stop();
 		s1.stop();
 		s = sw.start();
-		FieldUtil.setFieldValue(f, s, value - 10);
+		FieldUtil.setFieldValue(s, f, value - 10);
 		s.stop();
 		s = sw.start();
-		FieldUtil.setFieldValue(f, s, value - 1490);
+		FieldUtil.setFieldValue(s, f, value - 1490);
 		s.stop();
 	}
 
@@ -94,7 +94,7 @@ public class StopWatchTest {
 	public void testFBegin() throws Exception {
 		sw.begin(false);
 		Field f = FieldUtil.getField(StopWatch.class, "startTime");
-        FieldUtil.setFieldValue(f, sw, System.currentTimeMillis() - 1580);
+        FieldUtil.setFieldValue(sw, f, System.currentTimeMillis() - 1580);
 	}
 
 	/**
@@ -111,15 +111,15 @@ public class StopWatchTest {
 		Stop s1 = sw.start();
 		Field f = FieldUtil.getField(Stop.class, "startTime");
 		long value = System.currentTimeMillis() - 10;
-		FieldUtil.setFieldValue(f, s, value);
-		FieldUtil.setFieldValue(f, s1, --value);
+		FieldUtil.setFieldValue(s, f, value);
+		FieldUtil.setFieldValue(s1, f, --value);
 		s.stop();
 		s1.stop();
 		s = sw.start();
-		FieldUtil.setFieldValue(f, s, value - 10);
+		FieldUtil.setFieldValue(s, f, value - 10);
 		s.stop();
 		s = sw.start();
-		FieldUtil.setFieldValue(f, s, value - 1490);
+		FieldUtil.setFieldValue(s, f, value - 1490);
 		s.stop();
 	}
 

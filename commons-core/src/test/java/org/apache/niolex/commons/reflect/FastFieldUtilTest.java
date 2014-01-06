@@ -64,8 +64,8 @@ public class FastFieldUtilTest {
 	@Test
 	public void testGetFieldValue() {
 		FieldTestBean bean = new FieldTestBean();
-		FastFieldUtil.setFieldValue("strName", bean, "Not yet implemented");
-		String fa = FastFieldUtil.getFieldValue("strName", bean);
+		FastFieldUtil.setFieldValue(bean, "strName", "Not yet implemented");
+		String fa = FastFieldUtil.getFieldValue(bean, "strName");
 		System.out.println(fa);
 		Assert.assertEquals(bean.echoName(), "Not yet implemented");
 	}
@@ -76,7 +76,7 @@ public class FastFieldUtilTest {
 	@Test
 	public void testSetFieldValueStringObjectBoolean() {
 		FastBean b = new FastBean();
-		FastFieldUtil.setFieldValue("gender", b, true);
+		FastFieldUtil.setFieldValue(b, "gender", true);
 		assertTrue(b.gender);
 	}
 
@@ -86,7 +86,7 @@ public class FastFieldUtilTest {
 	@Test
 	public void testSetFieldValueStringObjectByte() {
 		FastBean b = new FastBean();
-		FastFieldUtil.setFieldValue("resvered", b, (byte)123);
+		FastFieldUtil.setFieldValue(b, "resvered", (byte)123);
 		assertTrue(b.resvered == 123);
 	}
 
@@ -96,7 +96,7 @@ public class FastFieldUtilTest {
 	@Test
 	public void testSetFieldValueStringObjectChar() {
 		FastBean b = new FastBean();
-		FastFieldUtil.setFieldValue("chdier", b, '#');
+		FastFieldUtil.setFieldValue(b, "chdier", '#');
 		assertTrue(b.chdier == '#');
 	}
 
@@ -106,7 +106,7 @@ public class FastFieldUtilTest {
 	@Test
 	public void testSetFieldValueStringObjectDouble() {
 		FastBean b = new FastBean();
-		FastFieldUtil.setFieldValue("earned", b, 123.456);
+		FastFieldUtil.setFieldValue(b, "earned", 123.456);
 		assertTrue(b.earned == 123.456);
 	}
 
@@ -116,7 +116,7 @@ public class FastFieldUtilTest {
 	@Test
 	public void testSetFieldValueStringObjectFloat() {
 		FastBean b = new FastBean();
-		FastFieldUtil.setFieldValue("tax", b, 123.456F);
+		FastFieldUtil.setFieldValue(b, "tax", 123.456F);
 		assertTrue(b.tax == 123.456F);
 	}
 
@@ -126,7 +126,7 @@ public class FastFieldUtilTest {
 	@Test
 	public void testSetFieldValueStringObjectInt() {
 		FastBean b = new FastBean();
-		FastFieldUtil.setFieldValue("intId", b, 1312123);
+		FastFieldUtil.setFieldValue(b, "intId", 1312123);
 		assertTrue(b.intId == 1312123);
 	}
 
@@ -136,7 +136,7 @@ public class FastFieldUtilTest {
 	@Test
 	public void testSetFieldValueStringObjectLong() {
 		FastBean b = new FastBean();
-		FastFieldUtil.setFieldValue("empno", b, 1313134132432123l);
+		FastFieldUtil.setFieldValue(b, "empno", 1313134132432123l);
 		assertTrue(b.empno == 1313134132432123l);
 	}
 
@@ -146,14 +146,14 @@ public class FastFieldUtilTest {
 	@Test
 	public void testSetFieldValueStringObjectShort() {
 		FastBean b = new FastBean();
-		FastFieldUtil.setFieldValue("veridk", b, (short)5434);
+		FastFieldUtil.setFieldValue(b, "veridk", (short)5434);
 		assertTrue(b.veridk == 5434);
 	}
 
 }
 
 class FastBean {
-    String strName;
+    static String strName;
     int intId;
     int intLevel;
     Integer age;
