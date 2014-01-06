@@ -71,6 +71,18 @@ public class FastFieldUtilTest {
 	}
 
 	/**
+	 * Test method for {@link org.apache.niolex.commons.reflect.FastFieldUtil#getFieldAccess(java.lang.Class)}.
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testGetStaticFieldValue() {
+	    FastBean bean = new FastBean();
+	    FastFieldUtil.setFieldValue(bean, "strName", "Lex tested it.");
+	    String fa = FastFieldUtil.getFieldValue(bean, "strName");
+	    System.out.println(fa);
+	    Assert.assertEquals(fa, "Lex tested it.");
+	}
+
+	/**
 	 * Test method for {@link org.apache.niolex.commons.reflect.FastFieldUtil#setFieldValue(java.lang.String, java.lang.Object, boolean)}.
 	 */
 	@Test

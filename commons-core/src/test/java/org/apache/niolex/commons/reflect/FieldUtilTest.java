@@ -36,6 +36,15 @@ public class FieldUtilTest extends FieldUtil {
     }
 
     @Test
+    public void testGetStaticFieldValue() {
+        FastBean bean = new FastBean();
+        setValue(bean, "strName", "Lex tested it.");
+        String fa = getValue(bean, "strName");
+        System.out.println(fa);
+        Assert.assertEquals(fa, "Lex tested it.");
+    }
+
+    @Test
     public void testSetValueAutoConvert() throws Exception {
         FieldTestBean bean = new FieldTestBean();
         setValueAutoConvert(bean, "earned", "92831221.302902");

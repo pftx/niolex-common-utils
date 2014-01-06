@@ -21,11 +21,11 @@ import com.esotericsoftware.reflectasm.FieldAccess;
 
 /**
  * Cn: FastFieldUtil是一个通过Reflect ASM来操作Java对象的工具类
- * 注意！本类只能操作public/protected/package修饰的字段，私有字段请通过FieldUtil操作
+ * 注意！本类只能操作public/protected/package修饰的字段，私有字段和静态请通过FieldUtil操作
  * <br>
  * En: FastFieldUtil using Reflect ASM to operate on Java bean to achieve high speed.
  * Notion! This utility can only operate on public/protected/package fields. For other
- * private fields, please use {@link org.apache.niolex.commons.reflect.FieldUtil}
+ * private or static fields, please use {@link org.apache.niolex.commons.reflect.FieldUtil}
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
