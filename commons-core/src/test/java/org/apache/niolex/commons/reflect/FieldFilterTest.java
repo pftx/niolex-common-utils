@@ -116,7 +116,7 @@ public class FieldFilterTest {
     @Test
     public void testNoSynthetic() throws Exception {
         FieldResult<Object> find = FieldFilter.c().host(new MethodTestBean("Filter")).noSynthetic().find();
-        assertEquals("Filter", find.get());
+        assertEquals("Filter", find.first().get());
     }
 
 }

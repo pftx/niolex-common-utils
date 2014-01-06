@@ -94,7 +94,7 @@ public class ProtoStuffUtilTest {
 		set.add("cba");
 		Pair<String, Set<String>> p1 = new Pair<String, Set<String>>("abc", set);
 		byte[] tar = seriOne(p1);
-		Method m = MethodUtil.getMethods(getClass(), "method1")[0];
+		Method m = MethodUtil.getMethods(this, "method1").get(0);
 		Pair<String, Set<String>> p2 = parseOne(tar, m.getGenericParameterTypes()[0]);
 		assertEquals(p1.a, p2.a);
 		System.out.println(p2.b);
@@ -112,7 +112,7 @@ public class ProtoStuffUtilTest {
 		set.add("cba");
 		Pair<String, List<String>> p1 = new Pair<String, List<String>>("abc", set);
 		byte[] tar = seriOne(p1);
-		Method m = MethodUtil.getMethods(getClass(), "method2")[0];
+		Method m = MethodUtil.getMethods(this, "method2").get(0);
 		Pair<String, List<String>> p2 = parseOne(tar, m.getGenericParameterTypes()[0]);
 		assertEquals(p1.a, p2.a);
 		System.out.println(p2.b);
@@ -130,7 +130,7 @@ public class ProtoStuffUtilTest {
 		set.put("cba", 5);
 		Pair<String, Map<String, Integer>> p1 = new Pair<String, Map<String, Integer>>("abc", set);
 		byte[] tar = seriOne(p1);
-		Method m = MethodUtil.getMethods(getClass(), "method3")[0];
+		Method m = MethodUtil.getMethods(this, "method3").get(0);
 		Pair<String, Map<String, Integer>> p2 = parseOne(tar, m.getGenericParameterTypes()[0]);
 		assertEquals(p1.a, p2.a);
 		System.out.println(p2.b);
@@ -156,7 +156,7 @@ public class ProtoStuffUtilTest {
 	public void testSeriOneErr() {
 		String s = "Not yet implemented";
 		byte[] tar = seriOne(s);
-		Method m = MethodUtil.getMethods(getClass(), "method4")[0];
+		Method m = MethodUtil.getMethods(this, "method4").get(0);
 		parseOne(tar, ((ParameterizedType)(m.getGenericParameterTypes()[0])).getActualTypeArguments()[0]);
 	}
 

@@ -31,15 +31,17 @@ import org.junit.Test;
 public class MethodUtilTest extends MethodUtil {
 
     @Test
-    public void testAllMethodsInterface() throws Throwable {
-        List<Method> list = getAllMethods(EchoName.class);
-        Assert.assertEquals(list.size(), 1);
+    public void testAllMethods() throws Throwable {
+        List<Method> arr = MethodUtil.getAllMethods(MethodTestBean.class);
+        System.out.println(arr.size());
+        Assert.assertTrue(arr.size() >= 19);
+        Assert.assertTrue(arr.size() <= 21);
     }
 
     @Test
-    public void testAllMethodsIncludeInterface() throws Throwable {
-        List<Method> list = getAllMethodsIncludeInterfaces(EchoName.class);
-        Assert.assertEquals(list.size(), 2);
+    public void testGetAllTypesObject() throws Exception {
+        MethodTestBean t = new MethodTestBean("Lex");
+        Assert.assertEquals(getAllTypes(t).size(), 8);
     }
 
     @Test
@@ -50,29 +52,57 @@ public class MethodUtilTest extends MethodUtil {
     }
 
     @Test
-    public void testAllMethods() throws Throwable {
-        List<Method> arr = MethodUtil.getAllMethods(MethodTestBean.class);
-        Assert.assertTrue(arr.size() >= 5);
+    public void testAllTypesComplicate() {
+        Collection<Class<?>> types = getAllTypes(MethodTestBean.class);
+        System.out.println(types);
+        Assert.assertEquals(types.size(), 8);
     }
 
     @Test
-    public void testMethodsName() throws Throwable {
+    public void testAllMethodsOfInterface() throws Throwable {
+        List<Method> list = getAllMethods(EchoName.class);
+        Assert.assertEquals(list.size(), 1);
+    }
+
+    @Test
+    public void testAllMethodsIncludeInterface() throws Throwable {
+        List<Method> list = getAllMethodsIncludeInterfaces(EchoName.class);
+        Assert.assertEquals(list.size(), 3);
+    }
+
+    @Test
+    public void testMethods() {
+        List<Method> arr = getMethods(MethodTestBean.class);
+        System.out.println(arr);
+        Assert.assertTrue(arr.size() >= 5);
+        Assert.assertTrue(arr.size() <= 6);
+    }
+
+    @Test
+    public void testMethodsThisOnly() throws Throwable {
         List<Method> arr = MethodUtil.getMethods(MethodTestBean.class, MethodFilter.create().methodName("echoName"));
         Assert.assertEquals(arr.size(), 4);
     }
 
     @Test
-    public void testGetAllTypesObject() throws Exception {
-        MethodTestBean t = new MethodTestBean("Lex");
-        Assert.assertEquals(getAllTypes(t).size(), 4);
+    public void testMethodsHasSuper() throws Throwable {
+        List<Method> arr = MethodUtil.getMethods(MethodTestBean.class, MethodFilter.create().
+                includeSuper().methodName("echoName"));
+        Assert.assertEquals(arr.size(), 5);
     }
 
     @Test
-    public void testGetAllMethods() throws Exception {
+    public void testMethodsWithInterfaces() throws Throwable {
+        List<Method> arr = MethodUtil.getMethods(MethodTestBean.class, MethodFilter.create().
+                includeInterfaces().methodName("echoName"));
+        Assert.assertEquals(arr.size(), 8);
+    }
+
+    @Test
+    public void testMethodsObjectString() throws Throwable {
         MethodTestBean t = new MethodTestBean("Lex");
-        Collection<Method> arr = MethodUtil.getMethods(t.getClass(), MethodFilter.create()
-                .methodName("echoName").includeInterfaces());
-        Assert.assertEquals(arr.size(), 6);
+        List<Method> arr = MethodUtil.getMethods(t, "echoName");
+        Assert.assertEquals(arr.size(), 5);
     }
 
     @Test
@@ -94,21 +124,8 @@ public class MethodUtilTest extends MethodUtil {
     }
 
     @Test
-    public void testMethodFromObj() throws Throwable {
-        Method m = null;
-        MethodTestBean host = new MethodTestBean("niolex-common-utils");
-        m = MethodUtil.getMethod(host.getClass(), "echoName", int.class);
-        Assert.assertEquals(m.getName(), "echoName");
-        Assert.assertEquals(m.getParameterTypes().length, 1);
-        Assert.assertEquals(m.getParameterTypes()[0], int.class);
-        Assert.assertEquals(m.getReturnType(), String.class);
-    }
-
-    @Test(expected=ItemNotFoundException.class)
-    public void testMethodFromObjNotFound() throws Throwable {
-        Method m = null;
-        MethodTestBean host = new MethodTestBean("niolex-common-utils");
-        m = MethodUtil.getMethod(host.getClass(), "echoName", boolean.class);
+    public void testGetMethodSmallInt() throws Throwable {
+        Method m = MethodUtil.getMethod(MethodTestBean.class, "echoName", int.class);
         Assert.assertEquals(m.getName(), "echoName");
         Assert.assertEquals(m.getParameterTypes().length, 1);
         Assert.assertEquals(m.getParameterTypes()[0], int.class);
@@ -137,7 +154,7 @@ public class MethodUtilTest extends MethodUtil {
     public void testInvokeMethodObjAotuCast() throws Throwable {
         MethodTestBean host = new MethodTestBean("lex");
         Object ret = MethodUtil.invokeMethod(host, "echoName", (byte)6);
-        Assert.assertEquals(ret, "lex");
+        Assert.assertEquals(ret, "lex-6");
 
         ret = MethodUtil.invokeMethod(host, "echoName", "God Like", (short)9);
         Assert.assertEquals(ret, "God Like");
@@ -150,59 +167,24 @@ public class MethodUtilTest extends MethodUtil {
         Assert.assertEquals(ret, "lex");
     }
 
-    public static interface Inter {
-        public void find(int k);
-    }
-
-    public static interface Cool extends Inter {
-        public int cool();
-    }
-
-    public static class Base extends MethodUtil implements Cool {
-        private int coo = 0;
-
-        public void find() {}
-
-        public void find(int k) {
-            coo = k;
-        }
-
-        public int cool() {
-            return coo * joke();
-        }
-
-        private int joke() {
-            return 6;
-        }
-    }
-
-    public static class Con extends Base implements Inter {
-
-        public void find(int k) {
-        }
-
-        public int find(int k, int m) {
-            return k * m;
-        }
-    }
-
     @Test
     public void testGetAllMethodsObjectString() throws Exception {
-        Object obj = new Con();
-        Collection<Method> arr = MethodUtil.getMethods(obj, MethodFilter.create().methodName("find").includeInterfaces());
-        Assert.assertEquals(arr.size(), 5);
+        Object obj = new Conc();
+        Collection<Method> arr = MethodUtil.getMethods(obj, "find");
+        Assert.assertEquals(arr.size(), 4);
     }
 
     @Test
     public void testGetAllMethodsObjectStringArrayList() throws Exception {
         List<Method> outLst = new ArrayList<Method>();
-        Collection<Method> arr = MethodUtil.getMethods(outLst, MethodFilter.create().methodName("toArray").includeInterfaces());
+        Collection<Method> arr = MethodUtil.getMethods(outLst.getClass(),
+                MethodFilter.create().methodName("toArray").includeInterfaces());
         Assert.assertEquals(arr.size(), 8);
     }
 
     @Test
     public void testInvokeMethodStringObjectObjectArray() throws Exception {
-        Object obj = new Con();
+        Object obj = new Conc();
         Object res = MethodUtil.invokeMethod(obj, "find", 921, 83);
         Assert.assertEquals(76443, res);
     }
@@ -216,16 +198,52 @@ public class MethodUtilTest extends MethodUtil {
 
     @Test
     public void testInvokePrivateMethod() throws Exception {
-        Object obj = new Con();
+        Object obj = new Conc();
         Object res = MethodUtil.invokeMethod(obj, "joke");
         Assert.assertEquals(6, res);
     }
 
     @Test(expected=NoSuchMethodException.class)
     public void testInvokePrivateMethodFalse() throws Exception {
-        Object obj = new Con();
+        Object obj = new Conc();
         Object res = MethodUtil.invokePublicMethod(obj, "joke");
         Assert.assertEquals(6, res);
     }
 
+}
+
+interface Inter {
+    public void find(int k);
+}
+
+interface Cool extends Inter {
+    public int cool();
+}
+
+class Base implements Cool {
+    private int coo = 0;
+
+    public void find() {}
+
+    public void find(int k) {
+        coo = k;
+    }
+
+    public int cool() {
+        return coo * joke();
+    }
+
+    private int joke() {
+        return 6;
+    }
+}
+
+class Conc extends Base implements Inter {
+
+    public void find(int k) {
+    }
+
+    public int find(int k, int m) {
+        return k * m;
+    }
 }

@@ -20,7 +20,6 @@ package org.apache.niolex.commons.reflect;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -30,10 +29,6 @@ import org.apache.niolex.commons.collection.CollectionUtil;
 
 /**
  * MethodUtil is a utility class help programmers call methods reflectively.
- * <br>
- * Please remember that:
- * When pass in an object, we will try to find the method in super class, otherwise
- * only find in this class.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -65,9 +60,10 @@ public class MethodUtil {
      * Retrieve all the [class]/[super class]/[interfaces] of this object.
      *
      * @param obj the object to be used
-     * @return the set contains all the types
+     * @return the list contains all the types
+     * @throws SecurityException if a security manager is present and the reflection is rejected
      */
-    public static final Collection<Class<?>> getAllTypes(Object obj) {
+    public static final List<Class<?>> getAllTypes(Object obj) {
         return getAllTypes(obj.getClass());
     }
 
@@ -76,31 +72,32 @@ public class MethodUtil {
      * Retrieve all the [class]/[super class]/[interfaces] of this class.
      *
      * @param clazz the class to be used
-     * @return the set contains all the types
+     * @return the list contains all the types
      * @throws SecurityException if a security manager is present and the reflection is rejected
      */
-    public static final Collection<Class<?>> getAllTypes(Class<?> clazz) {
+    public static final List<Class<?>> getAllTypes(Class<?> clazz) {
         // Store all the classes and interfaces here.
+        List<Class<?>> list = new ArrayList<Class<?>>();
+        List<Class<?>> interfaces = new ArrayList<Class<?>>();
+        // Step 1. Add this class and all the super classes.
+        do {
+            list.add(clazz);
+            CollectionUtil.addAll(interfaces, clazz.getInterfaces());
+            clazz = clazz.getSuperclass();
+        } while (clazz != null);
+        // Step 2. Add all the interfaces.
         HashSet<Class<?>> clsSet = new HashSet<Class<?>>();
-        getAllTypes(clazz, clsSet);
-        return clsSet;
-    }
-
-    /**
-     * Retrieve all the [class]/[super class]/[interfaces] of this class.
-     *
-     * @param cls the class to be used
-     * @param clsSet the set used to store all the types
-     * @throws SecurityException if a security manager is present and the reflection is rejected
-     */
-    public static final void getAllTypes(Class<?> cls, HashSet<Class<?>> clsSet) {
-        if (cls != null && !clsSet.contains(cls)) {
-            clsSet.add(cls);
-            for (Class<?> itf : cls.getInterfaces()) {
-                getAllTypes(itf, clsSet);
+        for (int i = 0; i < interfaces.size(); ++i) {
+            clazz = interfaces.get(i);
+            // Use this hash set to filter duplicates.
+            if (clsSet.contains(clazz)) {
+                continue;
             }
-            getAllTypes(cls.getSuperclass(), clsSet);
+            clsSet.add(clazz);
+            list.add(clazz);
+            CollectionUtil.addAll(interfaces, clazz.getInterfaces());
         }
+        return list;
     }
 
     /**
@@ -197,9 +194,9 @@ public class MethodUtil {
      * Retrieve all the methods with the specified method name from this object class and
      * all of it's super classes.
      *
-     * @param clazz the class to be used
-     * @param filter the filter used to filter methods
-     * @return the list contains all the methods which satisfy the filter
+     * @param obj the object to be used to find methods
+     * @param methodName the method name
+     * @return the list contains all the methods with this name
      * @throws SecurityException if a security manager is present and the reflection is rejected
      */
     public static final List<Method> getMethods(Object obj, String methodName) {
