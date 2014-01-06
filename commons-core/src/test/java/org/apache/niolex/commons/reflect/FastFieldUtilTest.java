@@ -163,17 +163,3 @@ public class FastFieldUtilTest {
 	}
 
 }
-
-class FastBean {
-    static String strName;
-    int intId;
-    int intLevel;
-    Integer age;
-    long empno;
-    boolean gender;
-    byte resvered;
-    short veridk;
-    char chdier;
-    double earned;
-    float tax;
-}
