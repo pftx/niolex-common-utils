@@ -133,6 +133,36 @@ public class MethodUtilTest extends MethodUtil {
     }
 
     @Test
+    public void testGetMethodFromSuper() throws Throwable {
+        Method m = MethodUtil.getMethod(MethodTestBean.class, "echoLevel");
+        Assert.assertEquals(m.getName(), "echoLevel");
+        Assert.assertEquals(m.getParameterTypes().length, 0);
+        Assert.assertEquals(m.getReturnType(), int.class);
+    }
+
+    @Test
+    public void testGetMethodFromSuperAgain() throws Throwable {
+        Sub a = new Sub();
+        Super b = new Super();
+        Assert.assertEquals(8, a.inc());
+        List<Method> arr = MethodUtil.getMethods(Sub.class, MethodFilter.create().includeSuper()
+                .n("inc"));
+        int i = (Integer) arr.get(0).invoke(a);
+        int j = (Integer) arr.get(1).invoke(a);
+        int k = (Integer) arr.get(1).invoke(b);
+        System.out.println(arr);
+        Assert.assertEquals(9, i);
+        Assert.assertEquals(10, j);
+        Assert.assertEquals(3, k);
+        Method m = MethodUtil.getMethod(Sub.class, "isSuper");
+        Assert.assertEquals(m.getName(), "isSuper");
+        Assert.assertEquals(m.getParameterTypes().length, 0);
+        Assert.assertEquals(m.getReturnType(), boolean.class);
+        Assert.assertFalse((Boolean)m.invoke(a));
+        Assert.assertTrue((Boolean)m.invoke(b));
+    }
+
+    @Test
     public void testInvokeMethodObj() throws Throwable {
         Method m = null;
         MethodTestBean host = new MethodTestBean("niolex-common-utils");

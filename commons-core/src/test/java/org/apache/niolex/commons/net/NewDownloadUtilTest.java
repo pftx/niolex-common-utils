@@ -152,7 +152,7 @@ public class NewDownloadUtilTest {
         try {
             downloadFile("http://mirror.bit.edu.cn/archlinux/readme", 54495);
         } catch (NetException e) {
-            assertEquals(e.getCode(), NetException.ExCode.INVALID_SERVER_RESPONSE);
+            assertEquals(NetException.ExCode.INVALID_SERVER_RESPONSE, e.getCode());
             throw e;
         }
     }

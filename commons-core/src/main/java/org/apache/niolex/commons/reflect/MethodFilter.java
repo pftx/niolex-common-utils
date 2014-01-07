@@ -33,6 +33,15 @@ import org.apache.niolex.commons.reflect.MethodUtil.Filter;
 public class MethodFilter implements Filter {
 
     /**
+     * Create a new method filter. This method is a short cut of {@link #create()}.
+     *
+     * @return a new method filter
+     */
+    public static final MethodFilter c() {
+        return create();
+    }
+
+    /**
      * Create a new method filter.
      *
      * @return a new method filter
@@ -58,6 +67,7 @@ public class MethodFilter implements Filter {
     public boolean isIncludeInterfaces() {
         return includeInterfaces;
     }
+
     /**
      * This is the override of super method.
      * @see org.apache.niolex.commons.reflect.MethodUtil.Filter#isIncludeSuper()
@@ -66,6 +76,7 @@ public class MethodFilter implements Filter {
     public boolean isIncludeSuper() {
         return includeSuper;
     }
+
     /**
      * This is the override of super method.
      * @see org.apache.niolex.commons.reflect.MethodUtil.Filter#isValid(java.lang.reflect.Method)
@@ -152,6 +163,15 @@ public class MethodFilter implements Filter {
     }
 
     /**
+     * Set the method name. This method is a short cut of {@link #methodName(String)}.
+     *
+     * @param methodName the methodName to set
+     */
+    public MethodFilter n(String methodName) {
+        return methodName(methodName);
+    }
+
+    /**
      * @param methodName the methodName to set
      */
     public MethodFilter methodName(String methodName) {
@@ -160,11 +180,29 @@ public class MethodFilter implements Filter {
     }
 
     /**
+     * Set the method return type. This method is a short cut of {@link #returnType(Class)}.
+     *
+     * @param returnType the returnType to set
+     */
+    public MethodFilter r(Class<?> returnType) {
+        return returnType(returnType);
+    }
+
+    /**
      * @param returnType the returnType to set
      */
     public MethodFilter returnType(Class<?> returnType) {
         this.returnType = returnType;
         return this;
+    }
+
+    /**
+     * Set the method parameter types. This method is a short cut of {@link #parameterTypes(Class[])}.
+     *
+     * @param parameterTypes the parameterTypes to set
+     */
+    public MethodFilter p(Class<?>... parameterTypes) {
+        return parameterTypes(parameterTypes);
     }
 
     /**

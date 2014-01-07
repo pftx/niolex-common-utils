@@ -70,4 +70,8 @@ class Jenny extends Lex {
         abc = i;
         return r;
     }
+
+    public static int get() {
+        return abc;
+    }
 }
