@@ -32,7 +32,7 @@ import org.apache.niolex.commons.reflect.MethodUtil;
 public class OOPrisoner {
 
     private static final int TOTAL = Prisoner.TOTAL;
-    private static final int ROUND = 1000;
+    private static final int ROUND = 2000;
     private static final Prisoner[] prisoners = new Prisoner[TOTAL];
 
     public static void initSimple() {
@@ -48,10 +48,20 @@ public class OOPrisoner {
         }
     }
 
+    public static void init7Stages() {
+        prisoners[0] = new StageCollector();
+        for (int i = 1; i < TOTAL; ++i) {
+            prisoners[i] = new StagePrisoner();
+        }
+    }
+
     public static void init2Stages() {
         prisoners[0] = new FinalCollector();
-        for (int i = 1; i < TOTAL; ++i) {
-            prisoners[i] = new FirstLevelCollector(i);
+        for (int i = 1; i < 10; ++i) {
+            prisoners[i] = new FirstLevelCollector();
+        }
+        for (int i = 10; i < TOTAL; ++i) {
+            prisoners[i] = new LevelPrisoner();
         }
     }
 
@@ -84,7 +94,7 @@ public class OOPrisoner {
         for (Method m : list) {
             int total = 0, max = 0, min = Integer.MAX_VALUE, k;
             Random generator = new Random(32785);
-            for (int i = 0; i < 1000; ++i) {
+            for (int i = 0; i < ROUND; ++i) {
                 m.invoke(null);
                 k = oneRound(generator);
                 total += k;
@@ -191,59 +201,85 @@ class ElectCollector extends BasePrisoner {
 
 }
 
-abstract class LevelPrisoner implements Prisoner {
+class StagePrisoner implements Prisoner {
+    static final int STAGE_LEN = 450;
+    protected int count = 1;
+    protected int coll = 0;
+
+    public final boolean sure(int day, LightBulb bulb) {
+        int rem = day % STAGE_LEN;
+        int itr = (day / STAGE_LEN) % 7;
+        boolean endDay = rem == STAGE_LEN - 1;
+        return sure(itr, endDay, day, bulb);
+    }
+
+    public boolean sure(int itr, boolean endDay, int day, LightBulb bulb) {
+        int cnt = 1 << itr;
+        if (bulb.isOn()) {
+            if ((count & cnt) > 0) {
+                bulb.turnOff();
+                count += cnt;
+            }
+        } else {
+            if ((count & cnt) > 0) {
+                bulb.setOn();
+                count -= cnt;
+            }
+        }
+        if (endDay && bulb.isOn()) {
+            bulb.turnOff();
+            count += cnt;
+        }
+        return false;
+    }
+
+}
+
+class StageCollector extends StagePrisoner {
+
+    public boolean sure(int itr, boolean endDay, int day, LightBulb bulb) {
+        int cnt = 1 << itr;
+        if (bulb.isOn()) {
+            bulb.turnOff();
+            count += cnt;
+            return count == TOTAL;
+        }
+        return false;
+    }
+
+}
+
+class LevelPrisoner implements Prisoner {
     static final int FIRST_LEN = 450;
     static final int SECOND_LEN = 450;
     static final int TOTAL_LEN = FIRST_LEN + SECOND_LEN;
-
-    abstract boolean sure(int level, boolean endDay, int day, LightBulb bulb);
     protected int count = 1;
+    protected int coll = 0;
 
-
-    public boolean sure(int day, LightBulb bulb) {
+    public final boolean sure(int day, LightBulb bulb) {
         int rem = day % TOTAL_LEN;
         int level = rem < FIRST_LEN ? 1 : 2;
         boolean endDay = rem == FIRST_LEN - 1 || rem == TOTAL_LEN - 1;
         return sure(level, endDay, day, bulb);
     }
-}
-
-class FirstLevelCollector extends LevelPrisoner {
-    static final int FIRST_COLLECT = 10;
-    protected int role = 0;
-    protected int coll = 0;
-
-    public FirstLevelCollector(int cnt) {
-        role = cnt < 10 ? 1 : 0;
-    }
 
     public boolean sure(int level, boolean endDay, int day, LightBulb bulb) {
         if (level == 1) {
-            if (role == 1) {
-                // collector
-                if (bulb.isOn()) {
-                    bulb.turnOff();
-                    ++count;
-                    if (count == FIRST_COLLECT) {
-                        role = 0;
-                        count = 0;
-                        ++coll;
-                    }
-                }
-            } else {
-                // prisoner
-                if (bulb.isOff() && count > 0) {
-                    --count;
-                    bulb.setOn();
-                }
+            if (bulb.isOff() && count > 0) {
+                --count;
+                bulb.setOn();
             }
         } else {
-            // give out
             if (bulb.isOff() && coll > 0) {
                 --coll;
                 bulb.setOn();
             }
         }
+        processEndday(level, endDay, bulb);
+        return false;
+    }
+
+    protected void processEndday(int level, boolean endDay, LightBulb bulb) {
         if (endDay && bulb.isOn()) {
             if (level == 1) {
                 ++count;
@@ -252,15 +288,35 @@ class FirstLevelCollector extends LevelPrisoner {
             }
             bulb.turnOff();
         }
-        return false;
+    }
+
+}
+
+class FirstLevelCollector extends LevelPrisoner {
+    static final int FIRST_COLLECT = 10;
+    protected int role = 1;
+
+    public boolean sure(int level, boolean endDay, int day, LightBulb bulb) {
+        if (role == 1 && level == 1) {
+            // collector
+            if (bulb.isOn()) {
+                bulb.turnOff();
+                ++count;
+                if (count == FIRST_COLLECT) {
+                    role = 0;
+                    count = 0;
+                    ++coll;
+                }
+            }
+            processEndday(level, endDay, bulb);
+            return false;
+        } else {
+            return super.sure(level, endDay, day, bulb);
+        }
     }
 }
 
 class FinalCollector extends FirstLevelCollector {
-
-    public FinalCollector() {
-        super(11);
-    }
 
     public boolean sure(int level, boolean endDay, int day, LightBulb bulb) {
         if (bulb.isOff()) {
@@ -283,8 +339,7 @@ class FinalCollector extends FirstLevelCollector {
                 bulb.turnOff();
                 ++role;
             }
-        }
-        if (level == 2) {
+        } else {
             bulb.turnOff();
             ++coll;
         }
