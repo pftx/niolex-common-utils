@@ -48,6 +48,13 @@ public class OOPrisoner {
         }
     }
 
+    public static void init2Stages() {
+        prisoners[0] = new FinalCollector();
+        for (int i = 1; i < TOTAL; ++i) {
+            prisoners[i] = new FirstLevelCollector(i);
+        }
+    }
+
     public static int oneRound(Random r) {
         LightBulb l = new LightBulb();
         boolean[] checks = new boolean[TOTAL];
@@ -164,19 +171,21 @@ class ElectCollector extends BasePrisoner {
             if (bulb.isOff()) {
                 ++visit;
                 if (visit == 2) {
-                    visit = 0;
                     bulb.setOn();
                     deligate = new BaseCollector(day);
                 }
             }
             if (day == 99) {
-                bulb.turnOff();
+                if (bulb.isOff()) return true;
+                else bulb.turnOff();
             }
             return false;
         } else {
-            if (visit > 0) return false;
-            if (deligate != null) return deligate.sure(day, bulb);
-            return super.sure(day, bulb);
+            switch (visit) {
+                case 0: return super.sure(day, bulb);
+                case 1: return false;
+                default: return deligate.sure(day, bulb);
+            }
         }
     }
 
@@ -186,12 +195,10 @@ abstract class LevelPrisoner implements Prisoner {
     static final int FIRST_LEN = 450;
     static final int SECOND_LEN = 450;
     static final int TOTAL_LEN = FIRST_LEN + SECOND_LEN;
-    static enum Role {PRI, FIR, SEC;}
-    static final int FIRST_COLLECT = 10;
 
     abstract boolean sure(int level, boolean endDay, int day, LightBulb bulb);
     protected int count = 1;
-    protected Role role = Role.PRI;
+
 
     public boolean sure(int day, LightBulb bulb) {
         int rem = day % TOTAL_LEN;
@@ -199,53 +206,88 @@ abstract class LevelPrisoner implements Prisoner {
         boolean endDay = rem == FIRST_LEN - 1 || rem == TOTAL_LEN - 1;
         return sure(level, endDay, day, bulb);
     }
-
-    public void prisoner(LightBulb bulb) {
-        if (bulb.isOff() && count > 0) {
-            --count;
-            bulb.setOn();
-        }
-    }
-
-    private int collNumber = 0;
-
-    public void firstCollect(LightBulb bulb) {
-        if (bulb.isOn() && count < collNumber * FIRST_COLLECT) {
-            ++count;
-            bulb.turnOff();
-        }
-    }
-
-    public void secondGive(LightBulb bulb) {
-        if (bulb.isOff() && count >= FIRST_COLLECT) {
-            count -= FIRST_COLLECT;
-            --collNumber;
-            bulb.setOn();
-        }
-    }
-
-    public void secondCollect(LightBulb bulb) {
-        if (bulb.isOn()) {
-            count += FIRST_COLLECT;
-            bulb.turnOff();
-        }
-    }
-}
-
-class DLevelPrisoner extends LevelPrisoner {
-    public boolean sure(int level, boolean endDay, int day, LightBulb bulb) {
-
-        return false;
-    }
 }
 
 class FirstLevelCollector extends LevelPrisoner {
+    static final int FIRST_COLLECT = 10;
+    protected int role = 0;
+    protected int coll = 0;
+
+    public FirstLevelCollector(int cnt) {
+        role = cnt < 10 ? 1 : 0;
+    }
 
     public boolean sure(int level, boolean endDay, int day, LightBulb bulb) {
-        if (bulb.isOff() && count > 0) {
-            --count;
-            bulb.setOn();
+        if (level == 1) {
+            if (role == 1) {
+                // collector
+                if (bulb.isOn()) {
+                    bulb.turnOff();
+                    ++count;
+                    if (count == FIRST_COLLECT) {
+                        role = 0;
+                        count = 0;
+                        ++coll;
+                    }
+                }
+            } else {
+                // prisoner
+                if (bulb.isOff() && count > 0) {
+                    --count;
+                    bulb.setOn();
+                }
+            }
+        } else {
+            // give out
+            if (bulb.isOff() && coll > 0) {
+                --coll;
+                bulb.setOn();
+            }
+        }
+        if (endDay && bulb.isOn()) {
+            if (level == 1) {
+                ++count;
+            } else {
+                ++coll;
+            }
+            bulb.turnOff();
         }
         return false;
+    }
+}
+
+class FinalCollector extends FirstLevelCollector {
+
+    public FinalCollector() {
+        super(11);
+    }
+
+    public boolean sure(int level, boolean endDay, int day, LightBulb bulb) {
+        if (bulb.isOff()) {
+            if (level == 1 && !endDay && role > 0) {
+                --role;
+                bulb.setOn();
+            }
+            return false;
+        }
+        if (level == 1) {
+            if (count != 0) {
+                bulb.turnOff();
+                ++count;
+                if (count == FIRST_COLLECT) {
+                    count = 0;
+                    ++coll;
+                }
+            } else if (endDay) {
+                // We have no way now.
+                bulb.turnOff();
+                ++role;
+            }
+        }
+        if (level == 2) {
+            bulb.turnOff();
+            ++coll;
+        }
+        return coll * 10 == TOTAL;
     }
 }
