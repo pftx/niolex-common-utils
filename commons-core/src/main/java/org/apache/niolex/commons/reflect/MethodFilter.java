@@ -98,8 +98,7 @@ public class MethodFilter implements Filter {
         if (!includeAbstract && Modifier.isAbstract(m.getModifiers())) {
             return false;
         }
-        // SYNTHETIC = 0x00001000;
-        if (!includeSynthetic && (m.getModifiers() & 0x00001000) != 0) {
+        if (!includeSynthetic && m.isSynthetic()) {
             return false;
         }
         return true;

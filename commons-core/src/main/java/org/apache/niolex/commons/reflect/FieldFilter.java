@@ -250,8 +250,7 @@ public class FieldFilter<T> implements Filter {
         return this.add(new Filter(){
             @Override
             public boolean isValid(Field f) {
-                // SYNTHETIC = 0x00001000;
-                return (f.getModifiers() & 0x00001000) == 0;
+                return !f.isSynthetic();
             }});
     }
 
