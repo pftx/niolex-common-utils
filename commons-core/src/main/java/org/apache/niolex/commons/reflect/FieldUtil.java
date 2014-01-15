@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.niolex.commons.collection.CollectionUtil;
+import org.apache.niolex.commons.config.PropertiesWrapper;
 
 /**
  * FieldUtil is a utility class help programmers access object fields.
@@ -446,9 +447,9 @@ public abstract class FieldUtil {
             } else if (type == byte.class) {
                 field.setByte(host, Byte.parseByte(value));
             } else if (type == Boolean.class) {
-                field.set(host, Boolean.parseBoolean(value));
+                field.set(host, PropertiesWrapper.parseBoolean(value));
             } else if (type == boolean.class) {
-                field.setBoolean(host, Boolean.parseBoolean(value));
+                field.setBoolean(host, PropertiesWrapper.parseBoolean(value));
             } else if (type == Character.class) {
                 field.set(host, value.charAt(0));
             } else if (type == char.class) {

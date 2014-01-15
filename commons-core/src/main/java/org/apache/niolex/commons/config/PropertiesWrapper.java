@@ -44,6 +44,17 @@ public class PropertiesWrapper extends Properties {
     private static final long serialVersionUID = -352075645997166876L;
 
     /**
+     * Parse the boolean value from this parameter.
+     * We interpret "true", "1", "on", "yes"(case insensitive) as true, all others as false.
+     *
+     * @param s the input string
+     * @return the boolean value
+     */
+    public static boolean parseBoolean(String s) {
+        return StringUtil.isIn(s, false, "true", "1", "on", "yes");
+    }
+
+    /**
      * 默认构造函数
      * The default Constructor, doing nothing.
      */
@@ -287,17 +298,6 @@ public class PropertiesWrapper extends Properties {
     public boolean getBoolean(String key, boolean defaultValue) {
         String s = this.getString(key);
         return s == null ? defaultValue : parseBoolean(s);
-    }
-
-    /**
-     * Parse the boolean value from this parameter.
-     * We interpret "true", "1", "on", "yes"(case insensitive) as true, all others as false.
-     *
-     * @param s the input string
-     * @return the boolean value
-     */
-    public boolean parseBoolean(String s) {
-        return StringUtil.isIn(s, false, "true", "1", "on", "yes");
     }
 
     /**
