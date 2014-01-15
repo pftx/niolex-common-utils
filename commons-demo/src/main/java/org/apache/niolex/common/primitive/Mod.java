@@ -33,6 +33,12 @@ public class Mod {
         System.out.println("-5%3 => " + (-5%3));
         System.out.println("-5%-3 => " + (-5%-3));
         System.out.println("5%3 => " + (5%3));
+        int i = Integer.MAX_VALUE - 3, j = 0;
+        while (j++ < 8) {
+            int k = i % 7;
+            System.out.println(i + "%7 => " + (k < 0 ? k + 7 : k));
+            ++i;
+        }
     }
 
 }
