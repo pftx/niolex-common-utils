@@ -191,17 +191,35 @@ public class MethodUtil {
     }
 
     /**
-     * Retrieve all the methods with the specified method name from this object class and
+     * Retrieve all the methods with the specified method name from this class and
      * all of it's super classes.
      *
-     * @param obj the object to be used to find methods
+     * @param clazz the class to be used to find methods
      * @param methodName the method name
      * @return the list contains all the methods with this name
      * @throws SecurityException if a security manager is present and the reflection is rejected
      */
-    public static final List<Method> getMethods(Object obj, String methodName) {
-        return getMethods(obj.getClass(), MethodFilter.create().includeSuper()
+    public static final List<Method> getMethods(Class<?> clazz, String methodName) {
+        return getMethods(clazz, MethodFilter.create().includeSuper()
                 .methodName(methodName));
+    }
+
+    /**
+     * Get the first found method with the specified method name from this class and
+     * all of it's super classes.
+     *
+     * @param clazz the class to be used to find methods
+     * @param methodName the method name
+     * @return the first found method
+     * @throws ItemNotFoundException if method not found in this class and all of it's super classes
+     */
+    public static final Method getFirstMethod(Class<?> clazz, String methodName) {
+        List<Method> list = getMethods(clazz, methodName);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            throw new ItemNotFoundException("Method not found.", null);
+        }
     }
 
     /**
@@ -209,19 +227,19 @@ public class MethodUtil {
      * If this method is not found, we will try to look at it from the super class too.
      *
      * @param clazz the class to be used for reflection
-     * @param name the method name
+     * @param methodName the method name
      * @param parameterTypes the method parameter types
      * @return the method if found
      * @throws SecurityException if a security manager is present and the reflection is rejected
      * @throws ItemNotFoundException if method not found in this class and all of it's super classes
      */
-    public static final Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+    public static final Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
         try {
-            return clazz.getDeclaredMethod(name, parameterTypes);
+            return clazz.getDeclaredMethod(methodName, parameterTypes);
         } catch (NoSuchMethodException e) {
             clazz = clazz.getSuperclass();
             if (clazz != null) {
-                return getMethod(clazz, name, parameterTypes);
+                return getMethod(clazz, methodName, parameterTypes);
             } else {
                 throw new ItemNotFoundException("Method not found.", e);
             }

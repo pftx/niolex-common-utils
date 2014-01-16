@@ -101,8 +101,41 @@ public class MethodUtilTest extends MethodUtil {
     @Test
     public void testMethodsObjectString() throws Throwable {
         MethodTestBean t = new MethodTestBean("Lex");
-        List<Method> arr = MethodUtil.getMethods(t, "echoName");
+        List<Method> arr = MethodUtil.getMethods(t.getClass(), "echoName");
         Assert.assertEquals(arr.size(), 5);
+    }
+
+    @Test
+    public void testGetFirstMethod() throws Throwable {
+        Method m = getFirstMethod(MethodTestBean.class, "echoName");
+        Assert.assertEquals(m.getName(), "echoName");
+        Assert.assertEquals(m.getParameterTypes().length, 0);
+        Assert.assertEquals(m.getReturnType(), String.class);
+    }
+
+    @Test
+    public void testGetFirstMethodConc() throws Throwable {
+        Method m = getFirstMethod(Conc.class, "find");
+        Assert.assertEquals(m.getName(), "find");
+        Assert.assertEquals(m.getParameterTypes().length, 1);
+        Assert.assertEquals(m.getParameterTypes()[0], int.class);
+        Assert.assertEquals(m.getReturnType(), void.class);
+    }
+
+    @Test
+    public void testGetFirstMethodFromSuper() throws Throwable {
+        Method m = getFirstMethod(Conc.class, "cool");
+        Assert.assertEquals(m.getName(), "cool");
+        Assert.assertEquals(m.getParameterTypes().length, 0);
+        Assert.assertEquals(m.getReturnType(), int.class);
+    }
+
+    @Test(expected=ItemNotFoundException.class)
+    public void testGetFirstMethodNotFound() throws Throwable {
+        Method m = getFirstMethod(Jenny.class, "cool");
+        Assert.assertEquals(m.getName(), "cool");
+        Assert.assertEquals(m.getParameterTypes().length, 0);
+        Assert.assertEquals(m.getReturnType(), int.class);
     }
 
     @Test
@@ -200,7 +233,7 @@ public class MethodUtilTest extends MethodUtil {
     @Test
     public void testGetAllMethodsObjectString() throws Exception {
         Object obj = new Conc();
-        Collection<Method> arr = MethodUtil.getMethods(obj, "find");
+        Collection<Method> arr = MethodUtil.getMethods(obj.getClass(), "find");
         Assert.assertEquals(arr.size(), 4);
     }
 
