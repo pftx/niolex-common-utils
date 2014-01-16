@@ -107,7 +107,8 @@ public class MethodUtilTest extends MethodUtil {
 
     @Test
     public void testGetFirstMethod() throws Throwable {
-        Method m = getFirstMethod(MethodTestBean.class, "echoName");
+        MethodTestBean t = new MethodTestBean("Lex");
+        Method m = getFirstMethod(t, "echoName");
         Assert.assertEquals(m.getName(), "echoName");
         Assert.assertEquals(m.getParameterTypes().length, 0);
         Assert.assertEquals(m.getReturnType(), String.class);

@@ -223,6 +223,18 @@ public class MethodUtil {
     }
 
     /**
+     * Get the first found method with the specified method name from the host object.
+     *
+     * @param host the host object used to find method
+     * @param methodName the method name
+     * @return the first found method
+     * @throws ItemNotFoundException if method not found in this class and all of it's super classes
+     */
+    public static final Method getFirstMethod(Object host, String methodName) {
+        return getFirstMethod(host.getClass(), methodName);
+    }
+
+    /**
      * Retrieve the method with the specified name and parameter types from this class.
      * If this method is not found, we will try to look at it from the super class too.
      *
