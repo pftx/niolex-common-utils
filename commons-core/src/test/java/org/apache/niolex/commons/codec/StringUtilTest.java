@@ -180,6 +180,60 @@ public class StringUtilTest extends StringUtil {
 	}
 
     @Test
+    public void testSplit() throws Exception {
+        String[] arr = split("aaaaaaa", "aa", true);
+        assertEquals(arr.length, 4);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "   a");
+    }
+
+    @Test
+    public void testSplitR() throws Exception {
+        String[] arr = split("aaaaaaa", "aaa", true);
+        assertEquals(arr.length, 3);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "  a");
+    }
+
+    @Test
+    public void testSplitLastOff() throws Exception {
+        String[] arr = split("a/b/cd", "/", false);
+        assertEquals(arr.length, 3);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "a b cd");
+    }
+
+    @Test
+    public void testSplitLastOn() throws Exception {
+        String[] arr = split("a/b/cd/", "/", false);
+        assertEquals(arr.length, 3);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "a b cd");
+    }
+
+    @Test
+    public void testSplitFirstOn() throws Exception {
+        String[] arr = split("/a/b/cd/", "/", false);
+        assertEquals(arr.length, 3);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "a b cd");
+    }
+
+    @Test
+    public void testSplitRedunt() throws Exception {
+        String[] arr = split("///////a/////b//cd///////", "/", false);
+        assertEquals(arr.length, 3);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "a b cd");
+    }
+
+    @Test
+    public void testSplitOne() throws Exception {
+        String[] arr = split("//////////////////", "///", false);
+        assertEquals(arr.length, 0);
+    }
+
+    @Test
     public void testSplitLinesOkOff() throws Exception {
         String[] arr = StringUtil.splitLines("a\n\nbcd\r\nedf\rg", false);
         assertEquals(arr.length, 4);

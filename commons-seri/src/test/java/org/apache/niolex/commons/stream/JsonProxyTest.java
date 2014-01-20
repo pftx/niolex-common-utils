@@ -62,5 +62,22 @@ public class JsonProxyTest {
 		System.out.println("q => " + r.getLikely() + ", " + s.getLikely());
 	}
 
+    @Test
+    public void testJsonProxy() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeObj(out, "Lex");
+        writeObj(out, 2);
+        writeObj(out, 4);
+        writeObj(out, " Hello");
+        System.out.println("s => " + StringUtil.utf8ByteToStr(out.toByteArray()));
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        JsonProxy proxy = new JsonProxy(in);
+        String a = proxy.readObject(String.class);
+        assertEquals("Lex", a);
+        Integer b = proxy.readObject(Integer.class);
+        assertEquals(24, b.intValue());
+        String c = proxy.readObject(String.class);
+        assertEquals(" Hello", c);
+    }
 
 }

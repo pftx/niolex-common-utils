@@ -210,8 +210,34 @@ public abstract class StringUtil extends StringUtils {
 	}
 
 	/**
+	 * Split the string into tokens by the specified separator. We will preserve all the empty
+	 * tokens if you need.
+	 * <br>
+	 * This is a replacement of {@link String#split(String)}, which is using regex.
+	 *
+	 * @param str the string to be split
+	 * @param separator the separator
+	 * @param preserveEmptyToken if set this to true, we preserve all empty tokens
+	 * @return the token array
+	 */
+	public static final String[] split(String str, String separator, boolean preserveEmptyToken) {
+	    List<String> list = new ArrayList<String>();
+	    int start = 0, i = 0, len = separator.length(), total = str.length();
+	    while ((i = str.indexOf(separator, start)) != -1) {
+	        if (start != i || preserveEmptyToken) {
+	            list.add(str.substring(start, i));
+	        }
+	        start = i + len;
+	    }
+	    if (start != total) {
+	        list.add(str.substring(start, total));
+	    }
+	    return list.toArray(new String[list.size()]);
+	}
+
+	/**
 	 * This is a platform independent line split tool. We will split a line by
-	 * '\r', '\n', '\r\n', and preserve all empty lines is you need.
+	 * '\r', '\n', '\r\n', and preserve all empty lines if you need.
 	 *
 	 * A new line separator at the last line is not needed.
 	 *

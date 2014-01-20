@@ -19,6 +19,8 @@ package org.apache.niolex.commons.util;
 
 import static org.apache.niolex.commons.reflect.FieldUtil.*;
 
+import org.apache.niolex.commons.codec.StringUtil;
+
 /**
  * The utility class for throwable related functions.
  *
@@ -46,7 +48,7 @@ public class ThrowableUtil {
     /**
      * The field separator used for string a throwable object.
      */
-    public static final String FIELD_SEPARATOR = "#~@&";
+    public static final String FIELD_SEPARATOR = "/^*(V)*^/";
 
     /**
      * Translate the throwable into string.
@@ -94,7 +96,7 @@ public class ThrowableUtil {
      * @throws Exception if necessary
      */
     public static final Throwable strToThrowable(String s) throws Exception {
-        String[] items = s.split(FIELD_SEPARATOR, 5);
+        String[] items = StringUtil.split(s, FIELD_SEPARATOR, true);
         if (items.length != 3 && items.length != 5) {
             return null;
         }
