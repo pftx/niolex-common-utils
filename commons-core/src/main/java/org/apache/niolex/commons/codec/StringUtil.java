@@ -229,7 +229,7 @@ public abstract class StringUtil extends StringUtils {
 	        }
 	        start = i + len;
 	    }
-	    if (start != total) {
+	    if (start != total || preserveEmptyToken) {
 	        list.add(str.substring(start, total));
 	    }
 	    return list.toArray(new String[list.size()]);

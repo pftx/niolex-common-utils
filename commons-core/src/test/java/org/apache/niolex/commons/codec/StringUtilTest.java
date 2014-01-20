@@ -212,11 +212,27 @@ public class StringUtilTest extends StringUtil {
     }
 
     @Test
+    public void testSplitLastOnTrue() throws Exception {
+        String[] arr = split("a/b/cd/", "/", true);
+        assertEquals(arr.length, 4);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, "a b cd ");
+    }
+
+    @Test
     public void testSplitFirstOn() throws Exception {
         String[] arr = split("/a/b/cd/", "/", false);
         assertEquals(arr.length, 3);
         String b = StringUtil.join(arr, " ");
         assertEquals(b, "a b cd");
+    }
+
+    @Test
+    public void testSplitFirstOnTrue() throws Exception {
+        String[] arr = split("/a/b/cd/", "/", true);
+        assertEquals(arr.length, 5);
+        String b = StringUtil.join(arr, " ");
+        assertEquals(b, " a b cd ");
     }
 
     @Test
