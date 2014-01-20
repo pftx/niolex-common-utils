@@ -95,12 +95,7 @@ public class SystemUtil {
 	 * @return the root cause
 	 */
 	public static final Throwable getRootCause(Throwable e) {
-	    Throwable p = e.getCause();
-        while (p != null) {
-            e = p;
-            p = e.getCause();
-        }
-        return e;
+        return ThrowableUtil.getRootCause(e);
 	}
 
     /**
