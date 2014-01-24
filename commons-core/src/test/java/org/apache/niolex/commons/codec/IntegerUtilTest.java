@@ -25,7 +25,75 @@ import org.junit.Test;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2012-11-11$
  */
-public class IntegerUtilTest {
+public class IntegerUtilTest extends IntegerUtil {
+
+    @Test
+    public void testFourBytes() throws Exception {
+        int i = IntegerUtil.fourBytes((byte)1, (byte)3, (byte)4, (byte)5);
+        assertEquals(i, 16974853);
+    }
+
+    @Test
+    public void testFourBytes2() throws Exception {
+        int i = IntegerUtil.fourBytes((byte)0x20, (byte)0xb7, (byte)0x6a, (byte)0x73);
+        assertEquals(i, 548891251);
+    }
+
+    @Test
+    public void testFourBytesArr() throws Exception {
+        byte[] arr = new byte[4];
+        for (int i = 0; i < 10000; i += 245) {
+            encFourBytes(i, arr, 0);
+            assertEquals(i, fourBytes(arr, 0));
+        }
+        for (int i = 65535, j = 0; i < 6553500; i += 245, ++j) {
+            encFourBytes(i, arr, 0);
+            assertEquals(i, fourBytes(arr, 0));
+            if (j % 100 == 0)
+                i += 65535;
+        }
+        for (int i = 16777215; i < 167772160; i += 67595) {
+            encFourBytes(i, arr, 0);
+            assertEquals(i, fourBytes(arr, 0));
+        }
+        for (byte i = -128; i < 127; ++i) {
+            arr[0] = i;
+            arr[1] = i;
+            arr[2] = i;
+            arr[3] = i;
+            int j = fourBytes(arr, 0);
+            for (int k = 0; k < 4; ++k) {
+                assertEquals(i, (byte)(j));
+                j = j >> 8;
+            }
+        }
+        arr = toFourBytes(Integer.MAX_VALUE);
+        assertEquals(127, arr[0]);
+        assertEquals(-1, arr[1]);
+        assertEquals(-1, arr[2]);
+        assertEquals(-1, arr[3]);
+        arr = toFourBytes(Integer.MIN_VALUE);
+        assertEquals(-128, arr[0]);
+        assertEquals(0, arr[1]);
+        assertEquals(0, arr[2]);
+        assertEquals(0, arr[3]);
+    }
+
+    @Test
+    public void testEncFourBytes() throws Exception {
+        for (int i = 548891251; i < 548956786; i += 256) {
+            byte[] arr = toFourBytes(i);
+            assertEquals(arr[2], (byte)(i / 256));
+        }
+    }
+
+    @Test
+    public void testToFourBytes() throws Exception {
+        for (int i = 548891251; i < 548891507; ++i) {
+            byte[] arr = toFourBytes(i);
+            assertEquals(arr[3], (byte)(i % 256));
+        }
+    }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.codec.IntegerUtil#threeBytes(byte, byte, byte)}.

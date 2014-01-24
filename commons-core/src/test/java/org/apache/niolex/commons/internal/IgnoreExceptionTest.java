@@ -49,4 +49,9 @@ public class IgnoreExceptionTest extends IgnoreException {
         assertFalse(isNetworkInterfaceUp(null));
     }
 
+    @Test
+    public void testPopulateLocalAddresses() throws Exception {
+        populateLocalAddresses(null);
+    }
+
 }

@@ -31,8 +31,58 @@ import org.apache.niolex.commons.util.Const;
  */
 public abstract class IntegerUtil {
 
+    /**
+     * Create an integer from the specified byte array, start from the specified index.
+     *
+     * @param arr the byte array
+     * @param idx the data start index
+     * @return the result integer
+     */
+    public static final int fourBytes(byte[] arr, int idx) {
+        return fourBytes(arr[idx], arr[idx + 1], arr[idx + 2], arr[idx + 3]);
+    }
+
+    /**
+     * Create an integer from the specified four bytes, in the order of highest bits first.
+     *
+     * @param h the highest bits
+     * @param a the second byte
+     * @param b the third byte
+     * @param c the lowest bits
+     * @return the result integer
+     */
+    public static final int fourBytes(byte h, byte a, byte b, byte c) {
+        return ((h & 0xff) << 24) + ((a & 0xff) << 16) + ((b & 0xff) << 8) + (c & 0xff);
+    }
+
+    /**
+     * Encode the integer into four bytes.
+     *
+     * @param i the integer to be encoded
+     * @return the encoded four bytes
+     */
+    public static final byte[] toFourBytes(int i) {
+        byte[] arr = new byte[4];
+        encFourBytes(i, arr, 0);
+        return arr;
+    }
+
+    /**
+     * Encode the integer into four bytes, store the result into the specified array.
+     *
+     * @param i the integer need to be encoded
+     * @param arr the array used to to store the results
+     * @param idx the start index to store result
+     */
+    public static final void encFourBytes(int i, byte[] arr, int idx) {
+        arr[idx++] = (byte)(i >> 24);
+        arr[idx++] = (byte)(i >> 16);
+        arr[idx++] = (byte)(i >> 8);
+        arr[idx] = (byte)i;
+    }
+
 	/**
-	 * Create an integer by the three bytes, in the order of higher bits first.
+	 * Create an integer by the specified three bytes, in the order of higher bits first.
 	 *
 	 * @param a the highest bits
 	 * @param b the mid bits
@@ -44,11 +94,11 @@ public abstract class IntegerUtil {
 	}
 
 	/**
-	 * Encode integer into three bytes, store the result into <code>arr</code>
+	 * Encode integer into three bytes, store the result into the specified array.
 	 *
 	 * @param i the integer need to encode
-	 * @param arr the array to store result
-	 * @param idx the index to store result
+	 * @param arr the array used to store the result
+	 * @param idx the start index to store the result
 	 */
 	public static final void encThreeBytes(int i, byte[] arr, int idx) {
 		arr[idx++] = (byte)(i >> 16);
@@ -59,7 +109,7 @@ public abstract class IntegerUtil {
 	/**
 	 * Create an integer by the two bytes, in the order of higher bits first.
 	 *
-	 * @param b the mid bits
+	 * @param b the highest bits
 	 * @param c the lowest bits
 	 * @return the result integer
 	 */
@@ -68,11 +118,11 @@ public abstract class IntegerUtil {
 	}
 
 	/**
-	 * Encode integer into two bytes, store the result into <code>arr</code>
+	 * Encode integer into two bytes, store the result into the specified array.
 	 *
-	 * @param i the integer need to encode
-	 * @param arr the array to store result
-	 * @param idx the index to store result
+	 * @param i the integer need to be encoded
+	 * @param arr the array used to store the result
+	 * @param idx the start index to store the result
 	 */
 	public static final void encTwoBytes(int i, byte[] arr, int idx) {
 		arr[idx++] = (byte)(i >> 8);
@@ -80,7 +130,8 @@ public abstract class IntegerUtil {
 	}
 
 	/**
-	 * Format the size into string end with one letter.
+	 * Format the size into string end with one letter. We will round the result
+	 * by half up, and keep two decimal places.
 	 *
 	 * @param size the size need to be formatted
 	 * @return the string representation

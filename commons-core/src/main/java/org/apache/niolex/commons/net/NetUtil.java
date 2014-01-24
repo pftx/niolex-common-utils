@@ -20,8 +20,11 @@ package org.apache.niolex.commons.net;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.niolex.commons.codec.IntegerUtil;
+import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.internal.IgnoreException;
 import org.apache.niolex.commons.test.Check;
 
@@ -40,7 +43,9 @@ public abstract class NetUtil extends Check {
      * @return the result
      */
     public static final Set<InetAddress> getAllLocalAddresses() {
-        return IgnoreException.getAllLocalAddresses();
+        Set<InetAddress> set = new HashSet<InetAddress>();
+        IgnoreException.populateLocalAddresses(set);
+        return set;
     }
 
     /**
@@ -72,15 +77,45 @@ public abstract class NetUtil extends Check {
     }
 
     /**
+     * Create an InetSocketAddress from the IP:Port string.
+     *
+     * @param ipPort the IP:Port format string
+     * @return the created INET socket address
+     */
+    public static final InetSocketAddress ipPort2InetSocketAddress(String ipPort) {
+        String[] ip0port1 = StringUtil.split(ipPort, ":", true);
+
+        int intIP = ipToInt(ip0port1[0]);
+        InetAddress addr = getByAddress(IntegerUtil.toFourBytes(intIP));
+
+        int port = Integer.parseInt(ip0port1[1]);
+        return new InetSocketAddress(addr, port);
+    }
+
+    /**
+     * Get Internet address from the bytes array.
+     *
+     * @param bytes the bytes array
+     * @return the Internet address
+     */
+    public static final InetAddress getByAddress(byte[] bytes) {
+        try {
+            return InetAddress.getByAddress(bytes);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Failed to create InetAddress.", e);
+        }
+    }
+
+    /**
      * Convert the IP address from textual presentation to int.
      *
      * @param ip the IP address string in textual presentation
      * @return the IP in integer presentation
      * @throws IllegalArgumentException if Invalid IP format.
      */
-    public int ipToInt(String ip) {
+    public static final int ipToInt(String ip) {
         notNull(ip, "The parameter ip is null.");
-        String[] nums = ip.split("\\.");
+        String[] nums = StringUtil.split(ip, ".", true);
         String msg = "Invalid IP format: " + ip;
         eq(nums.length, 4, msg);
         int res = 0;
@@ -90,7 +125,7 @@ public abstract class NetUtil extends Check {
                 if (k < 0 || k > 255) {
                     throw new IllegalArgumentException(msg);
                 }
-                res = (res << 8) + k;
+                res = (res << 8) | k;
             } catch (Throwable t) {
                 throw new IllegalArgumentException(msg, t);
             }
@@ -104,7 +139,7 @@ public abstract class NetUtil extends Check {
      * @param intIP the IP in integer presentation
      * @return the IP in textual presentation
      */
-    public String intToIP(int intIP) {
+    public static final String intToIP(int intIP) {
         int[] nums = new int[4];
         for (int i = 3; i > -1; --i) {
             nums[i] = intIP & 0xff;

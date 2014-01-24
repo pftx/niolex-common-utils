@@ -23,7 +23,6 @@ import java.nio.charset.Charset;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -51,12 +50,11 @@ public class IgnoreException {
     }
 
     /**
-     * Get all the local Internet addresses. If exception occurred, we return an empty set.
+     * Populate all local addresses and store them into the specified set.
      *
-     * @return the result
+     * @param set the set to store the results
      */
-    public static final Set<InetAddress> getAllLocalAddresses() {
-        Set<InetAddress> set = new HashSet<InetAddress>();
+    public static void populateLocalAddresses(Set<InetAddress> set) {
         try {
             // Get All the network card interfaces
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -76,7 +74,6 @@ public class IgnoreException {
         } catch (Exception e) {
             // We do nothing when exception occurred.
         }
-        return set;
     }
 
     /**

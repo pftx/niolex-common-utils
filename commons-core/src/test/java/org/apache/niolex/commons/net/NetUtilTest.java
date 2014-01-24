@@ -67,6 +67,60 @@ public class NetUtilTest extends NetUtil {
     }
 
     @Test
+    public void testIpPort2InetSocketAddress() throws Exception {
+        InetSocketAddress in = ipPort2InetSocketAddress("1.2.3.4:9088");
+        assertEquals(9088, in.getPort());
+        assertEquals("1.2.3.4", in.getAddress().getHostAddress());
+    }
+
+    @Test
+    public void testIpPort2InetSocketAddressLong() throws Exception {
+        InetSocketAddress in = ipPort2InetSocketAddress("10.1.2.4:88");
+        assertEquals(88, in.getPort());
+        assertEquals("10.1.2.4", in.getAddress().getHostAddress());
+    }
+
+    @Test
+    public void testIpPort2InetSocketAddressEx1() throws Exception {
+        try {
+            ipPort2InetSocketAddress("10.35.2.4:0x88");
+        } catch (Exception e) {
+            assertTrue(e instanceof NumberFormatException);
+            assertEquals("For input string: \"0x88\"", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testIpPort2InetSocketAddressEx2() throws Exception {
+        try {
+            ipPort2InetSocketAddress("10.35.2.f4:0x88");
+        } catch (Exception e) {
+            assertTrue(e instanceof IllegalArgumentException);
+            assertEquals("Invalid IP format: 10.35.2.f4", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testIpPort2InetSocketAddressEx3() throws Exception {
+        try {
+            ipPort2InetSocketAddress("10.35.2.135");
+        } catch (Exception e) {
+            assertTrue(e instanceof ArrayIndexOutOfBoundsException);
+            assertEquals("1", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetByAddress() throws Exception {
+        try {
+            getByAddress(new byte[3]);
+        } catch (Exception e) {
+            assertTrue(e instanceof IllegalArgumentException);
+            assertEquals("Failed to create InetAddress.", e.getMessage());
+        }
+    }
+
+    @Test
     public void testIpToInt() throws Exception {
         int i = ipToInt("1.2.3.4");
         String s = Integer.toHexString(i);
@@ -79,6 +133,13 @@ public class NetUtilTest extends NetUtil {
         int i = ipToInt("16.17.3.4");
         String s = Integer.toHexString(i);
         assertEquals("10110304", s);
+    }
+
+    @Test
+    public void testIpToIntMax() throws Exception {
+        assertEquals(-1, ipToInt("255.255.255.255"));
+        assertEquals(-2, ipToInt("255.255.255.254"));
+        assertEquals(-257, ipToInt("255.255.254.255"));
     }
 
     @Test(expected=IllegalArgumentException.class)
