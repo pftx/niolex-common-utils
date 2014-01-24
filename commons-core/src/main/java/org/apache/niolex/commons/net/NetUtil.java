@@ -80,7 +80,7 @@ public abstract class NetUtil extends Check {
      * Create an InetSocketAddress from the IP:Port string.
      *
      * @param ipPort the IP:Port format string
-     * @return the created INET socket address
+     * @return the created Internet socket address
      */
     public static final InetSocketAddress ipPort2InetSocketAddress(String ipPort) {
         String[] ip0port1 = StringUtil.split(ipPort, ":", true);
