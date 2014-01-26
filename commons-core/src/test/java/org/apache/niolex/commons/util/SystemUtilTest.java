@@ -86,6 +86,13 @@ public class SystemUtilTest extends SystemUtil {
     }
 
     @Test
+    public void testGetSystemPropertyWithDefault() throws Exception {
+        assertEquals(":Lex:", getSystemPropertyWithDefault("owner.name.nickname", ":Lex:"));
+        assertEquals(":Lex:", getSystemPropertyWithDefault(null, ":Lex:"));
+        System.out.println(getSystemPropertyWithDefault("os.version", "not yet implemented"));
+    }
+
+    @Test
     public void testGetSystemPropertyAsInt() throws Exception {
         System.out.println(getSystemPropertyAsInt("sun.arch.data.model", 66));
         System.out.println(getSystemPropertyAsInt("java.class.version", 160));
