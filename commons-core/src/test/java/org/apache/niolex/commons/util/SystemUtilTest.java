@@ -76,13 +76,19 @@ public class SystemUtilTest extends SystemUtil {
         String s = SystemUtil.getSystemProperty("user.home", "usr.home");
         System.out.println("home = " + s);
         s = SystemUtil.getSystemProperty("usr.home", "java.class.path");
-        System.out.println("home = " + s);
+        System.out.println("path = " + s);
     }
 
     @Test
     public void testGetSystemPropertyNull() throws Exception {
         String s = SystemUtil.getSystemProperty("evn.home", "usr.home");
         System.out.println("home = " + s);
+    }
+
+    @Test
+    public void testGetSystemPropertyAsInt() throws Exception {
+        System.out.println(getSystemPropertyAsInt("sun.arch.data.model", 66));
+        System.out.println(getSystemPropertyAsInt("java.class.version", 160));
     }
 
     @Test

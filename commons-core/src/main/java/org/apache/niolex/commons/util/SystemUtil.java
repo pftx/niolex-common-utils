@@ -79,6 +79,22 @@ public class SystemUtil {
 	}
 
 	/**
+	 * Try to get system property by the specified property name, if any error occurred,
+	 * return the default value.
+	 *
+	 * @param propName the property name
+	 * @param defaultValue the default value
+	 * @return the property value or the default value if error occurred
+	 */
+	public static final int getSystemPropertyAsInt(String propName, int defaultValue) {
+	    try {
+            return Integer.parseInt(System.getProperty(propName));
+        } catch (Exception e) {
+            return defaultValue;
+        }
+	}
+
+	/**
 	 * Check whether the specified system properties defined or not.
 	 *
 	 * @param args the specified property keys
