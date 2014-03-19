@@ -28,7 +28,7 @@ public class Single {
     public static final Single S = new Single();
 
     private Single() {
-        System.out.println("Single Created");
+        System.out.println("Single Created " + (System.currentTimeMillis() / 1000));
     }
 
 }
