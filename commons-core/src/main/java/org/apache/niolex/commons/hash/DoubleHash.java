@@ -130,7 +130,7 @@ public class DoubleHash<T> {
      * @return the pair of server nodes
      */
     @SuppressWarnings("unchecked")
-    public <K> Pair<T, T> getPairNodes(String key) {
+    public Pair<T, T> getPairNodes(String key) {
         final Object[] tmpArray = this.nodeArray;
         final int length = tmpArray.length;
         final int idx1 = Hashing.consistentHash(primary.hashString(key), length);
@@ -149,7 +149,7 @@ public class DoubleHash<T> {
      * @return the pair of server nodes
      */
     @SuppressWarnings("unchecked")
-    public <K> Pair<T, T> getPairNodes(long key) {
+    public Pair<T, T> getPairNodes(long key) {
         final Object[] tmpArray = this.nodeArray;
         final int length = tmpArray.length;
         final int idx1 = Hashing.consistentHash(primary.hashLong(key), length);
@@ -168,7 +168,7 @@ public class DoubleHash<T> {
      * @return the pair of server nodes
      */
     @SuppressWarnings("unchecked")
-    public <K> Pair<T, T> getPairNodes(int key) {
+    public Pair<T, T> getPairNodes(int key) {
         final Object[] tmpArray = this.nodeArray;
         final int length = tmpArray.length;
         final int idx1 = Hashing.consistentHash(primary.hashInt(key), length);

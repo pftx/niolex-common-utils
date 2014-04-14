@@ -17,9 +17,11 @@
  */
 package org.apache.niolex.commons.hash;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -34,7 +36,7 @@ import com.google.common.hash.Hashing;
  * This class is mean for use in high concurrency, Applications developers need to call prepare
  * to supply all the nodes(or supply in the constructor). And call add or remove at runtime
  * to adjust the hash ring. We will copy the whole hash ring in add & remove method to achieve
- * high concurrency with out using lock.
+ * high concurrency without using any lock.
  *
  * It was originally copied from Tom White's implementation found here:
  * https://weblogs.java.net/blog/tomwhite/archive/2007/11/consistent_hash.html
@@ -98,7 +100,9 @@ public class ConsistentHash<T> {
          */
         @Override
         public int hashCode(Object o, int seed) {
-            return (seed + o.toString() + seed).hashCode();
+            StringBuilder sb = new StringBuilder();
+            sb.append(seed).append(o).append(seed);
+            return sb.toString().hashCode();
         }
 
     }
@@ -239,11 +243,9 @@ public class ConsistentHash<T> {
      * @param node the node to be added
      */
     private void internalAdd(TreeMap<Integer, T> ring, T node) {
-        int START = hashFunction.hashCode(node);
-        if (START > Integer.MAX_VALUE - numberOfReplicas) {
-            START -= numberOfReplicas * 79;
-        }
-        for (int i = START; i < numberOfReplicas + START; i++) {
+        final int START = findStart(node);
+
+        for (int i = START; i < numberOfReplicas + START; ++i) {
             ring.put(hashFunction.hashCode(node, i), node);
         }
     }
@@ -259,15 +261,24 @@ public class ConsistentHash<T> {
         // We clone the hash ring.
         @SuppressWarnings("unchecked")
         TreeMap<Integer, T> ring = (TreeMap<Integer, T>) circle.clone();
-        int START = hashFunction.hashCode(node);
-        if (START > Integer.MAX_VALUE - numberOfReplicas) {
-            START -= numberOfReplicas * 79;
-        }
+        final int START = findStart(node);
+
         for (int i = START; i < numberOfReplicas + START; i++) {
             ring.remove(hashFunction.hashCode(node, i));
         }
         // We replace the old hash ring with this new ring.
         this.circle = ring;
+    }
+
+    /**
+     * Find the start index to add or remove this node.
+     *
+     * @param node the node to be added or removed
+     * @return the start index
+     */
+    private int findStart(T node) {
+        final int START = hashFunction.hashCode(node);
+        return (START > Integer.MAX_VALUE - numberOfReplicas) ? START - numberOfReplicas * 79 : START;
     }
 
     /**
@@ -294,7 +305,7 @@ public class ConsistentHash<T> {
      * @param key the key
      * @return the node list, which contains only two nodes
      */
-    public Collection<T> getNodeList(Object key) {
+    public List<T> getNodeList(Object key) {
         return getNodeList(key, 2);
     }
 
@@ -305,10 +316,11 @@ public class ConsistentHash<T> {
      * @param numberOfNodes the number of different nodes needed
      * @return the node list
      */
-    public Collection<T> getNodeList(Object key, final int numberOfNodes) {
-        HashSet<T> set = new HashSet<T>();
+    public List<T> getNodeList(Object key, final int numberOfNodes) {
+        HashSet<T> set = new HashSet<T>(numberOfNodes);
+        List<T> list = new ArrayList<T>(numberOfNodes);
         if (circle.isEmpty()) {
-            return set;
+            return list;
         }
         int hash = hashFunction.hashCode(key);
         // Find the next entry.
@@ -317,18 +329,21 @@ public class ConsistentHash<T> {
         boolean isTail = true;
         while (set.size() < numberOfNodes) {
             if (iter.hasNext()) {
-                set.add(iter.next());
+                T t = iter.next();
+                if (set.add(t)) {
+                    list.add(t);
+                }
             } else {
                 if (isTail) {
                     iter = circle.values().iterator();
                     isTail = false;
                 } else {
-                    throw new IllegalArgumentException("There are only " + set.size() + " different nodes, but request "
+                    throw new IllegalStateException("There are only " + set.size() + " different nodes, but request "
                             + numberOfNodes + " in total.");
                 }
             }
         }
-        return set;
+        return list;
     }
 
 }

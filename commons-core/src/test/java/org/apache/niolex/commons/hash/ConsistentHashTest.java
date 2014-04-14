@@ -17,15 +17,20 @@
  */
 package org.apache.niolex.commons.hash;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.niolex.commons.hash.ConsistentHash.GuavaHash;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -35,10 +40,44 @@ import org.junit.Test;
 public class ConsistentHashTest {
 
     /**
+     * Test the provided hash function for spread.
+     *
+     * @param func
+     */
+    protected void testFunc(ConsistentHash.HashFunction func) {
+        String root = "test-hash";
+        List<Integer> list = Lists.newArrayList(101);
+        list.add(func.hashCode(root));
+        for (int i = 0; i < 100; ++i) {
+            list.add(func.hashCode(root, i));
+        }
+        Collections.sort(list);
+        long inc = list.get(1) - list.get(0);
+        long avg = 0, cur;
+        for (int i = 2; i < 101; ++i) {
+            avg = inc / (i - 1);
+            cur = list.get(i) - list.get(i - 1);
+            cur = cur > avg * 4 ? avg * 3 : cur;
+            inc += cur;
+        }
+        System.out.println("Spread for [" + func.getClass().getSimpleName() + "] is - " + inc);
+    }
+
+    @Test
+    public final void testJVMHash() {
+        testFunc(ConsistentHash.JVMHash.INSTANCE);
+    }
+
+    @Test
+    public final void testGuavaHash() {
+        testFunc(ConsistentHash.GuavaHash.INSTANCE);
+    }
+
+    /**
      * Test method for {@link org.apache.niolex.commons.util.ConsistentHash#getNode(java.lang.Object)}.
      */
     @Test
-    public final void testGetNode() {
+    public final void testGetNodeJVM() {
         ConsistentHash<String> cHash = new ConsistentHash<String>();
         cHash.add("ididje3i840-92");
         cHash.add("e323dsfg45zad-");
@@ -47,13 +86,20 @@ public class ConsistentHashTest {
         cHash.add("32ja0f;qlkafkf");
         // ----------------------------------------
         String key = "This-First-Key";
-        System.out.print("testGetNode  JVM ");
+        System.out.print("testGetNode--JVM ");
         for (int j = 0; j < 10; ++j) {
             String i = cHash.getNode(j + key + j + key);
             System.out.print(i.charAt(0) + " ");
         }
         String i = cHash.getNode("This-First-Va");
-        SystemUtil.println("This-First-Va => %s", i);
+        assertEquals("e323dsfg45zad-", i);
+        i = cHash.getNode("This-First");
+        assertEquals("ididje3i840-92", i);
+        i = cHash.getNode("xie-ji-yun");
+        assertEquals("098023lasdalks", i);
+        i = cHash.getNode("let-s-go");
+        assertEquals("32ja0f;qlkafkf", i);
+        SystemUtil.println("let's go => %s", i);
     }
 
     /**
@@ -75,7 +121,14 @@ public class ConsistentHashTest {
             System.out.print(i.charAt(0) + " ");
         }
         String i = cHash.getNode("This-First-Va");
-        System.out.println("This-First-Va => " + i);
+        assertEquals("lads-m;sadna'd", i);
+        i = cHash.getNode("This-First");
+        assertEquals("e323dsfg45zad-", i);
+        i = cHash.getNode("xie-ji-yun");
+        assertEquals("098023lasdalks", i);
+        i = cHash.getNode("let-s-go");
+        assertEquals("lads-m;sadna'd", i);
+        SystemUtil.println("let's go => %s", i);
     }
 
     /**
@@ -91,21 +144,62 @@ public class ConsistentHashTest {
         cHash.add("9sd");
 
         Collection<String> nodeList = cHash.getNodeList("0-dafk30f", 3);
-        System.out.print("0-dafk30f =>" + nodeList);
         assertEquals(nodeList.size(), 3);
+        Iterator<String> iter = nodeList.iterator();
+        assertEquals("jdf", iter.next());
+        assertEquals("ejf", iter.next());
+        assertEquals("3wl", iter.next());
 
         nodeList = cHash.getNodeList("0932ldio", 3);
-        System.out.println("\t0932ldio =>" + nodeList);
         assertEquals(nodeList.size(), 3);
+        iter = nodeList.iterator();
+        assertEquals("ijd", iter.next());
+        assertEquals("3wl", iter.next());
+        assertEquals("9sd", iter.next());
+        // Try get 2
+        nodeList = cHash.getNodeList("0932ldio");
+        assertEquals(nodeList.size(), 2);
+        iter = nodeList.iterator();
+        assertEquals("ijd", iter.next());
+        assertEquals("3wl", iter.next());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void testAdd() throws Exception {
-        ConsistentHash<String> cHash = new ConsistentHash<String>(GuavaHash.INSTANCE, 5, Arrays.asList("23", "ef", "pod"));
+        ConsistentHash<String> cHash = new ConsistentHash<String>(GuavaHash.INSTANCE, 5,
+                Arrays.asList("23", "ef", "pod"));
         cHash.prepare("9j", "de", "qa");
         Collection<String> nodeList = cHash.getNodeList("@#093naf", 3);
-        System.out.println("ef, qa, pod] => " + nodeList);
-        cHash.getNodeList("32qrads", 7);
+        assertEquals(nodeList.size(), 3);
+        Iterator<String> iter = nodeList.iterator();
+        assertEquals("pod", iter.next());
+        assertEquals("23", iter.next());
+        assertEquals("ef", iter.next());
+
+        nodeList = cHash.getNodeList("32qrads", 6);
+        assertEquals(nodeList.size(), 6);
+        iter = nodeList.iterator();
+        assertEquals("qa", iter.next());
+        assertEquals("de", iter.next());
+        assertEquals("pod", iter.next());
+        assertEquals("9j", iter.next());
+        assertEquals("23", iter.next());
+        assertEquals("ef", iter.next());
+
+        nodeList = cHash.getNodeList("lex-next", 6);
+        assertEquals(nodeList.size(), 6);
+        iter = nodeList.iterator();
+        assertEquals("pod", iter.next());
+        assertEquals("de", iter.next());
+        assertEquals("9j", iter.next());
+        assertEquals("23", iter.next());
+        assertEquals("ef", iter.next());
+        assertEquals("qa", iter.next());
+
+        try {
+            cHash.getNodeList("32qrads", 7);
+            assertTrue(false);
+        } catch (IllegalStateException e) {};
     }
 
     @Test
@@ -124,16 +218,16 @@ public class ConsistentHashTest {
             }, 5, Arrays.asList("2", "ef", "pod"));
 
         cHash.add("Nice");
-        System.out.print("3a3f => " + cHash.getNode("3a3f"));
+        assertEquals("ef", cHash.getNode("3a3f"));
         cHash.remove("ef");
-        System.out.print(" 3a3f => " + cHash.getNode("3a3f"));
+        assertEquals("Nice", cHash.getNode("3a3f"));
         cHash.remove("Nice");
-        System.out.print(" 3a3f => " + cHash.getNode("3a3f"));
+        assertEquals("2", cHash.getNode("3a3f"));
         cHash.remove("2");
-        System.out.print(" 3a3f => " + cHash.getNode("3a3f"));
+        assertEquals("pod", cHash.getNode("3a3f"));
         cHash.remove("pod");
-        System.out.print(" 3a3f => " + cHash.getNode("3a3f"));
-        System.out.println(" 3a3f => " + cHash.getNodeList("3a3f"));
+        assertNull(cHash.getNode("3a3f"));
+        assertEquals(0, cHash.getNodeList("3a3f").size());
     }
 
     @Test
@@ -147,7 +241,7 @@ public class ConsistentHashTest {
         for (int i = 0; i < 2000; ++i) {
             String key = MockUtil.randString(8);
             String server1 = cHash.getNode(key);
-            String server2 = cHash.getNode(key);
+            String server2 = dHash.getNode(key);
             assertEquals(server1, server2);
         }
 
@@ -157,7 +251,7 @@ public class ConsistentHashTest {
         for (int i = 0; i < 2000; ++i) {
             String key = MockUtil.randString(9);
             String server1 = cHash.getNode(key);
-            String server2 = cHash.getNode(key);
+            String server2 = dHash.getNode(key);
             assertEquals(server1, server2);
         }
 
@@ -167,7 +261,7 @@ public class ConsistentHashTest {
         for (int i = 0; i < 2000; ++i) {
             String key = MockUtil.randString(7);
             String server1 = cHash.getNode(key);
-            String server2 = cHash.getNode(key);
+            String server2 = dHash.getNode(key);
             assertEquals(server1, server2);
         }
     }
