@@ -65,7 +65,7 @@ public class MultipleLock {
         System.out.println("Time - " + (System.currentTimeMillis() - in));
     }
 
-    public static void run() {
+    public void run() {
         while (atom.incrementAndGet() < 2000) {
             inc();
         }

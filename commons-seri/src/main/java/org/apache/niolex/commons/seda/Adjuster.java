@@ -59,7 +59,7 @@ public class Adjuster implements Runnable {
 	 *
 	 * @param s the stage need to be adjusted.
 	 */
-	public synchronized void addStage(Stage<?> s) {
+	public void addStage(Stage<?> s) {
 		stageList.add(s);
 	}
 

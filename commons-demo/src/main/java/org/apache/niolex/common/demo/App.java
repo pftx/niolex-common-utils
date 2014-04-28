@@ -26,6 +26,7 @@ public abstract class App extends HttpURLConnection
 
     public static void main(String[] args) {
         System.out.println((new Date()).getTime());
+        System.out.println((new Date(-13978034193460l)));
         System.out.println("\n**** Test system property");
         String fileName = SystemUtil.getSystemProperty("ConfigClient.configurationFile", "config-client-properties",
                 "config.client.property.file");

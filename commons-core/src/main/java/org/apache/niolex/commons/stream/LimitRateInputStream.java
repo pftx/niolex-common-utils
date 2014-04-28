@@ -41,6 +41,14 @@ public class LimitRateInputStream extends InputStream {
     private long chunk = CHECK_SIZE_THRESHOLD;
 
     /**
+     * Create a LimitRateInputStream with the rate of 20 MB/seconds
+     * @param delegate
+     */
+    public LimitRateInputStream(InputStream delegate) {
+        this(delegate, 20);
+    }
+
+    /**
      * Create a LimitRateInputStream with the given rate
      * @param delegate
      * @param rate MB/s
@@ -50,14 +58,6 @@ public class LimitRateInputStream extends InputStream {
         this.delegate = delegate;
         this.expectedRate = (rate * 1024 * 1024) / 1000000000L;
         startedTime = System.nanoTime();
-    }
-
-    /**
-     * Create a LimitRateInputStream with the rate of 20 MB/seconds
-     * @param delegate
-     */
-    public LimitRateInputStream(InputStream delegate) {
-        this(delegate, 20);
     }
 
     /**

@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.common.primitive;
 
+import org.apache.niolex.commons.util.SystemUtil;
+
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -28,17 +30,23 @@ public class Mod {
      * @param args
      */
     public static void main(String[] args) {
-        System.out.println("5%3 => " + (5%3));
-        System.out.println("5%-3 => " + (5%-3));
-        System.out.println("-5%3 => " + (-5%3));
-        System.out.println("-5%-3 => " + (-5%-3));
-        System.out.println("5%3 => " + (5%3));
+        System.out.println("求余数的法则：越界以后，余数没有任何连续性");
         int i = Integer.MAX_VALUE - 3, j = 0;
         while (j++ < 8) {
             int k = i % 7;
-            System.out.println(i + "%7 => " + (k < 0 ? k + 7 : k));
+            System.out.println((i > 0 ? "+" : "") + i
+                    + "%7 => " + (k >= 0 ? "+" : "") + k + " 修正  " + (k < 0 ? -k : k));
             ++i;
         }
+        System.out.println("求余数的法则：不管被除数的符号如何变化，商和余数的绝对值不变，只是变化符号");
+        countMod(5, 3);
+        countMod(5, -3);
+        countMod(-5, 3);
+        countMod(-5, -3);
+    }
+
+    public static void countMod(int p, int r) {
+        SystemUtil.println("% d / % d = %2d Mod %2d", p, r, (p / r), (p % r));
     }
 
 }

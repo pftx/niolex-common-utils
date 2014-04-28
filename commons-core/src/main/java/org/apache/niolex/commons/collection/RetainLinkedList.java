@@ -62,6 +62,10 @@ public class RetainLinkedList<E> {
 
 	/**
 	 * The internal head, which is a stub to mark the head of this List.
+	 * Retain Head      Visit Head                    Tail
+	 * |       K        |                             |
+	 * |                |                             |
+	 * ------------------------------------------------
 	 */
 	private final Link<E> head = new Link<E>();
 
@@ -127,8 +131,7 @@ public class RetainLinkedList<E> {
 			if (pointer.next == null) {
 				return null;
 			} else {
-				Link<E> tmp = pointer.next;
-				pointer = tmp;
+				pointer = pointer.next;
 
 				if (headPointerSize >= retainSize) {
 					Link<E> t = head.next;
@@ -138,7 +141,7 @@ public class RetainLinkedList<E> {
 				} else {
 					++headPointerSize;
 				}
-				return tmp.e;
+				return pointer.e;
 			}
 		} finally {
 			headLock.unlock();
