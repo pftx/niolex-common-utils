@@ -1,5 +1,5 @@
 /**
- * Election.java
+ * Elector.java
  *
  * Copyright 2013 the original author or authors.
  *

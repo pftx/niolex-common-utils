@@ -20,7 +20,6 @@ package org.apache.niolex.notify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +30,8 @@ import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.zookeeper.core.ZKConnector;
 import org.apache.niolex.zookeeper.core.ZKListener;
+
+import com.google.common.collect.Maps;
 
 /**
  * The core class of this notify framework. Watch the changes of node data and node properties.
@@ -68,8 +69,16 @@ public class Notify implements ZKListener {
 
     }
 
-    private final Map<ByteArray, byte[]> properties = new HashMap<ByteArray, byte[]>();
+    /**
+     * This list must be visited in synchronized block.
+     */
     private final List<Listener> list = new ArrayList<Listener>();
+
+    /**
+     * Use concurrent one to reduce lock usage.
+     */
+    private final Map<ByteArray, byte[]> properties = Maps.newConcurrentMap();
+
     private final ZKConnector zkConn;
     private final String basePath;
 
@@ -106,9 +115,21 @@ public class Notify implements ZKListener {
      *
      * @param data the new data.
      */
-    public synchronized void updateData(byte[] data) {
+    public void updateData(byte[] data) {
         this.zkConn.updateNodeData(basePath, data);
         // We will not set the new data to local directly, it will be updated by events.
+    }
+
+    /**
+     * Fired when the data of this notify changed.
+     *
+     * @param data the new data
+     */
+    public synchronized void onDataChange(byte[] data) {
+        this.data = data;
+        for (Listener li : list) {
+            li.onDataChange(data);
+        }
     }
 
     /**
@@ -127,17 +148,17 @@ public class Notify implements ZKListener {
      * @param key the property key
      * @return true if deleted, false if not found.
      */
-    public synchronized boolean deleteProperty(byte[] key) {
+    public boolean deleteProperty(byte[] key) {
         ByteArray k = new ByteArray(key);
         byte[] v = this.properties.get(k);
-        if (v != null) {
-            // Old property exist, we delete it.
-            String p = KVBase64Util.kvToBase64(key, v);
-            this.zkConn.deleteNode(basePath + "/" + p);
-            this.properties.remove(k);
-            return true;
+        if (v == null) {
+            return false;
         }
-        return false;
+        // Old property exist, we delete it.
+        String p = KVBase64Util.kvToBase64(key, v);
+        this.zkConn.deleteNode(basePath + "/" + p);
+        this.properties.remove(k);
+        return true;
     }
 
     /**
@@ -158,7 +179,7 @@ public class Notify implements ZKListener {
      * @param key the key to replace
      * @param value the new value
      */
-    public synchronized void replaceProperty(byte[] key, byte[] value) {
+    public void replaceProperty(byte[] key, byte[] value) {
         ByteArray k = new ByteArray(key);
         byte[] v = this.properties.get(k);
         if (v != null) {
@@ -194,17 +215,6 @@ public class Notify implements ZKListener {
         return list.remove(listener);
     }
 
-    /**
-     * Fired when the data of this notify changed.
-     *
-     * @param data the new data
-     */
-    public synchronized void onDataChange(byte[] data) {
-        this.data = data;
-        for (Listener li : list) {
-            li.onDataChange(data);
-        }
-    }
 
     /**
      * Fired when the children of this notify changed.
