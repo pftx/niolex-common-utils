@@ -262,7 +262,7 @@ public abstract class Stage<Input extends Message> {
 		@Override
 		public final void run() {
 			// We run this loop endlessly.
-			while (stageStatus < Stage.STOP && isWorking) {
+			while (stageStatus < STOP && isWorking) {
 				Input in = null;
 				long inTime = 0;
 				try {
@@ -547,7 +547,7 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * Shutdown this stage and the internal pool.
 	 */
-	public synchronized void shutdown() {
+	public void shutdown() {
 		stageStatus = SHUTDOWN;
 		if (inputQueue.size() <= 2 * currentPoolSize) {
 			// We have only a small number of messages, we must wait until it's down.
