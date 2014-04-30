@@ -118,7 +118,7 @@ public class Syncer implements InvocationHandler {
     }
 
     // The internal cache for higher speed.
-    private final Map<Method, Integer> cache = Maps.newHashMap();
+    private final Map<Method, Integer> cache = Maps.newConcurrentMap();
 
     // The internal lock for this class.
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -171,44 +171,34 @@ public class Syncer implements InvocationHandler {
             String name = method.getName();
             if (writePattern.matcher(name).matches()) {
                 // Write lock.
-                put(method, LOCK_WRITE);
+                cache.put(method, LOCK_WRITE);
                 return Finally.useWriteLock(lock, host, method, args);
             } else if (readPattern.matcher(name).matches()) {
                 // Read lock.
-                put(method, LOCK_READ);
+                cache.put(method, LOCK_READ);
                 return Finally.useReadLock(lock, host, method, args);
             } else {
                 // No lock.
-                put(method, NO_LOCK);
+                cache.put(method, NO_LOCK);
                 return method.invoke(host, args);
             }
         } else {
             // Annotation way.
             if (method.isAnnotationPresent(Write.class)) {
                 // Write lock.
-                put(method, LOCK_WRITE);
+                cache.put(method, LOCK_WRITE);
                 return Finally.useWriteLock(lock, host, method, args);
             } else if (method.isAnnotationPresent(Read.class)) {
                 // Read lock.
-                put(method, LOCK_READ);
+                cache.put(method, LOCK_READ);
                 return Finally.useReadLock(lock, host, method, args);
             } else {
                 // No lock.
-                put(method, NO_LOCK);
+                cache.put(method, NO_LOCK);
                 return method.invoke(host, args);
             }
         }
         // This path will not happen.
-    }
-
-    /**
-     * Put the lock status into cache.
-     *
-     * @param method the method
-     * @param lockStatus the lock status
-     */
-    private synchronized void put(Method method, Integer lockStatus) {
-        cache.put(method, lockStatus);
     }
 
 }

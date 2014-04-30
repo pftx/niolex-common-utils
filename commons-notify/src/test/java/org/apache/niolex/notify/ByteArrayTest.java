@@ -55,6 +55,7 @@ public class ByteArrayTest {
         ByteArray t1 = new ByteArray(a);
         byte t2 = 3;
         assertNotEquals(t1, t2);
+        assertEquals(t1, t1);
     }
 
     /**

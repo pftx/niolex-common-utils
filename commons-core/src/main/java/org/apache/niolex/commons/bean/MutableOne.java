@@ -113,7 +113,7 @@ public class MutableOne<T> {
     /**
      * Get the current data.
      *
-     * @return  the current data
+     * @return the current data
      */
     public T data() {
         return one;

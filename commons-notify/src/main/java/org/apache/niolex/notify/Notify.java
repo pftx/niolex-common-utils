@@ -214,7 +214,7 @@ public class Notify implements ZKListener {
     public void onChildrenChange(List<String> list) {
         Pair<List<String>,List<String>> pair = CollectionUtil.intersection(this.children, list);
         for (String s : pair.a) {
-            // All the delete item.
+            // All the deleted item.
             if (Base64.isBase64(s)) {
                 // We try to decode it.
                 try {
