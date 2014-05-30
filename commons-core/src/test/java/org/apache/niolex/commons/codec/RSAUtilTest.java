@@ -19,13 +19,13 @@ package org.apache.niolex.commons.codec;
 
 import static org.mockito.Mockito.mock;
 
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Map;
 
+import org.apache.niolex.commons.file.FileUtil;
 import org.apache.niolex.commons.net.NetExceptionTest;
 import org.apache.niolex.commons.test.MockUtil;
-import org.apache.niolex.commons.file.FileUtil;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,9 +44,9 @@ public class RSAUtilTest {
 
     @BeforeClass
     public static final void init() throws Exception {
-        Map<String, Object> keyPair = RSAUtil.initKey();
-        privateKey = RSAUtil.getPrivateKey(keyPair);
-        publicKey = RSAUtil.getPublicKey(keyPair);
+        KeyPair keyPair = RSAUtil.initKey();
+        privateKey = RSAUtil.encodeKeyToBase64(keyPair.getPrivate());
+        publicKey = RSAUtil.encodeKeyToBase64(keyPair.getPublic());
     }
 
     @Test(expected=IllegalArgumentException.class)

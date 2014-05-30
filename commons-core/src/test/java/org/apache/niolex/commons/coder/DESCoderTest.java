@@ -34,12 +34,18 @@ public class DESCoderTest {
 
     private static DESCoder dCoder;
     static {
-        try {
-        	dCoder = new DESCoder();
-            dCoder.initKey("UadMJuXO98g=");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        dCoder = new DESCoder();
+        dCoder.initKey("sxFO4PRMcdvhQBAMqtR+WFFUyIXZtgRD");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testInitKey() throws Exception {
+        new DESCoder().initKey("not yet".getBytes());
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testInitKeyString() throws Exception {
+        new DESCoder().initKey("not yet");
     }
 
     @Test
@@ -145,7 +151,7 @@ public class DESCoderTest {
         System.out.println("加密前：" + b + "\n解密后：" + c2);
         System.out.println("中间结果：" + a);
         assertEquals("", c2);
-        assertEquals("t7LrBCNVF+xKbc4Lsq73JHDQ0ZySEL3rD4LjQKSHUTdmiLW+au522jdW67kpntX0bO4kL2eEuTy/aO7qtZDh0w-2", a);
+        assertEquals("LWYVZPjB/QboEiNM570HvOxWLUNDzn0+qAtciUrP2KbnsjO1sHCiEGKficAyGK46yVDM5Dojxvw9fouob7j/3g-2", a);
     }
 
     @Test

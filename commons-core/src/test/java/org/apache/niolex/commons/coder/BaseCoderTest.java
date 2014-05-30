@@ -34,7 +34,7 @@ public class BaseCoderTest {
 	public static class Mock extends BaseCoder {
 
 		@Override
-		public void initKey(String key) throws Exception {
+		public void initKey(String key) {
 		}
 
 		@Override

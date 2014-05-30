@@ -23,6 +23,7 @@ import org.apache.niolex.commons.codec.StringUtil;
 
 /**
  * 加密解密框架的基础接口。定义了操作二进制和操作字符串的方法。
+ * The basic interface for the Coder framework.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2011-7-13$
@@ -37,13 +38,13 @@ public interface Coder {
      * @param key
      * @throws Exception
      */
-    public void initKey(String key) throws Exception;
+    public void initKey(String key);
 
     /**
      * 加密
      *
      * @param data
-     * @return the object
+     * @return the encrypted data
      * @throws Exception
      */
     public byte[] encrypt(byte[] data) throws Exception;
@@ -52,7 +53,7 @@ public interface Coder {
      * 解密
      *
      * @param data
-     * @return the object
+     * @return the decrypted data
      * @throws Exception
      */
     public byte[] decrypt(byte[] data) throws Exception;
@@ -60,8 +61,8 @@ public interface Coder {
     /**
      * 加密字符串
      *
-     * @param str
-     * @return the object
+     * @param str the input string
+     * @return the encoded string
      * @throws Exception
      */
     public String encode(String str) throws Exception;
@@ -69,8 +70,8 @@ public interface Coder {
     /**
      * 解密字符串
      *
-     * @param str
-     * @return the object
+     * @param str the input string
+     * @return the decoded string
      * @throws Exception
      */
     public String decode(String str) throws Exception;

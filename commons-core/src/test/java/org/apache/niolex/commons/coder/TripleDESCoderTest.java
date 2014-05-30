@@ -37,14 +37,10 @@ public class TripleDESCoderTest {
     private static TripleDESCoder coder = null;
 
     static {
-        try {
-            String key = KeyUtil.genKey("I am a gmail good man", "TripleDES", 64, 168);
-            System.out.println("key => " + key);
-            coder = new TripleDESCoder();
-            coder.initKey(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String key = KeyUtil.genKey("I am a gmail good man", "TripleDES", 64, 168);
+        System.out.println("key => " + key);
+        coder = new TripleDESCoder();
+        coder.initKey(key);
     }
 
     @Test
@@ -71,5 +67,10 @@ public class TripleDESCoderTest {
         System.out.println("中间结果：" + Base16Util.byteToBase16(a));
         assertEquals(b, new String(o, StringUtil.UTF_8));
         assertTrue(Arrays.equals(b.getBytes(StringUtil.UTF_8), o));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testInitKey() throws Exception {
+        new TripleDESCoder().initKey("not yet implemented");
     }
 }

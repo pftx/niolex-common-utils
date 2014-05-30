@@ -33,7 +33,6 @@ import org.apache.niolex.commons.bean.Pair;
  * 将64进制字符串转换成KV byte数组
  *
  * @see org.apache.commons.codec.binary.Base64
- * @category niolex-common-utils -> 公共库 -> 编码加密
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
  * @since 2012-12-27

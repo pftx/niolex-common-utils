@@ -579,4 +579,42 @@ public class StringUtilTest extends StringUtil {
         assertEquals("[IT's Amazing!]", list.toString());
     }
 
+    @Test
+    public void testTrimMode() throws Exception {
+        assertEquals(TrimMode.BOTH.toString(), "BOTH");
+        assertEquals(TrimMode.BOTH, TrimMode.valueOf("BOTH"));
+    }
+
+    @Test
+    public void testTrimStringChar() throws Exception {
+        assertEquals("", trim("0", '0'));
+        assertEquals("", trim("000000", '0'));
+        assertEquals("1", trim("001", '0'));
+        assertEquals("1", trim("100", '0'));
+        assertEquals("1", trim("00100", '0'));
+        assertEquals("12332", trim("12332", '0'));
+        assertEquals("12332", trim("000012332", '0'));
+        assertEquals("12332", trim("12332000000000", '0'));
+        assertEquals("12332", trim("00001233200000", '0'));
+    }
+
+    @Test
+    public void testTrimStringCharTrimMode() throws Exception {
+        assertEquals("12332", trim("00012332", '0', TrimMode.LEFT));
+        assertEquals("1233200", trim("0001233200", '0', TrimMode.LEFT));
+        assertEquals("12332", trim("1233200", '0', TrimMode.RIGHT));
+        assertEquals("00012332", trim("0001233200", '0', TrimMode.RIGHT));
+        assertEquals("", trim("00", '0', TrimMode.RIGHT));
+        assertEquals("", trim("", '0', TrimMode.RIGHT));
+        assertEquals("b", trim("b000", '0', TrimMode.RIGHT));
+        assertEquals("", trim("00", '0', TrimMode.LEFT));
+        assertEquals("", trim("", '0', TrimMode.LEFT));
+        assertEquals("a", trim("000a", '0', TrimMode.LEFT));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testTrimStringCharTrimModeEx() throws Exception {
+        trim(null, '0', TrimMode.LEFT);
+    }
+
 }

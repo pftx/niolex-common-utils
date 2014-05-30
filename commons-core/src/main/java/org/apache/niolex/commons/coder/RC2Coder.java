@@ -48,7 +48,7 @@ public class RC2Coder extends BaseCoder {
      * @throws Exception
      */
     @Override
-    public void initKey(String key) throws Exception {
+    public void initKey(String key) {
         byte[] keyData = Base64Util.base64toByte(key);
         ivParam = new RC2ParameterSpec(128, keyData, 0);
         secretKey = new SecretKeySpec(keyData, keyData.length - 16, 16, ALGORITHM);

@@ -18,11 +18,11 @@
 package org.apache.niolex.commons.codec;
 
 import java.security.KeyFactory;
+import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,7 +36,7 @@ import org.junit.Test;
  */
 public class OldRSAHelperTest {
 
-    private static Map<String, Object> initKeys = null;
+    private static KeyPair initKeys = null;
 
     static {
         try {
@@ -55,7 +55,7 @@ public class OldRSAHelperTest {
 
     @Test
     public void testPublicKey() {
-        PublicKey key = (PublicKey)initKeys.get(RSAUtil.PUBLIC_KEY);
+        PublicKey key = initKeys.getPublic();
         String xml = RSAHelper.encodePublicKeyToXml(key);
         System.out.println("Pubk => " + xml);
         PublicKey key2 = RSAHelper.decodePublicKeyFromXml(xml);
@@ -64,7 +64,7 @@ public class OldRSAHelperTest {
 
     @Test
     public void testPrivateKey() {
-        PrivateKey key = (PrivateKey)initKeys.get(RSAUtil.PRIVATE_KEY);
+        PrivateKey key = initKeys.getPrivate();
         String xml = RSAHelper.encodePrivateKeyToXml(key);
         System.out.println("Prik => " + xml);
         PrivateKey key2 = RSAHelper.decodePrivateKeyFromXml(xml);

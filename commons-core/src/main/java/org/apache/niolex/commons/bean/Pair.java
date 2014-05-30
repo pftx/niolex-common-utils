@@ -20,6 +20,8 @@ package org.apache.niolex.commons.bean;
 /**
  * A common utility class to store two variables into one object.
  *
+ * @param <A> the first data type
+ * @param <B> the second data type
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-7-12
  */
@@ -65,7 +67,7 @@ public class Pair<A, B> {
      */
     @Override
     public String toString() {
-        return "{a=" + a + ", b=" + b + "}";
+        return String.format("{a=%s, b=%s}", a, b);
     }
 
     /**

@@ -32,7 +32,7 @@ import org.apache.commons.lang.ArrayUtils;
 /**
  * 有些Cipher无法处理大数据，只能处理固定的块大小。使用本工具可以解决这个问题。
  *
- * @used RSAUtil
+ * @see RSAUtil
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2012-4-9$
  */
@@ -90,7 +90,8 @@ public abstract class CipherUtil {
      * @throws BadPaddingException
      * @throws ShortBufferException
      */
-    public static byte[] process(Cipher cipher, int blockSize, byte[] input) throws IllegalBlockSizeException, BadPaddingException, ShortBufferException {
+    public static byte[] process(Cipher cipher, int blockSize, byte[] input) throws IllegalBlockSizeException,
+            BadPaddingException, ShortBufferException {
         if (input.length <= blockSize) {
             return cipher.doFinal(input);
         }
@@ -106,7 +107,9 @@ public abstract class CipherUtil {
                 break;
             }
         }
-        return ArrayUtils.subarray(output, 0, outputIndex);
+        if (outputIndex != OUTPUT_SIZE)
+            return ArrayUtils.subarray(output, 0, outputIndex);
+        return output;
     }
 
 }

@@ -26,16 +26,18 @@ import java.util.List;
  *
  * If user want to be notified when data change, please add a listener to it.
  *
+ * @param <T> the data type
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
  * @since 2013-1-6
+ * @see DataChangeListener
  */
 public class MutableOne<T> {
 
     /**
-     * The listener interface for anyone want to be notified when data changed.
+     * The listener interface for anyone he who want to be notified when data changed.
      *
-     * @param <T>
+     * @param <T> the data type
      * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
      * @version 1.0.5
      * @since 2013-1-6

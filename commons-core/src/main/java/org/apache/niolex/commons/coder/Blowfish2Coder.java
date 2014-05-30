@@ -45,16 +45,17 @@ public class Blowfish2Coder extends BaseCoder {
      * </code>
      */
 
-    private byte[] secretKey;
+    private Blowfish2 blow;
 
     /**
      * 初始化密钥和IV参数
      *
      * @param key
-     * @throws Exception
      */
-    public void initKey(String key) throws Exception {
-        secretKey = Base64Util.base64toByte(key);
+    @Override
+    public void initKey(String key) {
+        byte[] secretKey = Base64Util.base64toByte(key);
+        blow = new Blowfish2(secretKey);
     }
 
     /**
@@ -64,9 +65,8 @@ public class Blowfish2Coder extends BaseCoder {
      * @return the object
      * @throws Exception
      */
+    @Override
     public byte[] encrypt(byte[] data) throws Exception {
-        Blowfish2 blow = new Blowfish2(secretKey);
-
         return blow.encrypt(data);
     }
 
@@ -78,9 +78,8 @@ public class Blowfish2Coder extends BaseCoder {
      * @return the object
      * @throws Exception
      */
+    @Override
     public byte[] decrypt(byte[] data) throws Exception {
-        Blowfish2 blow = new Blowfish2(secretKey);
-
         return blow.decrypt(data);
     }
 }

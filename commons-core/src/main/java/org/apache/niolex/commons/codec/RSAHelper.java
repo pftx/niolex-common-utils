@@ -32,15 +32,13 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.niolex.commons.internal.IgnoreException;
 
 
 /**
  * This class is for generate RSA Keys and transform keys to XML description file or base64 string.
- * The XML description file can be used to exchange RSA Keys, especially for .Net project.
+ * The XML description file can be used to exchange RSA Keys, especially for .Net projects.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -50,25 +48,17 @@ public abstract class RSAHelper {
 
     public static final String ALGORITHM = "RSA";
     public static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
-    public static final String PUBLIC_KEY = "RSAPublicKey";
-    public static final String PRIVATE_KEY = "RSAPrivateKey";
 
     /**
      * Initialize the Key pair with 1024bit size.
      *
-     * @return the Key Map
+     * @return the Key Pair storing both keys
      * @throws NoSuchAlgorithmException If Your JDK don't support RSA.
      */
-    public static Map<String, Object> initKey() throws NoSuchAlgorithmException {
+    public static KeyPair initKey() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(ALGORITHM);
         keyPairGen.initialize(1024);
-        KeyPair keyPair = keyPairGen.generateKeyPair();
-
-        Map<String, Object> keyMap = new HashMap<String, Object>(2);
-
-        keyMap.put(PUBLIC_KEY, keyPair.getPublic());
-        keyMap.put(PRIVATE_KEY, keyPair.getPrivate());
-        return keyMap;
+        return keyPairGen.generateKeyPair();
     }
 
     /**
@@ -104,18 +94,6 @@ public abstract class RSAHelper {
     }
 
     /**
-     * Get the base64 encoded private key specification
-     *
-     * @param keyMap the Key Map
-     * @return the base64 encoded private key specification
-     */
-    public static String getPrivateKey(Map<String, Object> keyMap) {
-        Key key = (Key) keyMap.get(PRIVATE_KEY);
-
-        return Base64Util.byteToBase64(key.getEncoded());
-    }
-
-    /**
      * Decode the public key from the base64 encoded public key specification.
      *
      * @param key the base64 encoded public key specification
@@ -138,14 +116,12 @@ public abstract class RSAHelper {
     }
 
     /**
-     * Get the base64 encoded public key specification
+     * Encode the (public/private) key into base64 string specification.
      *
-     * @param keyMap the Key Map
-     * @return the base64 encoded public key specification
+     * @param key the key to be encoded
+     * @return the base64 encoded key specification
      */
-    public static String getPublicKey(Map<String, Object> keyMap) {
-        Key key = (Key) keyMap.get(PUBLIC_KEY);
-
+    public static String encodeKeyToBase64(Key key) {
         return Base64Util.byteToBase64(key.getEncoded());
     }
 
@@ -245,10 +221,11 @@ public abstract class RSAHelper {
     }
 
     /**
-     * Get the real middle string between tags.
-     * @param xml
-     * @param start
-     * @param end
+     * Get the real middle string between the tags.
+     *
+     * @param xml the XML string
+     * @param start the start tag
+     * @param end the end tag
      * @return the middle string
      */
     public static String getMiddleString(String xml, String start, String end) {

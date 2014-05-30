@@ -51,7 +51,7 @@ public class BeanUtil {
 
     /**
      * Merge the non null properties from the source bean to the target bean.
-     * We will not merge default numeric primitives too.
+     * We will not merge default numeric primitives(0 for int long etc, 0.0 for float double).
      *
      * @param to the target bean
      * @param from the source bean
@@ -71,7 +71,7 @@ public class BeanUtil {
      */
     public static final <To, From> To merge(To to, From from, boolean mergeDefault) {
         try {
-            HashMap<String, Method> writeMap = prepareWriteMethodMap(to.getClass());
+            Map<String, Method> writeMap = prepareWriteMethodMap(to.getClass());
             BeanInfo fromInfo = Introspector.getBeanInfo(from.getClass());
             // Iterate over all the attributes of from, do copy here.
             for (PropertyDescriptor descriptor : fromInfo.getPropertyDescriptors()) {
@@ -104,11 +104,11 @@ public class BeanUtil {
     /**
      * Parse all the write methods and prepare them to the hash map.
      *
-     * @param toClass the class to introspect
+     * @param toClass the class to be introspected
      * @return the hash map
      * @throws IntrospectionException
      */
-    public static HashMap<String, Method> prepareWriteMethodMap(Class<?> toClass) throws IntrospectionException {
+    public static Map<String, Method> prepareWriteMethodMap(Class<?> toClass) throws IntrospectionException {
         BeanInfo toInfo = Introspector.getBeanInfo(toClass);
         HashMap<String, Method> writeMap = Maps.newHashMap();
         // Iterate over all the attributes of to, prepare write methods.
@@ -148,7 +148,7 @@ public class BeanUtil {
      */
     public static final <To> To merge(To to, Map<String, Object> from) {
         try {
-            HashMap<String, Method> writeMap = prepareWriteMethodMap(to.getClass());
+            Map<String, Method> writeMap = prepareWriteMethodMap(to.getClass());
             for (Map.Entry<String, Object> entry : from.entrySet()) {
                 Method writeMethod = writeMap.get(entry.getKey());
                 if (writeMethod == null) {

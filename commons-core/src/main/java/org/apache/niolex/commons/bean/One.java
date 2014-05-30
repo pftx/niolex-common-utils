@@ -20,6 +20,7 @@ package org.apache.niolex.commons.bean;
 /**
  * A common utility class to store one object.
  *
+ * @param <T> the data type
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-12-5$
  */
@@ -67,7 +68,7 @@ public class One<T> {
      */
     @Override
     public String toString() {
-        return "{" + a + "}";
+        return String.format("{%s}", a);
     }
 
 }

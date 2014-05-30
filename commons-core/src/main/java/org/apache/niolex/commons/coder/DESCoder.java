@@ -22,6 +22,7 @@ import java.security.Key;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.niolex.commons.codec.Base64Util;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ public class DESCoder extends BaseCoder {
     private static final Logger LOG = LoggerFactory.getLogger(DESCoder.class);
 
     private static final String ALGORITHM = "DES";
+    public static final String TRANSFORMATION = "DES/CBC/PKCS5Padding";
+    private IvParameterSpec ivParam;
     private Key key;
 
     /**
@@ -46,10 +49,20 @@ public class DESCoder extends BaseCoder {
      * @throws Exception
      */
     @Override
-    public void initKey(String key) throws Exception {
-        DESKeySpec dks = new DESKeySpec(Base64Util.base64toByte(key));
-        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
-    	this.key = keyFactory.generateSecret(dks);
+    public void initKey(String key) {
+        byte[] keyData = Base64Util.base64toByte(key);
+        ivParam = new IvParameterSpec(keyData, 0, 8);
+        initKey(keyData);
+    }
+
+    protected void initKey(byte[] keyData) {
+        try {
+            DESKeySpec dks = new DESKeySpec(keyData, keyData.length - 8);
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
+            this.key = keyFactory.generateSecret(dks);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to init this key.", e);
+        }
     }
 
     /**
@@ -61,8 +74,8 @@ public class DESCoder extends BaseCoder {
      */
     @Override
     public byte[] encrypt(byte[] data) throws Exception {
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.ENCRYPT_MODE, key);
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+        cipher.init(Cipher.ENCRYPT_MODE, key, ivParam);
 
         return cipher.doFinal(data);
     }
@@ -76,8 +89,8 @@ public class DESCoder extends BaseCoder {
      */
     @Override
     public byte[] decrypt(byte[] data) throws Exception {
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, key);
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+        cipher.init(Cipher.DECRYPT_MODE, key, ivParam);
 
         return cipher.doFinal(data);
     }

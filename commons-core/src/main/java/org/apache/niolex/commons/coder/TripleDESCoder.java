@@ -66,13 +66,17 @@ public class TripleDESCoder extends BaseCoder {
      * @throws IOException
      */
     @Override
-    public void initKey(String key) throws Exception {
+    public void initKey(String key) {
         byte[] keyData = Base64Util.base64toByte(key);
         ivParam = new IvParameterSpec(keyData, 0, 8);
-        // DESedeKey always length 24 bytes
-        KeySpec keySpec = new DESedeKeySpec(keyData, keyData.length - 24);
-        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
-        secretKey = keyFactory.generateSecret(keySpec);
+        try {
+            // DESedeKey always length 24 bytes
+            KeySpec keySpec = new DESedeKeySpec(keyData, keyData.length - 24);
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
+            secretKey = keyFactory.generateSecret(keySpec);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to init this key.", e);
+        }
     }
 
     /**

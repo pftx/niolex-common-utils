@@ -44,9 +44,9 @@ public class AESCoder extends BaseCoder {
      * 初始化密钥和IV参数
      *
      * @param key
-     * @throws Exception
      */
-    public void initKey(String key) throws Exception {
+    @Override
+    public void initKey(String key) {
         byte[] keyData = Base64Util.base64toByte(key);
         ivParam = new IvParameterSpec(keyData, 0, 16);
         secretKey = new SecretKeySpec(keyData, 16, keyData.length - 16, ALGORITHM);
@@ -59,6 +59,7 @@ public class AESCoder extends BaseCoder {
      * @return the encrypted data
      * @throws Exception
      */
+    @Override
     public byte[] encrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParam);
@@ -73,6 +74,7 @@ public class AESCoder extends BaseCoder {
      * @return the decrypted data
      * @throws Exception
      */
+    @Override
     public byte[] decrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParam);

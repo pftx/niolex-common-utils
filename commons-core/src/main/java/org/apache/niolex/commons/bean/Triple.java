@@ -20,6 +20,9 @@ package org.apache.niolex.commons.bean;
 /**
  * A common utility class to store three variables into one object.
  *
+ * @param <X> the first data type
+ * @param <Y> the second data type
+ * @param <Z> the third data type
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-12-5$
  */
@@ -28,9 +31,9 @@ public class Triple<X, Y, Z> {
     /**
      * Create a Triple with the specified value.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the first data
+     * @param y the second data
+     * @param z the third data
      */
     public static <X, Y, Z> Triple<X, Y, Z> create(X x, Y y, Z z) {
         return new Triple<X, Y, Z>(x, y, z);

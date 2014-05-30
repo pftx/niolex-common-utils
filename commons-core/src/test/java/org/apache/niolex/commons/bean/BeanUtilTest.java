@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 import java.util.Map;
 
 import org.apache.niolex.commons.util.Const;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
@@ -166,6 +167,42 @@ public class BeanUtilTest extends BeanUtil {
     public void testMergeFailure() throws Exception {
         A a = new A();
         merge(a, null, true);
+    }
+
+    @Test
+    public void testMergeSpeed() {
+        A a = new A();
+        B b = new B();
+        b.any = this;
+        b.b = Boolean.TRUE;
+        long in, t1, t2;
+        for (int i = 0; i < 10; ++i) {
+            in = System.nanoTime();
+            merge2(a, b);
+            t1 = System.nanoTime() - in;
+            in = System.nanoTime();
+            copy(a, b);
+            t2 = System.nanoTime() - in;
+            in = t2 * 1000 / t1;
+            SystemUtil.println("Ratio : %d‰\n", in);
+        }
+    }
+
+    public void merge2(A a, B b) {
+        for (int i = 0; i < 10000; ++i) {
+            merge(a, b, true);
+        }
+    }
+
+    public void copy(A a, B b) {
+        for (int i = 0; i < 10000; ++i) {
+            a.setAny(b.getAny());
+            a.setB(b.getB());
+            a.setFmt(b.getFmt().doubleValue());
+            a.setI(b.getI());
+            a.setName(b.getName());
+            a.setNum(b.getNum().longValue());
+        }
     }
 
     static class A {

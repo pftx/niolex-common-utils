@@ -30,8 +30,6 @@ import java.security.NoSuchAlgorithmException;
  * 2. public static final boolean md5Check(String md5, String... plainTexts)
  * 根据输入的MD5签名和字符串列表进行校验
  *
- * @used 暂无项目使用
- * @category niolex-common-utils -> 公共库 -> 编码加密
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */

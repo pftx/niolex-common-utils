@@ -27,6 +27,7 @@ import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.niolex.commons.internal.IgnoreException;
+import org.apache.niolex.commons.test.Check;
 
 import com.google.common.collect.Lists;
 
@@ -167,10 +168,10 @@ public abstract class StringUtil extends StringUtils {
 	 * @return the result string
 	 */
 	public static final String join(String[] strs, String sep) {
-		StringBuilder sb = new StringBuilder();
 		if (strs == null || strs.length == 0) {
 			return "";
 		}
+		StringBuilder sb = new StringBuilder();
 		sb.append(strs[0]);
 		for (int i = 1; i < strs.length; ++i) {
 			sb.append(sep).append(strs[i]);
@@ -197,10 +198,10 @@ public abstract class StringUtil extends StringUtils {
 	 * @return the result string
 	 */
 	public static final String join(Collection<String> strs, String sep) {
-		StringBuilder sb = new StringBuilder();
 		if (strs == null || strs.size() == 0) {
 			return "";
 		}
+		StringBuilder sb = new StringBuilder();
 		Iterator<String> it = strs.iterator();
 		sb.append(it.next());
 		while (it.hasNext()) {
@@ -213,7 +214,7 @@ public abstract class StringUtil extends StringUtils {
 	 * Split the string into tokens by the specified separator. We will preserve all the empty
 	 * tokens if you need.
 	 * <br>
-	 * This is a replacement of {@link String#split(String)}, which is using regex.
+	 * This is a replacement of {@link String#split(String)}, which using regex.
 	 *
 	 * @param str the string to be split
 	 * @param separator the separator
@@ -390,6 +391,56 @@ public abstract class StringUtil extends StringUtils {
             r += rl;
         }
         return list;
+    }
+
+    /**
+     * The trim mode used to guide {@link StringUtil#trim(String, char, TrimMode)}.
+     *
+     * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
+     * @version 1.0.0
+     * @since 2014-5-29
+     */
+    public static enum TrimMode {
+        LEFT, RIGHT, BOTH;
+    }
+
+    /**
+     * Trim the specified character from both sides of the string.
+     *
+     * @param str the string to be trimmed
+     * @param c the character to trim
+     * @return the trimmed string
+     */
+    public static final String trim(String str, char c) {
+        return trim(str, c, TrimMode.BOTH);
+    }
+
+    /**
+     * Trim the specified character from the string.
+     *
+     * @param str the string to be trimmed
+     * @param c the character to trim
+     * @param m the trim mode
+     * @return the trimmed string
+     */
+    public static final String trim(String str, char c, TrimMode m) {
+        Check.notNull(str, "<str> can not be null");
+        int s = 0;
+        int e = str.length();
+        if (m == TrimMode.BOTH || m == TrimMode.LEFT) {
+            while (s < e) {
+                if (str.charAt(s) != c) break;
+                ++s;
+            }
+        }
+        if (m == TrimMode.BOTH || m == TrimMode.RIGHT) {
+            while (s < e) {
+                if (str.charAt(e - 1) != c) break;
+                --e;
+            }
+        }
+        if (s < e) return str.substring(s, e);
+        return "";
     }
 
 }

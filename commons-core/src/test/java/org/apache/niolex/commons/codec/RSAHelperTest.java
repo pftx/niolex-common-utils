@@ -21,9 +21,9 @@ package org.apache.niolex.commons.codec;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,18 +37,17 @@ public class RSAHelperTest extends RSAHelper {
 
     static PrivateKey PRIK;
     static PublicKey PUBK;
-    static Map<String, Object> MAP;
 
     @BeforeClass
     public static void testInitKey() throws Exception {
-        MAP = initKey();
-        PRIK = (PrivateKey) MAP.get(PRIVATE_KEY);
-        PUBK = (PublicKey) MAP.get(PUBLIC_KEY);
+        KeyPair pair = initKey();
+        PRIK = pair.getPrivate();
+        PUBK = pair.getPublic();
     }
 
     @Test
-    public void testGetPrivateKeyString() throws Exception {
-        String k = getPrivateKey(MAP);
+    public void testencodeKeyToBase64() throws Exception {
+        String k = encodeKeyToBase64(PRIK);
         PrivateKey key = getPrivateKey(k);
         assertEquals(key, PRIK);
     }
@@ -59,8 +58,8 @@ public class RSAHelperTest extends RSAHelper {
     }
 
     @Test
-    public void testGetPublicKeyString() throws Exception {
-        String k = getPublicKey(MAP);
+    public void testencodePublicKeyToBase64KeyString() throws Exception {
+        String k = encodeKeyToBase64(PUBK);
         PublicKey key = getPublicKey(k);
         assertEquals(key, PUBK);
     }
