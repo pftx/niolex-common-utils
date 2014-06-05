@@ -101,6 +101,18 @@ public abstract class CollectionUtil {
 	}
 
 	/**
+	 * Add all the elements in args into collection.
+	 *
+	 * @param collection the collection used to add elements
+	 * @param args the elements to be added
+	 */
+	public static final <E> void addAll(Collection<E> collection, E ...args) {
+	    for (int i = 0; i < args.length; ++i) {
+	        collection.add(args[i]);
+	    }
+	}
+
+	/**
 	 * Make a copy of the parameter.
 	 *
 	 * @param args the collection to be copied
@@ -120,7 +132,7 @@ public abstract class CollectionUtil {
 	 *
 	 * @param left
 	 * @param right
-	 * @return the Pair of the results.
+	 * @return the Pair of the results
 	 */
 	public static final <E> Pair<List<E>, List<E>> intersection(Collection<E> left, Collection<E> right) {
 	    List<E> a = new ArrayList<E>(left);
@@ -134,7 +146,7 @@ public abstract class CollectionUtil {
      * Return <code>true</code> if the supplied Collection is <code>null</code>
      * or empty. Otherwise, return <code>false</code>.<br>
      *
-     * @param collection the Collection to check
+     * @param collection the Collection to be checked
      * @return whether the given Collection is empty
      */
     public static boolean isEmpty(Collection<?> collection) {
@@ -145,7 +157,7 @@ public abstract class CollectionUtil {
      * Return <code>true</code> if the supplied Map is <code>null</code>
      * or empty. Otherwise, return <code>false</code>.<br>
      *
-     * @param map the Map to check
+     * @param map the Map to be checked
      * @return whether the given Map is empty
      */
     public static boolean isEmpty(Map<?, ?> map) {
@@ -156,7 +168,7 @@ public abstract class CollectionUtil {
      * Return <code>true</code> if the supplied Collection is not <code>null</code>
      * and contain only one element. Otherwise, return <code>false</code>.<br>
      *
-     * @param collection the Collection to check
+     * @param collection the Collection to be checked
      * @return whether the given Collection is Single
      */
     public static boolean isSingle(Collection<?> collection) {
@@ -167,23 +179,11 @@ public abstract class CollectionUtil {
      * Return <code>true</code> if the supplied Map is not <code>null</code>
      * and contain only one element. Otherwise, return <code>false</code>.<br>
      *
-     * @param map the Map to check
+     * @param map the Map to be checked
      * @return whether the given Map is Single
      */
     public static boolean isSingle(Map<?, ?> map) {
         return (map != null && map.size() == 1);
-    }
-
-    /**
-     * Add all the elements in args into collection.
-     *
-     * @param collection the collection used to add elements
-     * @param args the elements to be added
-     */
-    public static final <E> void addAll(Collection<E> collection, E ...args) {
-        for (int i = 0; i < args.length; ++i) {
-            collection.add(args[i]);
-        }
     }
 
 }

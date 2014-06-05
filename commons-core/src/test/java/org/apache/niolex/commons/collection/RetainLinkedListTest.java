@@ -30,6 +30,7 @@ import org.junit.Test;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-23$
  */
+@SuppressWarnings("deprecation")
 public class RetainLinkedListTest {
 
 	/**
@@ -37,23 +38,23 @@ public class RetainLinkedListTest {
 	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void testRetainLinkedList() {
-		new RetainLinkedList<String>(0).getClass();
+		new RetainLinkedList<String>(0);
 	}
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#add(java.lang.Object)}.
 	 */
 	@Test
-	public void testAddAndSize() {
+	public void testAdd1() {
 		RetainLinkedList<String> list = new RetainLinkedList<String>(3);
 		list.add("It ");
-		assertEquals(list.size(), 1);
+		assertEquals(list.totalSize(), 1);
 		list.add("is ");
-		assertEquals(list.size(), 2);
+		assertEquals(list.totalSize(), 2);
 		assertEquals(list.handleSize(), 2);
 		list.add("me");
 		assertEquals(list.handleNext(), "It ");
-		assertEquals(list.size(), 3);
+		assertEquals(list.totalSize(), 3);
 		assertEquals(list.handleSize(), 2);
 	}
 
@@ -69,11 +70,11 @@ public class RetainLinkedListTest {
 		list.add("big ");
 		list.add("world!");
 		String w = "";
-		while (!list.handleEmpty()) {
+		while (list.hasNext()) {
 			w += list.handleNext();
 		}
 		assertEquals(w, "It is a big world!");
-		assertEquals(list.size(), 3);
+		assertEquals(list.totalSize(), 3);
 		assertEquals(list.handleSize(), 0);
 	}
 
@@ -113,11 +114,11 @@ public class RetainLinkedListTest {
 		while (list.handleNext() != null) {
 			list.handleNext();
 		}
-		while (!list.isEmpty()) {
+		while (list.hasRetain()) {
 			w += list.handleRetain();
 		}
 		assertEquals(w, "a big world!");
-		assertEquals(list.size(), 0);
+		assertEquals(list.totalSize(), 0);
 		assertEquals(list.handleSize(), 0);
 	}
 
@@ -136,7 +137,7 @@ public class RetainLinkedListTest {
 	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#addAll(org.apache.niolex.commons.collection.RetainLinkedList)}.
 	 */
 	@Test
-	public void testAddAllRetainLinkedListOfE() {
+	public void testHasRetain() {
 		List<String> list = new ArrayList<String>();
 		list.add("It ");
 		list.add("is ");
@@ -150,11 +151,11 @@ public class RetainLinkedListTest {
 		while (list2.handleNext() != null) {
 			list2.handleNext();
 		}
-		while (!list2.isEmpty()) {
+		while (list2.hasRetain()) {
 			w += list2.handleRetain();
 		}
 		assertEquals(w, "a big world!");
-		assertEquals(list2.size(), 0);
+		assertEquals(list2.totalSize(), 0);
 		assertEquals(list2.handleSize(), 0);
 	}
 
@@ -162,7 +163,7 @@ public class RetainLinkedListTest {
 	 * Test method for {@link org.apache.niolex.commons.collection.RetainLinkedList#addAll(java.util.Collection)}.
 	 */
 	@Test
-	public void testAddAllCollectionOfE() {
+	public void testHasNext() {
 		RetainLinkedList<String> list = new RetainLinkedList<String>(3);
 		list.add("It ");
 		list.add("is ");
@@ -176,10 +177,10 @@ public class RetainLinkedListTest {
 		while (list2.handleNext() != null) {
 			list2.handleNext();
 		}
-		assertTrue(list2.handleEmpty());
+		assertFalse(list2.hasNext());
 		assertEquals(list2.handleSize(), 0);
-		assertFalse(list2.isEmpty());
-		assertEquals(list2.size(), 5);
+		assertFalse(list2.hasRetain());
+		assertEquals(list2.totalSize(), 5);
 	}
 
 	/**
@@ -199,20 +200,20 @@ public class RetainLinkedListTest {
 		assertEquals(arr[5], "not me.");
 		assertEquals(arr[4], "world!");
 		String w = "";
-		while (!list.handleEmpty()) {
+		while (list.hasNext()) {
 			list.handleNext();
 		}
-		assertEquals(list.size(), 3);
+		assertEquals(list.totalSize(), 3);
 		assertEquals(list.handleSize(), 0);
 		arr = new String[2];
 		list.toArray(arr);
 		assertEquals(arr[0], "a ");
 		assertEquals(arr[1], "big ");
-		while (!list.isEmpty()) {
+		while (list.hasRetain()) {
 			w += list.handleRetain();
 		}
 		assertEquals(w, "a big world!");
-		assertEquals(list.size(), 0);
+		assertEquals(list.totalSize(), 0);
 		assertEquals(list.handleSize(), 0);
 	}
 
@@ -236,28 +237,28 @@ public class RetainLinkedListTest {
 		list.add("a ");
 		list.add("big ");
 		list.add("world!");
-		assertFalse(list.isEmpty());
-		assertFalse(list.handleEmpty());
+		assertTrue(list.hasNext());
+		assertTrue(list.hasRetain());
 		String w = "";
-		while (!list.handleEmpty()) {
+		while (list.hasNext()) {
 			list.handleNext();
 		}
-		assertFalse(list.isEmpty());
-		assertTrue(list.handleEmpty());
-		assertEquals(list.size(), 3);
+		assertFalse(list.hasNext());
+		assertTrue(list.hasRetain());
+		assertEquals(list.totalSize(), 3);
 		assertEquals(list.handleSize(), 0);
-		while (!list.isEmpty()) {
+		while (list.hasRetain()) {
 			w += list.handleRetain();
 		}
 		assertEquals(w, "a big world!");
-		assertEquals(list.size(), 0);
+		assertEquals(list.totalSize(), 0);
 		assertEquals(list.handleSize(), 0);
-		assertTrue(list.isEmpty());
-		assertTrue(list.handleEmpty());
+		assertFalse(list.hasNext());
+		assertFalse(list.hasRetain());
 	}
 
     @Test(expected=NullPointerException.class)
-    public void testAdd() throws Exception {
+    public void testAddNull() throws Exception {
         RetainLinkedList<String> list = new RetainLinkedList<String>(3);
         Field field = FieldUtil.getField(RetainLinkedList.class, "tail");
         FieldUtil.setFieldValue(list, field, null);

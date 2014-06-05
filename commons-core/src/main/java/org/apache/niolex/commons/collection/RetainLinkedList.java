@@ -27,18 +27,36 @@ import java.util.concurrent.locks.ReentrantLock;
  * Retain a number of items in this list after all data has been consumed.
  * This list can be used when someone want to remember the last K elements
  * consumed latest.
- *
+ * <br>
  * There are two pointers maintained in this list, one for the retain header,
  * which is before the current head pointer, keep them moving as the head
  * pointer is moving; the other is head pointer. Finally you will get the
  * latest retainSize number of items left in the list.
- *
+ * <br><b>
  * This list is thread safe.
- *
+ * </b>
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-6-19
+ * @deprecated This implementation is not fast enough.
  */
+@Deprecated
 public class RetainLinkedList<E> {
+
+    /**
+     * The internal data structure, please keep away.
+     * The Link List data structure.
+     *
+     * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+     * @version 1.0.0, Date: 2012-6-1
+     */
+    private static class Link<E> {
+        private final E e;
+        private Link<E> next;
+
+        public Link(E e) {
+            this.e = e;
+        }
+    }
 
 	/**
 	 * The number of items need to be retained.
@@ -67,7 +85,7 @@ public class RetainLinkedList<E> {
 	 * |                |                             |
 	 * ------------------------------------------------
 	 */
-	private final Link<E> head = new Link<E>();
+	private final Link<E> head = new Link<E>(null);
 
 	/**
 	 * The pointer is the current visit head of this list.
@@ -114,6 +132,15 @@ public class RetainLinkedList<E> {
 		}
 	}
 
+    /**
+     * Check whether there is any data to handle.
+     *
+     * @return true if there has data not handled
+     */
+    public boolean hasNext() {
+        return pointer.next != null;
+    }
+
 	/**
 	 * Handle the next available item. If there is no more
 	 * available item, this method will return null.
@@ -149,13 +176,22 @@ public class RetainLinkedList<E> {
 	}
 
 	/**
+     * Check whether there is any data in the retain area.
+     *
+     * @return true if there has data
+     */
+    public boolean hasRetain() {
+        return headPointerSize != 0;
+    }
+
+	/**
 	 * Handle the next retain item in the retain area. If there is no more
 	 * item in the retain area, this method will return null.
 	 *
 	 * Note that there is no item in the retain area do not mean there is
 	 * no item in this list.
-	 *
-	 * Item will be removed automatically in this method.
+	 * <br>
+	 * Retain item will be removed automatically in this method.
 	 *
 	 * @return the next retain item.
 	 */
@@ -181,6 +217,9 @@ public class RetainLinkedList<E> {
 	 * Add all the items in the other RetainLinkedList into this list
 	 * This method automatically will remove items from the other RetainLinkedList
 	 * until it's empty.
+	 * <p>
+	 * Note: The retain area of the other list will be uncleared.
+	 * </p>
 	 *
 	 * @param other the other retain linked list
 	 */
@@ -237,30 +276,12 @@ public class RetainLinkedList<E> {
 	}
 
 	/**
-	 * Return whether this list is empty including the retain area.
-	 *
-	 * @return true if it's empty
-	 */
-	public boolean isEmpty() {
-		return size.intValue() == 0;
-	}
-
-	/**
-	 * Return whether there is any data to handle.
-	 *
-	 * @return true if all data is handled
-	 */
-	public boolean handleEmpty() {
-		return pointer.next == null;
-	}
-
-	/**
 	 * Return the size of this list including the retain area.
 	 *
 	 * @return the size
 	 */
-	public int size() {
-		return size.intValue();
+	public int totalSize() {
+	    return size.intValue();
 	}
 
 	/**
@@ -270,27 +291,6 @@ public class RetainLinkedList<E> {
 	 */
 	public int handleSize() {
 		return size.intValue() - headPointerSize;
-	}
-
-	/**
-	 * The internal data structure, please keep away.
-	 * The Link List data structure.
-	 *
-	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
-	 * @version 1.0.0, Date: 2012-6-1
-	 */
-	private static class Link<E> {
-		private E e;
-		private Link<E> next;
-
-		public Link() {
-			super();
-		}
-
-		public Link(E e) {
-			super();
-			this.e = e;
-		}
 	}
 
 }

@@ -25,9 +25,9 @@ import java.util.Collection;
  * the end of this list will automatically replace the eldest element
  * if it's already full.
  * Remove operation on this list is not supported.
- *
+ * <br><b>
  * This implementation is not thread safe.
- *
+ * </b>
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-22$
  */
@@ -104,8 +104,7 @@ public class CircularList<E> extends AbstractList<E> {
 	@Override
 	public E get(int index) {
 		if (index >= size || index < 0)
-		    throw new IndexOutOfBoundsException(
-			"Index: "+index+", Size: "+size);
+		    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
 
 		return (E) elementData[(head + index) % capacity];
 	}
@@ -124,8 +123,7 @@ public class CircularList<E> extends AbstractList<E> {
 	@Override
 	public E set(int index, E element) {
 		if (index >= size || index < 0)
-		    throw new IndexOutOfBoundsException(
-			"Index: "+index+", Size: "+size);
+		    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
 
 		index = (head + index) % capacity;
 		@SuppressWarnings("unchecked")
@@ -138,8 +136,9 @@ public class CircularList<E> extends AbstractList<E> {
 	/**
 	 * Inserts the specified element at the end of this list.
 	 *
-	 * <p> Please note that this implementation calls {@code add(e)}, which is
+	 * <p><b> Please note that this implementation calls {@link #add(Object)}, which is
 	 * different from the default specification in {@link java.util.List#add(int, Object)}.
+	 * </b></p>
 	 */
 	@Override
 	public void add(int index, E element) {
@@ -149,7 +148,6 @@ public class CircularList<E> extends AbstractList<E> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Override super method
 	 * @see java.util.List#size()
 	 */
 	@Override

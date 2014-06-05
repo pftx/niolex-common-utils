@@ -32,14 +32,15 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-6-19
  */
+@SuppressWarnings("deprecation")
 public class RetainLinkedTest {
 
 	private int runSize = 100000;
-	private RetainLinkedList<Integer> linked = new RetainLinkedList<Integer>(5);
+    private RetainLinkedList<Integer> linked = new RetainLinkedList<Integer>(5);
 	private Map<Integer, Integer> check = new ConcurrentHashMap<Integer, Integer>();
 	private AtomicInteger inger = new AtomicInteger();
 
-	private class LetsRun implements Runnable {
+	private class Put implements Runnable {
 
 		/**
 		 * Override super method
@@ -50,12 +51,13 @@ public class RetainLinkedTest {
 		    int id = (int)Thread.currentThread().getId();
 			int k = id * runSize;
 			long s = System.currentTimeMillis();
-			System.out.println(id + " Put start at " + s);
+			System.out.println("------" + id + " Put start at " + s);
 			for (int i = 0; i < runSize; ++i) {
 				linked.add(k + i);
 			}
-			System.out.println(id + " stoped with " + (System.currentTimeMillis() - s));
 			inger.decrementAndGet();
+			SystemUtil.sleep(50);
+			System.out.println(id + "\tPut stoped with " + (System.currentTimeMillis() - s));
 		}
 
 	}
@@ -70,7 +72,7 @@ public class RetainLinkedTest {
 		public void run() {
 			int k = (int)Thread.currentThread().getId();
 			long s = System.currentTimeMillis();
-			System.out.println(k + " Take start at " + s);
+			System.out.println("------" + k + " Take start at " + s);
 			while (true) {
 				Integer r = linked.handleNext();
 				if (r == null) {
@@ -88,7 +90,8 @@ public class RetainLinkedTest {
 					check.put(r, r);
 				}
 			}
-			System.out.println(k + " Take stoped with " + (System.currentTimeMillis() - s));
+			SystemUtil.sleep(50);
+			System.out.println(k + "\tTake stoped with " + (System.currentTimeMillis() - s));
 		}
 	}
 
@@ -98,7 +101,7 @@ public class RetainLinkedTest {
 		int i = 0;
 		inger.set(10);
 		for (i = 0; i < 10; ++i) {
-			Thread r = new Thread(new LetsRun());
+			Thread r = new Thread(new Put());
 			ts[i] = r;
 		}
 		for (i = 10; i < 20; ++i) {

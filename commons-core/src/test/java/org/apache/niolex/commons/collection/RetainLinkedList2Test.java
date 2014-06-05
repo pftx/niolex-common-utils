@@ -32,6 +32,7 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-6-19
  */
+@SuppressWarnings("deprecation")
 public class RetainLinkedList2Test {
 
 	/**
@@ -59,7 +60,7 @@ public class RetainLinkedList2Test {
 		assertEquals(null, a.handleNext());
 		a.add("You");
 		assertEquals("You", a.handleNext());
-		assertEquals(3, a.size());
+		assertEquals(3, a.totalSize());
 		String[] arr = new String[3];
 		a.toArray(arr);
 		assertEquals("meet", arr[0]);
@@ -77,18 +78,18 @@ public class RetainLinkedList2Test {
 		a.add("to");
 		a.add("meet");
 		a.add("Not yet implemented");
-		assertEquals(4, a.size());
+		assertEquals(4, a.totalSize());
 		assertEquals("NIce", a.handleNext());
-		assertEquals(4, a.size());
+		assertEquals(4, a.totalSize());
 		assertEquals("to", a.handleNext());
 		assertEquals("meet", a.handleNext());
 		assertEquals("Not yet implemented", a.handleNext());
-		assertEquals(1, a.size());
+		assertEquals(1, a.totalSize());
 		assertEquals(null, a.handleNext());
 		a.add("You");
-		assertEquals(2, a.size());
+		assertEquals(2, a.totalSize());
 		assertEquals("You", a.handleNext());
-		assertEquals(1, a.size());
+		assertEquals(1, a.totalSize());
 		String[] arr = new String[1];
 		a.toArray(arr);
 		assertEquals("You", arr[0]);
@@ -104,11 +105,11 @@ public class RetainLinkedList2Test {
 		inn.add(4);
 		inn.add(6);
 		inn.add(132);
-		assertEquals(4, inn.size());
+		assertEquals(4, inn.totalSize());
 		RetainLinkedList<Integer> a = new RetainLinkedList<Integer>(5);
 		a.addAll(inn);
-		assertEquals(1, inn.size());
-		assertEquals(4, a.size());
+		assertEquals(1, inn.totalSize());
+		assertEquals(4, a.totalSize());
 		Integer[] arr = new Integer[4];
 		a.toArray(arr);
 		assertEquals(5234, arr[0].intValue());
@@ -131,7 +132,7 @@ public class RetainLinkedList2Test {
 		RetainLinkedList<Integer> a = new RetainLinkedList<Integer>(5);
 		a.addAll(inn);
 		assertEquals(4, inn.size());
-		assertEquals(4, a.size());
+		assertEquals(4, a.totalSize());
 		Integer[] arr = new Integer[4];
 		a.toArray(arr);
 		assertEquals(5234, arr[0].intValue());
@@ -152,7 +153,7 @@ public class RetainLinkedList2Test {
 		inn.add(132);
 		inn.add(45234);
 		inn.add(65234);
-		assertEquals(6, inn.size());
+		assertEquals(6, inn.totalSize());
 		Integer[] arr = new Integer[4];
 		inn.toArray(arr);
 		assertEquals(5234, arr[0].intValue());
@@ -167,9 +168,9 @@ public class RetainLinkedList2Test {
 	@Test
 	public void testIsEmpty() {
 		RetainLinkedList<Integer> inn = new RetainLinkedList<Integer>(1);
-		assertTrue(inn.isEmpty());
+		assertFalse(inn.hasNext());
 		inn.add(5234);
-		assertFalse(inn.isEmpty());
+		assertTrue(inn.hasNext());
 	}
 
 	/**
@@ -181,7 +182,7 @@ public class RetainLinkedList2Test {
 		inn.add(5234);
 		inn.add(4);
 		inn.add(6);
-		assertEquals(3, inn.size());
+		assertEquals(3, inn.totalSize());
 		Integer[] arr = new Integer[4];
 		inn.toArray(arr);
 		assertEquals(5234, arr[0].intValue());

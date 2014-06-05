@@ -33,10 +33,11 @@ public class LRUHashMap<K, V> extends LinkedHashMap<K, V> {
 	 */
 	private static final long serialVersionUID = -1355706789097024625L;
 	// The max map size.
-	private int maxSize;
+	private final int maxSize;
 
 	/**
 	 * Create a LRUHashMap with this max size.
+	 *
 	 * @param maxSize the max map size
 	 */
 	public LRUHashMap(int maxSize) {

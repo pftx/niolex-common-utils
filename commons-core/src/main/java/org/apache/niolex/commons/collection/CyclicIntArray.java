@@ -22,10 +22,13 @@ import java.util.NoSuchElementException;
 /**
  * This class encapsulate an int array, one can get the head and tail at any time.
  * When there are more data than the capacity, we override the eldest element.
- *
+ * <br><b>
+ * This implementation is not thread safe.
+ * </b>
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
  * @since 2012-12-25
+ * @see CircularList
  */
 public class CyclicIntArray {
 
