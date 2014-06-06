@@ -24,7 +24,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.niolex.commons.codec.StringUtil;
-import org.apache.niolex.commons.internal.Finally;
+import org.apache.niolex.commons.stream.StreamUtil;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.JavaType;
@@ -48,7 +48,7 @@ public abstract class GZipUtil {
     public static final byte[] compress(byte[] data) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         GZIPOutputStream zout = new GZIPOutputStream(out);
-        Finally.writeAndClose(zout, data);
+        StreamUtil.writeAndClose(zout, data);
         return out.toByteArray();
     }
 
@@ -63,7 +63,7 @@ public abstract class GZipUtil {
     public static final byte[] decompress(byte[] data) throws IOException {
         GZIPInputStream zin = new GZIPInputStream(new ByteArrayInputStream(data));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Finally.transferAndClose(zin, out, 10240);
+        StreamUtil.transferAndClose(zin, out, 10240);
         return out.toByteArray();
     }
 

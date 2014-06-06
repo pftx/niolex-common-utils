@@ -17,9 +17,6 @@
  */
 package org.apache.niolex.commons.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -31,42 +28,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @since 2013-6-14
  */
 public class Finally {
-
-    /**
-     * Write the data to the output stream and close it.
-     *
-     * @param zout
-     * @param data
-     * @throws IOException
-     */
-    public static void writeAndClose(OutputStream zout, byte[] data) throws IOException {
-        try {
-            zout.write(data);
-        } finally {
-            zout.close();
-        }
-    }
-
-    /**
-     * Transfer all the data from the input stream to the output stream and close them.
-     *
-     * @param in
-     * @param out
-     * @param BUF_SIZE
-     * @throws IOException
-     */
-    public static void transferAndClose(InputStream in, OutputStream out, final int BUF_SIZE) throws IOException {
-        try {
-            byte[] data = new byte[BUF_SIZE];
-            int len;
-            while ((len = in.read(data)) != -1) {
-                out.write(data, 0, len);
-            }
-        } finally {
-            in.close();
-            out.close();
-        }
-    }
 
     /**
      * Use read lock to invoke this method.

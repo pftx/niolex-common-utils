@@ -35,7 +35,6 @@ import org.apache.commons.codec.CharEncoding;
 import org.apache.niolex.commons.bean.Pair;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
-import org.apache.niolex.commons.internal.Finally;
 import org.apache.niolex.commons.stream.StreamUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,7 +212,7 @@ public abstract class HTTPUtil {
             httpCon.connect();
             // 5. do output if needed.
             if (reqBytes != null) {
-                Finally.writeAndClose(httpCon.getOutputStream(), reqBytes);
+                StreamUtil.writeAndClose(httpCon.getOutputStream(), reqBytes);
             }
             // 6. Get the input stream.
             in = httpCon.getInputStream();

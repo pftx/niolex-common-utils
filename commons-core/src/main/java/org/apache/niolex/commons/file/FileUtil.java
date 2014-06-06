@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import org.apache.niolex.commons.internal.Finally;
 import org.apache.niolex.commons.stream.StreamUtil;
 import org.apache.niolex.commons.util.Const;
 import org.slf4j.Logger;
@@ -133,7 +132,7 @@ public abstract class FileUtil {
     	    InputStream in = cls.getResourceAsStream(pathname);
     	    if (in != null) {
     	        ByteArrayOutputStream out = new ByteArrayOutputStream(10240);
-    	        Finally.transferAndClose(in, out, 4096);
+    	        StreamUtil.transferAndClose(in, out, 4096);
     	        return out.toByteArray();
     	    }
     	} catch (Exception e) {

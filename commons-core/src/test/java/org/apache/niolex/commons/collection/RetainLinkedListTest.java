@@ -179,7 +179,7 @@ public class RetainLinkedListTest {
 		}
 		assertFalse(list2.hasNext());
 		assertEquals(list2.handleSize(), 0);
-		assertFalse(list2.hasRetain());
+		assertTrue(list2.hasRetain());
 		assertEquals(list2.totalSize(), 5);
 	}
 
@@ -238,7 +238,7 @@ public class RetainLinkedListTest {
 		list.add("big ");
 		list.add("world!");
 		assertTrue(list.hasNext());
-		assertTrue(list.hasRetain());
+		assertFalse(list.hasRetain());
 		String w = "";
 		while (list.hasNext()) {
 			list.handleNext();

@@ -20,6 +20,7 @@ package org.apache.niolex.commons.stream;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.apache.niolex.commons.stream.StreamUtil.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -80,6 +81,20 @@ public class StreamUtilTest {
         doThrow(new IOException("Just 4 test")).when(out).close();
         assertNotNull(StreamUtil.closeStream(out));
 	}
+
+    @Test(expected=IOException.class)
+    public void testWriteAndClose() throws Exception {
+        OutputStream out = mock(OutputStream.class);
+        doThrow(new IOException("This")).when(out).write(null);
+        writeAndClose(out, null);
+    }
+
+    @Test(expected=IOException.class)
+    public void testTransferAndClose() throws Exception {
+        InputStream in = mock(InputStream.class);
+        doThrow(new IOException("Mock")).when(in).read(any(byte[].class));
+        transferAndClose(in, mock(OutputStream.class), 1024);
+    }
 
 	@Test
 	public void testReadData() throws Exception {

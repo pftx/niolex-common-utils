@@ -23,7 +23,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterOutputStream;
 
 import org.apache.niolex.commons.codec.StringUtil;
-import org.apache.niolex.commons.internal.Finally;
+import org.apache.niolex.commons.stream.StreamUtil;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.JavaType;
@@ -48,7 +48,7 @@ public abstract class ZLibUtil {
     public static byte[] compress(byte[] data) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         DeflaterOutputStream zout = new DeflaterOutputStream(out);
-        Finally.writeAndClose(zout, data);
+        StreamUtil.writeAndClose(zout, data);
         return out.toByteArray();
     }
 
@@ -63,7 +63,7 @@ public abstract class ZLibUtil {
     public static byte[] decompress(byte[] data) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         InflaterOutputStream zos = new InflaterOutputStream(bos);
-        Finally.writeAndClose(zos, data);
+        StreamUtil.writeAndClose(zos, data);
         return bos.toByteArray();
     }
 

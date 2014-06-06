@@ -37,13 +37,49 @@ public class StreamUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(StreamUtil.class);
 
 	/**
-	 * Close the specified stream. It's OK the parameter be null.
+	 * Close the specified stream. It's OK if the parameter is null.
 	 *
 	 * @param s the stream to be closed
 	 */
 	public static final Exception closeStream(Closeable s) {
 		return SystemUtil.close(s);
 	}
+
+    /**
+     * Write the data to the output stream and close it.
+     *
+     * @param out the output stream
+     * @param data the data to be written
+     * @throws IOException if necessary
+     */
+    public static final void writeAndClose(OutputStream out, byte[] data) throws IOException {
+        try {
+            out.write(data);
+        } finally {
+            out.close();
+        }
+    }
+
+    /**
+     * Transfer all the data from the input stream to the output stream and close both of them.
+     *
+     * @param in the input stream
+     * @param out the output stream
+     * @param bufSize the transfer buffer size
+     * @throws IOException if necessary
+     */
+    public static void transferAndClose(InputStream in, OutputStream out, final int bufSize) throws IOException {
+        try {
+            byte[] data = new byte[bufSize];
+            int len;
+            while ((len = in.read(data)) != -1) {
+                out.write(data, 0, len);
+            }
+        } finally {
+            in.close();
+            out.close();
+        }
+    }
 
 	/**
 	 * Read data from the input stream and put them into the byte array.

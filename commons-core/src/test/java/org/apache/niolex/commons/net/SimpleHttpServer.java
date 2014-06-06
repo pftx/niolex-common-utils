@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.file.FileUtil;
-import org.apache.niolex.commons.internal.Finally;
+import org.apache.niolex.commons.stream.StreamUtil;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -135,7 +135,7 @@ public class SimpleHttpServer {
             h.set("Content-Type", "text/html");
             InputStream in = t.getRequestBody();
             ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
-            Finally.transferAndClose(in, bos, 1024);
+            StreamUtil.transferAndClose(in, bos, 1024);
             // ok, we are ready to send the response.
             byte[] data = bos.toByteArray();
             t.sendResponseHeaders(200, data.length);

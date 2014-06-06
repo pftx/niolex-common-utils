@@ -18,12 +18,8 @@
 package org.apache.niolex.commons.internal;
 
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -44,20 +40,6 @@ public class FinallyTest extends Finally {
 
     private int readCnt = 0;
     private int writeCnt = 0;
-
-    @Test(expected=IOException.class)
-    public void testWriteAndClose() throws Exception {
-        OutputStream out = mock(OutputStream.class);
-        doThrow(new IOException("This")).when(out).write(null);
-        writeAndClose(out, null);
-    }
-
-    @Test(expected=IOException.class)
-    public void testTransferAndClose() throws Exception {
-        InputStream in = mock(InputStream.class);
-        doThrow(new IOException("Mock")).when(in).read(any(byte[].class));
-        transferAndClose(in, mock(OutputStream.class), 1024);
-    }
 
     public void readTest(int k) {
         blocker.release("r", "1");
