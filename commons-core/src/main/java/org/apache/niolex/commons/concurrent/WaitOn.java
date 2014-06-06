@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-7-12
+ * @see Blocker
  */
 public class WaitOn<E> {
 
@@ -41,7 +42,7 @@ public class WaitOn<E> {
 	/**
 	 * The unexpected exception.
 	 */
-	private volatile Exception exc;
+	private volatile BlockerException exc;
 
 
 	/**
@@ -64,9 +65,9 @@ public class WaitOn<E> {
 	 * @param time the time to wait in milliseconds
 	 * @return the result, or null if timeout
 	 * @throws InterruptedException If interrupted by any other thread.
-     * @throws Exception If user release this key by an exception.
+     * @throws BlockerException If user release this key by an exception.
 	 */
-	public E waitForResult(long time) throws Exception {
+	public E waitForResult(long time) throws InterruptedException, BlockerException {
 		// First, let's check whether data is ready for now?
 		if (result != null)
 			return result;
@@ -99,7 +100,7 @@ public class WaitOn<E> {
 	 *
 	 * @param exc the exception
 	 */
-	public void release(Exception exc) {
+	public void release(BlockerException exc) {
 		this.exc = exc;
 		latch.countDown();
 	}

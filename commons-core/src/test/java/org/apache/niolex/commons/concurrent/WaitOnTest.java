@@ -59,9 +59,14 @@ public class WaitOnTest {
      * @throws Exception
      */
     @Test(expected=DecoderException.class)
-    public void testWaitForResultEx() throws Exception {
-        waitOn.release(new DecoderException("I am here to meet you!"));
-        assertEquals("Direct-Result", waitOn.waitForResult(5));
+    public void testWaitForResultEx() throws Throwable {
+        waitOn.release(new BlockerException(new DecoderException("I am here to meet you!")));
+
+        try {
+            assertEquals("Direct-Result", waitOn.waitForResult(5));
+        } catch (BlockerException e) {
+            throw e.getCause();
+        }
     }
 
 	/**
@@ -83,7 +88,7 @@ public class WaitOnTest {
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testWaitForResult2() throws InterruptedException {
+	public void testWaitForResult2() throws Throwable {
 		Thread t = new Thread() {
 			public void run() {
 				try {
@@ -98,7 +103,7 @@ public class WaitOnTest {
 		};
 		t.start();
 		Thread.sleep(10);
-		waitOn.release(new Exception("I am here to meet you!"));
+		waitOn.release(new BlockerException("I am here to meet you!"));
 		t.join();
 	}
 
@@ -107,7 +112,7 @@ public class WaitOnTest {
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testWaitForResult3() throws InterruptedException {
+	public void testWaitForResult3() throws Throwable {
 		Thread t = new Thread() {
 			public void run() {
 				try {
@@ -120,7 +125,7 @@ public class WaitOnTest {
 				}
 			}
 		};
-		waitOn.release(new Exception("I am here to meet you!"));
+		waitOn.release(new BlockerException("I am here to meet you!"));
 		t.start();
 		t.join();
 	}

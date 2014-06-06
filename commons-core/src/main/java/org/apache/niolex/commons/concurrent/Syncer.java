@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.concurrent;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,11 +34,11 @@ import org.apache.niolex.commons.internal.Finally;
 import com.google.common.collect.Maps;
 
 /**
- * The Syncer is a utility to decorate an object into synchronized object for
+ * The <b>Syncer</b> is a utility to decorate an object into synchronized object for
  * concurrent use in multiple threads environment.<br>
  * We use read/write lock for better performance.<br>
  *
- * We support two methods: annotation and regex match for method name.<br>
+ * We support two techniques: annotation and regex match for method name.<br>
  *
  * Annotation:
  *  Mark the method with @Read for acquiring read lock.
@@ -55,23 +56,25 @@ import com.google.common.collect.Maps;
 public class Syncer implements InvocationHandler {
 
     /**
-     * The Read lock mark annotation. Use this for methods who need read lock.
+     * The Read lock mark annotation. Use this for methods which need read lock.
      *
      * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
      * @version 1.0.0
      * @since 2013-7-27
      */
+    @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD})
     public static @interface Read{}
 
     /**
-     * The Write lock mark annotation. Use this for methods who need write lock.
+     * The Write lock mark annotation. Use this for methods which need write lock.
      *
      * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
      * @version 1.0.0
      * @since 2013-7-27
      */
+    @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD})
     public static @interface Write{}

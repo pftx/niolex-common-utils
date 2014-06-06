@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.concurrent;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Some common concurrent methods.
@@ -29,15 +29,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConcurrentUtil {
 
     /**
-     * Init the map with this new value if this key is absent in the specified map.
-     * Otherwise we return the old value associated with this key.
+     * Init the map with this new value if this key is absent in the specified map;
+     * otherwise we return the old value associated with this key.
      *
-     * @param map the map you want to init.
-     * @param key the key you want to init.
-     * @param newValue the new value ready to put into this map.
-     * @return the new or old value whichever is associated with this key.
+     * @param map the map you want to init
+     * @param key the key you want to init
+     * @param newValue the new value ready to put into this map
+     * @return the new or old value whichever is associated with this key
      */
-    public static final <K, V> V initMap(ConcurrentHashMap<K, V> map, K key, V newValue) {
+    public static final <K, V> V initMap(ConcurrentMap<K, V> map, K key, V newValue) {
         V oldValue = map.putIfAbsent(key, newValue);
         return (oldValue == null) ? newValue : oldValue;
     }

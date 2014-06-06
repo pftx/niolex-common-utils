@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.niolex.commons.collection.CollectionUtil;
-
 /**
  * Thread related utilities.
  *
@@ -72,7 +70,8 @@ public class ThreadUtil {
             size = group.enumerate(array, true);
         } while (size >= array.length);
         List<Thread> ret = new ArrayList<Thread>(size);
-        CollectionUtil.addAll(ret, array);
+        for (int i = 0; i < size; ++i)
+            ret.add(array[i]);
         return ret;
     }
 

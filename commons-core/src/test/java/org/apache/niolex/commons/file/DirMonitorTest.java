@@ -79,7 +79,7 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
-        WaitOn<String> wait = blocker.initWait("s");
+        WaitOn<String> wait = blocker.init("s");
         DirUtil.mkdirsIfAbsent(TMP + "/dir-monitor");
         wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
@@ -109,7 +109,7 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
-        WaitOn<String> wait = blocker.initWait("s");
+        WaitOn<String> wait = blocker.init("s");
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/tmp.txt", "FileMonitor", StringUtil.US_ASCII);
         wait.waitForResult(2000);
         assertEquals(1, cnt.cnt());
@@ -152,11 +152,11 @@ public class DirMonitorTest {
                 blocker.release(type, "");
             }
         };
-        WaitOn<String> wait = blocker.initWait(EventType.CREATE);
+        WaitOn<String> wait = blocker.init(EventType.CREATE);
         FileMonitor monitor2 = new DirMonitor(1, TMP + "/dir-monitor/tmp.txt");
         monitor2.addListener(update);
         wait.waitForResult(100);
-        wait = blocker.initWait(EventType.UPDATE);
+        wait = blocker.init(EventType.UPDATE);
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/tmp.txt", "DirMonitor", StringUtil.US_ASCII);
         wait.waitForResult(100);
         assertEquals(1, unt.cnt());
@@ -188,7 +188,7 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
-        WaitOn<String> wait = blocker.initWait("s");
+        WaitOn<String> wait = blocker.init("s");
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/dir.txt", "Lex is the Best!!", StringUtil.US_ASCII);
         wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
@@ -219,7 +219,7 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
-        WaitOn<String> wait = blocker.initWait("s");
+        WaitOn<String> wait = blocker.init("s");
         while(!DirUtil.delete(TMP + "/dir-monitor/dir.txt", false))
             ThreadUtil.sleepAtLeast(1);
         wait.waitForResult(1500);
@@ -254,7 +254,7 @@ public class DirMonitorTest {
         };
         DirMonitor monitor2 = new DirMonitor(1, TMP + "/dir-monitor/not-dir.txt");
         monitor2.addListener(cli);
-        WaitOn<String> wait = blocker.initWait("s");
+        WaitOn<String> wait = blocker.init("s");
 
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/not-dir.txt", "It's not a DIR", StringUtil.US_ASCII);
         wait.waitForResult(100);
@@ -287,7 +287,7 @@ public class DirMonitorTest {
                 System.out.println(type + " " + list);
             }};
         monitor.addListener(cli);
-        WaitOn<String> wait = blocker.initWait(EventType.DELETE);
+        WaitOn<String> wait = blocker.init(EventType.DELETE);
         while (!DirUtil.delete(TMP + "/dir-monitor", true)) ThreadUtil.sleepAtLeast(1);
         wait.waitForResult(2000);
         assertEquals(1, cnt.cnt());

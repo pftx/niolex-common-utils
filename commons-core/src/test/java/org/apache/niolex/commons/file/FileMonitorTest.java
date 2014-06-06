@@ -67,7 +67,7 @@ public class FileMonitorTest {
                 System.out.println(type + " " + happenTime);
             }};
         monitor.addListener(add);
-        WaitOn<String> wait = blocker.initWait("s");
+        WaitOn<String> wait = blocker.init("s");
         DirUtil.mkdirsIfAbsent(TMP + "/file-monitor");
         wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
@@ -88,7 +88,7 @@ public class FileMonitorTest {
                 System.out.println(type + " " + happenTime);
             }};
         monitor.addListener(update);
-        WaitOn<String> wait = blocker.initWait("s");
+        WaitOn<String> wait = blocker.init("s");
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/file-monitor/tmp.txt", "FileMonitor", StringUtil.US_ASCII);
         wait.waitForResult(100);
         assertEquals(1, cnt.cnt());
@@ -109,7 +109,7 @@ public class FileMonitorTest {
                 System.out.println(type + " " + happenTime);
             }};
         monitor.addListener(delete);
-        WaitOn<String> wait = blocker.initWait("s");
+        WaitOn<String> wait = blocker.init("s");
         DirUtil.delete(TMP + "/file-monitor", true);
         wait.waitForResult(100);
         assertEquals(1, cnt.cnt());

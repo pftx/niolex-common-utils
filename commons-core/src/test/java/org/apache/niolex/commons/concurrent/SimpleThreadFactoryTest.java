@@ -45,19 +45,16 @@ public class SimpleThreadFactoryTest {
             @Override
             public void run() {
                 blocker.release("s", 1);
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
+                ThreadUtil.sleep(1000);
                 blocker.release("e", 1);
             }});
-        WaitOn<Integer> waitOn = blocker.initWait("s");
+        WaitOn<Integer> waitOn = blocker.init("s");
         t.start();
-        waitOn.waitForResult(100);
+        waitOn.waitForResult(500);
         assertEquals(t.getThreadGroup(), factory.getThreadGroup());
         assertEquals(t.getName(), "thread-fac-test-0");
         assertEquals(1, factory.getThreadGroup().activeCount());
-        waitOn = blocker.initWait("e");
+        waitOn = blocker.init("e");
         factory.getThreadGroup().interrupt();
         waitOn.waitForResult(100);
         Thread.sleep(10);

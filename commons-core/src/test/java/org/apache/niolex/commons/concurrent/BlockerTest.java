@@ -17,16 +17,13 @@
  */
 package org.apache.niolex.commons.concurrent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.test.Counter;
 import org.apache.niolex.commons.util.Runner;
-import org.apache.niolex.commons.bean.One;
-import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
 
 /**
@@ -42,27 +39,23 @@ public class BlockerTest {
 	 * Test method for {@link org.apache.niolex.commons.concurrent.Blocker#init(java.lang.Object)}.
 	 */
 	@Test
-	public void testInit() {
-		Pair<Boolean, WaitOn<Integer>> a = blocker.init("Not yet implemented");
-		Pair<Boolean, WaitOn<Integer>> b = blocker.init("Not yet implemented");
-		assertTrue(a.a);
-		assertFalse(b.a);
-		assertEquals(a.b, b.b);
-	}
-
-	/**
-	 * Test method for {@link org.apache.niolex.commons.concurrent.Blocker#initWait(java.lang.Object)}.
-	 * @throws Exception
-	 */
-	@Test
-	public void testInitWait() throws Exception {
-		final WaitOn<Integer> on = blocker.initWait(blocker);
+	public void testInit() throws Exception {
+		final WaitOn<Integer> on = blocker.init(blocker);
 		One<Integer> retVal = One.create(0);
 		Thread w = Runner.run(retVal , on, "waitForResult", 1000);
 		blocker.release(blocker, 156);
 		w.join();
 		assertEquals(156, retVal.a.intValue());
 	}
+
+	/**
+     * Test method for {@link org.apache.niolex.commons.concurrent.Blocker#init(java.lang.Object)}.
+     */
+    @Test
+    public void testInitAgain() throws Exception {
+        final WaitOn<Integer> on = blocker.init(blocker);
+        assertEquals(on, blocker.init(blocker));
+    }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.concurrent.Blocker#waitForResult(java.lang.Object, long)}.
@@ -98,7 +91,7 @@ public class BlockerTest {
 	@Test
 	public void testReleaseObjectE() {
 		assertFalse(blocker.release("implemented", 89));
-		assertFalse(blocker.release("concurrent", new Exception("J")));
+		assertFalse(blocker.release("concurrent", new BlockerException("J")));
 	}
 
 	/**
@@ -109,7 +102,7 @@ public class BlockerTest {
 	    blocker.init("implemented");
 	    blocker.init("concurrent");
 	    assertTrue(blocker.release("implemented", 89));
-	    assertTrue(blocker.release("concurrent", new Exception("J")));
+	    assertTrue(blocker.release("concurrent", new BlockerException("J")));
 	}
 
 	/**
@@ -119,7 +112,7 @@ public class BlockerTest {
 	@Test
 	public void testReleaseWithException() throws InterruptedException {
 		final Counter c = new Counter();
-		final WaitOn<Integer> on = blocker.initWait("man");
+		final WaitOn<Integer> on = blocker.init("man");
 		Thread t = new Thread() {
 			public void run() {
 				try {
@@ -133,16 +126,16 @@ public class BlockerTest {
 			}
 		};
 		t.start();
-		blocker.release("man", new Exception("J"));
+		blocker.release("man", new BlockerException("J"));
 		t.join();
 		assertEquals(1, c.cnt());
 	}
 
-	@Test(expected=IllegalStateException.class)
+	@Test(expected=BlockerException.class)
 	public void testReleaseAll() throws Exception {
 		blocker.init("a");
 		blocker.init("b");
-		WaitOn<Integer> k = blocker.initWait("c");
+		WaitOn<Integer> k = blocker.init("c");
 		blocker.releaseAll();
 		k.waitForResult(20);
 	}

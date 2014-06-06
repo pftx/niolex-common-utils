@@ -74,7 +74,7 @@ public class FinallyTest extends Finally {
 
     @Test
     public void testUseReadLock() throws Exception {
-        WaitOn<String> wait = blocker.initWait("r");
+        WaitOn<String> wait = blocker.init("r");
         Runner.run(this, "letsRead", 3);
         Runner.run(this, "letsRead", 4);
         wait.waitForResult(50);
@@ -87,7 +87,7 @@ public class FinallyTest extends Finally {
 
     @Test
     public void testUseWriteLock() throws Exception {
-        WaitOn<String> wait = blocker.initWait("w");
+        WaitOn<String> wait = blocker.init("w");
         Runner.run(this, "letsWrite", 2);
         wait.waitForResult(50);
         Runner.run(this, "letsRead", 3);
