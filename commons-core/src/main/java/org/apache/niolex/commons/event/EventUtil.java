@@ -27,41 +27,45 @@ import org.slf4j.LoggerFactory;
  * @version 1.0.0
  * @since 2012-6-26
  */
-public abstract class EventListener<E extends Event<?>> {
+public abstract class EventUtil {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(EventListener.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(EventUtil.class);
 
-	/**
-	 * The event happened. User need to implement this method to handle the event.
-	 *
-	 * @param e
-	 */
-	public abstract void eventHappened(E e);
-
-	/**
-	 * The internal method, handle the class cast problem.
-	 * We mark this method as final, to prevent subclass from change this method.
-	 *
-	 * @param e
-	 */
+    /**
+     * The event dispatch method, handle the class cast problem.
+     *
+     * @param l the listener
+     * @param e the event
+     */
 	@SuppressWarnings("unchecked")
-    protected final void internalEventHappened(Event<?> e) {
+	public static final void dispatch(Listener<?> l, Event<?> e) {
+	    castEvent((Listener<Object>)l, (Event<Object>)e);
+	}
+
+	/**
+	 * The internal method.
+	 *
+	 * @param l the listener
+	 * @param e the event
+	 */
+    private static final <V> void castEvent(Listener<V> l, Event<V> e) {
 	    try {
-	        eventHappened((E) e);
+	        l.eventHappened(e);
 	    } catch (ClassCastException ex) {
-	        onClassCastException(e, ex);
+	        onClassCastException(l, e, ex);
 	    }
 	}
 
 	/**
 	 * We just log the ClassCastException.
-	 * Subclass can override this method to take care of this exception.
 	 *
-	 * @param e
-	 * @param ex
+	 * @param l the listener
+	 * @param e the event
+	 * @param ex the exception
 	 */
-	protected void onClassCastException(Event<?> e, ClassCastException ex) {
-	    LOG.warn("ClassCastException occured for event type [{}] class: {}.", e.getEventType(), e.getClass(), ex);
+	public static final void onClassCastException(Listener<?> l, Event<?> e, ClassCastException ex) {
+	    LOG.warn("ClassCastException occured for event type [{}] class: {}; listener: {}.", e.getEventType(),
+	            e.getClass(), l, ex);
 	}
 
 }

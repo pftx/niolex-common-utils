@@ -34,7 +34,7 @@ public class EventTest {
      */
     @Test
     public void testGetEventType() {
-        Event<Integer> iEvn = new Event<Integer>("a", 3);
+        Event<Integer> iEvn = new BaseEvent<Integer>("a", 3);
         assertEquals("a", iEvn.getEventType());
         assertEquals(3, iEvn.getEventValue().intValue());
         System.out.println(iEvn.toString());

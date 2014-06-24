@@ -29,47 +29,78 @@ import org.apache.niolex.commons.concurrent.ConcurrentUtil;
  * @version 1.0.0
  * @since 2012-6-26
  */
-public class ConcurrentEventDispatcher implements IEventDispatcher {
+public class ConcurrentEventDispatcher implements Dispatcher {
 
-    private final ConcurrentHashMap<String, ConcurrentLinkedQueue<EventListener<?>>> handlerMap =
-            new ConcurrentHashMap<String, ConcurrentLinkedQueue<EventListener<?>>>();
+    private final ConcurrentHashMap<String, ConcurrentLinkedQueue<Listener<?>>> handlerMap =
+            new ConcurrentHashMap<String, ConcurrentLinkedQueue<Listener<?>>>();
+
+    /**
+     * This is the override of super method.
+     * @see org.apache.niolex.commons.event.Dispatcher#addListener(java.lang.Class, org.apache.niolex.commons.event.Listener)
+     */
+    @Override
+    public void addListener(Class<?> eventType, Listener<?> eListener) {
+        addListener(eventType.getName(), eListener);
+    }
 
     /**
      * Override super method
-     * @see org.apache.niolex.commons.event.IEventDispatcher#addListener(java.lang.String, org.apache.niolex.commons.event.EventListener)
+     * @see org.apache.niolex.commons.event.Dispatcher#addListener(String, Listener)
      */
     @Override
-    public void addListener(String eventType, EventListener<?> eListener) {
-        ConcurrentLinkedQueue<EventListener<?>> queue = handlerMap.get(eventType);
+    public void addListener(String eventType, Listener<?> eListener) {
+        ConcurrentLinkedQueue<Listener<?>> queue = handlerMap.get(eventType);
         if (queue == null) {
-            queue = ConcurrentUtil.initMap(handlerMap, eventType, new ConcurrentLinkedQueue<EventListener<?>>());
+            queue = ConcurrentUtil.initMap(handlerMap, eventType, new ConcurrentLinkedQueue<Listener<?>>());
         }
         queue.add(eListener);
     }
 
     /**
-     * Override super method
-     * @see org.apache.niolex.commons.event.IEventDispatcher#removeListener(java.lang.String, org.apache.niolex.commons.event.EventListener)
+     * This is the override of super method.
+     * @see org.apache.niolex.commons.event.Dispatcher#removeListener(java.lang.Class, org.apache.niolex.commons.event.Listener)
      */
     @Override
-    public void removeListener(String eventType, EventListener<?> eListener) {
-        ConcurrentLinkedQueue<EventListener<?>> queue = handlerMap.get(eventType);
+    public void removeListener(Class<?> eventType, Listener<?> eListener) {
+        removeListener(eventType.getName(), eListener);
+    }
+
+    /**
+     * Override super method
+     * @see org.apache.niolex.commons.event.Dispatcher#removeListener(String, Listener)
+     */
+    @Override
+    public void removeListener(String eventType, Listener<?> eListener) {
+        ConcurrentLinkedQueue<Listener<?>> queue = handlerMap.get(eventType);
         if (queue != null) {
             queue.remove(eListener);
         }
     }
 
     /**
-     * Override super method
-     * @see org.apache.niolex.commons.event.IEventDispatcher#fireEvent(org.apache.niolex.commons.event.Event)
+     * Directly fire the event.
+     *
+     * @param e the event
+     */
+    public void internalFireEvent(Event<?> e) {
+        ConcurrentLinkedQueue<Listener<?>> queue = handlerMap.get(e.getEventType());
+        if (queue != null) {
+            for (Listener<?> l : queue) {
+                EventUtil.dispatch(l, e);
+            }
+        }
+    }
+
+    /**
+     * This is the override of super method.
+     * @see org.apache.niolex.commons.event.Dispatcher#fireEvent(java.lang.Object)
      */
     @Override
-    public void fireEvent(Event<?> e) {
-        ConcurrentLinkedQueue<EventListener<?>> queue = handlerMap.get(e.getEventType());
-        if (queue != null) {
-            for (EventListener<?> eLi : queue) {
-                eLi.internalEventHappened(e);
-            }
+    public void fireEvent(Object e) {
+        if (e instanceof Event) {
+            internalFireEvent((Event<?>) e);
+        } else {
+            internalFireEvent(BaseEvent.create(e));
         }
     }
 

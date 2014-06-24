@@ -23,7 +23,7 @@ package org.apache.niolex.commons.event;
  * @version 1.0.5
  * @since 2012-12-20
  */
-public class StringEvent extends Event<String> {
+public class StringEvent extends BaseEvent<String> {
 
     /**
      * @param eventType

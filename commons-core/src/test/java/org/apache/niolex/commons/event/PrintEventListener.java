@@ -23,14 +23,14 @@ package org.apache.niolex.commons.event;
  * @version 1.0.5
  * @since 2012-12-20
  */
-public class PrintEventListener extends EventListener<Event<?>> {
+public class PrintEventListener implements Listener<Object> {
 
     /**
      * Override super method
-     * @see org.apache.niolex.commons.event.EventListener#eventHappened(org.apache.niolex.commons.event.Event)
+     * @see org.apache.niolex.commons.event.Listener#eventHappened(Event)
      */
     @Override
-    public void eventHappened(Event<?> e) {
+    public void eventHappened(Event<Object> e) {
         System.out.println(e);
     }
 

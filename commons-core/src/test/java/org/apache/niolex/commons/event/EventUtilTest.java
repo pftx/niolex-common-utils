@@ -25,32 +25,15 @@ import org.junit.Test;
  * @version 1.0.5
  * @since 2012-12-20
  */
-public class EventListenerTest {
+public class EventUtilTest extends EventUtil {
 
     /**
-     * Test method for {@link org.apache.niolex.commons.event.EventListener#eventHappened(org.apache.niolex.commons.event.Event)}.
+     * Test method for {@link org.apache.niolex.commons.event.EventUtil#eventHappened(org.apache.niolex.commons.event.Event)}.
      */
     @Test
-    public void testEventHappened() {
+    public void testDispatch() {
         PrintEventListener e = new PrintEventListener();
-        e.internalEventHappened(new StringEvent("A", "Event Fired."));
-        e.internalEventHappened(null);
-    }
-
-    /**
-     * Test method for {@link org.apache.niolex.commons.event.EventListener#internalEventHappened(org.apache.niolex.commons.event.Event)}.
-     */
-    @Test
-    public void testInternalEventHappened() {
-        EventListener<StringEvent> e = new EventListener<StringEvent>() {
-
-            @Override
-            public void eventHappened(StringEvent e) {
-                System.out.println("El: " + e);
-            }
-        };
-        e.internalEventHappened(new Event<String>("A", "Event Fired."));
-        e.internalEventHappened(null);
+        onClassCastException(e, new StringEvent("A", "Event Fired."), null);
     }
 
 }

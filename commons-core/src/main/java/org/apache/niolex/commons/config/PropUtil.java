@@ -69,8 +69,6 @@ import java.io.IOException;
  * 6-3. public static boolean getBoolean(String key, boolean defaultValue)
  * 从配置文件中读取布尔类型的配置
  *
- * @used 暂无项目使用
- * @category niolex-common-utils -> 公共库 -> 配置处理
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */

@@ -22,7 +22,7 @@ package org.apache.niolex.commons.event;
  * @version 1.0.0
  * @since 2013-5-22
  */
-public class IntEvent extends Event<Integer> {
+public class IntEvent extends BaseEvent<Integer> {
 
     /**
      * Constructor

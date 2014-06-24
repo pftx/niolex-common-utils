@@ -1,5 +1,5 @@
 /**
- * Event.java
+ * Listener.java
  *
  * Copyright 2014 the original author or authors.
  *
@@ -18,22 +18,19 @@
 package org.apache.niolex.commons.event;
 
 /**
- * The basic event interface.
+ * The basic listener interface.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2014-6-24
  */
-public interface Event<V> {
+public interface Listener<V> {
 
     /**
-     * @return the event type, event dispatcher will use this to distinguish events.
+     * The event happened. User need to implement this method to handle the event.
+     *
+     * @param e the event
      */
-    public String getEventType();
-
-    /**
-     * @return the event value, for user's application.
-     */
-    public V getEventValue();
+    public abstract void eventHappened(Event<V> e);
 
 }
