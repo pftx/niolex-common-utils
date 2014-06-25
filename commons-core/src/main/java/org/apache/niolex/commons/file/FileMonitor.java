@@ -175,7 +175,7 @@ public class FileMonitor implements Runnable {
      * If this list does not contain the element, it is unchanged.
      *
      * @param li the specified event listener to be removed.
-     * @return Returns true if this list contained the specified element (or equivalently, if this list changed as a result of the call).
+     * @return returns true if this list contained the specified element (or equivalently, if this list changed as a result of the call).
      */
     public synchronized boolean removeListener(EventListener li) {
         return list.remove(li);

@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 import java.nio.charset.Charset;
 
 import org.apache.niolex.commons.codec.StringUtil;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,21 +34,41 @@ import org.junit.Test;
  * @version 1.0.0, $Date: 2011-9-13$
  *
  */
-public class FileUtilTest {
+public class FileUtilTest extends FileUtil {
 
     static Charset UTF8 = StringUtil.UTF_8;
-    static String PREX = System.getProperty("user.home") + "/tmp";
+    static String PREX = System.getProperty("user.home") + "/tmpdqj";
+    static String str1 = "可以对每个连接设置当前的时区，相关描述参见5.10.8节，“MySQL服务器时区支持”。TIMESTAMP值"
+            + "结构复杂数据的可视化：欧文提供数据库结构，管理界面的容易简单，图形显示对视觉复杂。";
 
     @BeforeClass
     public static void setUp() {
         DirUtil.mkdirsIfAbsent(PREX);
-        String str1 = "可以对每个连接设置当前的时区，相关描述参见5.10.8节，“MySQL服务器时区支持”。TIMESTAMP值"
-                + "结构复杂数据的可视化：欧文提供数据库结构，管理界面的容易简单，图形显示对视觉复杂。";
-        FileUtil.setCharacterFileContentToFileSystem(PREX + "/tmp_file.txt", str1, UTF8);
+        setStr(PREX + "/tmp_file.txt", str1, UTF8);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        DirUtil.delete(PREX, true);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testSetBin() throws Exception {
+        assertFalse(setBin(null, null));
+    }
+
+    @Test
+    public void testGetBin() throws Exception {
+        assertNull(getBin(PREX + "/no_file_at_all.txt"));
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testGetBinEx() throws Exception {
+        assertNull(getBin(null));
     }
 
     @Test(expected=IllegalStateException.class)
-    public void testGetBinaryFileContentFromFileSystemStringInt() throws Exception {
+    public void testGetBinaryFileContentFromFileSystem() throws Exception {
         try {
             FileUtil.getBinaryFileContentFromFileSystem(PREX + "/tmp_file.txt", 5);
         } catch (Exception e) {
@@ -57,11 +78,9 @@ public class FileUtilTest {
     }
 
     @Test
-    public final void testCharacterFileContent() {
+    public final void testSetBinaryFileContentToFileSystem() {
     	String str2 = FileUtil.getCharacterFileContentFromFileSystem(PREX + "/tmp_file.txt", UTF8);
     	System.out.println("filee " + str2);
-        String str1 = "可以对每个连接设置当前的时区，相关描述参见5.10.8节，“MySQL服务器时区支持”。TIMESTAMP值"
-                + "结构复杂数据的可视化：欧文提供数据库结构，管理界面的容易简单，图形显示对视觉复杂。";
     	assertEquals(str1, str2);
     	boolean b;
     	b = FileUtil.setCharacterFileContentToFileSystem(PREX + "'.../_f^i$le:.txt", str2, UTF8);
@@ -69,20 +88,28 @@ public class FileUtilTest {
     }
 
     @Test
-    public final void testFileReadAndWrite() {
+    public final void testSetStr() {
         String str = FileUtil.getCharacterFileContentFromClassPath("Data.txt", FileUtilTest.class, UTF8);
-        Assert.assertTrue(FileUtil.setCharacterFileContentToFileSystem(PREX + "/tmp_file.txt", str, UTF8));
+        Assert.assertTrue(FileUtil.setStr(PREX + "/data_file.txt", str, UTF8));
 
-        String str2 = FileUtil.getCharacterFileContentFromFileSystem(PREX + "/tmp_file.txt", UTF8);
+        String str2 = FileUtil.getCharacterFileContentFromFileSystem(PREX + "/data_file.txt", UTF8);
         System.out.println("SL1 " + str2.length());
         Assert.assertEquals(str, str2);
+    }
 
+    @Test
+    public void testGetStr() throws Exception {
+        assertNull(getStr(PREX + "/no_file_at_all.txt", StringUtil.UTF_8));
+    }
+
+    @Test
+    public final void testSetCharacterFileContentToFileSystem() {
         byte[] a = FileUtil.getBinaryFileContentFromFileSystem(PREX + "/t/m/p/_/file.txt");
         Assert.assertEquals(null, a);
 
-        str = "TIMESTAMP NULL DEFAULT NULL";
-        Assert.assertTrue(FileUtil.setCharacterFileContentToFileSystem(PREX + "/tmp_file.txt", str, UTF8));
-        str2 = FileUtil.getCharacterFileContentFromFileSystem(PREX + "/tmp_file.txt", UTF8);
+        String str = "TIMESTAMP NULL DEFAULT NULL";
+        Assert.assertTrue(setBin(PREX + "/a_file.txt", str.getBytes()));
+        String str2 = FileUtil.getCharacterFileContentFromFileSystem(PREX + "/a_file.txt", UTF8);
         System.out.println("SL2 " + str2.length());
         Assert.assertEquals(str, str2);
     }

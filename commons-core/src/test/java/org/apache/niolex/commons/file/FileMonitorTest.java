@@ -20,24 +20,28 @@ package org.apache.niolex.commons.file;
 
 import static org.junit.Assert.*;
 
+import java.util.EnumMap;
+
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.concurrent.Blocker;
 import org.apache.niolex.commons.concurrent.WaitOn;
 import org.apache.niolex.commons.file.FileMonitor.EventListener;
 import org.apache.niolex.commons.file.FileMonitor.EventType;
-import org.apache.niolex.commons.test.Counter;
-import org.apache.niolex.commons.test.OrderedRunner;
+import org.apache.niolex.commons.test.AnnotationOrderedRunner;
+import org.apache.niolex.commons.test.AnnotationOrderedRunner.Order;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.google.common.collect.Maps;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2013-7-23
  */
-@RunWith(OrderedRunner.class)
+@RunWith(AnnotationOrderedRunner.class)
 public class FileMonitorTest {
 
     static final String TMP = System.getProperty("user.home") + "/tmp";
@@ -46,7 +50,7 @@ public class FileMonitorTest {
     @BeforeClass
     public static void testFileMonitor() throws Exception {
         DirUtil.delete(TMP + "/file-monitor", true);
-        monitor = new FileMonitor(1, TMP + "/file-monitor");
+        monitor = new FileMonitor(10, TMP + "/file-monitor");
     }
 
     @AfterClass
@@ -54,70 +58,111 @@ public class FileMonitorTest {
         monitor.stop();
     }
 
-    @Test
-    public void testAddRun() throws Exception {
-        final Counter cnt = new Counter();
-        final Blocker<String> blocker = new Blocker<String>();
-        EventListener add = new EventListener() {
+    static final EnumMap<EventType, Integer> map = Maps.newEnumMap(EventType.class);
+    static final Blocker<String> blocker = new Blocker<String>();
+    static final EventListener listn = new EventListener() {
 
-            @Override
-            public void notify(EventType type, long happenTime) {
-                blocker.release("S", "");
-                if (type == EventType.CREATE) cnt.inc();
-                System.out.println(type + " " + happenTime);
-            }};
-        monitor.addListener(add);
+        @Override
+        public void notify(EventType type, long happenTime) {
+            map.put(type, map.containsKey(type) ? map.get(type) + 1 : 1);
+            blocker.release("s", "");
+            System.out.println(type + " " + happenTime);
+        }};
+
+    private void setFile(String str) {
+        FileUtil.setCharacterFileContentToFileSystem(TMP + "/file-monitor", str, StringUtil.US_ASCII);
+    }
+
+    @Test
+    @Order(1)
+    public void testCreateFile() throws Exception {
+        monitor.addListener(listn);
         WaitOn<String> wait = blocker.init("s");
-        DirUtil.mkdirsIfAbsent(TMP + "/file-monitor");
-        wait.waitForResult(100);
-        assertEquals(1, cnt.cnt());
-        boolean b = monitor.removeListener(add);
+        setFile("now");
+        wait.waitForResult(1000);
+        assertEquals(1, map.get(EventType.CREATE).intValue());
+        boolean b = monitor.removeListener(listn);
         assertTrue(b);
     }
 
     @Test
-    public void testBupdateAddListener() throws Exception {
-        final Counter cnt = new Counter();
-        final Blocker<String> blocker = new Blocker<String>();
-        EventListener update = new EventListener() {
-
-            @Override
-            public void notify(EventType type, long happenTime) {
-                blocker.release("S", "");
-                if (type == EventType.UPDATE) cnt.inc();
-                System.out.println(type + " " + happenTime);
-            }};
-        monitor.addListener(update);
+    @Order(2)
+    public void testUpdateFile() throws Exception {
+        boolean b = monitor.removeListener(listn);
+        assertFalse(b);
+        monitor.addListener(listn);
         WaitOn<String> wait = blocker.init("s");
-        FileUtil.setCharacterFileContentToFileSystem(TMP + "/file-monitor/tmp.txt", "FileMonitor", StringUtil.US_ASCII);
-        wait.waitForResult(100);
-        assertEquals(1, cnt.cnt());
-        boolean b = monitor.removeListener(update);
-        assertTrue(b);
+
+        setFile("update");
+        wait.waitForResult(1000);
+        assertEquals(1, map.get(EventType.CREATE).intValue());
+        assertEquals(1, map.get(EventType.UPDATE).intValue());
     }
 
     @Test
+    @Order(3)
     public void testDeleteNotify() throws Exception {
-        final Counter cnt = new Counter();
-        final Blocker<String> blocker = new Blocker<String>();
-        EventListener delete = new EventListener() {
-
-            @Override
-            public void notify(EventType type, long happenTime) {
-                blocker.release("S", "");
-                if (type == EventType.DELETE) cnt.inc();
-                System.out.println(type + " " + happenTime);
-            }};
-        monitor.addListener(delete);
         WaitOn<String> wait = blocker.init("s");
         DirUtil.delete(TMP + "/file-monitor", true);
-        wait.waitForResult(100);
-        assertEquals(1, cnt.cnt());
-        boolean b = monitor.removeListener(delete);
+        wait.waitForResult(1000);
+        assertEquals(1, map.get(EventType.CREATE).intValue());
+        assertEquals(1, map.get(EventType.UPDATE).intValue());
+        assertEquals(1, map.get(EventType.DELETE).intValue());
+        boolean b = monitor.removeListener(listn);
         assertTrue(b);
     }
 
     @Test
+    @Order(4)
+    public void testCreateDir() throws Exception {
+        monitor.addListener(listn);
+        WaitOn<String> wait = blocker.init("s");
+
+        DirUtil.mkdirsIfAbsent(TMP + "/file-monitor");
+        wait.waitForResult(1000);
+        assertEquals(2, map.get(EventType.CREATE).intValue());
+        assertEquals(1, map.get(EventType.UPDATE).intValue());
+        assertEquals(1, map.get(EventType.DELETE).intValue());
+    }
+
+    @Test
+    @Order(5)
+    public void testUpdateDir() throws Exception {
+        WaitOn<String> wait = blocker.init("s");
+
+        DirUtil.mkdirsIfAbsent(TMP + "/file-monitor/tmp");
+        wait.waitForResult(1000);
+        assertEquals(2, map.get(EventType.CREATE).intValue());
+        assertEquals(2, map.get(EventType.UPDATE).intValue());
+        assertEquals(1, map.get(EventType.DELETE).intValue());
+    }
+
+    @Test
+    @Order(6)
+    public void testUpdateInnerFile() throws Exception {
+        WaitOn<String> wait = blocker.init("s");
+
+        FileUtil.setCharacterFileContentToFileSystem(TMP + "/file-monitor/tmp.txt", "Lex", StringUtil.US_ASCII);
+        wait.waitForResult(1000);
+        assertEquals(2, map.get(EventType.CREATE).intValue());
+        assertEquals(3, map.get(EventType.UPDATE).intValue());
+        assertEquals(1, map.get(EventType.DELETE).intValue());
+    }
+
+    @Test
+    @Order(7)
+    public void testDeleteDir() throws Exception {
+        WaitOn<String> wait = blocker.init("s");
+        DirUtil.delete(TMP + "/file-monitor", true);
+
+        wait.waitForResult(1000);
+        assertEquals(2, map.get(EventType.CREATE).intValue());
+        assertTrue(3 <= map.get(EventType.UPDATE).intValue());
+        assertEquals(2, map.get(EventType.DELETE).intValue());
+    }
+
+    @Test
+    @Order(9)
     public void testRemoveListener() throws Exception {
         assertEquals(1, EventType.DELETE.compareTo(EventType.CREATE));
         assertEquals(EventType.valueOf("DELETE"), EventType.DELETE);

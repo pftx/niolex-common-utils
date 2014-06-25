@@ -100,7 +100,8 @@ public class DirMonitor extends FileMonitor implements FileMonitor.EventListener
         } else {
             // This is the first time we check the children list.
             fileList = Arrays.asList(file.list());
-            notifyChildrenListeners(EventType.ADD_CHILDREN, Collections.unmodifiableList(fileList));
+            if (fileList.size() > 0)
+                notifyChildrenListeners(EventType.ADD_CHILDREN, Collections.unmodifiableList(fileList));
         }
     }
 
@@ -120,8 +121,8 @@ public class DirMonitor extends FileMonitor implements FileMonitor.EventListener
     }
 
     /**
-     * @param type
-     * @param a
+     * @param type event type
+     * @param a file list
      */
     private synchronized void notifyChildrenListeners(EventType type, List<String> a) {
         for (EventListener li : list) {
@@ -136,13 +137,14 @@ public class DirMonitor extends FileMonitor implements FileMonitor.EventListener
      */
     private void checkDelete() {
         isDir = null;
+        fileList = null;
     }
 
     /**
      * @return the current children list.
      */
     public List<String> currentChildren() {
-        return fileList;
+        return fileList == null ? null : Collections.unmodifiableList(fileList);
     }
 
     /**

@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -39,6 +40,19 @@ import org.slf4j.LoggerFactory;
 public abstract class FileUtil {
     private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);
 
+
+    /**
+     * Store binary data into local disk.<br>
+     * Shortcut of {@link #setBinaryFileContentToFileSystem(String, byte[])}
+     *
+     * @param pathname the file path name
+     * @param raw the data to store
+     * @return true if file store success
+     */
+    public static boolean setBin(String pathname, byte[] raw) {
+        return setBinaryFileContentToFileSystem(pathname, raw);
+    }
+
     /**
      * Store binary data into local disk.
      *
@@ -52,13 +66,26 @@ public abstract class FileUtil {
             out = new FileOutputStream(pathname);
             out.write(raw);
             out.flush();
-            StreamUtil.closeStream(out);
             return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOG.warn("Error occured while store content to file [{}] reason - {}", pathname, e.toString());
-            StreamUtil.closeStream(out);
             return false;
+        } finally {
+            StreamUtil.closeStream(out);
         }
+    }
+
+    /**
+     * Store the string into local file system.<br>
+     * Shortcut of {@link #setCharacterFileContentToFileSystem(String, String, Charset)}
+     *
+     * @param pathname the file path and name
+     * @param content the string to store
+     * @param charset the charset to use
+     * @return true if file store success
+     */
+    public static boolean setStr(String pathname, String content, Charset charset) {
+        return setCharacterFileContentToFileSystem(pathname, content, charset);
     }
 
     /**
@@ -74,6 +101,19 @@ public abstract class FileUtil {
     }
 
     /**
+     * Read the file content into a byte array. The file must less than 10MB.<br>
+     * Shortcut of {@link #getBinaryFileContentFromFileSystem(String)}
+     *
+     * @param pathname
+     *            The file path and file name.
+     * @return The file content as byte array.
+     * @throws IllegalStateException If file larger than 10 MB.
+     */
+    public static byte[] getBin(String pathname) {
+        return getBinaryFileContentFromFileSystem(pathname);
+    }
+
+    /**
      * Read the file content into a byte array. The file must less than 10MB.
      *
      * @param pathname
@@ -84,7 +124,6 @@ public abstract class FileUtil {
     public static byte[] getBinaryFileContentFromFileSystem(String pathname) {
         return getBinaryFileContentFromFileSystem(pathname, Const.M * 10);
     }
-
 
     /**
      * Read the file content into a byte array.
@@ -99,25 +138,20 @@ public abstract class FileUtil {
         InputStream in = null;
         try {
             File file = new File(pathname);
-            final int SIZE = (int) file.length();
-            if (SIZE > maxSize) {
-                throw new IllegalStateException("File too large. max " + maxSize + ", file size " + SIZE);
+            final int size = (int) file.length();
+            if (size > maxSize) {
+                throw new IllegalStateException("File too large. max " + maxSize + ", file size " + size);
             }
-            byte[] raw = new byte[SIZE];
+            byte[] raw = new byte[size];
             in = new FileInputStream(file);
-            int k = 0;
-            while (k != SIZE) {
-                k += in.read(raw, k, SIZE - k);
-            }
+            StreamUtil.readData(in, raw);
             return raw;
-        } catch (IllegalStateException ie) {
-            throw ie;
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOG.warn("Error occured while read file [{}] from filesystem; reason - {}", pathname, e.toString());
+            return null;
         } finally {
             StreamUtil.closeStream(in);
         }
-        return null;
     }
 
     /**
@@ -142,6 +176,20 @@ public abstract class FileUtil {
     }
 
     /**
+     * Read The File Content into a string.<br>
+     * Shortcut of {@link #getCharacterFileContentFromFileSystem(String, Charset)}
+     *
+     * @param pathname
+     *            The file path and file name.
+     * @param encoding
+     *            The file encoding.
+     * @return The file content as string.
+     */
+    public static String getStr(String pathname, Charset encoding) {
+        return getCharacterFileContentFromFileSystem(pathname, encoding);
+    }
+
+    /**
      * Read The File Content into a string.
      *
      * @param pathname
@@ -152,10 +200,7 @@ public abstract class FileUtil {
      */
     public static String getCharacterFileContentFromFileSystem(String pathname, Charset encoding) {
         byte[] data = getBinaryFileContentFromFileSystem(pathname);
-        if (data != null) {
-            return new String(data, encoding);
-        }
-        return null;
+        return data == null ? null : new String(data, encoding);
     }
 
     /**
@@ -169,10 +214,7 @@ public abstract class FileUtil {
      */
     public static <T> String getCharacterFileContentFromClassPath(String pathname, Class<T> cls, Charset encoding) {
         byte[] data = getBinaryFileContentFromClassPath(pathname, cls);
-        if (data != null) {
-            return new String(data, encoding);
-        }
-        return null;
+        return data == null ? null : new String(data, encoding);
     }
 
 }
