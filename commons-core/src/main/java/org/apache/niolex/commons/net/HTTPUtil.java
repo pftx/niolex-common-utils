@@ -111,54 +111,6 @@ public abstract class HTTPUtil {
     }
 
     /**
-     * Infer the charset from HTTP response headers, or from the body if needed.
-     *
-     * @param headers the HTTP response headers
-     * @param body the HTTP response body
-     * @return the inferred charset
-     */
-    public static final Charset inferCharset(Map<String, List<String>> headers, byte[] body) {
-        // Case 1. Infer charset from headers.
-        String charSet = null;
-        for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
-            if ("Content-Type".equalsIgnoreCase(entry.getKey())) {
-                List<String> list = entry.getValue();
-                if (!CollectionUtil.isEmpty(list)) {
-                    String s = list.get(0);
-                    int idx = s.indexOf("charset=");
-                    if (idx > 0) {
-                        charSet = s.substring(idx + 8).trim();
-                    }
-                }
-                break;
-            }
-        }
-        // Case 2. Infer charset from body.
-        if (charSet == null) {
-            String s = StringUtil.asciiByteToStr(Arrays.copyOfRange(body, 0, 400));
-            int idx = s.indexOf("charset=");
-            if (idx > 0) {
-                idx += 8;
-                char ch = s.charAt(idx);
-                if (ch == '\'' || ch == '"') ++idx;
-                final int start = idx;
-                for (; idx < 400; ++idx) {
-                    ch = s.charAt(idx);
-                    if (ch == '\'' || ch == '"') {
-                        break;
-                    }
-                }
-                charSet = s.substring(start, idx);
-            }
-        }
-        // Case 3. Use default.
-        if (charSet == null) {
-            return StringUtil.UTF_8;
-        }
-        return Charset.forName(charSet);
-    }
-
-    /**
      * Do the HTTP request.
      *
      * @param strUrl the request URL
@@ -239,6 +191,54 @@ public abstract class HTTPUtil {
             // Close the input stream.
             StreamUtil.closeStream(in);
         }
+    }
+
+    /**
+     * Infer the charset from HTTP response headers, or from the body if needed.
+     *
+     * @param headers the HTTP response headers
+     * @param body the HTTP response body
+     * @return the inferred charset
+     */
+    public static final Charset inferCharset(Map<String, List<String>> headers, byte[] body) {
+        // Case 1. Infer charset from headers.
+        String charSet = null;
+        for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+            if ("Content-Type".equalsIgnoreCase(entry.getKey())) {
+                List<String> list = entry.getValue();
+                if (!CollectionUtil.isEmpty(list)) {
+                    String s = list.get(0);
+                    int idx = s.indexOf("charset=");
+                    if (idx > 0) {
+                        charSet = s.substring(idx + 8).trim();
+                    }
+                }
+                break;
+            }
+        }
+        // Case 2. Infer charset from body.
+        if (charSet == null) {
+            String s = StringUtil.asciiByteToStr(Arrays.copyOfRange(body, 0, 400));
+            int idx = s.indexOf("charset=");
+            if (idx > 0) {
+                idx += 8;
+                char ch = s.charAt(idx);
+                if (ch == '\'' || ch == '"') ++idx;
+                final int start = idx;
+                for (; idx < 400; ++idx) {
+                    ch = s.charAt(idx);
+                    if (ch == '\'' || ch == '"') {
+                        break;
+                    }
+                }
+                charSet = s.substring(start, idx);
+            }
+        }
+        // Case 3. Use default.
+        if (charSet == null) {
+            return StringUtil.UTF_8;
+        }
+        return Charset.forName(charSet);
     }
 
     /**

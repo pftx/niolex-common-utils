@@ -53,7 +53,7 @@ public class NetUtilTest extends NetUtil {
     public void testGetLocalIP() throws Exception {
         InetAddress i = InetAddress.getByName("localhost");
         String s = getLocalIP();
-        System.out.println(i + ", " + s);
+        System.out.println(i + ":= " + s);
     }
 
     @Test
@@ -105,8 +105,8 @@ public class NetUtilTest extends NetUtil {
         try {
             ipPort2InetSocketAddress("10.35.2.135");
         } catch (Exception e) {
-            assertTrue(e instanceof ArrayIndexOutOfBoundsException);
-            assertEquals("1", e.getMessage());
+            assertTrue(e instanceof IllegalArgumentException);
+            assertEquals("Invalid IP:Port string - 10.35.2.135", e.getMessage());
         }
     }
 

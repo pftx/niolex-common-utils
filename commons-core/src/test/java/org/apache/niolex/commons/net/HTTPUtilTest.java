@@ -40,6 +40,15 @@ import com.google.common.collect.Maps;
 public class HTTPUtilTest extends HTTPUtil {
 
     @Test
+    public void testGet() throws Exception {
+        if (SystemUtil.defined("download", "download.http")) return;
+        Map<String, String> params = Maps.newHashMap();
+        params.put("list", "sh000001");
+        String s = get("http://hq.sinajs.cn/", params);
+        System.out.println(s);
+    }
+
+    @Test
     public void testGetWithoutEnc() throws Exception {
         if (SystemUtil.defined("download", "download.http")) return;
         String s = get("http://www.zju.edu.cn/");
@@ -56,13 +65,73 @@ public class HTTPUtilTest extends HTTPUtil {
     }
 
     @Test
+    public void testGetStringParam() throws Exception {
+        if (SystemUtil.defined("download", "download.http")) return;
+        Map<String, String> params = Maps.newHashMap();
+        params.put("wd", "谢佶芸");
+        String s = get("http://www.baidu.com/baidu", params);
+        assertTrue(s.length() > 1024);
+        assertTrue(s.contains("谢佶芸_百度搜索"));
+    }
+
+    @Test
+    public void testPost() throws Exception {
+        Map<String, String> params = Maps.newHashMap();
+        params.put("wd", "谢佶芸");
+        params.put("ie", "gb2312");
+        params.put("inputT", "18400");
+        params.put("rsv_bp", "0");
+        params.put("rsv_spt", "3");
+        params.put("rsv_sug", "0");
+        params.put("rsv_sug1", "8");
+        params.put("rsv_sug3", "11");
+        params.put("rsv_sug4", "624");
+        params.put("tn", "baidu");
+        params.put("wd", "commons-core");
+        String s = post("http://www.baidu.com/baidu", params);
+        assertTrue(s.length() > 1024);
+        assertTrue(s.contains("百度--您的访问出错了"));
+    }
+
+    @Test(expected=NetException.class)
+    public void testDoHTTPInvalidURL() throws Exception {
+        try {
+            doHTTP(DownloadUtilTest.JAR, null, true);
+        } catch (NetException e) {
+            assertEquals(e.getCode(), NetException.ExCode.INVALID_URL_TYPE);
+            throw e;
+        }
+    }
+
+    @Test(expected=NetException.class)
+    public final void testDoHTTPIOE() throws Exception, Throwable {
+        try {
+            doHTTP("http://search.maven.org/#search%7Cga%7C1%7Cprotobuf-java",
+                            null, null, 1000, 50, false);
+        } catch (NetException et) {
+            System.out.println("MSG " + et.getMessage());
+            assertEquals(et.getCode(), NetException.ExCode.IOEXCEPTION);
+            throw et;
+        }
+    }
+
+    @Test
+    public void testDoHTTPNuLLHeader() throws Exception {
+        if (SystemUtil.defined("download", "download.http")) return;
+        byte[] body = doHTTP("http://view.163.com/", null, null, 5000, 3000, false).b;
+        String s = StringUtil.gbkByteToStr(body);
+        assertTrue(s.length() > 1024);
+        assertTrue(s.contains("网易评论频道是网易新闻中心一个包含有另一面"));
+    }
+
+    @Test
     public void testInferCharset() throws Exception {
         byte[] body = StringUtil.strToUtf8Byte("<!DOCTYPE html><!--STATUS OK--><html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\"><meta http-equiv=\"content-type\"" +
-        		" content=\"text/html;charset=utf-8\"><title>谢佶芸_百度搜索</title><style >body{color:#000;background:#fff;padding:6px 0 0;margin:0;position:relative}body,th,td,.p1,.p" +
-        		"2{font-family:arial}p,form,ol,ul,li,dl,dt,dd,h3{margin:0;padding:0;list-style:none}input{padding-top:0;padding-bottom:0;-moz-box-sizing:border-box;-webkit-box-sizin" +
-        		"g:border-box;box-sizing:border-box}table,img{border:0}td{font-size:9pt;line-height:18px}em{font-style:normal;color:#cc0000}a em{text-decoration:underline}cite{font-" +
-        		"style:normal;color:#008000}.m,a.m{color:#666}a.m:visited{color:#606}.g,a.g{color:#008000}.c{color:#77c}.f14{font-size:14px}.f10{font-size:10.5pt}.f16{font-size:16px" +
-        		"}.f13{font-size:13px}#u,#head,#tool,#search,#foot{font-size:12px}.p1{line-height:120%;margin-left:-12pt}");
+                " content=\"text/html;charset=utf-8\"><title>谢佶芸_百度搜索</title><style >body{color:#000;background:#fff;padding:6px 0 0;margin:0;position:relative}body,th,td,.p1,.p" +
+                "2{font-family:arial}p,form,ol,ul,li,dl,dt,dd,h3{margin:0;padding:0;list-style:none}input{padding-top:0;padding-bottom:0;-moz-box-sizing:border-box;-webkit-box-sizin" +
+                "g:border-box;box-sizing:border-box}table,img{border:0}td{font-size:9pt;line-height:18px}em{font-style:normal;color:#cc0000}a em{text-decoration:underline}cite{font-" +
+                "style:normal;color:#008000}.m,a.m{color:#666}a.m:visited{color:#606}.g,a.g{color:#008000}.c{color:#77c}.f14{font-size:14px}.f10{font-size:10.5pt}.f16{font-size:16px" +
+                "}.f13{font-size:13px}#u,#head,#tool,#search,#foot{font-size:12px}.p1{line-height:120%;margin-left:-12pt}");
         Map<String, List<String>> headers = Maps.newHashMap();
         headers.put("Content-Type", Lists.newArrayList("text/html;charset=utf-8"));
         Charset cs = inferCharset(headers, body);
@@ -167,72 +236,26 @@ public class HTTPUtilTest extends HTTPUtil {
     }
 
     @Test
-    public void testGetStringParam() throws Exception {
-        if (SystemUtil.defined("download", "download.http")) return;
-        Map<String, String> params = Maps.newHashMap();
-        params.put("wd", "谢佶芸");
-        String s = get("http://www.baidu.com/baidu", params);
-        assertTrue(s.length() > 1024);
-        assertTrue(s.contains("谢佶芸_百度搜索"));
-    }
-
-    @Test
-    public void testGet() throws Exception {
-        if (SystemUtil.defined("download", "download.http")) return;
-        Map<String, String> params = Maps.newHashMap();
-        params.put("list", "sh000001");
-        String s = get("http://hq.sinajs.cn/", params);
-        System.out.println(s);
-    }
-
-    @Test
-    public void testPostServerE() throws Exception {
-        Map<String, String> params = Maps.newHashMap();
-        params.put("wd", "谢佶芸");
-        params.put("ie", "gb2312");
-        params.put("inputT", "18400");
-        params.put("rsv_bp", "0");
-        params.put("rsv_spt", "3");
-        params.put("rsv_sug", "0");
-        params.put("rsv_sug1", "8");
-        params.put("rsv_sug3", "11");
-        params.put("rsv_sug4", "624");
-        params.put("tn", "baidu");
-        params.put("wd", "commons-core");
-        String s = post("http://www.baidu.com/baidu", params);
-        assertTrue(s.length() > 1024);
-        assertTrue(s.contains("百度--您的访问出错了"));
-    }
-
-    @Test(expected=NetException.class)
-    public void testHTTP() throws Exception {
-        doHTTP("ftp://ftp:ftp@ftp.speed.hinet.net/test_001m.zip", null, true);
-    }
-
-    @Test
-    public void testHTTPNuLLHeader() throws Exception {
-        if (SystemUtil.defined("download", "download.http")) return;
-        byte[] body = doHTTP("http://view.163.com/", null, null, 5000, 3000, false).b;
-        String s = StringUtil.gbkByteToStr(body);
-        assertTrue(s.length() > 1024);
-        assertTrue(s.contains("网易评论频道是网易新闻中心一个包含有另一面"));
-    }
-
-    @Test
     public void testPrepareWwwFormUrlEncoded() throws Exception {
-        Map<String, String> params = Maps.newHashMap();
-        String s = prepareWwwFormUrlEncoded(params);
-        assertTrue(s.isEmpty());
-    }
-
-    @Test
-    public void testPrepareWwwFormUrlEncodedNullKey() throws Exception {
         Map<String, String> params = Maps.newHashMap();
         params.put(null, "no-cache");
         params.put("XXS", "Lex");
         params.put("Host", "apache");
         String s = prepareWwwFormUrlEncoded(params);
         assertEquals(s, "Host=apache&XXS=Lex");
+    }
+
+    @Test
+    public void testPrepareWwwFormUrlEncodedNullKey() throws Exception {
+        String s = prepareWwwFormUrlEncoded(null);
+        assertEquals(s, "");
+    }
+
+    @Test
+    public void testPrepareWwwFormUrlEncodedEmpty() throws Exception {
+        Map<String, String> params = Maps.newHashMap();
+        String s = prepareWwwFormUrlEncoded(params);
+        assertTrue(s.isEmpty());
     }
 
     @Test

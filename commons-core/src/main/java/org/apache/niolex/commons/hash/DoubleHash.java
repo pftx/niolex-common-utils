@@ -22,6 +22,7 @@ import java.util.Collection;
 import org.apache.niolex.commons.bean.Pair;
 
 import com.google.common.hash.Funnel;
+import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 
@@ -49,7 +50,7 @@ public class DoubleHash<T> {
     // the secondary hash function
     private final HashFunction secondary;
     // the server node array
-    private Object[] nodeArray;
+    private volatile Object[] nodeArray;
 
     /**
      * The only * Constructor to create this object. All Parameters must be filled.
@@ -129,16 +130,8 @@ public class DoubleHash<T> {
      * @param key the key to be hashed
      * @return the pair of server nodes
      */
-    @SuppressWarnings("unchecked")
     public Pair<T, T> getPairNodes(String key) {
-        final Object[] tmpArray = this.nodeArray;
-        final int length = tmpArray.length;
-        final int idx1 = Hashing.consistentHash(primary.hashString(key), length);
-        int idx2 = Hashing.consistentHash(secondary.hashString(key), length - 1);
-        if (idx2 >= idx1) {
-            ++idx2;
-        }
-        return (Pair<T, T>) Pair.create(tmpArray[idx1], tmpArray[idx2]);
+        return getPairNodes(primary.hashString(key), secondary.hashString(key));
     }
 
     /**
@@ -148,16 +141,8 @@ public class DoubleHash<T> {
      * @param key the key to be hashed
      * @return the pair of server nodes
      */
-    @SuppressWarnings("unchecked")
     public Pair<T, T> getPairNodes(long key) {
-        final Object[] tmpArray = this.nodeArray;
-        final int length = tmpArray.length;
-        final int idx1 = Hashing.consistentHash(primary.hashLong(key), length);
-        int idx2 = Hashing.consistentHash(secondary.hashLong(key), length - 1);
-        if (idx2 >= idx1) {
-            ++idx2;
-        }
-        return (Pair<T, T>) Pair.create(tmpArray[idx1], tmpArray[idx2]);
+        return getPairNodes(primary.hashLong(key), secondary.hashLong(key));
     }
 
     /**
@@ -167,16 +152,8 @@ public class DoubleHash<T> {
      * @param key the key to be hashed
      * @return the pair of server nodes
      */
-    @SuppressWarnings("unchecked")
     public Pair<T, T> getPairNodes(int key) {
-        final Object[] tmpArray = this.nodeArray;
-        final int length = tmpArray.length;
-        final int idx1 = Hashing.consistentHash(primary.hashInt(key), length);
-        int idx2 = Hashing.consistentHash(secondary.hashInt(key), length - 1);
-        if (idx2 >= idx1) {
-            ++idx2;
-        }
-        return (Pair<T, T>) Pair.create(tmpArray[idx1], tmpArray[idx2]);
+        return getPairNodes(primary.hashInt(key), secondary.hashInt(key));
     }
 
     /**
@@ -187,16 +164,39 @@ public class DoubleHash<T> {
      * @param funnel the funnel to be used
      * @return the pair of server nodes
      */
-    @SuppressWarnings("unchecked")
     public <K> Pair<T, T> getPairNodes(K key, Funnel<? super K> funnel) {
+        return getPairNodes(primary.hashObject(key, funnel), secondary.hashObject(key, funnel));
+    }
+
+    /**
+     * Get the pair of server nodes by these hash codes. We guarantee the first and second node are
+     * not the same.<br>
+     *
+     * @param primaryHashCode the primary hash code
+     * @param secondaryHashCode the secondary hash code
+     * @return the pair of server nodes
+     */
+    protected Pair<T, T> getPairNodes(HashCode primaryHashCode, HashCode secondaryHashCode) {
         final Object[] tmpArray = this.nodeArray;
         final int length = tmpArray.length;
-        final int idx1 = Hashing.consistentHash(primary.hashObject(key, funnel), length);
-        int idx2 = Hashing.consistentHash(secondary.hashObject(key, funnel), length - 1);
+        /**
+         * The node array
+         * ---------------------------------------
+         *                    ^
+         *      The idx1 in any of the positions
+         * ------------------- -------------------
+         *      The idx2 will be in the remains
+         * So the length must - 1
+         */
+        final int idx1 = Hashing.consistentHash(primaryHashCode, length);
+        int idx2 = Hashing.consistentHash(secondaryHashCode, length - 1);
         if (idx2 >= idx1) {
             ++idx2;
         }
-        return (Pair<T, T>) Pair.create(tmpArray[idx1], tmpArray[idx2]);
+
+         @SuppressWarnings("unchecked")
+         Pair<T, T> r = Pair.<T, T>create((T)tmpArray[idx1], (T)tmpArray[idx2]);
+         return r;
     }
 
 }

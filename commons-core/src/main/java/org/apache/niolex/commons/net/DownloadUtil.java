@@ -63,7 +63,7 @@ public abstract class DownloadUtil {
 	 * Set the flag whether we use thread local cache for less byte array creation.
 	 * This is useful for large amount of file download.
 	 */
-	private static boolean useThreadLocalCache = true;
+	private static volatile boolean useThreadLocalCache = true;
 
 	/**
 	 * Set the flag whether we use thread local cache for less byte array creation.
@@ -214,10 +214,7 @@ public abstract class DownloadUtil {
             } while ((count = in.read(byteBuf)) > 0);
             ret = bos.toByteArray();
         }
-        if (ret.length < MIN_SIZE) {
-            throw new NetException(NetException.ExCode.FILE_TOO_SMALL, "File " + strUrl +
-                    " content size [" + ret.length + "] too small, it indicates error.");
-        }
+        validateContentLength(strUrl, ret.length, maxFileSize);
         return ret;
 	}
 

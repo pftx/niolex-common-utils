@@ -31,13 +31,12 @@ public class NetExceptionTest {
 
     @Test
     public void testFILE_TOO_LARGEGetCode() throws Exception {
-        FILE_TOO_LARGE.toString();
+        assertEquals(FILE_TOO_LARGE.toString(), "FILE_TOO_LARGE");
         assertEquals(FILE_TOO_LARGE, valueOf("FILE_TOO_LARGE"));
     }
 
     @Test
     public void testINVALID_SERVER_RESPONSEGetCode() throws Exception {
-        INVALID_SERVER_RESPONSE.toString();
         assertEquals("INVALID_SERVER_RESPONSE", INVALID_SERVER_RESPONSE.name());
     }
 
@@ -48,13 +47,23 @@ public class NetExceptionTest {
 
     @Test
     public void testIOEXCEPTIONGetCode() throws Exception {
-        IOEXCEPTION.toString();
         assertTrue(IOEXCEPTION.equals(valueOf("IOEXCEPTION")));
     }
 
     @Test
     public void testIOEXCEPTIONGetMessage() throws Exception {
         assertEquals(-1, IOEXCEPTION.ordinal() - INVALID_SERVER_RESPONSE.ordinal());
+    }
+
+    @Test
+    public void testNetExceptionExCodeString() throws Exception {
+        assertEquals(FILE_TOO_LARGE, new NetException(FILE_TOO_LARGE, "OK").getCode());
+    }
+
+    @Test
+    public void testGetCode() throws Exception {
+        assertEquals("INVALID_SERVER_RESPONSE: OK",
+                new NetException(INVALID_SERVER_RESPONSE, "OK", null).getMessage());
     }
 
 }

@@ -17,15 +17,9 @@
  */
 package org.apache.niolex.commons.net;
 
-import static org.apache.niolex.commons.net.DownloadUtil.*;
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 import org.apache.niolex.commons.file.FileUtil;
-import org.apache.niolex.commons.net.NetException;
-import org.apache.niolex.commons.net.DownloadUtil;
 import org.apache.niolex.commons.test.StopWatch;
 import org.apache.niolex.commons.test.StopWatch.Stop;
 import org.apache.niolex.commons.util.SystemUtil;
@@ -34,14 +28,15 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 /**
+ * Test the unusual download, use FTP.
+ *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2013-6-20
  */
-public class NewDownloadUtilTest {
+public class NewDownloadUtilTest extends DownloadUtil {
 
     static StopWatch sw = new StopWatch(10);
     private Stop start;
@@ -71,60 +66,27 @@ public class NewDownloadUtilTest {
     final static String URL = "http://fe.bdimg.com/tangram/2.0.2.5.js";
     final static String FTP = "ftp://ftp:ftp@ftp.speed.hinet.net/test_001m.zip";
     final static String SMALL = NewDownloadUtilTest.class.getResource("Small.txt").toExternalForm();
-    final static String JAR = Logger.class.getResource("Logger.class").toExternalForm();
-
-    @Test(expected=NetException.class)
-    public void testUnusualDownloadSmallFile() throws Exception {
-        InputStream in = new ByteArrayInputStream(new byte[5]);
-        try {
-            unusualDownload(URL, in, 512, true);
-        } catch (NetException e) {
-            assertEquals(e.getCode(), NetException.ExCode.FILE_TOO_SMALL);
-            throw e;
-        }
-    }
-
-    @Test(expected=NetException.class)
-    public void testUnusualDownloadLargeFile() throws Exception {
-        byte[] local = FileUtil.getBinaryFileContentFromClassPath("2.0.2.5.js.txt", getClass());
-        InputStream in = new ByteArrayInputStream(local);
-        try {
-            unusualDownload(URL, in, 512, true);
-        } catch (NetException e) {
-            assertEquals(e.getCode(), NetException.ExCode.FILE_TOO_LARGE);
-            throw e;
-        }
-    }
 
     @Test
-    public void testDownload() throws NetException {
+    public void testDownloadOK() throws NetException {
         byte[] data = downloadFile(URL);
         byte[] local = FileUtil.getBinaryFileContentFromClassPath("2.0.2.5.js.txt", getClass());
         assertArrayEquals(local, data);
     }
 
     @Test
-    public void testDownloadJar() throws NetException {
-        byte[] data = downloadFile(JAR);
-        byte[] local = FileUtil.getBinaryFileContentFromClassPath("Logger.class", Logger.class);
+    public void testDownloadFile() throws NetException {
+        if (SystemUtil.defined("download", "download.http")) return;
+        byte[] data = downloadFile("http://www.10086.cn/images/quickbg.gif", 9624);
+        byte[] local = FileUtil.getBinaryFileContentFromClassPath("quickbg.gif.txt", getClass());
         assertArrayEquals(local, data);
     }
 
     @Test
     public void testDownloadFtp() throws NetException {
         if (SystemUtil.defined("download", "download.ftp")) return;
-        byte[] data = downloadFile(FTP);
+        byte[] data = downloadFile(FTP, 30000, 30000, 1049902, false);
         assertEquals(1049902, data.length);
-    }
-
-    @Test(expected=NetException.class)
-    public void testDownloadTooLarge() throws NetException {
-        try {
-            downloadFile(URL, 54495);
-        } catch (NetException e) {
-            assertEquals(e.getCode(), NetException.ExCode.FILE_TOO_LARGE);
-            throw e;
-        }
     }
 
     @Test(expected=NetException.class)
@@ -155,38 +117,6 @@ public class NewDownloadUtilTest {
             assertEquals(NetException.ExCode.INVALID_SERVER_RESPONSE, e.getCode());
             throw e;
         }
-    }
-
-    @Test
-    public void testDownloadFile() throws NetException {
-        if (SystemUtil.defined("download", "download.http")) return;
-        byte[] data = downloadFile("http://www.10086.cn/images/quickbg.gif", 9624);
-        byte[] local = FileUtil.getBinaryFileContentFromClassPath("quickbg.gif.txt", getClass());
-        assertArrayEquals(local, data);
-    }
-
-    @Test
-    public void testUseCache() {
-        byte[] buf1 = getByteBuffer(true);
-        byte[] buf2 = getByteBuffer(true);
-        byte[] buf3 = getByteBuffer(false);
-        assertTrue(buf1 == buf2);
-        assertTrue(buf1 != buf3);
-    }
-
-    @Test
-    public final void testIsTextFileTypeBlank() throws Exception, Throwable {
-        assertFalse(DownloadUtil.isTextFileType(""));
-        assertFalse(DownloadUtil.isTextFileType(null));
-        assertFalse(DownloadUtil.isTextFileType("  "));
-    }
-
-    @Test
-    public final void testIsTextFileType() throws Exception, Throwable {
-        assertFalse(DownloadUtil.isTextFileType("dijfewaoifjaw"));
-        assertTrue(DownloadUtil.isTextFileType("/hone/text"));
-        assertTrue(DownloadUtil.isTextFileType("jaxa/html"));
-        assertTrue(DownloadUtil.isTextFileType("application/json"));
     }
 
 }

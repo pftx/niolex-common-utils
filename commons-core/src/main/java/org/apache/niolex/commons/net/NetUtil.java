@@ -84,6 +84,7 @@ public abstract class NetUtil extends Check {
      */
     public static final InetSocketAddress ipPort2InetSocketAddress(String ipPort) {
         String[] ip0port1 = StringUtil.split(ipPort, ":", true);
+        Check.eq(2, ip0port1.length, "Invalid IP:Port string - " + ipPort);
 
         int intIP = ipToInt(ip0port1[0]);
         InetAddress addr = getByAddress(IntegerUtil.toFourBytes(intIP));

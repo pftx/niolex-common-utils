@@ -76,7 +76,7 @@ public class ConsistentHash<T> {
     }
 
     /**
-     * A Hash funtion implementation by JVM default hash method.
+     * A Hash function implementation by JVM default hash method.
      *
      * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
      * @version 1.0.0
@@ -108,7 +108,7 @@ public class ConsistentHash<T> {
     }
 
     /**
-     * A Hash funtion implementation Using guava murmur3_32 as hash method, and use toString to
+     * A Hash function implementation Using guava murmur3_32 as hash method, and use toString to
      * digest the object.
      *
      * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -151,7 +151,7 @@ public class ConsistentHash<T> {
     /**
      * The hash ring
      */
-    private TreeMap<Integer, T> circle = new TreeMap<Integer, T>();
+    private volatile TreeMap<Integer, T> circle = new TreeMap<Integer, T>();
 
 
     /**
@@ -263,7 +263,7 @@ public class ConsistentHash<T> {
         TreeMap<Integer, T> ring = (TreeMap<Integer, T>) circle.clone();
         final int START = findStart(node);
 
-        for (int i = START; i < numberOfReplicas + START; i++) {
+        for (int i = START; i < numberOfReplicas + START; ++i) {
             ring.remove(hashFunction.hashCode(node, i));
         }
         // We replace the old hash ring with this new ring.

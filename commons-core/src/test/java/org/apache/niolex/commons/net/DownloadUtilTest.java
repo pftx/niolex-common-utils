@@ -3,14 +3,17 @@ package org.apache.niolex.commons.net;
 import static org.apache.niolex.commons.net.DownloadUtil.*;
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 
+import org.apache.niolex.commons.file.FileUtil;
 import org.apache.niolex.commons.net.NetException;
-import org.apache.niolex.commons.net.DownloadUtil;
 import org.apache.niolex.commons.net.NetException.ExCode;
 import org.apache.niolex.commons.test.StopWatch;
 import org.apache.niolex.commons.test.StopWatch.Stop;
+import org.apache.niolex.commons.util.Const;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -18,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 public class DownloadUtilTest {
 
@@ -48,11 +52,27 @@ public class DownloadUtilTest {
 	@Test
 	public final void testDownloadFileNormal() throws Exception, Throwable {
 	    if (SystemUtil.defined("download", "download.http")) return;
-		byte[] con = downloadFile("http://img01.51jobcdn.com/im/2009/logo/logo2009.gif",
-						3000, 3000, 3000, false);
+		byte[] con = downloadFile("http://img01.51jobcdn.com/im/2009/logo/logo2009.gif");
 		System.out.println("SL " + con.length);
 		Assert.assertTrue(2800 < con.length);
 		Assert.assertTrue(2900 > con.length);
+	}
+
+	@Test
+	public final void testDownloadFileOK() throws Exception, Throwable {
+	    if (SystemUtil.defined("download", "download.http")) return;
+	    byte[] con = downloadFile("http://file.ipinyou.com.cn/material/1336702985302-b/index.html#2288|17680|1336702985302",
+	            10000, 10000, 10000, false);
+	    Assert.assertEquals(7299, con.length);
+	}
+
+	final static String JAR = Logger.class.getResource("Logger.class").toExternalForm();
+
+	@Test
+	public final void testDownloadJarOK() throws Exception, Throwable {
+	    byte[] data = downloadFile(JAR, 50 * Const.K);
+        byte[] local = FileUtil.getBinaryFileContentFromClassPath("Logger.class", Logger.class);
+        assertArrayEquals(local, data);
 	}
 
 	@Test(expected=NetException.class)
@@ -65,14 +85,6 @@ public class DownloadUtilTest {
 			assertEquals(et.getCode(), NetException.ExCode.IOEXCEPTION);
 			throw et;
 		}
-	}
-
-	@Test
-	public final void testDownloadFileOK() throws Exception, Throwable {
-	    if (SystemUtil.defined("download", "download.http")) return;
-		byte[] con = downloadFile("http://file.ipinyou.com.cn/material/1336702985302-b/index.html#2288|17680|1336702985302",
-						10000, 10000, 10000, false);
-		Assert.assertEquals(7299, con.length);
 	}
 
 	@Test(expected=NetException.class)
@@ -101,10 +113,76 @@ public class DownloadUtilTest {
 	// TEST OTHER FUNCTIONS
 	// ------------------------------------------------------------------------------------------
 
+	class InternalInputStream extends ByteArrayInputStream {
+	    final int size;
+	    int cnt;
+
+        /**
+         * Constructor
+         */
+        public InternalInputStream(int size) {
+            super(new byte[1]);
+            this.size = size;
+            this.cnt = 0;
+        }
+
+        /**
+         * This is the override of super method.
+         * @see java.io.ByteArrayInputStream#read(byte[], int, int)
+         */
+        @Override
+        public synchronized int read(byte[] b, int off, int len) {
+            if (cnt >= size) return -1;
+            cnt += len;
+            return cnt < size ? len : size + len - cnt;
+        }
+
+	}
+
     @Test
-    public void testIsTextFileType() {
-        assertTrue(DownloadUtil.isTextFileType("local/txt"));
-        assertTrue(DownloadUtil.isTextFileType("remote/xml"));
+    public void testUnusualDownload() throws Exception {
+        byte[] abc = unusualDownload("aa/bb", new InternalInputStream(34), 55, null);
+        assertEquals(abc.length, 34);
+    }
+
+    @Test(expected=NetException.class)
+    public void testUnusualDownloadSmallFile() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[5]);
+        try {
+            unusualDownload("aa/bb", in, 512, true);
+        } catch (NetException e) {
+            assertEquals(e.getCode(), NetException.ExCode.FILE_TOO_SMALL);
+            throw e;
+        }
+    }
+
+    @Test(expected=NetException.class)
+    public void testUnusualDownloadTooLarge() throws Exception {
+        try {
+            byte[] abc = unusualDownload("aa/bb", new InternalInputStream(9340), 5055, false);
+            assertEquals(abc.length, 34);
+        } catch (NetException e) {
+            assertEquals(e.getCode(), NetException.ExCode.FILE_TOO_LARGE);
+            throw e;
+        }
+    }
+
+    @Test(expected=NetException.class)
+    public void testUnusualDownloadSuperLarge() throws Exception {
+        try {
+            byte[] abc = unusualDownload("aa/bb", new InternalInputStream(934000), 17 * Const.K, false);
+            assertEquals(abc.length, 34);
+        } catch (NetException e) {
+            assertEquals(e.getCode(), NetException.ExCode.FILE_TOO_LARGE);
+            throw e;
+        }
+    }
+
+    @Test
+    public void testUnusualDownloadLargeButWeWant() throws Exception {
+        final int size = 33 * Const.K;
+        byte[] abc = unusualDownload("aa/bb", new InternalInputStream(size), size, false);
+        assertEquals(abc.length, size);
     }
 
     class InternalHttpURLConnection extends HttpURLConnection {
@@ -236,6 +314,41 @@ public class DownloadUtilTest {
             return;
         }
         assertTrue(false);
+    }
+
+    @Test
+    public void testSetUseThreadLocalCache() throws Exception {
+        setUseThreadLocalCache(true);
+    }
+
+    @Test
+    public void testUseCache() {
+        byte[] buf1 = getByteBuffer(true);
+        byte[] buf2 = getByteBuffer(true);
+        byte[] buf3 = getByteBuffer(false);
+        assertTrue(buf1 == buf2);
+        assertTrue(buf1 != buf3);
+    }
+
+    @Test
+    public void testIsTextFileType() {
+        assertTrue(isTextFileType("local/txt"));
+        assertTrue(isTextFileType("remote/xml"));
+    }
+
+    @Test
+    public final void testIsTextFileTypeBlank() throws Exception, Throwable {
+        assertFalse(isTextFileType(""));
+        assertFalse(isTextFileType(null));
+        assertFalse(isTextFileType("  "));
+    }
+
+    @Test
+    public final void testIsTextFileTypeNega() throws Exception, Throwable {
+        assertFalse(isTextFileType("dijfewaoifjaw"));
+        assertTrue(isTextFileType("/hone/text"));
+        assertTrue(isTextFileType("jaxa/html"));
+        assertTrue(isTextFileType("application/json"));
     }
 
 }
