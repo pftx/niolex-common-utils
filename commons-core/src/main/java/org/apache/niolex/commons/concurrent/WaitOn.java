@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Use this class to wait for the specified result to happen.
  *
+ * @param <E> the data type user expected as the result of {@link #waitForResult(long)}
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-7-12
  * @see Blocker

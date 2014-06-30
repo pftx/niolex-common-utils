@@ -20,13 +20,13 @@ package org.apache.niolex.commons.reflect;
 import com.esotericsoftware.reflectasm.MethodAccess;
 
 /**
- * Cn: FastMethodUtil是一个通过Reflect ASM来操作Java方法的工具类
+ * <p>中： FastMethodUtil是一个通过Reflect ASM来操作Java方法的工具类
  * 注意！本类只能操作public/protected/package修饰的方法，私有方法请通过MethodUtil操作
- * <br>
+ * </p><p>
  * En: FastMethodUtil using Reflect ASM to operate on Java bean to achieve high speed.
  * Notion! This utility can only operate on public/protected/package methods. For other
  * private methods, please use {@link org.apache.niolex.commons.reflect.MethodUtil}
- *
+ * </p><pre>
  * 目前提供的功能如下：
  * 1. public static final String[] getMethods(Class<?> clazz)
  * 获取一个Java类定义的所有非私有方法
@@ -35,7 +35,7 @@ import com.esotericsoftware.reflectasm.MethodAccess;
  * 获取一个Java类所对应的方法操作类
  *
  * 3. public static final Object invokeMethod(String methodName, Object host, Object[] args)
- * 在指定Java对象上调用指定的方法
+ * 在指定Java对象上调用指定的方法</pre>
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -45,21 +45,19 @@ public class FastMethodUtil {
 
     /**
      * En: Retrieve all the non-private methods defined in this class.<br>
-     * Cn: 获取一个Java类定义的所有非私有方法
+     * 中： 获取一个Java类定义的所有非私有方法
      *
      * @param clazz 需要获取的类
      * @return 所有方法数组
      * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
      */
     public static final String[] getMethods(Class<?> clazz) {
-    	MethodAccess access = MethodAccess.get(clazz);
-
-        return access.getMethodNames();
+        return getMethodAccess(clazz).getMethodNames();
     }
 
     /**
      * En: Get the method access object of this class.<br>
-     * Cn: 获取一个Java类所对应的方法操作类
+     * 中： 获取一个Java类所对应的方法操作类
      *
      * @param clazz 需要获取的类
      * @return 所对应的方法操作类
@@ -70,7 +68,7 @@ public class FastMethodUtil {
 
     /**
      * En: Invoke this method on the host object.<br>
-     * Cn: 在指定Java对象上调用指定的方法
+     * 中： 在指定Java对象上调用指定的方法
      *
      * @param host 用来调用指定方法的对象
      * @param methodName 需要调用的方法
@@ -80,7 +78,7 @@ public class FastMethodUtil {
      * 接口方法的返回类型是void或者接口方法返回了null
      */
     public static final Object invokeMethod(Object host, String methodName, Object... args) {
-    	MethodAccess access = MethodAccess.get(host.getClass());
+    	MethodAccess access = getMethodAccess(host.getClass());
     	if (args != null && args.length != 0) {
     		Class<?>[] clazz = new Class<?>[args.length];
     		for (int i = 0; i < args.length; ++i) {

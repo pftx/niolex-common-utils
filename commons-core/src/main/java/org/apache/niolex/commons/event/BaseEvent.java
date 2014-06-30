@@ -22,6 +22,7 @@ package org.apache.niolex.commons.event;
  * Every event is recognized by there event type property, not the class type.
  * So it's recommended to use the full qualified class name as the event type.
  *
+ * @param <V> the event value type
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
  * @since 2012-12-20

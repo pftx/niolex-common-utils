@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.niolex.commons.reflect.FieldUtil.Filter;
+import org.apache.niolex.commons.test.Check;
 
 import com.google.common.collect.Lists;
 
@@ -34,29 +35,90 @@ import com.google.common.collect.Lists;
  * And user can use the method {@link #find()} to find the correct fields
  * and then operate on them.
  *
+ * @param <FT> the filtered field type, set to Object if not known
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2014-1-6
  */
-public class FieldFilter<T> implements Filter {
+public class FieldFilter<FT> implements Filter {
+
+    // ========================================================================
+    // The static methods.
+    // ========================================================================
 
     /**
      * A short cut for method {@link #create()}.
      *
-     * @return a new field filter
+     * @param <CT> the filtered field type
+     * @return a newly created field filter
      */
-    public static final FieldFilter<Object> c() {
+    public static final <CT> FieldFilter<CT> c() {
         return create();
     }
 
     /**
      * Create a new field filter.
      *
-     * @return a new field filter
+     * @param <CT> the filtered field type
+     * @return a newly created field filter
      */
-    public static final FieldFilter<Object> create() {
-        return new FieldFilter<Object>();
+    public static final <CT> FieldFilter<CT> create() {
+        return new FieldFilter<CT>();
     }
+
+    /**
+     * A short cut for method {@link #forType(Class)}.
+     *
+     * @param <QT> the filtered field type
+     * @param type the field type
+     * @return a newly created field filter
+     */
+    public static final <QT> FieldFilter<QT> t(final Class<QT> type) {
+        return forType(type);
+    }
+
+    /**
+     * Create a new filter with this type as the filtered field type. Unlike {@link #exactType(Class)},
+     * we do widening of primitive classes and match sub classes too.
+     *
+     * @param <QT> the filtered field type
+     * @param type the field type
+     * @return a newly created field filter
+     */
+    public static final <QT> FieldFilter<QT> forType(final Class<QT> type) {
+        // Step 1. Create a new field filter.
+        FieldFilter<QT> e = new FieldFilter<QT>();
+        // Step 2. Add filter.
+        e.add(new Filter(){
+            @Override
+            public boolean isValid(Field f) {
+                return ClassUtils.isAssignable(f.getType(), type);
+            }});
+        return e;
+    }
+
+    /**
+     * Filter the fields exactly with this type.
+     *
+     * @param <E> the exact field type
+     * @param type the field type
+     * @return a newly created field filter
+     */
+    public static final <E> FieldFilter<E> exactType(final Class<E> type) {
+        // Step 1. Create a new field filter.
+        FieldFilter<E> e = new FieldFilter<E>();
+        // Step 2. Add filter.
+        e.filterList.add(new Filter(){
+            @Override
+            public boolean isValid(Field f) {
+                return type.equals(f.getType());
+            }});
+        return e;
+    }
+
+    // ========================================================================
+    // The class fields.
+    // ========================================================================
 
     /**
      * The list to save all the filters
@@ -72,6 +134,10 @@ public class FieldFilter<T> implements Filter {
      * The host class
      */
     private Class<?> clazz;
+
+    // ========================================================================
+    // The instance methods.
+    // ========================================================================
 
     /**
      * This is the override of super method.
@@ -91,10 +157,28 @@ public class FieldFilter<T> implements Filter {
      * @param filter the filter to be added
      * @return this
      */
-    public FieldFilter<T> add(Filter filter) {
+    public FieldFilter<FT> add(Filter filter) {
         filterList.add(filter);
         return this;
     }
+
+    /**
+     * Find the fields match this filter.
+     *
+     * @return the field result
+     * @throws IllegalStateException if neither host variable nor host class was set
+     */
+    public final FieldResult<FT> find() {
+        if (clazz != null) {
+            return new FieldResult<FT>(host, FieldUtil.getFields(clazz, this));
+        } else {
+            throw new IllegalStateException("Please set host variable or class first!");
+        }
+    }
+
+    // ========================================================================
+    // The chain methods for clients.
+    // ========================================================================
 
     /**
      * Set the host variable.
@@ -102,7 +186,7 @@ public class FieldFilter<T> implements Filter {
      * @param host the host variable
      * @return this
      */
-    public final FieldFilter<T> host(Object host) {
+    public final FieldFilter<FT> host(Object host) {
         this.host = host;
         this.clazz = host.getClass();
         return this;
@@ -114,75 +198,19 @@ public class FieldFilter<T> implements Filter {
      * @param clazz the host class
      * @return this
      */
-    public final FieldFilter<T> clazz(Class<?> clazz) {
+    public final FieldFilter<FT> clazz(Class<?> clazz) {
         this.clazz = clazz;
         return this;
     }
 
     /**
-     * Find the fields matches this filter.
-     *
-     * @return the field result
-     * @throws IllegalStateException if neither host variable nor host class was set
-     */
-    public final FieldResult<T> find() {
-        if (clazz != null) {
-            return new FieldResult<T>(host, FieldUtil.getFields(clazz, this));
-        } else {
-            throw new IllegalStateException("Please set host variable or class first!");
-        }
-    }
-
-    /**
-     * Filter the fields with this type as the field type. Unlike {@link #exactType(Class)},
-     * we do widening of primitive classes and match sub classes too.
-     *
-     * @param type the field type
-     * @return a newly created field filter
-     */
-    public final <E> FieldFilter<? extends E> forType(final Class<E> type) {
-        // Step 1. Add filter.
-        this.add(new Filter(){
-            @Override
-            public boolean isValid(Field f) {
-                return ClassUtils.isAssignable(f.getType(), type);
-            }});
-        // Step 2. Create a new field filter.
-        FieldFilter<? extends E> e = new FieldFilter<E>();
-        e.host = this.host;
-        e.clazz = this.clazz;
-        e.filterList.addAll(this.filterList);
-        return e;
-    }
-
-    /**
-     * Filter the fields exactly with this type.
-     *
-     * @param type the field type
-     * @return a newly created field filter
-     */
-    public final <E> FieldFilter<E> exactType(final Class<E> type) {
-        // Step 1. Add filter.
-        this.add(new Filter(){
-            @Override
-            public boolean isValid(Field f) {
-                return type.equals(f.getType());
-            }});
-        // Step 2. Create a new field filter.
-        FieldFilter<E> e = new FieldFilter<E>();
-        e.host = this.host;
-        e.clazz = this.clazz;
-        e.filterList.addAll(this.filterList);
-        return e;
-    }
-
-    /**
-     * Filter the fields with this name.
+     * Filter the fields with this name.<br>
+     * A short cut for method {@link #withName(String)}.
      *
      * @param fieldName the field name
      * @return this
      */
-    public final FieldFilter<T> name(final String fieldName) {
+    public final FieldFilter<FT> name(final String fieldName) {
         return withName(fieldName);
     }
 
@@ -192,7 +220,8 @@ public class FieldFilter<T> implements Filter {
      * @param fieldName the field name
      * @return this
      */
-    public final FieldFilter<T> withName(final String fieldName) {
+    public final FieldFilter<FT> withName(final String fieldName) {
+        Check.notNull(fieldName, "fieldName should not be null.");
         return this.add(new Filter(){
             @Override
             public boolean isValid(Field f) {
@@ -206,7 +235,7 @@ public class FieldFilter<T> implements Filter {
      * @param nameRegex the field name regex expression
      * @return this
      */
-    public final FieldFilter<T> nameLike(final String nameRegex) {
+    public final FieldFilter<FT> nameLike(final String nameRegex) {
         final Pattern p = Pattern.compile(nameRegex);
         return this.add(new Filter(){
             @Override
@@ -220,7 +249,7 @@ public class FieldFilter<T> implements Filter {
      *
      * @return this
      */
-    public final FieldFilter<T> onlyStatic() {
+    public final FieldFilter<FT> onlyStatic() {
         return this.add(new Filter(){
             @Override
             public boolean isValid(Field f) {
@@ -233,7 +262,7 @@ public class FieldFilter<T> implements Filter {
      *
      * @return this
      */
-    public final FieldFilter<T> noStatic() {
+    public final FieldFilter<FT> noStatic() {
         return this.add(new Filter(){
             @Override
             public boolean isValid(Field f) {
@@ -246,7 +275,7 @@ public class FieldFilter<T> implements Filter {
      *
      * @return this
      */
-    public final FieldFilter<T> noSynthetic() {
+    public final FieldFilter<FT> noSynthetic() {
         return this.add(new Filter(){
             @Override
             public boolean isValid(Field f) {

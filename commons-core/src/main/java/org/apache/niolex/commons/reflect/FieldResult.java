@@ -23,14 +23,15 @@ import java.util.List;
 /**
  * The field result used to save all the information about how to operate on host.
  *
+ * @param <T> the field type
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2014-1-6
  */
 public class FieldResult<T> {
 
+    private final List<Field> fields;
     private Object host;
-    private List<Field> fields;
     private Field field;
     private boolean onlyOne;
 
@@ -68,18 +69,6 @@ public class FieldResult<T> {
     }
 
     /**
-     * @return the result field
-     * @throws IllegalStateException if multiple fields found
-     */
-    public Field result() {
-        if (onlyOne) {
-            return field;
-        } else {
-            throw new IllegalStateException("Multiple fields found, please filter out only one.");
-        }
-    }
-
-    /**
      * Use the first method.
      *
      * @return this
@@ -110,13 +99,25 @@ public class FieldResult<T> {
     }
 
     /**
+     * @return the result field
+     * @throws IllegalStateException if multiple fields found
+     */
+    public Field result() {
+        if (onlyOne) {
+            return field;
+        } else {
+            throw new IllegalStateException("Multiple fields found, please filter out one first!");
+        }
+    }
+
+    /**
      * @return the field value of this field
      */
     public T get() {
         if (onlyOne) {
             return FieldUtil.getFieldValue(host, field);
         } else {
-            throw new IllegalStateException("Multiple fields found, please filter out only one.");
+            throw new IllegalStateException("Multiple fields found, please filter out one first!");
         }
     }
 
@@ -129,7 +130,7 @@ public class FieldResult<T> {
         if (onlyOne) {
             FieldUtil.setFieldValue(host, field, t);
         } else {
-            throw new IllegalStateException("Multiple fields found, please filter out only one.");
+            throw new IllegalStateException("Multiple fields found, please filter out one first!");
         }
     }
 

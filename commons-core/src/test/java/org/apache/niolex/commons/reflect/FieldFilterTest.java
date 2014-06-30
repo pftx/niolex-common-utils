@@ -40,13 +40,13 @@ public class FieldFilterTest {
 
     @Test
     public void testIsValid() throws Exception {
-        FieldResult<Integer> find = FieldFilter.create().clazz(FastBean.class).exactType(int.class).find();
+        FieldResult<Integer> find = FieldFilter.exactType(int.class).clazz(FastBean.class).find();
         assertEquals(2, find.results().size());
     }
 
     @Test
     public void testAdd() throws Exception {
-        FieldResult<? extends Integer> find = FieldFilter.create().clazz(FastBean.class).forType(int.class).find();
+        FieldResult<? extends Integer> find = FieldFilter.forType(int.class).clazz(FastBean.class).find();
         System.out.println(find.results());
         assertEquals(5, find.results().size());
     }
@@ -67,7 +67,7 @@ public class FieldFilterTest {
 
     @Test(expected=IllegalStateException.class)
     public void testFind() throws Exception {
-        FieldFilter.create().forType(int.class).find();
+        FieldFilter.t(int.class).find();
     }
 
     @Test
@@ -86,7 +86,7 @@ public class FieldFilterTest {
     public void testWithName() throws Exception {
         FieldTestBean bean = new FieldTestBean();
         FieldUtil.setValue(bean, "empno", 273921);
-        FieldResult<? extends Long> find = FieldFilter.c().host(bean).nameLike("e\\w+").forType(long.class).find();
+        FieldResult<? extends Long> find = FieldFilter.t(long.class).host(bean).nameLike("e\\w+").find();
         Long l = find.get();
         assertEquals(273921, l.intValue());
     }
@@ -94,14 +94,14 @@ public class FieldFilterTest {
     @Test
     public void testNameLike() throws Exception {
         FieldTestBean bean = new FieldTestBean();
-        FieldResult<Integer> find = FieldFilter.c().host(bean).nameLike("int\\w+").exactType(int.class).find();
+        FieldResult<Integer> find = FieldFilter.exactType(int.class).host(bean).nameLike("int\\w+").find();
         find.last().set(29322);
         assertEquals(29322, bean.echoLevel());
     }
 
     @Test
     public void testOnlyStatic() throws Exception {
-        FieldResult<Boolean> find = FieldFilter.c().clazz(Sub.class).exactType(boolean.class).find();
+        FieldResult<Boolean> find = FieldFilter.exactType(boolean.class).clazz(Sub.class).find();
         assertFalse(find.host(new Sub()).get());
         assertTrue(find.host(new Super()).get());
     }

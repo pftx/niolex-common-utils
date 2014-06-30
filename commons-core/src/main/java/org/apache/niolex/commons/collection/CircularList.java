@@ -28,6 +28,8 @@ import java.util.Collection;
  * <br><b>
  * This implementation is not thread safe.
  * </b>
+ *
+ * @param <E> the element data type
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-22$
  */

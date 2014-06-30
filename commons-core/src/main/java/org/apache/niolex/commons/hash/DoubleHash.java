@@ -39,6 +39,7 @@ import com.google.common.hash.Hashing;
  *
  * User can add and remove nodes at runtime dynamically. We use copy on write to remove the need of lock.
  *
+ * @param <T> the server node type
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2013-5-25

@@ -30,9 +30,9 @@ import org.junit.Test;
 public class FieldResultTest extends FieldUtil {
 
 
-    private FieldResult<Integer> three = FieldFilter.c().host(new Sub()).exactType(int.class).find();
-    private FieldResult<Integer> one = FieldFilter.c().host(new Sub()).exactType(int.class).name("age").find();
-    private FieldResult<Character> empty = FieldFilter.c().host(new Sub()).exactType(char.class).find();
+    private FieldResult<Integer> three = FieldFilter.exactType(int.class).host(new Sub()).find();
+    private FieldResult<Integer> one = FieldFilter.exactType(int.class).host(new Sub()).name("age").find();
+    private FieldResult<Character> empty = FieldFilter.exactType(char.class).host(new Sub()).find();
 
     @Test
     public void testFieldResult() throws Exception {

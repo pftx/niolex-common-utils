@@ -20,6 +20,7 @@ package org.apache.niolex.commons.event;
 /**
  * The basic event interface.
  *
+ * @param <V> the event value type
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2014-6-24

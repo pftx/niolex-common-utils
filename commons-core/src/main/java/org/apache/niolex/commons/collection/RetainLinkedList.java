@@ -35,6 +35,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * <br><b>
  * This list is thread safe.
  * </b>
+ *
+ * @param <E> the element data type
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-6-19
  * @deprecated This implementation is not fast enough.

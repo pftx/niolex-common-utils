@@ -41,10 +41,10 @@ import com.google.common.hash.Hashing;
  * It was originally copied from Tom White's implementation found here:
  * https://weblogs.java.net/blog/tomwhite/archive/2007/11/consistent_hash.html
  *
+ * @param <T> the server node type
  * @author original version by Tom White, enhanced by <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2013-5-11
- * @param <T>
  */
 public class ConsistentHash<T> {
 

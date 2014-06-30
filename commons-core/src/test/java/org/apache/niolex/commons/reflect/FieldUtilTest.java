@@ -94,7 +94,7 @@ public class FieldUtilTest extends FieldUtil {
 
     @Test
     public void testGetFields2() throws Exception {
-        List<Field> fields = FieldUtil.getFields(FieldTestBean.class, FieldFilter.create().exactType(long.class));
+        List<Field> fields = FieldUtil.getFields(FieldTestBean.class, FieldFilter.exactType(long.class));
         FieldTestBean bean = new FieldTestBean();
         Assert.assertEquals(fields.size(), 1);
         long val;
@@ -107,7 +107,7 @@ public class FieldUtilTest extends FieldUtil {
 
     @Test
     public void testGetFieldsInt() throws Exception {
-        List<Field> fields = FieldUtil.getFields(FieldTestBean.class, FieldFilter.create().forType(int.class));
+        List<Field> fields = FieldUtil.getFields(FieldTestBean.class, FieldFilter.t(int.class));
         System.out.println("FieldTestBean int fields => " + fields);
         Assert.assertEquals(fields.size(), 5);
     }

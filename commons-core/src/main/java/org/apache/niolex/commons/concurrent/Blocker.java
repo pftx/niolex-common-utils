@@ -30,6 +30,7 @@ import java.util.concurrent.CountDownLatch;
  * 3. call E waitForResult(Object key, long time) to wait for the result.
  * </pre>
  *
+ * @param <E> the data type user expected as the result of wait
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2012-7-12
