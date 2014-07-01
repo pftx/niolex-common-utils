@@ -32,6 +32,10 @@ import org.apache.niolex.commons.reflect.MethodUtil.Filter;
  */
 public class MethodFilter implements Filter {
 
+    // ========================================================================
+    // The static methods.
+    // ========================================================================
+
     /**
      * Create a new method filter. This method is a short cut of {@link #create()}.
      *
@@ -49,6 +53,10 @@ public class MethodFilter implements Filter {
     public static final MethodFilter create() {
         return new MethodFilter();
     }
+
+    // ========================================================================
+    // The instance fields & methods.
+    // ========================================================================
 
     private boolean includeInterfaces;
     private boolean includeSuper;
@@ -171,6 +179,8 @@ public class MethodFilter implements Filter {
     }
 
     /**
+     * Set the method name.
+     *
      * @param methodName the methodName to set
      */
     public MethodFilter methodName(String methodName) {
@@ -188,6 +198,8 @@ public class MethodFilter implements Filter {
     }
 
     /**
+     * Set the method return type.
+     *
      * @param returnType the returnType to set
      */
     public MethodFilter returnType(Class<?> returnType) {
@@ -205,6 +217,8 @@ public class MethodFilter implements Filter {
     }
 
     /**
+     * Set the method parameter types.
+     *
      * @param parameterTypes the parameterTypes to set
      */
     public MethodFilter parameterTypes(Class<?>[] parameterTypes) {

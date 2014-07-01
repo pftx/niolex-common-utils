@@ -145,7 +145,7 @@ public class BeanServer implements Runnable {
                 // We accept at most 10 connections.
                 if (connectionNumber.incrementAndGet() > 10) {
                     connectionNumber.decrementAndGet();
-                    StreamUtil.writeString(socket.getOutputStream(), "Too many connections.\n");
+                    StreamUtil.writeUTF8IgnoreException(socket.getOutputStream(), "Too many connections.\n");
                     SystemUtil.close(socket);
                     continue;
                 }

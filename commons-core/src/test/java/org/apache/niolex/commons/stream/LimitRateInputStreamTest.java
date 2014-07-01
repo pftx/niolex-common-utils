@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 
+import org.apache.niolex.commons.reflect.FieldUtil;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -35,53 +36,54 @@ import org.mockito.Mockito;
  *
  */
 public class LimitRateInputStreamTest {
+    byte[] b = new byte[1024];
+
+    private void commonRateTest(InputStream in, int exRate) throws IOException {
+        DecimalFormat myFormatter = new DecimalFormat("#,###.##");
+        int tick = 50;
+        double cnt = 0, rate, maxRate = exRate * 1.1 + 3;
+        long init = System.currentTimeMillis();
+        long end = init;
+        while (tick-- > 0) {
+            end += 10;
+            while (System.currentTimeMillis() < end) {
+                cnt += in.read(b);
+            }
+            rate = cnt / 1024 / 1024 * 1000 / (System.currentTimeMillis() - init);
+            System.out.println("(" + exRate + ") download rate: " + myFormatter.format(rate) + "MB/s.");
+            assertTrue(rate < maxRate);
+        }
+    }
+
+    @Test
+    public void testRatesSmall() throws Exception {
+        InputStream stub = new LimitRateInputStream(new InputStreamStub(), 5);
+        commonRateTest(stub, 5);
+    }
 
     @Test
     public void testRatesMoke() throws Exception {
         InputStream stub = new LimitRateInputStream(new InputStreamStub());
-        byte[] b = new byte[1024];
-        double cnt = 0, rate;
-        DecimalFormat myFormatter = new DecimalFormat("#,###.##");
-        long init = System.currentTimeMillis();
-        while (System.currentTimeMillis() - init < 150) {
-            cnt += stub.read(b);
-            ++cnt;
-            stub.read();
-            if (cnt < 1025 * 1000) {
-            	continue;
-            }
-            if (cnt % (1025 * 120) == 0) {
-            	rate = cnt / 1024 / 1024 * 1000 / (System.currentTimeMillis() - init);
-            	System.out.println("Current download rate: " + myFormatter.format(rate) + "MB/s.");
-            	assertTrue(rate < 25);
-            }
-        }
+        commonRateTest(stub, 20);
     }
 
     @Test
     public void testRatesReal() throws Exception {
-        System.out.println("Current testRatesReal");
         InputStream stub = new LimitRateInputStream(new InputStreamStub(), 45);
-        byte[] b = new byte[1024];
-        double cnt = 0, rate;
-        long s = System.currentTimeMillis(), t = 10000;
-        DecimalFormat myFormatter = new DecimalFormat("#,###.##");
-        while (t-- > 0) {
-            cnt += stub.read(b);
-            cnt += stub.read(b, 0, 1023);
-            ++cnt;
-            stub.read();
-            if (cnt < 1025 * 2203) {
-            	continue;
-            }
-            if (cnt % (1024 * 200) == 0) {
-                rate = cnt / 1024 / 1024 * 1000 / (System.currentTimeMillis() - s);
-                System.out.println("Current download rate: " + myFormatter.format(rate) + "MB/s.");
-                assertTrue(rate < 60);
-            }
-        }
+        commonRateTest(stub, 45);
     }
 
+    @Test
+    public void testRates100() throws Exception {
+        InputStream stub = new LimitRateInputStream(new InputStreamStub(), 100);
+        commonRateTest(stub, 100);
+    }
+
+    @Test
+    public void testRates200() throws Exception {
+        InputStream stub = new LimitRateInputStream(new InputStreamStub(), 200);
+        commonRateTest(stub, 200);
+    }
 
     @Test
     public void testOther() throws Exception {
@@ -103,6 +105,19 @@ public class LimitRateInputStreamTest {
     	verify(mock).mark(5);
     	verify(mock).reset();
     	verify(mock).skip(123);
+    }
+
+    @Test
+    public void testCheckSize() throws Exception {
+        InputStream stub = new LimitRateInputStream(new InputStreamStub(), 123);
+        long time = System.nanoTime() - 3600000000000l;
+        FieldUtil.setValue(stub, "startedTime", time);
+        stub.read(new byte[10240], 0, 10240);
+        Long v = FieldUtil.getValue(stub, "startedTime");
+        assertEquals(time, v.longValue());
+        stub.read();
+        Long v2 = FieldUtil.getValue(stub, "startedTime");
+        assertNotEquals(time, v2.longValue());
     }
 
 }

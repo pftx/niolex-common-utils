@@ -20,7 +20,6 @@ package org.apache.niolex.commons.stream;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.apache.niolex.commons.stream.StreamUtil.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,7 +36,7 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-7-4
  */
-public class StreamUtilTest {
+public class StreamUtilTest extends StreamUtil {
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.stream.StreamUtil#closeStream(java.io.InputStream)}.
@@ -82,6 +81,64 @@ public class StreamUtilTest {
         assertNotNull(StreamUtil.closeStream(out));
 	}
 
+	@Test
+	public void testReadData() throws Exception {
+	    byte[] buf = MockUtil.randByteArray(20);
+	    byte[] data = new byte[20];
+	    InputStream in = new ByteArrayInputStream(buf);
+	    StreamUtil.readData(in, data);
+	    assertArrayEquals(buf, data);
+	}
+
+	@Test
+	public void testReadDataIF() throws Exception {
+	    byte[] buf = MockUtil.randByteArray(6);
+	    byte[] data = new byte[20];
+	    InputStream in = new ByteArrayInputStream(buf);
+	    int s = StreamUtil.readData(in, data);
+	    assertEquals(6, s);
+	}
+
+	@Test
+	public void testWriteUTF8() throws IOException {
+	    PipedOutputStream out = null;
+	    closeStream(out);
+	    out = new PipedOutputStream();
+	    PipedInputStream snk = new PipedInputStream();
+	    out.connect(snk);
+	    System.out.println(snk.available());
+	    writeUTF8(out, "This is so good");
+	    System.out.println(snk.available());
+	    assertEquals(15, snk.available());
+	}
+
+	@Test(expected=IOException.class)
+	public void testWriteUTF8Error() throws IOException {
+	    OutputStream out = mock(OutputStream.class);
+	    doThrow(new IOException("Just 4 test")).when(out).write(any(byte[].class));
+	    writeUTF8(out, "This is so good");
+	}
+
+	@Test
+	public void testWriteUTF8IgnoreExceptionOK() throws Exception {
+	    PipedOutputStream out = null;
+	    closeStream(out);
+	    out = new PipedOutputStream();
+	    PipedInputStream snk = new PipedInputStream();
+	    out.connect(snk);
+	    System.out.println(snk.available());
+	    writeUTF8IgnoreException(out, "This is so good");
+	    System.out.println(snk.available());
+	    assertEquals(15, snk.available());
+	}
+
+	@Test
+	public void testWriteUTF8IgnoreExceptionEx() throws Exception {
+	    OutputStream out = mock(OutputStream.class);
+	    doThrow(new IOException("Just 4 test")).when(out).write(any(byte[].class));
+	    writeUTF8IgnoreException(out, "This is so good");
+	}
+
     @Test(expected=IOException.class)
     public void testWriteAndClose() throws Exception {
         OutputStream out = mock(OutputStream.class);
@@ -95,44 +152,5 @@ public class StreamUtilTest {
         doThrow(new IOException("Mock")).when(in).read(any(byte[].class));
         transferAndClose(in, mock(OutputStream.class), 1024);
     }
-
-	@Test
-	public void testReadData() throws Exception {
-	    byte[] buf = MockUtil.randByteArray(20);
-	    byte[] data = new byte[20];
-        InputStream in = new ByteArrayInputStream(buf);
-        StreamUtil.readData(in, data);
-        assertArrayEquals(buf, data);
-	}
-
-	@Test
-	public void testReadDataIF() throws Exception {
-	    byte[] buf = MockUtil.randByteArray(6);
-        byte[] data = new byte[20];
-        InputStream in = new ByteArrayInputStream(buf);
-        int s = StreamUtil.readData(in, data);
-        assertEquals(6, s);
-	}
-
-	@Test
-	public void testWriteString() throws IOException {
-		PipedOutputStream out = null;
-		StreamUtil.closeStream(out);
-		out = new PipedOutputStream();
-		PipedInputStream snk = new PipedInputStream();
-		out.connect(snk);
-		System.out.println(snk.available());
-		StreamUtil.writeString(out, "This is so good");
-		System.out.println(snk.available());
-		assertEquals(15, snk.available());
-	}
-
-	@Test
-	public void testWriteStringError() throws IOException {
-	    OutputStream out = mock(OutputStream.class);
-        doThrow(new IOException("Just 4 test")).when(out).write(any(byte[].class));
-	    StreamUtil.writeString(out, "This is so good");
-	    new StreamUtil();
-	}
 
 }

@@ -30,49 +30,87 @@ import org.apache.niolex.commons.util.SystemUtil;
  */
 public class LimitRateInputStream extends InputStream {
 
-    // We check when we received every 10K for rate.
+    /**
+     * We check for input rate when we received every 10K.
+     */
     private static final int CHECK_SIZE_THRESHOLD = 10240;
+
+    /**
+     * We check for time in nanoseconds.
+     */
+    private static final int MILLS_INTO_NANO_SECOND = 1000000;
+
+    /**
+     * We keep a round in one hour.
+     */
+    private static final int HOUR_INTO_NANO_SECOND = MILLS_INTO_NANO_SECOND * 3600000;
+
+    // ========================================================================
+    // INSTANCE FIELDS.
+    // ========================================================================
+
     private final InputStream delegate;
     // The rate of 1 Byte/Nanosecond.
     private final double expectedRate;
 
-    private final long startedTime;
+    private long startedTime = 0;
     private long cnt = 0;
-    private long chunk = CHECK_SIZE_THRESHOLD;
+    private long chunk = 0;
 
     /**
-     * Create a LimitRateInputStream with the rate of 20 MB/seconds
-     * @param delegate
+     * Create a LimitRateInputStream with the input rate limited to 20 MB/seconds.
+     *
+     * @param delegate the input stream to delegate read to
      */
     public LimitRateInputStream(InputStream delegate) {
         this(delegate, 20);
     }
 
     /**
-     * Create a LimitRateInputStream with the given rate
-     * @param delegate
-     * @param rate MB/s
+     * Create a LimitRateInputStream with the given input rate limit.
+     *
+     * @param delegate the input stream to delegate read to
+     * @param rate the maximum input rate, in MB/s
      */
     public LimitRateInputStream(InputStream delegate, double rate) {
         super();
         this.delegate = delegate;
         this.expectedRate = (rate * 1024 * 1024) / 1000000000L;
-        startedTime = System.nanoTime();
+        reset(0);
     }
 
     /**
-     * This is the core method to restrict the rate.
-     * @param size
+     * Reset the internal rate calculation variables.
+     *
+     * @param offset the offset left from last round
+     */
+    private void reset(int offset) {
+        startedTime = System.nanoTime();
+        cnt = offset;
+        chunk = CHECK_SIZE_THRESHOLD;
+    }
+
+    /**
+     * This is the core method to restrict the input rate.
+     *
+     * @param size the current read size
      */
     private void checkSize(int size) {
         cnt += size;
         if (cnt > chunk) {
             long usedTime = System.nanoTime() - startedTime;
             long needTime = (long) (cnt / expectedRate);
-            if (usedTime < needTime - 300000) {
-                SystemUtil.sleep((needTime - usedTime) / 1000000 + 1);
+            long sleepTime = needTime - usedTime + 300000;
+            if (sleepTime > MILLS_INTO_NANO_SECOND) {
+                SystemUtil.sleep(sleepTime / MILLS_INTO_NANO_SECOND + 1);
+            } else if (sleepTime > 0) {
+                Thread.yield();
             }
-            chunk += CHECK_SIZE_THRESHOLD;
+            if (usedTime > HOUR_INTO_NANO_SECOND) {
+                reset(0);
+            } else {
+                chunk += CHECK_SIZE_THRESHOLD;
+            }
         }
     }
 

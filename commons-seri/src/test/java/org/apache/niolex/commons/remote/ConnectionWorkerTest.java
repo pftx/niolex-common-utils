@@ -61,7 +61,7 @@ public class ConnectionWorkerTest {
         @Override
         public void execute(Object o, OutputStream out, String[] args) throws IOException {
             this.o = o;
-            StreamUtil.writeString(out, "got you ----<<<<<<\n");
+            StreamUtil.writeUTF8(out, "got you ----<<<<<<\n");
             out.flush();
         }
 
@@ -155,13 +155,13 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(1)
     public void testEndl() throws Exception {
         ConnectionWorker.endl();
-        StreamUtil.writeString(src, "windows\n");
+        StreamUtil.writeUTF8(src, "windows\n");
         src.flush();
         scan.nextLine();
-        StreamUtil.writeString(src, "linux\n");
+        StreamUtil.writeUTF8(src, "linux\n");
         src.flush();
         scan.nextLine();
-        StreamUtil.writeString(src, "\n");
+        StreamUtil.writeUTF8(src, "\n");
         src.flush();
     }
 
@@ -169,16 +169,16 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(2)
     public void testSetAuthInfo() throws Exception {
         ConnectionWorker.setAuthInfo("isck");
-        StreamUtil.writeString(src, "auth abcc\n");
+        StreamUtil.writeUTF8(src, "auth abcc\n");
         src.flush();
         String r = null;
         r = scan.nextLine();
         assertEquals("Authenticate Failed.", r);
-        StreamUtil.writeString(src, "go linux\n");
+        StreamUtil.writeUTF8(src, "go linux\n");
         src.flush();
         r = scan.nextLine();
         assertEquals("Please authenticate.", r);
-        StreamUtil.writeString(src, "auth isck\n");
+        StreamUtil.writeUTF8(src, "auth isck\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -189,7 +189,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(3)
     public void testConnectionWorker() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "have fun please\n");
+        StreamUtil.writeUTF8(src, "have fun please\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -200,7 +200,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(4)
     public void testRun() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get fun[me].good\n");
+        StreamUtil.writeUTF8(src, "get fun[me].good\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -211,7 +211,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(5)
     public void testExecuteInvalidPath() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get ben.list[5].groupName.value[3].good\n");
+        StreamUtil.writeUTF8(src, "get ben.list[5].groupName.value[3].good\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -222,7 +222,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(6)
     public void testExecuteNotArr() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get ben.name[1]\n");
+        StreamUtil.writeUTF8(src, "get ben.name[1]\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -233,7 +233,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(7)
     public void testExecuteArray() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get ben.list[5].groupName.value[77]\n");
+        StreamUtil.writeUTF8(src, "get ben.list[5].groupName.value[77]\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -244,7 +244,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(8)
     public void testExecuteCollection() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get ben.list[100]\n");
+        StreamUtil.writeUTF8(src, "get ben.list[100]\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -255,7 +255,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(9)
     public void testExecuteMapErr() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get joy{name}\n");
+        StreamUtil.writeUTF8(src, "get joy{name}\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -266,7 +266,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(10)
     public void testExecuteMap() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get ben.list[3].beanMap{Qute}.name[8]\n");
+        StreamUtil.writeUTF8(src, "get ben.list[3].beanMap{Qute}.name[8]\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -277,7 +277,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(11)
     public void testExecuteiMap() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get imap{3}.value.length\n");
+        StreamUtil.writeUTF8(src, "get imap{3}.value.length\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -288,7 +288,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(12)
     public void testExecuteiMapErr() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get imap{8f}\n");
+        StreamUtil.writeUTF8(src, "get imap{8f}\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -299,7 +299,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(13)
     public void testExecutelMap() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get lmap{1234567890}.value.length\n");
+        StreamUtil.writeUTF8(src, "get lmap{1234567890}.value.length\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -310,7 +310,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(14)
     public void testExecutelMapErr() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get lmap{12345x67890}.value.length\n");
+        StreamUtil.writeUTF8(src, "get lmap{12345x67890}.value.length\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -321,7 +321,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(15)
     public void testExecuteOMapErr() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get omap{12345x67890}.value.length\n");
+        StreamUtil.writeUTF8(src, "get omap{12345x67890}.value.length\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -332,7 +332,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(16)
     public void testExecuteEMap() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get emap{12345x67890}.value.length\n");
+        StreamUtil.writeUTF8(src, "get emap{12345x67890}.value.length\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -343,7 +343,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(17)
     public void testExecuteNotFound() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "get test.value.length\n");
+        StreamUtil.writeUTF8(src, "get test.value.length\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -354,7 +354,7 @@ public class ConnectionWorkerTest {
     @AnnotationOrderedRunner.Order(18)
     public void testExecute() throws Exception {
         String r = null;
-        StreamUtil.writeString(src, "fun ben.name\n");
+        StreamUtil.writeUTF8(src, "fun ben.name\n");
         src.flush();
         r = scan.nextLine();
         System.out.println(r);
@@ -365,7 +365,7 @@ public class ConnectionWorkerTest {
     @Test
     @AnnotationOrderedRunner.Order(99)
     public void testQuit() throws Exception {
-        StreamUtil.writeString(src, "exit\n");
+        StreamUtil.writeUTF8(src, "exit\n");
         src.flush();
         System.out.println(scan.nextLine());
     }
