@@ -41,6 +41,7 @@ public class SystemInfoTest {
 	@AfterClass
 	public static void testStopRefresh() {
 	    info.stopRefresh();
+	    System.out.println(info.generateSystemInfo());
 	}
 
     /**

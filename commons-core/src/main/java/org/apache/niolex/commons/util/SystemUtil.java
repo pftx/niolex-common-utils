@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.test.TidyUtil;
 
 /**
  * System information related utility class.
@@ -148,6 +149,18 @@ public class SystemUtil {
      */
     public static final void println(String s, Object ... args) {
         System.out.println(String.format(s, args));
+    }
+
+    /**
+     * Format the inputs as a table and print it to the system standard output.
+     *
+     * @param colLen the columns length
+     * @param titles the columns titles
+     * @param values the table body
+     * @see {@link TidyUtil#generateTable(int[], String[], Object...)}
+     */
+    public static final void printTable(int[] colLen, String[] titles, Object ...values) {
+        System.out.println(TidyUtil.generateTable(colLen, titles, values));
     }
 
 }

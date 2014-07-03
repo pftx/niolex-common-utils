@@ -20,6 +20,9 @@ package org.apache.niolex.commons.test;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.util.SystemUtil;
+
 /**
  * This class is for test code performance in multi-threading environment.
  *
@@ -37,11 +40,11 @@ public abstract class MultiPerformance {
     private AtomicLong total = new AtomicLong();
 
     /**
-     * Create a MultiPerformance class.
+     * Create a new MultiPerformance instance.
      *
-     * @param threadsNumber The number of threads to run this performance test.
-     * @param innerIteration The iteration to run as a measure unit.
-     * @param outerIteration The iteration to run as a total iteration.
+     * @param threadsNumber the number of threads to run this performance test
+     * @param innerIteration the iteration to run as a measure unit
+     * @param outerIteration the numbers of iteration to run the measure unit
      */
     public MultiPerformance(int threadsNumber, int innerIteration, int outerIteration) {
         super();
@@ -119,13 +122,13 @@ public abstract class MultiPerformance {
         }
         // Wait for result.
         for (int i = 0; i < threadsNumber; ++i) {
-            try { threads[i].join(); } catch (Exception e) { }
+            ThreadUtil.join(threads[i]);
         }
         // Done.
         long cu = total.get() / outerIteration;
-        System.out.println("Performance Done, Total Time - " + (System.currentTimeMillis() - ein));
-        System.out.println("Iter " + outerIteration + ", Avg " + cu + ", Max "
-                + max + ", Min " + min);
+        System.out.println("MUL-PERF done, total time " + (System.currentTimeMillis() - ein) + "ms.");
+        SystemUtil.printTable(new int[] {10, 10, 10, 10},
+                new String[] {"ITERATIONS", "AVG", "MAX", "MIN"}, outerIteration, cu, max, min);
     }
 
 }

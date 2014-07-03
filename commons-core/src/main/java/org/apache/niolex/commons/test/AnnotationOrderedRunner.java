@@ -34,6 +34,8 @@ import org.junit.runners.model.InitializationError;
 
 /**
  * Run all the test cases marked by this runner in the order specified by the annotation value.
+ * <br>
+ * All the methods not annotated will be put to the end of the list.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0

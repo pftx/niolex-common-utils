@@ -67,38 +67,6 @@ public abstract class MockUtil {
     }
 
     /**
-     * Generate a randomly reordered int array.
-     * The array will be filled with the sequence [0 .. length)
-     *
-     * @param length the array length.
-     * @return the generated reordered array.
-     */
-    public static final int[] reorderIntArray(int length) {
-        int[] ar = new int[length];
-        for (int i = 0; i < length; ++i) {
-            ar[i] = i;
-        }
-        return reorderIntArray(ar);
-    }
-
-    /**
-     * Randomly reorder the int array, with all data stay the same.
-     *
-     * @param ar the array to be reordered.
-     * @return the reordered array.
-     */
-    public static final int[] reorderIntArray(int[] ar) {
-    	int length = ar.length;
-    	for (int i = length, j, k; i > 1; --i) {
-    		j = generator.nextInt(i);
-    		k = ar[i - 1];
-    		ar[i - 1] = ar[j];
-    		ar[j] = k;
-    	}
-    	return ar;
-    }
-
-    /**
      * Generate a random array.
      *
      * @param length
@@ -150,6 +118,38 @@ public abstract class MockUtil {
      */
     public static final String randString(int length) {
         return RandomStringUtils.randomAlphanumeric(length);
+    }
+
+    /**
+     * Generate a randomly reordered int array.
+     * The array will be filled with the sequence [0 .. length)
+     *
+     * @param length the array length.
+     * @return the generated reordered array.
+     */
+    public static final int[] reorderIntArray(int length) {
+        int[] ar = new int[length];
+        for (int i = 0; i < length; ++i) {
+            ar[i] = i;
+        }
+        return reorderIntArray(ar);
+    }
+
+    /**
+     * Randomly reorder the int array, with all data stay the same.
+     *
+     * @param ar the array to be reordered.
+     * @return the reordered array.
+     */
+    public static final int[] reorderIntArray(int[] ar) {
+        int length = ar.length;
+        for (int i = length, j, k; i > 1; --i) {
+            j = generator.nextInt(i);
+            k = ar[i - 1];
+            ar[i - 1] = ar[j];
+            ar[j] = k;
+        }
+        return ar;
     }
 
 }

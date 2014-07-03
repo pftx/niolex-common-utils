@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.niolex.commons.bean.Pair;
-import org.apache.niolex.commons.test.Counter;
 import org.apache.niolex.commons.test.MockUtil;
+import org.apache.niolex.commons.util.MathUtil;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
@@ -59,7 +59,7 @@ public class ConsistentHashBalanceTest {
                 map.put(key, integer);
             }
         }
-        System.out.println("BalanceInt => " + Counter.calcMeanSquareError(map.values()).toString("avg", "MSE"));
+        System.out.println("BalanceInt => " + MathUtil.calcMeanSquareError(map.values()).toString("avg", "MSE"));
         System.out.println("BalanceInt => " + map);
     }
 
@@ -88,7 +88,7 @@ public class ConsistentHashBalanceTest {
                 map.put(key, integer);
             }
         }
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
         System.out.println("BalanceIntG => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("BalanceIntG => " + map);
     }
@@ -118,7 +118,7 @@ public class ConsistentHashBalanceTest {
                 map.put(key, integer);
             }
         }
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
         System.out.println("Balances100 => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("Balances100 => " + map);
     }
@@ -148,7 +148,7 @@ public class ConsistentHashBalanceTest {
                 map.put(key, integer);
             }
         }
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
         System.out.println("Balances100G => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("Balances100G => " + map);
     }
@@ -178,7 +178,7 @@ public class ConsistentHashBalanceTest {
                 map.put(key, integer);
             }
         }
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
         System.out.println("Balances500 => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("Balances500 => " + map);
     }

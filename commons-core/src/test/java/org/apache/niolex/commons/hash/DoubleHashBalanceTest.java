@@ -23,8 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.niolex.commons.bean.Pair;
-import org.apache.niolex.commons.test.Counter;
-import org.apache.niolex.commons.test.MockUtil;
+import org.apache.niolex.commons.util.MathUtil;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
@@ -45,14 +44,14 @@ public class DoubleHashBalanceTest {
         Map<String, Integer> map = Maps.newHashMap();
         Map<String, String> trap = Maps.newHashMap();
         for (int i = 0; i < 20000; ++i) {
-            String key = MockUtil.randString();
+            String key = MathUtil.randString();
             String node = dHash.getPairNodes(key).a;
             Integer in = map.get(node);
             in = in == null ? 1 : in + 1;
             map.put(node, in);
             trap.put(key, node);
         }
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
         System.out.println("BalanceA => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         dHash.add("10.13.65.131:8088");
         int cnt = 0;
@@ -72,8 +71,8 @@ public class DoubleHashBalanceTest {
         DoubleHash<String> dHash = new DoubleHash<String>(Hashing.murmur3_128(), Hashing.crc32(), nodeList);
         Map<String, String> trap = Maps.newHashMap();
         for (int i = 0; i < 20000; ++i) {
-            String key = MockUtil.randString();
-            String node = dHash.getPairNodes(key).a;
+            String key = MathUtil.randString();
+            String node =dHash.getPairNodes(key).a;
             trap.put(key, node);
         }
         dHash.remove("10.214.133.101:8088");
@@ -88,7 +87,7 @@ public class DoubleHashBalanceTest {
                 ++cnt;
             }
         }
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
         System.out.println("BalanceR => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("ChangedR => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
     }
@@ -100,7 +99,7 @@ public class DoubleHashBalanceTest {
         DoubleHash<String> dHash = new DoubleHash<String>(Hashing.murmur3_128(), Hashing.crc32(), nodeList);
         Map<String, String> trap = Maps.newHashMap();
         for (int i = 0; i < 20000; ++i) {
-            String key = MockUtil.randString();
+            String key = MathUtil.randString();
             String node = dHash.getPairNodes(key).a;
             trap.put(key, node);
         }
@@ -116,7 +115,7 @@ public class DoubleHashBalanceTest {
                 ++cnt;
             }
         }
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
         System.out.println("BalanceR => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("ChangedR => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
     }
@@ -128,7 +127,7 @@ public class DoubleHashBalanceTest {
         DoubleHash<String> dHash = new DoubleHash<String>(Hashing.murmur3_128(), Hashing.crc32(), nodeList);
         Map<String, String> trap = Maps.newHashMap();
         for (int i = 0; i < 20000; ++i) {
-            String key = MockUtil.randString();
+            String key = MathUtil.randString();
             String node = dHash.getPairNodes(key).a;
             trap.put(key, node);
         }
@@ -144,7 +143,7 @@ public class DoubleHashBalanceTest {
                 ++cnt;
             }
         }
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
         System.out.println("BalanceL => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("ChangedL => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
     }

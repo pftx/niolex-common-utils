@@ -17,10 +17,6 @@
  */
 package org.apache.niolex.commons.test;
 
-import java.util.concurrent.CountDownLatch;
-
-import org.apache.niolex.commons.concurrent.ThreadUtil;
-import org.apache.niolex.commons.util.Runner;
 import org.junit.Test;
 
 /**
@@ -45,7 +41,7 @@ public class MultiPerformanceTest {
                     throw new RuntimeException("This is so bad! " + j);
                 }
             }};
-        System.out.print("AutoBoxing\t");
+        System.out.print("AutoBoxing ");
         perf.start();
     }
 
@@ -63,31 +59,8 @@ public class MultiPerformanceTest {
                     throw new RuntimeException("This is so bad! " + j);
                 }
             }};
-        System.out.print("Primitive\t");
+        System.out.print("Primitive ");
         perf.start();
-    }
-
-    @Test
-    public void testInterruptedException() throws InterruptedException {
-        final CountDownLatch la = new CountDownLatch(2);
-        MultiPerformance perf = new MultiPerformance(1, 2, 2) {
-            @Override
-            protected void run() {
-                la.countDown();
-                if (la.getCount() == 0)
-                    ThreadUtil.sleep(1000);
-            }
-        };
-        System.out.print("Interrupted\t");
-        Thread t = Runner.run(perf, "start");
-        la.await();
-        ThreadUtil.sleep(1);
-        t.interrupt();
-        ThreadUtil.sleep(1);
-        t.interrupt();
-        ThreadUtil.sleep(1);
-        t.interrupt();
-        t.join();
     }
 
 }

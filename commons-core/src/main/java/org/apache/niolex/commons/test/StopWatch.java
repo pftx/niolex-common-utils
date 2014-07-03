@@ -17,16 +17,17 @@
  */
 package org.apache.niolex.commons.test;
 
-import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.niolex.commons.util.Runme;
+import org.apache.niolex.commons.util.SystemUtil;
 
 /**
- * This class is calculating average time, max time, min time, time distribution.
+ * This class is calculating average time, max time, minimum time, time distribution.
  * Often needed for pressure test.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
@@ -34,6 +35,21 @@ import org.apache.niolex.commons.util.Runme;
  * @since 2012-8-14
  */
 public class StopWatch {
+
+    /**
+     * The columns length used to generate table.
+     */
+    private static final int[] COL_LENS = new int[]{10, 10, 10, 10};
+
+    /**
+     * The summary table titles.
+     */
+    private static final String[] TOTAL_TITILES = new String[] {"MAX", "MIN", "AVG", "RATE/sec"};
+
+    /**
+     * The distribution table titles.
+     */
+    private static final String[] DISTR_TITILES = new String[] {"DISTRIBU", "FROM", "TO", "COUNT"};
 
 	private final int distributionInterval;
 	private final ConcurrentLinkedQueue<Integer> linkList = new ConcurrentLinkedQueue<Integer>();
@@ -53,7 +69,7 @@ public class StopWatch {
 	/**
 	 * Construct a new Stop Watch.
 	 *
-	 * @param distributionInterval The interval to calculate distribution.
+	 * @param distributionInterval the interval used as a measure unit to calculate distribution, in milliseconds
 	 */
 	public StopWatch(int distributionInterval) {
 		super();
@@ -63,19 +79,20 @@ public class StopWatch {
 	/**
 	 * Begin the time calculation.
 	 *
-	 * @param printDirectly Whether to print RPS directly into console.
+	 * @param printDirectly whether we print the RPS directly into the console
 	 */
 	public void begin(final boolean printDirectly) {
 		startTime = System.currentTimeMillis();
-		counter.getAndSet(0);
+		counter.set(0);
 
 		rumme = new Runme() {
+		    private int cnt = 0;
 
 			@Override
 			public void runMe() {
 				Long l = counter.getAndSet(0);
 				if (printDirectly) {
-					System.out.println("rps -> " + l);
+				    SystemUtil.println("rps[%03d] -> %d", cnt++, l);
 				} else {
 					rpsList.add(l);
 				}
@@ -91,7 +108,7 @@ public class StopWatch {
 	 * Start a new time counter to count the current unit running time.
 	 * This method can be called in parallel.
 	 *
-	 * @return a Stop object.
+	 * @return a new stop object
 	 */
 	public Stop start() {
 		return new Stop();
@@ -126,41 +143,50 @@ public class StopWatch {
 	}
 
 	/**
-	 * Print all the statistics into console.
+	 * Print all the statistics into the console.
 	 */
 	public void print() {
+	    System.out.print(report());
+	}
+
+	/**
+	 * Generate a report according to the internal statistics.
+	 *
+	 * @return the string format of the report
+	 */
+	public String report() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("\n\n---------------------------------------\n");
-		sb.append("MAX\tMIN\tAVG\tRPS\n");
-		sb.append(max).append('\t').append(min).append('\t').append(avg).append('\t');
-		sb.append(rps).append('\n');
-		sb.append("---------------------------------------\n");
+		sb.append(TidyUtil.generateTable(COL_LENS, TOTAL_TITILES, max, min, avg, rps));
+		sb.append('\n');
+
 		int l = 0, r = distributionInterval;
-		NumberFormat nf = NumberFormat.getIntegerInstance();
-		NumberFormat rf = NumberFormat.getIntegerInstance();
-		nf.setMinimumIntegerDigits(3);
-		rf.setGroupingUsed(true);
-		rf.setMinimumIntegerDigits(6);
+		ArrayList<Object> list = new ArrayList<Object>();
 		for (int i = 0; i < distributions.length; ++i) {
 			if (distributions[i] > 0) {
-				sb.append(nf.format(l)).append(" to ");
+			    list.add(i);
+			    list.add(l);
 				if (i == distributions.length - 1) {
-					sb.append('~');
+				    list.add("    ~∞");
 				} else {
-					sb.append(nf.format(r));
+				    list.add(r);
 				}
-				sb.append("\t").append(rf.format(distributions[i])).append('\n');
+				list.add(distributions[i]);
 			}
 			l = r;
 			r += distributionInterval;
 		}
-		sb.append("---------------------------------------\n");
-		Iterator<Long> it = rpsList.iterator();
-		while (it.hasNext()) {
-			sb.append(rf.format(it.next())).append('\n');
+		sb.append(TidyUtil.generateTable(COL_LENS, DISTR_TITILES, list.toArray()));
+		sb.append('\n');
+
+		if (!rpsList.isEmpty()) {
+    		sb.append("------RPS-LIST-----\n");
+    		Iterator<Long> it = rpsList.iterator();
+    		while (it.hasNext()) {
+    			sb.append(it.next()).append('\n');
+    		}
+    		sb.append("--------END--------\n");
 		}
-		sb.append("----------------END--------------------\n");
-		System.out.print(sb);
+		return sb.toString();
 	}
 
 	//------------------------------------------------------------------
@@ -196,7 +222,7 @@ public class StopWatch {
 	//------------------------------------------------------------------
 
 	/**
-	 * An internal class to mark time. Just use the stop() to stop time.
+	 * An internal class to mark time. Just use the {@link #stop()} to stop time.
 	 *
 	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
 	 * @version 1.0.0
@@ -222,4 +248,5 @@ public class StopWatch {
 			counter.incrementAndGet();
 		}
 	}
+
 }

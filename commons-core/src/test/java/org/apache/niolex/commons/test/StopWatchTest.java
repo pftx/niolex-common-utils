@@ -22,8 +22,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.reflect.FieldUtil;
 import org.apache.niolex.commons.test.StopWatch.Stop;
+import org.apache.niolex.commons.util.MathUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -86,7 +88,7 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testEPrint() {
-	    System.out.print("EPrint " + System.currentTimeMillis());
+	    System.out.println("EPrint " + System.currentTimeMillis());
 		sw.print();
 	}
 
@@ -128,7 +130,7 @@ public class StopWatchTest {
 	 */
 	@Test
 	public void testFDone() {
-		System.out.print("FDone" + System.currentTimeMillis());
+		System.out.println("FDone" + System.currentTimeMillis());
 		sw.done();
 	}
 
@@ -186,5 +188,22 @@ public class StopWatchTest {
 		assertTrue(sw.getRps() < 10);
 		assertTrue(sw.getRpsList().size() < 3);
 	}
+
+    @Test
+    public void testReport() throws Exception {
+        final StopWatch sw = new StopWatch(1);
+        sw.begin(false);
+        MultiPerformance perf = new MultiPerformance(20, 1, 200) {
+
+            @Override
+            protected void run() {
+                Stop start = sw.start();
+                ThreadUtil.sleep(MathUtil.randInt(10));
+                start.stop();
+            }};
+        perf.start();
+        sw.done();
+        sw.print();
+    }
 
 }

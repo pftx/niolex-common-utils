@@ -17,11 +17,8 @@
  */
 package org.apache.niolex.commons.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-
-import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
 
 /**
@@ -51,19 +48,5 @@ public class CounterTest {
 		c.set(1123);
 		assertEquals(1123, c.cnt());
 	}
-
-    @Test
-    public void testCalcMeanSquareErrorIntArray() throws Exception {
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(3, 4, 5);
-        assertEquals(4, pair.a.intValue());
-        assertEquals(0.816496580927726, pair.b.doubleValue(), 0.0001);
-    }
-
-    @Test
-    public void testCalcMeanSquareErrorIntCollection() throws Exception {
-        Pair<Integer,Double> pair = Counter.calcMeanSquareError(Arrays.asList(3, 4, 5, 6, 9, 1));
-        assertEquals(4, pair.a.intValue());
-        assertEquals(2.581988897471611, pair.b.doubleValue(), 0.0001);
-    }
 
 }

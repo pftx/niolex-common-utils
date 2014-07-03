@@ -30,6 +30,21 @@ import com.esotericsoftware.reflectasm.FieldAccess;
 import com.esotericsoftware.reflectasm.MethodAccess;
 
 /**
+ * --------------------------------------------------------
+ * DirectMethod PERF DONE, TOTAL TIME - 33ms.
+ * PrimitiveField PERF DONE, TOTAL TIME - 35ms.
+ * DirectField PERF DONE, TOTAL TIME - 40ms.
+ * FastPrimitiveField PERF DONE, TOTAL TIME - 75ms.
+ * FastField    PERF DONE, TOTAL TIME - 84ms.
+ * FastMethod PERF DONE, TOTAL TIME - 127ms.
+ * --------------------------------------------------------
+ * ReflectMethod    MULT PERF DONE, TOTAL TIME - 289ms.
+ * ReflectField MULT PERF DONE, TOTAL TIME - 3110ms.
+ *
+ * setAccessable = true then:
+ * ReflectField MULT PERF DONE, TOTAL TIME - 262ms.
+ * ReflectMethod    MULT PERF DONE, TOTAL TIME - 99ms.
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2012-7-23
@@ -76,7 +91,7 @@ public class PerformanceTest {
 		public DirectMethod() {
 			super(innerIteration, outerIteration);
 			bean.setB(8475);
-			System.out.print("DirectMethod\t");
+			System.out.print("DirectMethod ");
 		}
 
 		/**
@@ -101,8 +116,8 @@ public class PerformanceTest {
 		 */
 		public DirectField() {
 			super(innerIteration, outerIteration);
-			bean.setB(8475);
-			System.out.print("DirectField\t");
+			bean.setB(8877);
+			System.out.print("DirectField ");
 		}
 
 		/**
@@ -111,7 +126,7 @@ public class PerformanceTest {
 		 */
 		@Override
 		protected void run() {
-			if (bean.b.intValue() != 8475) {
+			if (bean.b.intValue() != 8877) {
 				throw new RuntimeException("This is so bad!");
 			}
 		}
@@ -129,8 +144,8 @@ public class PerformanceTest {
 		 */
 		public FastMethod() {
 			super(innerIteration, outerIteration);
-			bean.setB(8475);
-			System.out.print("FastMethod\t");
+			bean.setB(7245);
+			System.out.print("FastMethod ");
 		}
 
 		/**
@@ -139,7 +154,7 @@ public class PerformanceTest {
 		 */
 		@Override
 		protected void run() {
-			if (((Integer)acc.invoke(bean, idx)).intValue() != 8475) {
+			if (((Integer)acc.invoke(bean, idx)).intValue() != 7245) {
 				throw new RuntimeException("This is so bad!");
 			}
 		}
@@ -157,8 +172,8 @@ public class PerformanceTest {
 		 */
 		public FastField() {
 			super(innerIteration, outerIteration);
-			bean.setB(8475);
-			System.out.print("FastField\t");
+			bean.setB(78345);
+			System.out.print("FastField ");
 		}
 
 		/**
@@ -167,14 +182,14 @@ public class PerformanceTest {
 		 */
 		@Override
 		protected void run() {
-			if (((Integer)acc.get(bean, idx)).intValue() != 8475) {
+			if (((Integer)acc.get(bean, idx)).intValue() != 78345) {
 				throw new RuntimeException("This is so bad!");
 			}
 		}
 
 	}
 
-	class ReflectMethod extends Performance {
+	class ReflectMethod extends MultiPerformance {
 		KTestBean bean = new KTestBean();
 		Method m;
 
@@ -183,10 +198,11 @@ public class PerformanceTest {
 		 * @param outerIteration
 		 */
 		public ReflectMethod() {
-			super(innerIteration, 10);
-			bean.setB(8475);
+			super(4, innerIteration, outerIteration);
+			bean.setB(6465);
 			try {
 				m = MethodUtil.getMethod(KTestBean.class, "getB");
+				m.setAccessible(true);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -200,7 +216,7 @@ public class PerformanceTest {
 		@Override
 		protected void run() {
 			try {
-				if (((Integer) m.invoke(bean)).intValue() != 8475) {
+				if (((Integer) m.invoke(bean)).intValue() != 6465) {
 					throw new RuntimeException("This is so bad!");
 				}
 			} catch (Exception e) {
@@ -219,10 +235,11 @@ public class PerformanceTest {
 		 * @param outerIteration
 		 */
 		public ReflectField() {
-			super(2, innerIteration, 6);
-			bean.setB(8475);
+			super(4, innerIteration, outerIteration);
+			bean.setB(783234);
 			try {
 				f = FieldUtil.getField(KTestBean.class, "b");
+				f.setAccessible(true);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -236,7 +253,7 @@ public class PerformanceTest {
 		@Override
 		protected void run() {
 			try {
-				if (((Integer) f.get(bean)).intValue() != 8475) {
+				if (((Integer) f.get(bean)).intValue() != 783234) {
 					throw new RuntimeException("This is so bad!");
 				}
 			} catch (Exception e) {
@@ -288,8 +305,8 @@ public class PerformanceTest {
 		 */
 		public PrimitiveField() {
 			super(innerIteration, outerIteration);
-			bean.setI(8475);
-			System.out.print("PrimitiveField\t");
+			bean.setI(5956);
+			System.out.print("PrimitiveField ");
 		}
 
 		/**
@@ -298,7 +315,7 @@ public class PerformanceTest {
 		 */
 		@Override
 		protected void run() {
-			if (bean.i != 8475) {
+			if (bean.i != 5956) {
 				throw new RuntimeException("This is so bad!");
 			}
 		}
@@ -316,8 +333,8 @@ public class PerformanceTest {
 		 */
 		public FastPrimitiveField() {
 			super(innerIteration, outerIteration);
-			bean.setI(8475);
-			System.out.print("FastPrimitiveField\t");
+			bean.setI(89456);
+			System.out.print("FastPrimitiveField ");
 		}
 
 		/**
@@ -326,7 +343,7 @@ public class PerformanceTest {
 		 */
 		@Override
 		protected void run() {
-			if (acc.getInt(bean, idx) != 8475) {
+			if (acc.getInt(bean, idx) != 89456) {
 				throw new RuntimeException("This is so bad!");
 			}
 		}

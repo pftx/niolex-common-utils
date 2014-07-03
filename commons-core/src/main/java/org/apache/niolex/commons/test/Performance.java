@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.test;
 
+import org.apache.niolex.commons.util.SystemUtil;
+
 /**
  * This class is for test code performance.
  *
@@ -32,10 +34,10 @@ public abstract class Performance {
 	private long min;
 
 	/**
-	 * Create a Performance class.
+	 * Create a new Performance instance.
 	 *
-	 * @param innerIteration The iteration to run as a measure unit.
-	 * @param outerIteration The iteration to run as a total iteration.
+	 * @param innerIteration the iteration to run as a measure unit
+	 * @param outerIteration the numbers of iteration to run the measure unit
 	 */
 	public Performance(int innerIteration, int outerIteration) {
 		super();
@@ -49,15 +51,22 @@ public abstract class Performance {
 	protected abstract void run();
 
 	/**
+     * This is run one batch.
+     */
+    protected void oneRun() {
+        for (int j = 0; j < innerIteration; ++j) {
+            run();
+        }
+    }
+
+	/**
 	 * Start to test now.
 	 */
 	public void start() {
 		/**
 		 * This is for preheat the JVM.
 		 */
-		for (int j = 0; j < innerIteration; ++j) {
-			run();
-		}
+	    oneRun();
 
 		long total, in, cu;
 		/**
@@ -69,9 +78,7 @@ public abstract class Performance {
 		long ein = System.currentTimeMillis();
 		for (int i = 0; i < outerIteration; ++i) {
 			in = System.currentTimeMillis();
-			for (int j = 0; j < innerIteration; ++j) {
-				run();
-			}
+			oneRun();
 			cu = System.currentTimeMillis() - in;
 			if (cu > max) max = cu;
 			if (cu < min) min = cu;
@@ -79,8 +86,8 @@ public abstract class Performance {
 		}
 		// Done.
 		cu = total / outerIteration;
-		System.out.println("Performance Done, Total Time - " + (System.currentTimeMillis() - ein));
-		System.out.println("Iter " + outerIteration + ", Avg " + cu + ", Max "
-				+ max + ", Min " + min);
+		System.out.println("PERF done, total time " + (System.currentTimeMillis() - ein) + "ms.");
+        SystemUtil.printTable(new int[] {10, 10, 10, 10},
+                new String[] {"ITERATIONS", "AVG", "MAX", "MIN"}, outerIteration, cu, max, min);
 	}
 }
