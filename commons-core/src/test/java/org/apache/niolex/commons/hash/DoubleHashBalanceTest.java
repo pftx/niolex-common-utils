@@ -51,7 +51,7 @@ public class DoubleHashBalanceTest {
             map.put(node, in);
             trap.put(key, node);
         }
-        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcStandardDeviation(map.values());
         System.out.println("BalanceA => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         dHash.add("10.13.65.131:8088");
         int cnt = 0;
@@ -87,7 +87,7 @@ public class DoubleHashBalanceTest {
                 ++cnt;
             }
         }
-        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcStandardDeviation(map.values());
         System.out.println("BalanceR => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("ChangedR => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
     }
@@ -115,7 +115,7 @@ public class DoubleHashBalanceTest {
                 ++cnt;
             }
         }
-        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcStandardDeviation(map.values());
         System.out.println("BalanceR => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("ChangedR => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
     }
@@ -143,7 +143,7 @@ public class DoubleHashBalanceTest {
                 ++cnt;
             }
         }
-        Pair<Integer,Double> pair = MathUtil.calcMeanSquareError(map.values());
+        Pair<Integer,Double> pair = MathUtil.calcStandardDeviation(map.values());
         System.out.println("BalanceL => " + pair.toString("avg", "MSE") + ", PCT=" + (int)(pair.b / pair.a * 100) + "%");
         System.out.println("ChangedL => " + cnt + ", PCT=" + (cnt * 100 / 20000) + "%");
     }
