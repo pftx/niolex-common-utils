@@ -38,7 +38,8 @@ public class ThrowableUtil {
      */
     public static final Throwable getRootCause(Throwable e) {
         Throwable p = e.getCause();
-        while (p != null) {
+        int k = 0;
+        while (p != null && ++k < 1024) {
             e = p;
             p = e.getCause();
         }

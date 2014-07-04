@@ -25,7 +25,7 @@ import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.test.TidyUtil;
 
 /**
- * System information related utility class.
+ * System Environment and JVM related utility class.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, Date: 2012-8-1
@@ -35,8 +35,8 @@ public class SystemUtil {
 	/**
 	 * Safely close the Closeable, without throwing any exception.
 	 *
-	 * @param cl the object you want to close.
-	 * @return null if success, the exception if exception occurred.
+	 * @param cl the object you want to close
+	 * @return null if success, the exception if exception occurred
 	 */
 	public static final IOException close(Closeable cl) {
 	    try {
@@ -50,8 +50,8 @@ public class SystemUtil {
 	/**
 	 * Safely close the Socket, without throwing any exception.
 	 *
-	 * @param cl the socket you want to close.
-	 * @return null if success, the exception if exception occurred.
+	 * @param cl the socket you want to close
+	 * @return null if success, the exception if exception occurred
 	 */
 	public static final IOException close(Socket cl) {
 	    try {
@@ -63,8 +63,7 @@ public class SystemUtil {
 	}
 
 	/**
-	 * Try to get system property according to the specified order of property
-	 * keys.
+	 * Try to get system property according to the specified order of property keys.
 	 *
 	 * @param args the specified property keys
 	 * @return the first found property, null if all keys not found
@@ -80,12 +79,12 @@ public class SystemUtil {
 	}
 
 	/**
-	 * Try to get system property by the specified property name, if not found or any error occurred,
+	 * Try to get the system property by the specified property name, if not found or any error occurred,
 	 * return the default value.
 	 *
 	 * @param propName the property name
 	 * @param defaultValue the default value
-	 * @return the property value of the default value if property not found or any error occurred
+	 * @return the property value or the default value if property not found or any error occurred
 	 */
 	public static final String getSystemPropertyWithDefault(String propName, String defaultValue) {
 	    try {
@@ -97,7 +96,7 @@ public class SystemUtil {
 	}
 
 	/**
-	 * Try to get system property by the specified property name, if any error occurred,
+	 * Try to get the system property by the specified property name, if any error occurred,
 	 * return the default value.
 	 *
 	 * @param propName the property name
@@ -113,7 +112,7 @@ public class SystemUtil {
 	}
 
 	/**
-	 * Check whether the specified system properties defined or not.
+	 * Check whether the specified system properties were defined or not.
 	 *
 	 * @param args the specified property keys
 	 * @return true if defined, false otherwise
@@ -157,7 +156,7 @@ public class SystemUtil {
      * @param colLen the columns length
      * @param titles the columns titles
      * @param values the table body
-     * @see {@link TidyUtil#generateTable(int[], String[], Object...)}
+     * @see TidyUtil#generateTable(int[], String[], Object...)
      */
     public static final void printTable(int[] colLen, String[] titles, Object ...values) {
         System.out.println(TidyUtil.generateTable(colLen, titles, values));

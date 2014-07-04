@@ -56,6 +56,15 @@ public class ThrowableUtilTest extends ThrowableUtil {
     }
 
     @Test
+    public void testGetRootCauseInfiniteLoop() throws Exception {
+        Exception i = new IOException("Wrap it.");
+        Exception e = new RuntimeException("Go away!", i);
+        i.initCause(e);
+        Throwable m = getRootCause(e);
+        assertEquals("Wrap it.", m.getMessage());
+    }
+
+    @Test
     public void testThrowableToString() throws Exception {
         try {
             wrapEx();

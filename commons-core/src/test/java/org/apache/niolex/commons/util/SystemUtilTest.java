@@ -114,8 +114,13 @@ public class SystemUtilTest extends SystemUtil {
 
     @Test
     public void testPrintln() throws Exception {
-        SystemUtil.println("");
-        SystemUtil.println("For: {%d}, This is your [%s].", 3, "Girl");
+        println("");
+        println("For: {%d}, This is your [%s].", 3, "Girl");
+    }
+
+    @Test
+    public void testPrintTable() throws Exception {
+        printTable(new int[]{10,30}, new String[] {"Nice", "Command"}, "Lex", "Good Utility!", 3, 5.6);
     }
 
 }
