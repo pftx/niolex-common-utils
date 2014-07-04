@@ -20,6 +20,7 @@ package org.apache.niolex.commons.concurrent;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 
 import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.test.Counter;
@@ -41,11 +42,11 @@ public class BlockerTest {
 	@Test
 	public void testInit() throws Exception {
 		final WaitOn<Integer> on = blocker.init(blocker);
-		One<Integer> retVal = One.create(0);
-		Thread w = Runner.run(retVal , on, "waitForResult", 1000);
+		One<Thread> retVal = new One<Thread>();
+		Future<Object> w = Runner.run(retVal , on, "waitForResult", 1000);
 		blocker.release(blocker, 156);
-		w.join();
-		assertEquals(156, retVal.a.intValue());
+		retVal.a.join();
+		assertEquals(156, w.get());
 	}
 
 	/**

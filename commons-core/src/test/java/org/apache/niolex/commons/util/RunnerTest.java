@@ -19,7 +19,15 @@ package org.apache.niolex.commons.util;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Method;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import javax.naming.NamingException;
+
 import org.apache.niolex.commons.bean.One;
+import org.apache.niolex.commons.reflect.ItemNotFoundException;
+import org.apache.niolex.commons.reflect.MethodUtil;
 import org.apache.niolex.commons.test.Counter;
 import org.junit.Test;
 
@@ -74,43 +82,96 @@ public class RunnerTest extends Runner implements Runnable {
 		throw e;
 	}
 
-    @Test
-    public void testRunMethodEx() throws Exception {
+	Method runme = MethodUtil.getMethod(getClass(), "runme", String.class);
+	Method runmeEx = MethodUtil.getMethod(getClass(), "runme", int.class, Exception.class);
+
+	@Test
+	public void testRunMethodName() throws Exception {
+	    c.set(0);
+	    Runner.run(this, "runme", "ab").join();
+	    assertEquals(2, c.cnt());
+	}
+
+	@Test
+	public void testRunMethodInstance() throws Exception {
+	    c.set(0);
+	    Runner.run(this, runme, "abcd").join();
+	    assertEquals(4, c.cnt());
+	}
+
+    @Test(expected=NamingException.class)
+    public void testRunMethodEx() throws Throwable {
         c.set(0);
-        One<Integer> one = new One<Integer>();
-        Runner.run(one, this, "runme", 2, new Exception("K")).join();
-        assertEquals(2, c.cnt());
+        One<Thread> one = new One<Thread>();
+        Future<Object> future = Runner.run(one, this, "runme", 6, new NamingException("K"));
+        try {
+            future.get();
+        } catch (ExecutionException e) {
+            assertEquals(6, c.cnt());
+            throw e.getCause();
+        }
         assertNull(one.a);
     }
 
-    @Test
-    public void testRunMethod() throws Exception {
+    @Test(expected=NamingException.class)
+    public void testRunMethodInstanceEx() throws Throwable {
         c.set(0);
-        Runner.run(this, "runme", "ab").join();
-        assertEquals(2, c.cnt());
+        One<Thread> one = new One<Thread>();
+        Future<Object> future = Runner.run(one, this, runmeEx, 6, new NamingException("K"));
+        try {
+            future.get();
+        } catch (ExecutionException e) {
+            assertEquals(6, c.cnt());
+            throw e.getCause();
+        }
+        assertNull(one.a);
     }
 
-    @Test
-    public void testRunMethodNotFound() throws Exception {
+    @Test(expected=ItemNotFoundException.class)
+    public void testRunMethodNotFound() throws Throwable {
         c.set(0);
-        Runner.run(this, "run", 2, new Exception("K")).join();
-        assertEquals(0, c.cnt());
+        One<Thread> one = new One<Thread>();
+        Future<Object> future = Runner.run(one, this, "run", 2, new Exception("K"));
+        try {
+            future.get();
+        } catch (ExecutionException e) {
+            assertEquals(0, c.cnt());
+            throw e.getCause();
+        } finally {
+            one.a.join();
+        }
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testRunMethodInvArgEx() throws Throwable {
+        c.set(0);
+        One<Thread> one = new One<Thread>();
+        Future<Object> future = Runner.run(one, this, runme, 2, new Exception("K"));
+        try {
+            future.get();
+        } catch (ExecutionException e) {
+            assertEquals(0, c.cnt());
+            throw e.getCause();
+        } finally {
+            one.a.join();
+        }
     }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.util.Runner#run(java.lang.Object, java.lang.String, java.lang.Object[])}.
 	 * @throws InterruptedException
+	 * @throws ExecutionException
 	 */
 	@Test
-	public void testRunObject() throws InterruptedException {
+	public void testRunObject() throws InterruptedException, ExecutionException {
 	    c.set(0);
-	    One<Integer> one = new One<Integer>();
-		Runner.run(one, this, "runme").join();
+	    One<Thread> one = new One<Thread>();
+		Future<Integer> future = Runner.run(one, this, "runme");
+		assertEquals(1, future.get().intValue());
 		assertEquals(1, c.cnt());
-		assertEquals(1, one.a.intValue());
-		Runner.run(one, this, "runme", 3).join();
+		future = Runner.run(one, this, "runme", 3);
+		assertEquals(2, future.get().intValue());
 		assertEquals(4, c.cnt());
-		assertEquals(2, one.a.intValue());
 	}
 
 }

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.niolex.commons.bean.One;
@@ -71,16 +72,16 @@ public class WaitOnTest {
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.concurrent.WaitOn#waitForResult(long)}.
-	 * @throws InterruptedException
+	 * @throws Exception
 	 */
 	@Test
-	public void testWaitForResultNormal() throws InterruptedException {
-	    One<String> retVal = One.create("N/A");
-        Thread w = Runner.run(retVal , waitOn, "waitForResult", 1000);
+	public void testWaitForResultNormal() throws Exception {
+	    One<Thread> retVal = new One<Thread>();
+        Future<Object> w = Runner.run(retVal , waitOn, "waitForResult", 1000);
         Thread.sleep(10);
         waitOn.release("Good");
-        w.join();
-        assertEquals("Good", retVal.a);
+        retVal.a.join();
+        assertEquals("Good", w.get());
 	}
 
 	/**

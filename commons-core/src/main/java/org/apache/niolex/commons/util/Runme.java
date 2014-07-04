@@ -63,7 +63,7 @@ public abstract class Runme extends Thread {
 	 * Override super method
 	 * @see java.lang.Thread#run()
 	 */
-	public void run() {
+	public final void run() {
 		if (isWorking) {
 			// Do initial sleep.
 		    ThreadUtil.sleep(System.nanoTime() % sleepInterval);
@@ -88,6 +88,7 @@ public abstract class Runme extends Thread {
 	 */
 	public void stopMe() {
 		isWorking = false;
+		this.interrupt();
 	}
 
 	/**

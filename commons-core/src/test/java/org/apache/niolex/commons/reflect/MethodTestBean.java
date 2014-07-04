@@ -67,11 +67,15 @@ class Jenny extends Lex {
 
     public int getAndSet(int i) {
         int r = abc;
-        abc = i;
+        set(i);
         return r;
     }
 
     public static int get() {
         return abc;
+    }
+
+    private static void set(int i) {
+        abc = i;
     }
 }

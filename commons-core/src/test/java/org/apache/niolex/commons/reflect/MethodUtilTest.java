@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.reflect;
 
+import static org.junit.Assert.assertEquals;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +27,7 @@ import java.util.List;
 import org.junit.Assert;
 
 import org.apache.niolex.commons.reflect.MethodUtil;
+import org.apache.niolex.commons.test.Benchmark;
 import org.junit.Test;
 
 
@@ -71,8 +74,8 @@ public class MethodUtilTest extends MethodUtil {
     }
 
     @Test
-    public void testMethods() {
-        List<Method> arr = getMethods(MethodTestBean.class);
+    public void testThisMethods() {
+        List<Method> arr = getThisMethods(MethodTestBean.class);
         System.out.println(arr);
         Assert.assertTrue(arr.size() >= 5);
         Assert.assertTrue(arr.size() <= 6);
@@ -272,6 +275,47 @@ public class MethodUtilTest extends MethodUtil {
         Object obj = new Conc();
         Object res = MethodUtil.invokePublicMethod(obj, "joke");
         Assert.assertEquals(6, res);
+    }
+
+    @Test
+    public void testGetMethodsParamRelaxAutoBox() throws Exception {
+        List<Method> list = getMethodsParamRelax(MethodTestBean.class, "echoName", Integer.class);
+        assertEquals(1, list.size());
+    }
+
+    @Test
+    public void testGetMethodsParamRelaxRelaxAutoBox() throws Exception {
+        List<Method> list = getMethodsParamRelax(MethodTestBean.class, "echoName", Byte.class);
+        assertEquals(1, list.size());
+    }
+
+    @Test
+    public void testGetMethodsParamRelaxAutoUnBox() throws Exception {
+        List<Method> list = getMethodsParamRelax(Benchmark.Group.class, "setGroupId", long.class);
+        assertEquals(1, list.size());
+    }
+
+    /**
+     * We can not do this!!
+     *
+     * @throws Exception
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetMethodsParamRelaxForceDo() throws Exception {
+        List<Method> list = getMethodsParamRelax(Benchmark.Group.class, "setGroupId", long.class);
+        assertEquals(1, list.size());
+        list.get(0).invoke(Benchmark.Group.makeGroup(), new Integer(56));
+    }
+
+    /**
+     * We can not do this!!
+     *
+     * @throws Exception
+     */
+    @Test(expected=AssertionError.class)
+    public void testGetMethodsParamRelaxRelaxAutoUnBox() throws Exception {
+        List<Method> list = getMethodsParamRelax(Benchmark.Group.class, "setGroupId", int.class);
+        assertEquals(1, list.size());
     }
 
 }

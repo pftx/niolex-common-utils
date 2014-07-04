@@ -36,28 +36,7 @@ import org.apache.niolex.commons.collection.CollectionUtil;
 public class MethodUtil {
 
     /**
-     * Retrieve all the methods of this class and it's super classes.
-     * <p>
-     * We don't get methods of interfaces, because every method in a interface must have
-     * the real definition in the classes.
-     * </p>
-     *
-     * @param clazz the class to be used
-     * @return the list contains all the methods
-     * @throws SecurityException if a security manager is present and the reflection is rejected
-     * @see #getAllMethodsIncludeInterfaces(Class)
-     */
-    public static final List<Method> getAllMethods(Class<?> clazz) {
-        List<Method> outList = new ArrayList<Method>();
-        do {
-            CollectionUtil.addAll(outList, clazz.getDeclaredMethods());
-            clazz = clazz.getSuperclass();
-        } while (clazz != null);
-        return outList;
-    }
-
-    /**
-     * Retrieve all the [class]/[super class]/[interfaces] of this object.
+     * Retrieve all the types, including class, super classes and interfaces of this object.
      *
      * @param obj the object to be used
      * @return the list contains all the types
@@ -69,7 +48,7 @@ public class MethodUtil {
 
 
     /**
-     * Retrieve all the [class]/[super class]/[interfaces] of this class.
+     * Retrieve all the types, including class, super classes and interfaces of this class.
      *
      * @param clazz the class to be used
      * @return the list contains all the types
@@ -101,7 +80,8 @@ public class MethodUtil {
     }
 
     /**
-     * Retrieve all the methods of this class and it's super classes and all of it's interfaces.
+     * Retrieve all the methods including static methods of this class and it's super classes and
+     * all of it's interfaces.
      *
      * @param clazz the class to be used
      * @return the list contains all the methods
@@ -117,15 +97,37 @@ public class MethodUtil {
     }
 
     /**
-     * Retrieve all the methods of this class, don't get super methods and interface methods.
+     * Retrieve all the methods including static methods of this class and it's super classes.
+     * <p>
+     * We don't get methods of interfaces, because every method in a interface must have
+     * the real definition in the classes.
+     * </p>
      *
      * @param clazz the class to be used
      * @return the list contains all the methods
      * @throws SecurityException if a security manager is present and the reflection is rejected
+     * @see #getAllMethodsIncludeInterfaces(Class)
+     */
+    public static final List<Method> getAllMethods(Class<?> clazz) {
+        List<Method> outList = new ArrayList<Method>();
+        do {
+            CollectionUtil.addAll(outList, clazz.getDeclaredMethods());
+            clazz = clazz.getSuperclass();
+        } while (clazz != null);
+        return outList;
+    }
+
+    /**
+     * Retrieve all the methods including static methods of this class, neither get super methods nor
+     * interface methods.
+     *
+     * @param clazz the class to be used
+     * @return the list contains all the methods including static methods of this class
+     * @throws SecurityException if a security manager is present and the reflection is rejected
      * @see #getAllMethods(Class)
      * @see #getAllMethodsIncludeInterfaces(Class)
      */
-    public static final List<Method> getMethods(Class<?> clazz) {
+    public static final List<Method> getThisMethods(Class<?> clazz) {
         List<Method> outList = new ArrayList<Method>();
         CollectionUtil.addAll(outList, clazz.getDeclaredMethods());
         return outList;
@@ -179,7 +181,7 @@ public class MethodUtil {
         } else if (filter.isIncludeSuper()) {
             raw = getAllMethods(clazz);
         } else {
-            raw = getMethods(clazz);
+            raw = getThisMethods(clazz);
         }
         List<Method> outList = new ArrayList<Method>();
         for (Method m : raw) {
@@ -192,7 +194,7 @@ public class MethodUtil {
 
     /**
      * Retrieve all the methods with the specified method name from this class and
-     * all of it's super classes.
+     * all of it's super classes including static methods.
      *
      * @param clazz the class to be used to find methods
      * @param methodName the method name
@@ -200,13 +202,13 @@ public class MethodUtil {
      * @throws SecurityException if a security manager is present and the reflection is rejected
      */
     public static final List<Method> getMethods(Class<?> clazz, String methodName) {
-        return getMethods(clazz, MethodFilter.create().includeSuper()
+        return getMethods(clazz, MethodFilter.create().includeSuper().includeStatic()
                 .methodName(methodName));
     }
 
     /**
      * Get the first found method with the specified method name from this class and
-     * all of it's super classes.
+     * all of it's super classes including static methods.
      *
      * @param clazz the class to be used to find methods
      * @param methodName the method name
@@ -223,7 +225,7 @@ public class MethodUtil {
     }
 
     /**
-     * Get the first found method with the specified method name from the host object.
+     * Get the first found method with the specified method name from the host object including static methods.
      *
      * @param host the host object used to find method
      * @param methodName the method name
@@ -235,7 +237,7 @@ public class MethodUtil {
     }
 
     /**
-     * Retrieve the method with the specified name and parameter types from this class.
+     * Retrieve the method with the specified name and parameter types from this class including static method.
      * If this method is not found, we will try to look at it from the super class too.
      *
      * @param clazz the class to be used for reflection
@@ -259,6 +261,27 @@ public class MethodUtil {
     }
 
     /**
+     * Retrieve the methods including static methods with the specified name and parameter types can be
+     * assigned from the specified parameter types.
+     * <pre>
+     * We have mainly two kinds of relax considered here:
+     *  1. long <= int <= short (Small type can be relaxed to a larger type for primitives)
+     *  2. int <= Integer or Integer <= int (Auto boxing and un-boxing)
+     * </pre>
+     * <b>Caution! We can not do relax on wrapper types!</b>
+     *
+     * @param clazz the class to be used for reflection
+     * @param methodName the method name
+     * @param parameterTypes the parameter types used to call this method
+     * @return the list contains all the methods satisfy the condition
+     */
+    public static final List<Method> getMethodsParamRelax(Class<?> clazz, String methodName,
+            Class<?>... parameterTypes) {
+        return getMethods(clazz, MethodFilter.create().includeSuper().includeStatic()
+                .methodName(methodName).parameterTypes(parameterTypes));
+    }
+
+    /**
      * Invoke this method on the specified host object.
      * If it's a static method, the host object could be null.
      *
@@ -278,7 +301,8 @@ public class MethodUtil {
 
     /**
      * 在指定Java对象上调用指定的方法
-     * Invoke the method with this specified method name on the host.
+     * Invoke the method with this specified method name and arguments on the host. We support
+     * auto boxing and primitive relax.
      *
      * @param host 用来调用指定方法的对象
      * @param methodName 需要调用的方法
@@ -306,7 +330,8 @@ public class MethodUtil {
 
     /**
      * 在指定Java对象上调用指定的方法
-     * Invoke the method with this specified method name on the host.
+     * Invoke the method with this specified method name and arguments on the host. We support
+     * auto boxing and primitive relax.
      *
      * @param host 用来调用指定方法的对象
      * @param methodName 需要调用的方法
@@ -324,8 +349,7 @@ public class MethodUtil {
             Object... args) throws IllegalArgumentException, IllegalAccessException,
             InvocationTargetException {
         // Check all methods to find the correct one.
-        List<Method> methods = getMethods(host.getClass(), MethodFilter.create().includeSuper()
-                .methodName(methodName).parameterTypes(parameterTypes));
+        List<Method> methods = getMethodsParamRelax(host.getClass(), methodName, parameterTypes);
         if (methods.size() > 0) {
             Method m = methods.get(0);
             m.setAccessible(true);
@@ -353,6 +377,8 @@ public class MethodUtil {
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the method invoked
      * @throws IllegalAccessException if the requested method is not accessible via reflection
+     *
+     * @see #invokeMethod(Object, String, Object...)
      */
     public static Object invokePublicMethod(Object object, String methodName, Object... args)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
