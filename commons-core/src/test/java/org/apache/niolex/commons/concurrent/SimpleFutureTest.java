@@ -50,10 +50,9 @@ public class SimpleFutureTest {
 
     @Test
     public void testGet() throws Exception {
-        Thread t = Runner.run(future, "setDone", "Nice Shirt!");
+        Runner.run(future, "setDone", "Nice Shirt!");
         String v = future.get();
         assertEquals("Nice Shirt!", v);
-        assertFalse(t.isAlive());
     }
 
     @Test

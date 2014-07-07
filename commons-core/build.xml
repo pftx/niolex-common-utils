@@ -3,7 +3,7 @@
 <project basedir="." default="javadoc" name="commons-core">
 	<property name="name" value="commons-core" />
 	<property name="company" value="Niolex.com Inc." />
-	<property name="version" value="1.0.0" />
+	<property name="version" value="2.0.0" />
 	<property name="author" value="Xie, Jiyun" />
 	<property name="author-email" value="xiejiyun@gmail.com" />
 
@@ -61,7 +61,7 @@
 	<target name="init" depends="clean">
 		<echo message="----------- Build ${name} ${version} [${TODAY}] ------------" />
 		<echo message="----------- ANT version [${ant.version}] java version [${java.version}] ------------" />
-		<filter token="year" value="2010" />
+		<filter token="year" value="2014" />
 		<filter token="version" value="${version}" />
 		<filter token="company" value="${company}" />
 		<filter token="author" value="${author}" />
@@ -80,7 +80,8 @@
 				<include name="**/*.java" />
 			</fileset>
 		</copy>
-		<javac srcdir="${build.dir}/src" destdir="${build.dir}/${classes.dir}" encoding="${javac.encoding}" deprecation="${javac.deprecation}" debug="${javac.debug}" target="1.5">
+		<javac srcdir="${build.dir}/src" destdir="${build.dir}/${classes.dir}" encoding="${javac.encoding}"
+			deprecation="${javac.deprecation}" debug="${javac.debug}" target="1.6" includeantruntime="false">
 			<classpath refid="classpath" />
 		</javac>
 	</target>
@@ -102,12 +103,19 @@
 	<!-- =================================================================== -->
 	<!-- 产生javadoc api 文档-->
 	<!-- =================================================================== -->
-	<target name="javadoc" depends="jar">
+	<target name="javadoc" depends="jar" description="Generate the Javadoc HTML pages.">
 		<mkdir dir="${build.dir}/javadocs" />
-		<javadoc sourcepath="${build.dir}/src" destdir="${build.dir}/javadocs" encoding="${javac.encoding}" author="true" version="true" use="true" splitindex="true" Windowtitle="${name} API" doctitle="${name}">
+		<javadoc sourcepath="${build.dir}/src" destdir="${build.dir}/javadocs" encoding="${javac.encoding}" author="true"
+			version="true" use="true" splitindex="true" Windowtitle="${name} Class API" doctitle="${name}">
 			<classpath refid="classpath" />
 		</javadoc>
-		<tar destfile="${output.dir}/${name}-doc.tar.gz" basedir="${build.dir}/javadocs" compression="gzip" />
+		<jar destfile="${output.dir}/${name}-${version}-javadoc.jar">
+			<fileset dir="${build.dir}/javadocs" />
+			<manifest>
+				<attribute name="Author" value="${author}" />
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
 		<delete dir="${build.dir}" />
 	</target>
 

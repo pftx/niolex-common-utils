@@ -33,12 +33,12 @@ import java.util.TimeZone;
 public abstract class DateTimeUtil {
 
     /**
-     * The long data time format.
+     * The long data time format, including details to milliseconds.
      */
     public static final String LONG_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
     /**
-     * The date time format.
+     * The date time format, including details to seconds.
      */
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
@@ -81,6 +81,7 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the current date time to "yyyy-MM-dd HH:mm:ss.SSS" format string.
+     *
      * @return the result
      */
     public static final String formatDate2LongStr() {
@@ -89,7 +90,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "yyyy-MM-dd HH:mm:ss.SSS" format string.
-     * @param date
+     *
+     * @param date the date you want to format
      * @return the result
      */
     public static final String formatDate2LongStr(Date date) {
@@ -99,7 +101,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "yyyy-MM-dd HH:mm:ss.SSS" format string.
-     * @param date
+     *
+     * @param date the date in milliseconds since January 1, 1970, 00:00:00 GMT.
      * @return the result
      */
     public static final String formatDate2LongStr(long date) {
@@ -109,6 +112,7 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the current date time to "yyyy-MM-dd HH:mm:ss" format string.
+     *
      * @return the result
      */
     public static final String formatDate2DateTimeStr() {
@@ -117,7 +121,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "yyyy-MM-dd HH:mm:ss" format string.
-     * @param date
+     *
+     * @param date the date you want to format
      * @return the result
      */
     public static final String formatDate2DateTimeStr(Date date) {
@@ -127,7 +132,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "yyyy-MM-dd HH:mm:ss" format string.
-     * @param date
+     *
+     * @param date the date in milliseconds since January 1, 1970, 00:00:00 GMT.
      * @return the result
      */
     public static final String formatDate2DateTimeStr(long date) {
@@ -137,6 +143,7 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the current date time to "yyyy-MM-dd" format string.
+     *
      * @return the result
      */
     public static final String formatDate2DateStr() {
@@ -145,7 +152,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "yyyy-MM-dd" format string.
-     * @param date
+     *
+     * @param date the date you want to format
      * @return the result
      */
     public static final String formatDate2DateStr(Date date) {
@@ -155,7 +163,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "yyyy-MM-dd" format string.
-     * @param date
+     *
+     * @param date the date in milliseconds since January 1, 1970, 00:00:00 GMT.
      * @return the result
      */
     public static final String formatDate2DateStr(long date) {
@@ -165,6 +174,7 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the current date time to "HH:mm:ss" format string.
+     *
      * @return the result
      */
     public static final String formatDate2TimeStr() {
@@ -173,7 +183,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "HH:mm:ss" format string.
-     * @param date
+     *
+     * @param date the date you want to format
      * @return the result
      */
     public static final String formatDate2TimeStr(Date date) {
@@ -183,7 +194,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "HH:mm:ss" format string.
-     * @param date
+     *
+     * @param date the date in milliseconds since January 1, 1970, 00:00:00 GMT.
      * @return the result
      */
     public static final String formatDate2TimeStr(long date) {
@@ -193,6 +205,7 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the current date time to "yyyyMMdd" format string.
+     *
      * @return the result
      */
     public static final String formatDate2ShortStr() {
@@ -201,7 +214,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "yyyyMMdd" format string.
-     * @param date
+     *
+     * @param date the date you want to format
      * @return the result
      */
     public static final String formatDate2ShortStr(Date date) {
@@ -211,7 +225,8 @@ public abstract class DateTimeUtil {
 
     /**
      * Format the given date time to "yyyyMMdd" format string.
-     * @param date
+     *
+     * @param date the date in milliseconds since January 1, 1970, 00:00:00 GMT.
      * @return the result
      */
     public static final String formatDate2ShortStr(long date) {
@@ -223,21 +238,49 @@ public abstract class DateTimeUtil {
     // PARSE DATE FROM STRING
     // /////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Parse date from the string in "yyyy-MM-dd HH:mm:ss.SSS" format.
+     *
+     * @param date the formatted date string
+     * @return the parsed date
+     * @throws ParseException if the beginning of the specified string cannot be parsed
+     */
     public static final Date parseDateFromLongStr(String date) throws ParseException {
         SimpleDateFormat s = getDateFormat(LONG_FORMAT);
         return s.parse(date);
     }
 
+    /**
+     * Parse date from the string in "yyyy-MM-dd HH:mm:ss" format.
+     *
+     * @param date the formatted date string
+     * @return the parsed date
+     * @throws ParseException if the beginning of the specified string cannot be parsed
+     */
     public static final Date parseDateFromDateTimeStr(String date) throws ParseException {
         SimpleDateFormat s = getDateFormat(DATE_TIME_FORMAT);
         return s.parse(date);
     }
 
+    /**
+     * Parse date from the string in "yyyy-MM-dd" format.
+     *
+     * @param date the formatted date string
+     * @return the parsed date
+     * @throws ParseException if the beginning of the specified string cannot be parsed
+     */
     public static final Date parseDateFromDateStr(String date) throws ParseException {
         SimpleDateFormat s = getDateFormat(DATE_FORMAT);
         return s.parse(date);
     }
 
+    /**
+     * Parse date from the string in "yyyyMMdd" format.
+     *
+     * @param date the formatted date string
+     * @return the parsed date
+     * @throws ParseException if the beginning of the specified string cannot be parsed
+     */
     public static final Date parseDateFromShortStr(String date) throws ParseException {
         SimpleDateFormat s = getDateFormat(SHORT_FORMAT);
         return s.parse(date);
@@ -247,22 +290,46 @@ public abstract class DateTimeUtil {
     // GET SPECIAL DATE BY PARAM
     // /////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Get the last date in the specified week day counted from today.
+     * You can use {@link Calendar#DAY_OF_WEEK} to specify the week day.
+     *
+     * @param weekDay the week day you want, from 1(SUNDAY) to 7(SATURDAY)
+     * @return the date
+     * @see Calendar#DAY_OF_WEEK
+     */
     public static final Date getLastWeekDay(int weekDay) {
         return getLastWeekDay(weekDay, new Date());
     }
 
-    public static final Date getLastWeekDay(Date end) {
-        if (end == null)
-            throw new IllegalArgumentException("The parameter [end date] should not be null!");
-        GregorianCalendar cal = getCalender(end, true);
+    /**
+     * Get the last date has the same week day as the specified date.
+     *
+     * @param date the specified date
+     * @return the date
+     * @see Calendar#DAY_OF_WEEK
+     */
+    public static final Date getLastWeekDay(Date date) {
+        if (date == null)
+            throw new IllegalArgumentException("The parameter [date] should not be null!");
+        GregorianCalendar cal = getCalender(date, true);
         cal.add(Calendar.DAY_OF_MONTH, -7);
 
         return cal.getTime();
     }
 
+    /**
+     * Get the last date in the specified week day counted from the specified end date.
+     * You can use {@link Calendar#DAY_OF_WEEK} to specify the week day.
+     *
+     * @param weekDay the week day you want, from 1(SUNDAY) to 7(SATURDAY)
+     * @param end the specified end date
+     * @return the date
+     * @see Calendar#DAY_OF_WEEK
+     */
     public static final Date getLastWeekDay(int weekDay, Date end) {
         if (end == null)
-            throw new IllegalArgumentException("The parameter [end date] should not be null!");
+            throw new IllegalArgumentException("The parameter [end] should not be null!");
         GregorianCalendar cal = getCalender(end, true);
         cal.set(Calendar.DAY_OF_WEEK, weekDay);
 
@@ -272,16 +339,31 @@ public abstract class DateTimeUtil {
         return cal.getTime();
     }
 
+    /**
+     * Get yesterday.
+     *
+     * @return the date
+     */
     public static final Date getYesterday() {
         GregorianCalendar cal = getCalender();
         cal.add(Calendar.DAY_OF_MONTH, -1);
         return cal.getTime();
     }
 
+    /**
+     * Get the date of today's mid night.
+     *
+     * @return the date
+     */
     public static final Date getTodayMidnight() {
         return getCalender().getTime();
     }
 
+    /**
+     * Get the date representing last hour of now, with the same minutes and seconds.
+     *
+     * @return the date
+     */
     public static final Date getLastHour() {
         GregorianCalendar cal = getCalender(new Date(), false);
         cal.add(Calendar.HOUR_OF_DAY, -1);
@@ -307,6 +389,14 @@ public abstract class DateTimeUtil {
         return cal.get(Calendar.SECOND);
     }
 
+    /**
+     * Get the week day of the specified date.
+     * The week day is specified by {@link Calendar#DAY_OF_WEEK}, from 1(SUNDAY) to 7(SATURDAY)
+     *
+     * @param date the specified date
+     * @return the week day
+     * @see Calendar#DAY_OF_WEEK
+     */
     public static final int getWeekDay(Date date) {
         GregorianCalendar cal = getCalender(date, false);
         return cal.get(Calendar.DAY_OF_WEEK);
@@ -317,6 +407,14 @@ public abstract class DateTimeUtil {
         return cal.get(Calendar.DAY_OF_MONTH);
     }
 
+    /**
+     * Get the month of the specified date.
+     * The month is specified by {@link Calendar#MONTH}, from 0(JANUARY) to 11(DECEMBER)
+     *
+     * @param date the specified date
+     * @return the month
+     * @see Calendar#MONTH
+     */
     public static final int getMonth(Date date) {
         GregorianCalendar cal = getCalender(date, false);
         return cal.get(Calendar.MONTH);

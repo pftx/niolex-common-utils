@@ -79,6 +79,27 @@ public class DateTimeUtilTest {
     }
 
     @Test
+    public void formatDate2TimeStr() throws Exception {
+        String r = DateTimeUtil.formatDate2TimeStr();
+        System.out.println("r => " + r);
+        Assert.assertEquals(8, r.length());
+    }
+
+    @Test
+    public void formatDate2TimeStrLong() throws Exception {
+        String r = DateTimeUtil.formatDate2TimeStr(123456000l);
+        Assert.assertEquals("18:17:36", r);
+    }
+
+    @Test
+    public void formatDate2TimeStrDate() throws Exception {
+        String s = "2011-09-21 15:46:53";
+        Date d = DateTimeUtil.parseDateFromDateTimeStr(s);
+        String r = DateTimeUtil.formatDate2TimeStr(d);
+        Assert.assertEquals("15:46:53", r);
+    }
+
+    @Test
     public void formatDate2ShortStr() throws Exception {
     	String s = DateTimeUtil.formatDate2ShortStr();
     	System.out.println("s => " + s);
@@ -124,30 +145,23 @@ public class DateTimeUtilTest {
         Assert.assertEquals(s, DateTimeUtil.formatDate2ShortStr(d));
     }
 
-
     @Test
-    public void getWeekDay() throws Exception {
-        String s = "2011-07-11";
-        Date d = DateTimeUtil.parseDateFromDateStr(s);
-        int weekDay = DateTimeUtil.getWeekDay(d);
-        Assert.assertEquals(weekDay, 2);
+    public void getLastWeekDayInt() throws Exception {
+        Date h = new Date();
+        Date d = DateTimeUtil.getLastWeekDay(4);
+        System.out.println("lwd2 => " + d);
+        Assert.assertEquals(DateTimeUtil.getWeekDay(d), 4);
+        Assert.assertTrue(d.before(h));
     }
 
     @Test
-    public void getLastWeekDay() throws Exception {
+    public void getLastWeekDayDate() throws Exception {
         String s = "2011-07-11";
         Date d = DateTimeUtil.parseDateFromDateStr(s);
         d = DateTimeUtil.getLastWeekDay(d);
         System.out.println("lwd => " + d);
         Assert.assertEquals("2011-07-04", DateTimeUtil.formatDate2DateStr(d));
         Assert.assertEquals(DateTimeUtil.getDayofMonth(d), 4);
-    }
-
-    @Test
-    public void getLastWeekDay_2() throws Exception {
-    	Date d = DateTimeUtil.getLastWeekDay(4);
-    	System.out.println("lwd2 => " + d);
-    	Assert.assertEquals(DateTimeUtil.getWeekDay(d), 4);
     }
 
     @Test
@@ -170,6 +184,24 @@ public class DateTimeUtilTest {
     }
 
     @Test
+    public void getLastWeekDay_5() throws Exception {
+        String s = "2014-07-07 1:2:3";
+        Date d = DateTimeUtil.parseDateFromDateTimeStr(s);
+        d = DateTimeUtil.getLastWeekDay(2, d);
+        System.out.println("d => " + d);
+        Assert.assertEquals("2014-07-07", DateTimeUtil.formatDate2DateStr(d));
+    }
+
+    @Test
+    public void getLastWeekDay_6() throws Exception {
+        String s = "2014-07-07";
+        Date d = DateTimeUtil.parseDateFromDateStr(s);
+        d = DateTimeUtil.getLastWeekDay(2, d);
+        System.out.println("d => " + d);
+        Assert.assertEquals("2014-06-30", DateTimeUtil.formatDate2DateStr(d));
+    }
+
+    @Test
     public void getYesterday() throws Exception {
         Date d = DateTimeUtil.getYesterday();
         int wday1 = DateTimeUtil.getWeekDay(d);
@@ -178,47 +210,6 @@ public class DateTimeUtilTest {
         	wday2 += 7;
         }
         Assert.assertEquals(1, Math.abs(wday2 - wday1));
-    }
-
-    @Test
-    public void getLastHour() throws Exception {
-    	Date d = DateTimeUtil.getLastHour();
-    	int hour = DateTimeUtil.getHour(d);
-    	System.out.println("d => " + d);
-    	System.out.println("Hour => " + hour);
-    	int hour2 = DateTimeUtil.getHour(new Date());
-    	Assert.assertEquals(1, hour2 - hour);
-    }
-
-    @Test
-    public void getDayPart() throws Exception {
-        String s = "2011-09-21 15:46:53";
-        Date d = DateTimeUtil.parseDateFromDateTimeStr(s);
-        int i = DateTimeUtil.getHour(d);
-        Assert.assertEquals(i, 15);
-
-        i = DateTimeUtil.getMinute(d);
-        Assert.assertEquals(i, 46);
-
-        i = DateTimeUtil.getWeekDay(d);
-        Assert.assertEquals(i, 4);
-
-        i = DateTimeUtil.getDayofMonth(d);
-        Assert.assertEquals(i, 21);
-
-        i = DateTimeUtil.getMonth(d);
-        Assert.assertEquals(i, 8);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void testGetLastWeekDay() throws Exception {
-        new DateTimeUtil() {};
-        DateTimeUtil.getLastWeekDay(null);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void testGetLastWeekDayEnd() throws Exception {
-        DateTimeUtil.getLastWeekDay(3, null);
     }
 
     @Test
@@ -238,23 +229,91 @@ public class DateTimeUtilTest {
     }
 
     @Test
-    public void testFormatDate2ShortStr() throws Exception {
-        String r = DateTimeUtil.formatDate2TimeStr();
-        Assert.assertEquals(8, r.length());
+    public void getLastHour() throws Exception {
+        Date d = DateTimeUtil.getLastHour();
+        int hour = DateTimeUtil.getHour(d);
+        System.out.println("d => " + d);
+        System.out.println("Hour => " + hour);
+        int hour2 = DateTimeUtil.getHour(new Date());
+        Assert.assertEquals(1, hour2 - hour);
     }
 
+    // -----------------------------------------------------------------------
+    // Test date part
+    // -----------------------------------------------------------------------
+
     @Test
-    public void testFormatDate2ShortStrDate() throws Exception {
+    public void getDayPart() throws Exception {
         String s = "2011-09-21 15:46:53";
         Date d = DateTimeUtil.parseDateFromDateTimeStr(s);
-        String r = DateTimeUtil.formatDate2TimeStr(d);
-        Assert.assertEquals("15:46:53", r);
+        int i = DateTimeUtil.getHour(d);
+        Assert.assertEquals(i, 15);
+
+        i = DateTimeUtil.getMinute(d);
+        Assert.assertEquals(i, 46);
+
+        i = DateTimeUtil.getSecond(d);
+        Assert.assertEquals(i, 53);
+
+        i = DateTimeUtil.getWeekDay(d);
+        Assert.assertEquals(i, 4);
+
+        i = DateTimeUtil.getDayofMonth(d);
+        Assert.assertEquals(i, 21);
+
+        i = DateTimeUtil.getMonth(d);
+        Assert.assertEquals(i, 8);
     }
 
     @Test
-    public void testFormatDate2ShortStrLong() throws Exception {
-        String r = DateTimeUtil.formatDate2TimeStr(123456000l);
-        Assert.assertEquals("18:17:36", r);
+    public void getDayPart_2() throws Exception {
+        String s = "2014-07-15 10:19:52";
+        Date d = DateTimeUtil.parseDateFromDateTimeStr(s);
+        int i = DateTimeUtil.getHour(d);
+        Assert.assertEquals(i, 10);
+
+        i = DateTimeUtil.getMinute(d);
+        Assert.assertEquals(i, 19);
+
+        i = DateTimeUtil.getSecond(d);
+        Assert.assertEquals(i, 52);
+
+        i = DateTimeUtil.getWeekDay(d);
+        Assert.assertEquals(i, 3);
+
+        i = DateTimeUtil.getDayofMonth(d);
+        Assert.assertEquals(i, 15);
+
+        i = DateTimeUtil.getMonth(d);
+        Assert.assertEquals(i, 6);
+
+        i = DateTimeUtil.getYear(d);
+        Assert.assertEquals(i, 2014);
+    }
+
+
+    @Test
+    public void getWeekDay() throws Exception {
+        String s = "2011-07-11";
+        Date d = DateTimeUtil.parseDateFromDateStr(s);
+        int weekDay = DateTimeUtil.getWeekDay(d);
+        Assert.assertEquals(weekDay, 2);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetLastWeekDay() throws Exception {
+        new DateTimeUtil() {};
+        DateTimeUtil.getLastWeekDay(null);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetLastWeekDayEnd() throws Exception {
+        DateTimeUtil.getLastWeekDay(3, null);
+    }
+
+    @Test
+    public void testGetTimeZone() throws Exception {
+        Assert.assertEquals(DateTimeUtil.getTimeZone(), DateTimeUtil.CN_TZ);
     }
 
 }
