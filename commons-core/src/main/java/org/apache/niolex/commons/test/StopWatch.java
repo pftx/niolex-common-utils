@@ -166,7 +166,7 @@ public class StopWatch {
 			    list.add(i);
 			    list.add(l);
 				if (i == distributions.length - 1) {
-				    list.add("    ~∞");
+				    list.add("    ~");
 				} else {
 				    list.add(r);
 				}
