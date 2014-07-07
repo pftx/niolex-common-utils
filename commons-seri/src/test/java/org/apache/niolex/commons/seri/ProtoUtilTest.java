@@ -17,25 +17,19 @@
  */
 package org.apache.niolex.commons.seri;
 
-import static org.apache.niolex.commons.seri.ProtoUtil.parseDelimitedOne;
-import static org.apache.niolex.commons.seri.ProtoUtil.parseMulti;
-import static org.apache.niolex.commons.seri.ProtoUtil.parseOne;
-import static org.apache.niolex.commons.seri.ProtoUtil.seriDelimitedOne;
-import static org.apache.niolex.commons.seri.ProtoUtil.seriMulti;
-import static org.apache.niolex.commons.seri.ProtoUtil.seriOne;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PipedOutputStream;
-import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.niolex.commons.seri.PersonProtos.Person;
-import org.apache.niolex.commons.seri.PersonProtos.Person.PhoneNumber;
-import org.apache.niolex.commons.seri.PersonProtos.Person.PhoneType;
+import org.apache.niolex.commons.seri.Proto.Person;
+import org.apache.niolex.commons.seri.Proto.PhoneNumber;
+import org.apache.niolex.commons.seri.Proto.PhoneType;
+import org.apache.niolex.commons.test.Performance;
+import org.apache.niolex.commons.util.MathUtil;
 import org.junit.Test;
 
 /**
@@ -43,36 +37,76 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-8-7
  */
-public class ProtoUtilTest {
+public class ProtoUtilTest extends ProtoUtil {
+
+    int i = MathUtil.randInt(9999);
+    Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
+            .setName("Niolex [" + i + "]")
+            .addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
+            .build();
+
+    byte[] single_p_data = p.toByteArray();
+
+    @Test
+    public void testSetUseFasterAccess() throws Exception {
+        System.out.print("Slower ");
+        setUseFasterAccess(false);
+        clearMethodsCache();
+        Performance pf = new Performance(3000, 100) {
+
+            @Override
+            protected void run() {
+                Person e = parseOne(single_p_data, Person.class);
+                assertEquals(e.getId(), 45 + i);
+            }
+        };
+        pf.start();
+        System.out.print("Faster ");
+        setUseFasterAccess(true);
+        clearMethodsCache();
+        pf = new Performance(3000, 100) {
+
+            @Override
+            protected void run() {
+                Person e = parseOne(single_p_data, Person.class);
+                assertEquals(e.getId(), 45 + i);
+            }
+        };
+        pf.start();
+    }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#parseOne(byte[], java.lang.reflect.Type)}.
 	 */
 	@Test
 	public void testParseOne() {
-		ProtoUtil pu = new ProtoUtil();
-		int i = 2345;
-		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
-				.setName("Niolex [" + i + "]")
-				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
-				.build();
 		byte[] ret = p.toByteArray();
-		@SuppressWarnings("static-access")
-		byte[] tar = pu.seriOne(p);
+		byte[] tar = seriOne(p);
 		assertArrayEquals(ret, tar);
 		Person p2 = (Person)parseOne(tar, Person.class);
 		assertEquals(p2.getEmail(), "kjdfjkdf" + i + "@xxx.com");
 		assertEquals(p2.getId(), 45 + i);
-		System.out.println("Tar.size " + tar.length);
+		assertEquals(p2.getName(), "Niolex [" + i + "]");
+		System.out.println("single.Tar.size " + tar.length);
 		Person p3 = (Person)parseOne(tar, Person.class);
 		assertEquals(p, p3);
 	}
+
+    @Test(expected=SeriException.class)
+    public void testParseDelimitedOne() throws Exception {
+        setUseFasterAccess(true);
+        clearMethodsCache();
+        ByteArrayInputStream binput = new ByteArrayInputStream(single_p_data);
+        parseDelimitedOne(binput, Person.class);
+    }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#parseMulti(byte[], java.lang.reflect.Type[])}.
 	 */
 	@Test
 	public void testParseMulti() {
+	    setUseFasterAccess(false);
+        clearMethodsCache();
 		int i = 2345;
 		Person p1 = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
 				.setName("Niolex [" + i + "]")
@@ -89,89 +123,50 @@ public class ProtoUtilTest {
 				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
 				.build();
 		byte[] tar = seriMulti(new Object[] {p1, p2, p3});
-		System.out.println("Tar.size " + tar.length);
-		Object[] r = parseMulti(tar, new Type[] {Person.class, Person.class, Person.class});
+		System.out.println("multi.Tar.size " + tar.length);
+		Object[] r = parseMulti(tar, new Class<?>[] {Person.class, Person.class, Person.class});
 		assertEquals(r[0], p1);
 		assertEquals(r[1], p2);
 		assertEquals(r[2], p3);
 		assertEquals(((Person)r[1]).getId(), 45 + 6967);
 	}
 
+	@Test
+	public void testSeriOne() {
+	    byte[] ret = seriOne(p);
+	    assertArrayEquals(ret, single_p_data);
+	}
+
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#seriOne(java.lang.Object)}.
 	 */
 	@Test(expected=SeriException.class)
-	public void testSeriOne() {
+	public void testSeriOneBad() {
 		seriOne("Not yet implemented");
 	}
 
-	@Test(expected=SeriException.class)
-	public void thisIsGood() {
-		int i = 2345;
-		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
-				.setName("Niolex [" + i + "]")
-				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
-				.build();
-		byte[] ret = p.toByteArray();
-		Set<String> set = new HashSet<String>();
-		parseOne(ret, set.getClass().getGenericSuperclass());
-	}
+
+    @Test(expected=SeriException.class)
+    public void testSeriDelimitedOneBadClass() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(4096);
+        seriDelimitedOne("This is good.", out);
+    }
+
+    @Test(expected=SeriException.class)
+    public void testSeriDelimitedOneBadStream() throws Exception {
+        PipedOutputStream oo = new PipedOutputStream();
+        seriDelimitedOne(p, oo);
+    }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#seriMulti(java.lang.Object[])}.
 	 */
 	@Test(expected=SeriException.class)
 	public void testSeriMulti() {
-		int i = 2345;
-		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
-				.setName("Niolex [" + i + "]")
-				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
-				.build();
-		byte[] ret = p.toByteArray();
+	    setUseFasterAccess(true);
+        clearMethodsCache();
 		Set<String> set = new HashSet<String>();
-		parseOne(ret, set.getClass());
-	}
-
-	@Test(expected=SeriException.class)
-	public void testParseDelimitedOne() throws Exception {
-		int i = 2345;
-		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
-				.setName("Niolex [" + i + "]")
-				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
-				.build();
-		byte[] ret = p.toByteArray();
-		ByteArrayInputStream binput = new ByteArrayInputStream(ret);
-		Set<String> set = new HashSet<String>();
-		parseDelimitedOne(binput, set.getClass().getGenericSuperclass());
-	}
-
-	@Test(expected=SeriException.class)
-	public void testParseDelimitedOne2() throws Exception {
-		int i = 2345;
-		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
-				.setName("Niolex [" + i + "]")
-				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
-				.build();
-		byte[] ret = p.toByteArray();
-		ByteArrayInputStream binput = new ByteArrayInputStream(ret);
-		parseDelimitedOne(binput, Person.class);
-	}
-
-	@Test(expected=SeriException.class)
-	public void testSeriDelimitedOne() throws Exception {
-	    ByteArrayOutputStream out = new ByteArrayOutputStream(4096);
-		seriDelimitedOne("This is good.", out);
-	}
-
-	@Test(expected=SeriException.class)
-	public void testSeriDelimitedOne2() throws Exception {
-		int i = 2345;
-		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
-				.setName("Niolex [" + i + "]")
-				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
-				.build();
-		PipedOutputStream oo = new PipedOutputStream();
-		seriDelimitedOne(p, oo);
+		seriMulti(new Object[] {p, p, set});
 	}
 
 }

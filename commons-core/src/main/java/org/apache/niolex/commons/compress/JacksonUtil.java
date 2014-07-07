@@ -36,6 +36,7 @@ import org.codehaus.jackson.type.TypeReference;
  * @version 1.0.0, $Date: 2011-3-18$
  */
 public abstract class JacksonUtil {
+
     // can reuse, share globally
     private static final ObjectMapper mapper;
 
@@ -49,25 +50,27 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Get the internal Json Factory this Object Mapper is using.
-     * @return the internal factory
+     * Get the Json Factory the ObjectMapper inside this class is using.
+     *
+     * @return the internal json factory
      */
     public static final JsonFactory getJsonFactory() {
     	return mapper.getJsonFactory();
     }
 
     /**
-     * Get the internal Type Factory this Object Mapper is using.
-     * @return the internal factory
+     * Get the Type Factory the ObjectMapper inside this class is using.
+     *
+     * @return the internal type factory
      */
     public static final TypeFactory getTypeFactory() {
         return mapper.getTypeFactory();
     }
 
     /**
-     * Convert Object to binary
+     * Serialize the specified Object into binary form.
      *
-     * @param o the object need to serialization
+     * @param o the object needs to be serialized
      * @return the binary array
      * @throws IOException
      */
@@ -76,7 +79,7 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Convert binary to Object
+     * Convert the binary data into the original Object.
      *
      * @param bin the binary array data
      * @param valueType the Java class type
@@ -88,7 +91,7 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Convert binary to Object
+     * Convert the binary data into the original Object.
      *
      * @param bin the binary array data
      * @param valueType the Java class type
@@ -101,7 +104,7 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Convert binary to Object
+     * Convert the binary data into the original Object.
      *
      * @param bin the binary array data
      * @param valueType the Java class type
@@ -114,8 +117,9 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Convert Object to String
-     * @param o
+     * Serialize the specified Object into string form.
+     *
+     * @param o the object needs to be serialized
      * @return the string represents the object
      * @throws IOException
      */
@@ -124,9 +128,10 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Convert String to Object
-     * @param s
-     * @param valueType
+     * Convert the string data into the original Object.
+     *
+     * @param s the string data
+     * @param valueType the Java class type
      * @return the object
      * @throws IOException
      */
@@ -135,9 +140,10 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Convert String to Object
-     * @param s
-     * @param valueType
+     * Convert the string data into the original Object.
+     *
+     * @param s the string data
+     * @param valueType the Java class type
      * @return the object
      * @throws IOException
      */
@@ -147,9 +153,10 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Convert String to Object
-     * @param s
-     * @param valueType
+     * Convert the string data into the original Object.
+     *
+     * @param s the string data
+     * @param valueType the Java class type
      * @return the object
      * @throws IOException
      */
@@ -159,9 +166,10 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Write object json representation to the OutputStream
-     * @param out
-     * @param value
+     * Write object json representation to the specified output stream.
+     *
+     * @param out the output stream used to write the output
+     * @param value the object to be written
      * @throws IOException
      */
     public static final void writeObj(OutputStream out, Object value) throws IOException {
@@ -169,9 +177,10 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Read object from the InputStream
-     * @param in
-     * @param valueType
+     * Read object from the specified input stream.
+     *
+     * @param in the input stream to read data from
+     * @param valueType the Java class type
      * @return the object
      * @throws IOException
      */
@@ -180,9 +189,10 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Read object from the InputStream
-     * @param in
-     * @param valueType
+     * Read object from the specified input stream.
+     *
+     * @param in the input stream to read data from
+     * @param valueType the Java class type
      * @return the object
      * @throws IOException
      */
@@ -192,9 +202,10 @@ public abstract class JacksonUtil {
     }
 
     /**
-     * Read object from the InputStream
-     * @param in
-     * @param valueType
+     * Read object from the specified input stream.
+     *
+     * @param in the input stream to read data from
+     * @param valueType the Java class type
      * @return the object
      * @throws IOException
      */

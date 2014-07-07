@@ -25,6 +25,7 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.smile.SmileFactory;
 import org.codehaus.jackson.smile.SmileGenerator;
 import org.codehaus.jackson.smile.SmileParser;
@@ -38,6 +39,7 @@ import org.codehaus.jackson.type.TypeReference;
  * @version 1.0.0, $Date: 2011-3-18$
  */
 public abstract class SmileUtil {
+
     // can reuse, share globally
     private static final ObjectMapper mapper;
 
@@ -55,18 +57,27 @@ public abstract class SmileUtil {
 
 
     /**
-     * Get the internal Json Factory this Object Mapper is using.
+     * Get the Json Factory the ObjectMapper inside this class is using.
      *
-     * @return the internal Json Factory
+     * @return the internal json factory
      */
     public static final JsonFactory getJsonFactory() {
     	return mapper.getJsonFactory();
     }
 
     /**
-     * Convert Object to binary
+     * Get the Type Factory the ObjectMapper inside this class is using.
      *
-     * @param o the object need to serialization
+     * @return the internal type factory
+     */
+    public static final TypeFactory getTypeFactory() {
+        return mapper.getTypeFactory();
+    }
+
+    /**
+     * Serialize the specified Object into binary form.
+     *
+     * @param o the object needs to be serialized
      * @return the binary array
      * @throws IOException
      */
@@ -75,7 +86,7 @@ public abstract class SmileUtil {
     }
 
     /**
-     * Convert binary to Object
+     * Convert the binary data into the original Object.
      *
      * @param bin the binary array data
      * @param valueType the Java class type
@@ -87,7 +98,7 @@ public abstract class SmileUtil {
     }
 
     /**
-     * Convert binary to Object
+     * Convert the binary data into the original Object.
      *
      * @param bin the binary array data
      * @param valueType the Java class type
@@ -100,7 +111,7 @@ public abstract class SmileUtil {
     }
 
     /**
-     * Convert binary to Object
+     * Convert the binary data into the original Object.
      *
      * @param bin the binary array data
      * @param valueType the Java class type
@@ -113,10 +124,10 @@ public abstract class SmileUtil {
     }
 
     /**
-     * Write object smile representation to the OutputStream
+     * Write object smile representation to the specified output stream.
      *
-     * @param out the output stream to write the output
-     * @param value the java bean need to serialize
+     * @param out the output stream used to write the output
+     * @param value the object to be written
      * @throws IOException
      */
     public static final void writeObj(OutputStream out, Object value) throws IOException {
@@ -124,7 +135,7 @@ public abstract class SmileUtil {
     }
 
     /**
-     * Read object from the InputStream
+     * Read object from the specified input stream.
      *
      * @param in the input stream to read data from
      * @param valueType the Java class type
@@ -136,7 +147,7 @@ public abstract class SmileUtil {
     }
 
     /**
-     * Read object from the InputStream
+     * Read object from the specified input stream.
      *
      * @param in the input stream to read data from
      * @param valueType the Java class type
@@ -149,7 +160,7 @@ public abstract class SmileUtil {
     }
 
     /**
-     * Read object from the InputStream
+     * Read object from the specified input stream.
      *
      * @param in the input stream to read data from
      * @param valueType the Java class type

@@ -43,7 +43,7 @@ public class ProtoStuffUtil {
 	/**
 	 * Serialize one object using protocol stuff.
 	 *
-	 * @param o
+	 * @param o the object to be serialized
 	 * @return the byte array
 	 */
 	@SuppressWarnings("unchecked")
@@ -56,17 +56,17 @@ public class ProtoStuffUtil {
 	/**
 	 * Parse one object of type <code>type</code> from the byte array.
 	 *
-	 * @param data
-	 * @param type
+	 * @param data the object represented in wire format
+	 * @param type the object type
 	 * @return the object
 	 */
 	@SuppressWarnings("unchecked")
     public static final <T> T parseOne(byte[] data, Type type) {
-		// Case 1. Generic Type, We get the Raw Type.
+		// Step 1. Generic Type, We get the Raw Type.
 		if (type instanceof ParameterizedType) {
 			type = ((ParameterizedType)(type)).getRawType();
 		}
-		// Case 2. Let's deal with it.
+		// Step 2. Let's deal with it.
 		if (type instanceof Class<?>) {
 		    Schema<T> schema = RuntimeSchema.getSchema((Class<T>) type);
 		    T ret = schema.newMessage();
@@ -79,7 +79,7 @@ public class ProtoStuffUtil {
 	/**
 	 * Serialize multiple objects using protocol stuff into byte array.
 	 *
-	 * @param params
+	 * @param params the objects to be serialized
 	 * @return the byte array
 	 */
 	@SuppressWarnings("unchecked")
@@ -102,22 +102,22 @@ public class ProtoStuffUtil {
 	/**
 	 * Parse multiple objects of the specified type array from the byte array.
 	 *
-	 * @param data
-	 * @param generic
-	 * @return the object array
+	 * @param data the objects represented in wire format
+	 * @param types the objects types array
+	 * @return the objects array
 	 */
 	@SuppressWarnings("unchecked")
-    public static final Object[] parseMulti(byte[] data, Type[] generic) {
-		Object[] r = new Object[generic.length];
+    public static final Object[] parseMulti(byte[] data, Type[] types) {
+		Object[] r = new Object[types.length];
 		ByteArrayInputStream in = new ByteArrayInputStream(data);
 		try {
-			for (int i = 0; i < generic.length; ++i) {
-				Type type = generic[i];
-				// Case 1. Generic Type, We get the Raw Type.
+			for (int i = 0; i < types.length; ++i) {
+				Type type = types[i];
+				// Step 1. Generic Type, We get the Raw Type.
 				if (type instanceof ParameterizedType) {
 					type = ((ParameterizedType)(type)).getRawType();
 				}
-				// Case 2. Let's deal with it.
+				// Step 2. Let's deal with it.
 			    Schema<Object> schema = RuntimeSchema.getSchema((Class<Object>) type);
 			    Object ret = schema.newMessage();
 			    ProtostuffIOUtil.mergeDelimitedFrom(in, ret, schema);

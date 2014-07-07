@@ -17,10 +17,6 @@
  */
 package org.apache.niolex.commons.seri;
 
-import static org.apache.niolex.commons.seri.ProtoStuffUtil.parseMulti;
-import static org.apache.niolex.commons.seri.ProtoStuffUtil.parseOne;
-import static org.apache.niolex.commons.seri.ProtoStuffUtil.seriMulti;
-import static org.apache.niolex.commons.seri.ProtoStuffUtil.seriOne;
 import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Method;
@@ -34,13 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.niolex.commons.bean.Pair;
 import org.apache.niolex.commons.reflect.MethodUtil;
-import org.apache.niolex.commons.seri.PersonProtos.Person;
-import org.apache.niolex.commons.seri.PersonProtos.Person.PhoneNumber;
-import org.apache.niolex.commons.seri.PersonProtos.Person.PhoneType;
+import org.apache.niolex.commons.seri.Proto.Person;
+import org.apache.niolex.commons.seri.Proto.PhoneNumber;
+import org.apache.niolex.commons.seri.Proto.PhoneType;
 import org.apache.niolex.commons.test.Benchmark;
 import org.apache.niolex.commons.test.Benchmark.Bean;
-import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
 
 /**
@@ -48,17 +44,15 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-8-7
  */
-public class ProtoStuffUtilTest {
+public class ProtoStuffUtilTest extends ProtoStuffUtil {
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seri.ProtoStuffUtil#parseOne(byte[], java.lang.reflect.Type)}.
 	 */
 	@Test
 	public void testParseOne() {
-		ProtoStuffUtil pu = new ProtoStuffUtil();
 		Bean t = new Bean(3, "Qute", 12212, new Date(1338008328709L));
-		@SuppressWarnings("static-access")
-		byte[] tar = pu.seriOne(t);
+		byte[] tar = seriOne(t);
 		Bean p2 = (Bean)parseOne(tar, Bean.class);
 		assertEquals(p2.getBirth(), new Date(1338008328709L));
 		assertEquals(p2.getId(), 12212);
