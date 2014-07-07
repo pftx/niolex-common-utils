@@ -100,7 +100,7 @@ public class BeanServerTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.remote.BeanServer#putIfAbsent(java.lang.String, java.lang.Object)}.
+	 * Test method for {@link org.apache.niolex.commons.remote.BeanServer#putIfAbsent(String, Object)}.
 	 */
 	@Test
 	public void testPutIfAbsent() {
@@ -117,38 +117,11 @@ public class BeanServerTest {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.remote.BeanServer#replace(java.lang.String, java.lang.Object, java.lang.Object)}.
+	 * Test method for {@link org.apache.niolex.commons.remote.BeanServer#replace(String, Object, Object)}.
 	 */
 	@Test
 	public void testReplace() {
 		beanS.replace("fail", "Not yet implemented", "New value");
-	}
-
-	/**
-	 * Test method for {@link org.apache.niolex.commons.remote.BeanServer#start()}.
-	 * @throws InterruptedException
-	 */
-	public static void main(String[] args) throws InterruptedException {
-		ConnectionWorker.setAuthInfo("abcD");
-		BeanServerTest test = new BeanServerTest();
-		test.beanS.putIfAbsent("bench", Benchmark.makeBenchmark());
-		test.beanS.putIfAbsent("group", test.new A());
-		test.beanS.putIfAbsent("system", SystemInfo.getInstance());
-		final Monitor m = new Monitor(10);
-		test.beanS.putIfAbsent("cdc", m);
-		Runme rme = new Runme() {
-
-			@Override
-			public void runMe() {
-				m.addValue("test.me", MockUtil.randInt(200));
-			}
-
-		};
-		rme.setSleepInterval(1000);
-		rme.start();
-		test.beanS.start();
-		Thread.sleep(3000000);
-		test.beanS.stop();
 	}
 
 	/**
@@ -195,6 +168,33 @@ public class BeanServerTest {
     @AnnotationOrderedRunner.Order(3)
     public void testStop() throws Exception {
         beanS.stop();
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.commons.remote.BeanServer#start()}.
+     * @throws InterruptedException
+     */
+    public static void main(String[] args) throws InterruptedException {
+        ConnectionWorker.setAuthInfo("abcD");
+        BeanServerTest test = new BeanServerTest();
+        test.beanS.putIfAbsent("bench", Benchmark.makeBenchmark());
+        test.beanS.putIfAbsent("group", test.new A());
+        test.beanS.putIfAbsent("system", SystemInfo.getInstance());
+        final Monitor m = new Monitor(10);
+        test.beanS.putIfAbsent("cdc", m);
+        Runme rme = new Runme() {
+
+            @Override
+            public void runMe() {
+                m.addValue("test.me", MockUtil.randInt(200));
+            }
+
+        };
+        rme.setSleepInterval(1000);
+        rme.start();
+        test.beanS.start();
+        Thread.sleep(3000000);
+        test.beanS.stop();
     }
 
 }

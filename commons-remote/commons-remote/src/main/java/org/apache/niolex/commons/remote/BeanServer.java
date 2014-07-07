@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class will export beans to remote telnet, you can get, list and set properties.<br>
- * We provided invoke directive for execute methods also.
+ * We provided invoke directive for execute methods also.<br>
+ * We will accept at most 10 concurrent connections.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.1
@@ -52,7 +53,8 @@ public class BeanServer implements Runnable {
 	private int port = 8597;
 
 	/**
-     * If the specified key is not already associated with a value, associate it with the given value. This is equivalent to
+     * If the specified key is not already associated with a value, associate it with the given value.
+     * This is equivalent to:
      * <pre>
      *   if (!map.containsKey(key))
      *       return map.put(key, value);
@@ -72,7 +74,8 @@ public class BeanServer implements Runnable {
 	}
 
 	/**
-	 * Removes the key (and its corresponding value) from this map. This method does nothing if the key is not in the map.
+	 * Removes the key (and its corresponding value) from this map. This method does nothing if the key
+	 * is not in the map.
 	 *
 	 * @param key key with which the specified value is associated
 	 * @return the previous value associated with key, or null if there was no mapping for key
@@ -125,7 +128,7 @@ public class BeanServer implements Runnable {
 
 	/**
 	 * Stop this bean server.
-	 * This method will return immediately, but the server will continue be up for a few seconds.
+	 * This method will return immediately, but the server will continue to be up for a few seconds.
 	 */
 	public void stop() {
 		isListening = false;
@@ -165,7 +168,7 @@ public class BeanServer implements Runnable {
 	/**
 	 * Set the port for Bean Server to listen to.
 	 *
-	 * @param port
+	 * @param port the new port number
 	 */
 	public void setPort(int port) {
 		this.port = port;

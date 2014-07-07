@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class process client commands and return results.
+ * This class wraps the connections, process client commands and return results.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -52,11 +52,11 @@ public class ConnectionWorker implements Runnable {
 
 	// Add all executers here.
 	static {
-		COMMAND_MAP.put("get", new Executer.Getter());
-		COMMAND_MAP.put("list", new Executer.Lister());
-		COMMAND_MAP.put("set", new Executer.Setter());
-		COMMAND_MAP.put("invoke", new Executer.Invoker());
-		COMMAND_MAP.put("mon", new Executer.InvoMonitor());
+		addCommand("get", new Executer.Getter());
+		addCommand("list", new Executer.Lister());
+		addCommand("set", new Executer.Setter());
+		addCommand("invoke", new Executer.Invoker());
+		addCommand("mon", new Executer.InvoMonitor());
 	}
 
 	/**
@@ -89,23 +89,29 @@ public class ConnectionWorker implements Runnable {
 	    AUTH_INFO = s;
 	}
 
-	// Scan input stream.
+	// Scan the input stream.
 	private final Scanner scan;
+	// Write result to this output.
 	private final OutputStream out;
+	// The socket connection.
 	private final Socket sock;
+	// Current connection number.
 	private final AtomicInteger connNum;
+	// The bean map.
 	private final ConcurrentHashMap<String, Object> beanMap;
-	private boolean isAuth = false;
+	// Had we authenticated this connection?
+	private boolean hasAuthed = false;
 
 	/**
-	 * The main Constructor.
+	 * The main Constructor, used to instantiate connection worker.
 	 *
 	 * @param socket the socket to work with
 	 * @param map the global bean map
 	 * @param connectionNumber the connection number counter
 	 * @throws IOException
 	 */
-	public ConnectionWorker(Socket socket, ConcurrentHashMap<String, Object> map, AtomicInteger connectionNumber) throws IOException {
+	public ConnectionWorker(Socket socket, ConcurrentHashMap<String, Object> map, AtomicInteger connectionNumber)
+	        throws IOException {
 		scan = new Scanner(socket.getInputStream(), "UTF-8");
 		out = socket.getOutputStream();
 		sock = socket;
@@ -126,6 +132,7 @@ public class ConnectionWorker implements Runnable {
 		try {
 			execute();
 		} catch (Exception e) {
+		    LOG.debug("Error occurred when execute commands.", e);
 		} finally {
 			scan.close();
 			SystemUtil.close(out);
@@ -150,41 +157,11 @@ public class ConnectionWorker implements Runnable {
 				continue;
 			}
 			final String comm = args[0].toLowerCase();
-			// Change End Of Line
-			if (comm.startsWith("win")) {
-				ENDL_HOLDER.set("\r\n");
-				writeAndFlush("End Line Changed.");
-				continue;
-			}
-			if (comm.startsWith("lin")) {
-				ENDL_HOLDER.set("\n");
-				writeAndFlush("End Line Changed.");
-				continue;
-			}
-			// Quit
-			if ("quit".equals(comm) || "exit".equals(comm)) {
-				writeAndFlush("Goodbye.");
-				break;
-			}
-			// Auth
-			if ("auth".equals(comm)) {
-				if (AUTH_INFO == null || (args.length == 2 && AUTH_INFO.equals(args[1]))) {
-					writeAndFlush("Authenticate Success.");
-					isAuth = true;
-				} else {
-					writeAndFlush("Authenticate Failed.");
-				}
-				continue;
-			}
-			if (AUTH_INFO != null && !isAuth) {
-				writeAndFlush("Please authenticate.");
-				continue;
-			}
-			// Invalid command.
-			if (!COMMAND_MAP.containsKey(comm) || args.length < 2 || args[1].length() == 0) {
-				writeAndFlush("Invalid Command.");
-				continue;
-			}
+
+			Boolean b = commonProcess(comm, args);
+			if (b == null) break;
+			if (b == Boolean.TRUE) continue;
+
 			// Parse tree.
 			Path path = Path.parsePath(args[1]);
 			if (path.getType() == Type.INVALID) {
@@ -294,6 +271,54 @@ public class ConnectionWorker implements Runnable {
 			ex.execute(parent, out, args);
 		}
 
+	}
+
+	/**
+	 * Process the common commands.
+	 *
+	 * @param comm the command name
+	 * @param args the command arguments
+	 * @return TRUE if command processed, FALSE if not, null if need exit
+	 * @throws IOException
+	 */
+	protected Boolean commonProcess(String comm, String[] args) throws IOException {
+	    // Change End Of Line
+        if (comm.startsWith("win")) {
+            ENDL_HOLDER.set("\r\n");
+            writeAndFlush("End Line Changed.");
+            return Boolean.TRUE;
+        }
+        if (comm.startsWith("lin")) {
+            ENDL_HOLDER.set("\n");
+            writeAndFlush("End Line Changed.");
+            return Boolean.TRUE;
+        }
+        // Quit
+        if ("quit".equals(comm) || "exit".equals(comm)) {
+            writeAndFlush("Goodbye.");
+            return null;
+        }
+        // Auth
+        if ("auth".equals(comm)) {
+            if (AUTH_INFO == null || (args.length == 2 && AUTH_INFO.equals(args[1]))) {
+                writeAndFlush("Authenticate Success.");
+                hasAuthed = true;
+            } else {
+                hasAuthed = false;
+                writeAndFlush("Authenticate Failed.");
+            }
+            return Boolean.TRUE;
+        }
+        if (AUTH_INFO != null && !hasAuthed) {
+            writeAndFlush("Please authenticate.");
+            return Boolean.TRUE;
+        }
+        // Invalid command.
+        if (!COMMAND_MAP.containsKey(comm) || args.length < 2 || args[1].length() == 0) {
+            writeAndFlush("Invalid Command.");
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
 	}
 
 	/**

@@ -9,49 +9,22 @@
 		<relativePath></relativePath>
 	</parent>
 
-	<artifactId>commons-seri</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+	<artifactId>commons-remote</artifactId>
+	<version>1.1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>commons-seri</name>
+	<name>commons-remote</name>
 	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.niolex</groupId>
 			<artifactId>commons-core</artifactId>
 			<version>[2.0.0,3.0.0)</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-smile</artifactId>
-			<version>[1.9.0,2.0.0)</version>
-		</dependency>
-		<dependency>
-			<groupId>com.esotericsoftware.kryo</groupId>
-			<artifactId>kryo</artifactId>
-			<version>[2.17,3.0.0)</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>reflectasm</artifactId>
-					<groupId>com.esotericsoftware.reflectasm</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-			<version>2.5.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.dyuproject.protostuff</groupId>
-			<artifactId>protostuff-runtime</artifactId>
-			<version>1.0.8</version>
-		</dependency>
-		<dependency>
-			<groupId>com.dyuproject.protostuff</groupId>
-			<artifactId>protostuff-core</artifactId>
-			<version>1.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -72,5 +45,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 </project>
