@@ -92,6 +92,14 @@ public class ProtoUtilTest extends ProtoUtil {
 		assertEquals(p, p3);
 	}
 
+	/**
+     * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#parseOne(byte[], java.lang.reflect.Type)}.
+     */
+    @Test(expected=SeriException.class)
+    public void testParseOneError() {
+        parseOne(new byte[100], Person.class);
+    }
+
     @Test(expected=SeriException.class)
     public void testParseDelimitedOne() throws Exception {
         setUseFasterAccess(true);

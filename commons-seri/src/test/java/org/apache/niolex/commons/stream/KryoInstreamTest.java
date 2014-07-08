@@ -26,6 +26,7 @@ import java.util.Date;
 
 import org.apache.niolex.commons.test.Benchmark;
 import org.apache.niolex.commons.test.Benchmark.Bean;
+import org.apache.niolex.commons.util.DateTimeUtil;
 import org.junit.Test;
 
 /**
@@ -50,12 +51,35 @@ public class KryoInstreamTest {
 		ooo.close();
 		byte[] bs = bos.toByteArray();
 		System.out.println("L " + bs.length);
+		// ----------
 		KryoInstream iii = new KryoInstream(new ByteArrayInputStream(bs));
 		Benchmark cp = iii.readObject(Benchmark.class);
 		Bean t = iii.readObject(Bean.class);
 		System.out.println("I " + t.getId());
 		assertEquals(t.getBirth(), q.getBirth());
 		assertEquals(bench, cp);
+		iii.close();
 	}
+
+    @Test
+    public void testKryoInstreamInputStream() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        KryoOutstream ooo = new KryoOutstream(bos);
+        ooo.writeObject(123);
+        ooo.writeObject("Lex");
+        ooo.writeObject(DateTimeUtil.parseDateFromDateStr("2014-06-07"));
+        ooo.close();
+        byte[] bs = bos.toByteArray();
+        System.out.println("L " + bs.length);
+        // ----------
+        KryoInstream iii = new KryoInstream(new ByteArrayInputStream(bs));
+        Integer i = iii.readObject(Integer.class);
+        assertEquals(123, i.intValue());
+        String s = iii.readObject(String.class);
+        assertEquals("Lex", s);
+        Date d = iii.readObject(Date.class);
+        assertEquals("2014-06-07", DateTimeUtil.formatDate2DateStr(d));
+        iii.close();
+    }
 
 }

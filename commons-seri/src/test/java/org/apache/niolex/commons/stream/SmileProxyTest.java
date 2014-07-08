@@ -45,7 +45,7 @@ public class SmileProxyTest {
 	 * @throws JsonGenerationException
 	 */
 	@Test
-	public void testReadObjectClassOfT() throws Exception {
+	public void testReadObject() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Bean t = new Bean(3, "Qute", 12212, new Date(1338008328709L));
 		Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
@@ -61,5 +61,25 @@ public class SmileProxyTest {
 		assertEquals(q, s);
 		System.out.println("q => " + r.getLikely() + ", " + s.getLikely());
 	}
+
+    @Test
+    public void testSmileProxy() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeObj(out, "Lex");
+        writeObj(out, 2);
+        writeObj(out, 4);
+        writeObj(out, " Hello");
+        System.out.println("s => " + StringUtil.utf8ByteToStr(out.toByteArray()));
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        SmileProxy proxy = new SmileProxy(in);
+        String a = proxy.readObject(String.class);
+        assertEquals("Lex", a);
+        Integer b = proxy.readObject(Integer.class);
+        assertEquals(2, b.intValue());
+        b = proxy.readObject(Integer.class);
+        assertEquals(4, b.intValue());
+        String c = proxy.readObject(String.class);
+        assertEquals(" Hello", c);
+    }
 
 }

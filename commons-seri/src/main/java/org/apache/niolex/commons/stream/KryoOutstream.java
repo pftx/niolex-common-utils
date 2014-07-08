@@ -35,7 +35,7 @@ public class KryoOutstream {
 	private final Output outp;
 
 	/**
-	 * Create a simple kryo by this output stream.
+	 * Create a simple kryo to process this output stream.
 	 *
 	 * @param out the output stream
 	 */
@@ -44,7 +44,7 @@ public class KryoOutstream {
 	}
 
 	/**
-	 * Create a kryo outstream directly.
+	 * Create a kryo out stream with the specified Kryo directly.
 	 *
 	 * @param kryo the kryo instance
 	 * @param out the output stream
@@ -71,4 +71,5 @@ public class KryoOutstream {
 	public void close() {
 		outp.close();
 	}
+
 }

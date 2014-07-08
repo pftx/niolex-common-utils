@@ -45,7 +45,7 @@ public class JsonProxyTest {
 	 * @throws JsonGenerationException
 	 */
 	@Test
-	public void testReadObjectClassOfT() throws Exception {
+	public void testReadObject() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Bean t = new Bean(3, "Qute", 12212, new Date(1338008328709L));
 		Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));

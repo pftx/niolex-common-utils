@@ -26,8 +26,8 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.type.TypeReference;
 
 /**
- * This is the proxy to read multiple objects from one input stream.
- * Please use this class instead of {@link SmileUtil}
+ * This is the proxy for read multiple objects from one input stream.
+ * Please use this class instead of {@link SmileUtil} for this purpose.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -51,20 +51,20 @@ public class SmileProxy {
 	}
 
 	/**
-	 * Read an object from the input stream
+	 * Read an object from the input stream.
 	 *
-	 * @param clazz
+	 * @param clazz the object class
 	 * @return the object
 	 * @throws IOException
 	 */
 	public <T> T readObject(Class<T> clazz) throws IOException {
-		return (T)jp.readValueAs(clazz);
+		return jp.readValueAs(clazz);
 	}
 
 	/**
-	 * Read an object from the input stream
+	 * Read an object from the input stream.
 	 *
-	 * @param valueTypeRef
+	 * @param valueTypeRef the object type reference
 	 * @return the object
 	 * @throws IOException
 	 */

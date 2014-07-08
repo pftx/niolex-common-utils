@@ -35,7 +35,7 @@ public class KryoInstream {
 	private final Input inp;
 
 	/**
-	 * Create a simple kryo by this input stream.
+	 * Create a simple kryo to process this input stream.
 	 *
 	 * @param in the input stream
 	 */
@@ -44,7 +44,7 @@ public class KryoInstream {
 	}
 
 	/**
-	 * Create a kryo instream directly.
+	 * Create a kryo in stream with the specified Kryo directly.
 	 *
 	 * @param kryo the kryo instance
 	 * @param in the input stream
@@ -59,7 +59,7 @@ public class KryoInstream {
 	 * Read object from the internal stream, this method will not close the stream.
 	 * You can call it repeatedly.
 	 *
-	 * @param clazz
+	 * @param clazz the object class
 	 * @return the object
 	 */
 	public <T> T readObject(Class<T> clazz) {
@@ -72,4 +72,5 @@ public class KryoInstream {
 	public void close() {
 		inp.close();
 	}
+
 }

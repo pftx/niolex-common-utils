@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Date;
 
 import org.apache.niolex.commons.compress.JacksonUtil;
@@ -31,11 +32,8 @@ import org.apache.niolex.commons.stream.KryoOutstream;
 import org.apache.niolex.commons.stream.SmileProxy;
 import org.apache.niolex.commons.test.Benchmark;
 import org.apache.niolex.commons.test.Benchmark.Bean;
-import org.apache.niolex.commons.test.Benchmark.Group;
-import org.apache.niolex.commons.test.Performance;
+import org.apache.niolex.commons.test.MultiPerformance;
 import org.junit.Test;
-
-import com.esotericsoftware.kryo.Kryo;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
@@ -44,26 +42,24 @@ import com.esotericsoftware.kryo.Kryo;
  */
 public class PerfTest {
 
+    private static int threadsCount = 4;
 	private static int innerIteration = 100;
 	private static int outerIteration = 100;
 
-	class Kryoo extends Performance {
-		Kryo kryo = new Kryo();
+	abstract class MyPerformance extends MultiPerformance {
+
+        public MyPerformance() {
+            super(threadsCount, innerIteration, outerIteration);
+        }
+
+	}
+
+	class Kryoo extends MyPerformance {
 		Benchmark bench = Benchmark.makeBenchmark();
 		Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
 
-		/**
-		 * @param innerIteration
-		 * @param outerIteration
-		 */
 		public Kryoo() {
-			super(innerIteration, outerIteration);
-			System.out.print("Kryoo\t");
-			kryo.register(Benchmark.class, 10);
-			kryo.register(Group.class, 11);
-			kryo.register(Bean.class, 12);
-			kryo.setReferences(false);
-			kryo.setAutoReset(false);
+			System.out.print("Kryoo ");
 		}
 
 		/**
@@ -73,12 +69,12 @@ public class PerfTest {
 		@Override
 		protected void run() {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			KryoOutstream ooo = new KryoOutstream(kryo, bos);
+			KryoOutstream ooo = new KryoOutstream(bos);
 			ooo.writeObject(bench);
 			ooo.writeObject(q);
 			ooo.close();
 			byte[] bs = bos.toByteArray();
-			KryoInstream iii = new KryoInstream(kryo, new ByteArrayInputStream(bs));
+			KryoInstream iii = new KryoInstream(new ByteArrayInputStream(bs));
 			Benchmark cp = iii.readObject(Benchmark.class);
 			Bean t = iii.readObject(Bean.class);
 			assertTrue(t.getId() != 0);
@@ -87,7 +83,7 @@ public class PerfTest {
 		}
 	}
 
-	class Smile extends Performance {
+	class Smile extends MyPerformance {
 		Benchmark bench = Benchmark.makeBenchmark();
 		Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
 
@@ -96,8 +92,7 @@ public class PerfTest {
 		 * @param outerIteration
 		 */
 		public Smile() {
-			super(innerIteration, outerIteration);
-			System.out.print("Smile\t");
+			System.out.print("Smile ");
 		}
 
 		/**
@@ -123,7 +118,7 @@ public class PerfTest {
 		}
 	}
 
-	class Json extends Performance {
+	class Json extends MyPerformance {
 		Benchmark bench = Benchmark.makeBenchmark();
 		Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
 
@@ -132,8 +127,7 @@ public class PerfTest {
 		 * @param outerIteration
 		 */
 		public Json() {
-			super(innerIteration, outerIteration);
-			System.out.print("Json\t");
+			System.out.print("Json ");
 		}
 
 		/**
@@ -159,11 +153,36 @@ public class PerfTest {
 		}
 	}
 
+	class Stuff extends MyPerformance {
+	    Benchmark bench = Benchmark.makeBenchmark();
+	    Bean q = new Bean(674, "Another", 452723, new Date(5354482831545L));
+
+	    public Stuff() {
+	        System.out.print("Stuff ");
+	    }
+
+	    /**
+	     * Override super method
+	     * @see org.apache.niolex.commons.test.Performance#run()
+	     */
+	    @Override
+	    protected void run() {
+	        byte[] bs = ProtoStuffUtil.seriMulti(new Object[] {bench, q});
+	        Type[] types = new Type[] {Benchmark.class, Bean.class};
+	        Object[] back = ProtoStuffUtil.parseMulti(bs, types);
+	        Benchmark cp = (Benchmark) back[0];
+	        Bean t = (Bean) back[1];
+	        assertTrue(t.getId() == 452723);
+	        assertTrue(t.getBirth().getTime() == 5354482831545L);
+	        assertTrue(bench.equals(cp));
+	    }
+	}
+
 	@Test
-	public void test() {
-		new SmileUtil() {};
+	public void testPerf() {
 		new Kryoo().start();
 		new Smile().start();
 		new Json().start();
+		new Stuff().start();
 	}
 }

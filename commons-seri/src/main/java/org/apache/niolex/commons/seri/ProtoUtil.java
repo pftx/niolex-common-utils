@@ -28,7 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.niolex.commons.reflect.MethodUtil;
 import org.apache.niolex.commons.util.Const;
-import org.apache.niolex.commons.util.SystemUtil;
 
 import com.google.protobuf.MessageLite;
 
@@ -36,8 +35,8 @@ import com.google.protobuf.MessageLite;
  * Common Utility to do protocol buffer serialization.
  * <p>
  * We have a faster access mode, which will need the security rights to set accessible.
- * If your system can not grant this, define a system property "seri.slowaccess" or invoke
- * the method {@link #setUseFasterAccess(boolean)} with parameter "false" to disable it.
+ * If your system can not grant this, invoke the method {@link #setUseFasterAccess(boolean)}
+ * with parameter "false" to disable it.
  * </p>
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
@@ -53,7 +52,7 @@ public class ProtoUtil {
 	private static final ConcurrentHashMap<Type, Method> MUL_MAP = new ConcurrentHashMap<Type, Method>();
 	private static final int BUF_SIZE = 8 * Const.K;
 
-	private static boolean fasterAccess = !SystemUtil.defined("seri.slowaccess");
+	private static boolean fasterAccess = true;
 
 	/**
 	 * Set the faster access flag with this new value.

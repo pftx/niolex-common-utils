@@ -23,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
-import org.apache.niolex.commons.test.Benchmark;
+import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.test.Benchmark.Bean;
 import org.junit.Test;
 
@@ -44,20 +44,27 @@ public class KryoOutstreamTest {
 		Kryo kryo = new Kryo();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		KryoOutstream ooo = new KryoOutstream(kryo, bos);
+		One<Long> o = One.<Long>create(8743244964238596L);
+		Bean p = new Bean(324, "One", 8967, new Date(8743244964238596L));
 		Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
-		Benchmark bench = Benchmark.makeBenchmark();
-		ooo.writeObject(bench);
+		ooo.writeObject(o);
+		ooo.writeObject(p);
 		ooo.writeObject(q);
 		ooo.close();
 		byte[] bs = bos.toByteArray();
 		System.out.println("L " + bs.length);
+		// --------------------
 		KryoInstream iii = new KryoInstream(kryo, new ByteArrayInputStream(bs));
-		Benchmark cp = iii.readObject(Benchmark.class);
+		@SuppressWarnings("unchecked")
+        One<Long> r = (One<Long>)iii.readObject(One.class);
+		Bean s = iii.readObject(Bean.class);
 		Bean t = iii.readObject(Bean.class);
 		iii.close();
-		System.out.println("I " + t.getId());
+		assertEquals(8743244964238596L, r.a.longValue());
+		assertEquals(523212, t.getId());
 		assertEquals(t.getBirth(), q.getBirth());
-		assertEquals(bench, cp);
+		assertEquals(p, s);
+		assertEquals(q, t);
 	}
 
 }
