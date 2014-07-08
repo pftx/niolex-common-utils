@@ -15,9 +15,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.common.btrace;
+package btr;
 
 import static com.sun.btrace.BTraceUtils.*;
+
+import com.sun.btrace.annotations.BTrace;
 import com.sun.btrace.annotations.Kind;
 import com.sun.btrace.annotations.Location;
 import com.sun.btrace.annotations.OnMethod;
@@ -29,20 +31,23 @@ import com.sun.btrace.annotations.TLS;
  * @version 1.0.0
  * @since 2012-8-29
  */
+@BTrace
 public class TraceMethodExecuteTime {
 
 	@TLS
 	static long beginTime;
 
-	@OnMethod(clazz = "CaseObject", method = "execute")
+	@OnMethod(clazz = "org.apache.niolex.common.btrace.BtraceDemo", method = "inputHashCode")
 	public static void traceExecuteBegin() {
 		beginTime = timeMillis();
 	}
 
-	@OnMethod(clazz = "CaseObject", method = "execute",
+	@OnMethod(clazz = "org.apache.niolex.common.btrace.BtraceDemo", method = "inputHashCode",
 			location = @Location(Kind.RETURN))
-	public static void traceExecute(int sleepTime, @Return boolean result) {
-		println(strcat(strcat("CaseObject.execute time is:",
+	public static void traceExecute(String str, @Return int result) {
+		println(strcat(strcat("BtraceDemo.inputHashCode execution time is: ",
 				str(timeMillis() - beginTime)), "ms"));
+		println(strcat(strcat("Parameter: ", str), strcat(", result: ", str(result))));
 	}
+
 }

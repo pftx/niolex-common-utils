@@ -19,35 +19,64 @@ package btr;
 
 import static com.sun.btrace.BTraceUtils.*;
 
-import com.sun.btrace.annotations.Kind;
-import com.sun.btrace.annotations.Location;
-import com.sun.btrace.annotations.OnMethod;
-import com.sun.btrace.annotations.ProbeClassName;
-import com.sun.btrace.annotations.ProbeMethodName;
-import com.sun.btrace.annotations.Self;
-import com.sun.btrace.annotations.TargetMethodOrField;
+import org.apache.niolex.common.btrace.BtraceDemo;
+
+import com.sun.btrace.AnyType;
+import com.sun.btrace.annotations.*;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2012-8-28
  */
+@BTrace
 public class BtrDemo {
 
+    /**
+     * Track on all the calls to those methods without argument.
+     */
     @OnMethod(clazz="org.apache.niolex.common.btrace.BtraceDemo", method="/.*/",
             location=@Location(value=Kind.CALL, clazz="/.*/", method="/.*/"))
-	public static void m(@Self Object self, @TargetMethodOrField String method,
+	public static void methodCallOnArg(@Self Object self, @TargetMethodOrField String method,
 			@ProbeMethodName String probeMethod) {
 		// all calls to the methods with signature "()"
 		println(strcat(method, strcat(" was called in ", probeMethod)));
 	}
 
-	@OnMethod(clazz = "java.lang.Thread",
+    @OnMethod(clazz="org.apache.niolex.common.btrace.BtraceDemo", method="/.*/",
+            location=@Location(value=Kind.CALL, clazz="/.*/", method="/.*/"))
+    public static void methodCallWithArg(@Self Object self, @TargetMethodOrField String method,
+            @ProbeMethodName String probeMethod, AnyType[] args) {
+        // all calls to the methods with signature "(...)"
+        print(strcat("in ", probeMethod));
+        print(strcat(strcat("\tcall\t", method), " args "));
+        printArray(args);
+    }
+
+    /**
+     * Track on the lines been executed in any specified class.
+     */
+	@OnMethod(clazz = "org.apache.niolex.common.btrace.BtraceDemo",
 			location = @Location(value = Kind.LINE, line = -1))
-	public static void online(@ProbeClassName String pcn, @ProbeMethodName String pmn,
+	public static void onLine(@ProbeClassName String pcn, @ProbeMethodName String pmn,
 			int line) {
 		print(strcat(pcn, "."));
-		print(strcat(pmn, ":"));
+		print(strcat(pmn, "(..): "));
 		println(line);
 	}
+
+    @OnMethod(clazz = "org.apache.niolex.common.btrace.BtraceDemo",
+            method = "inputHashCode",
+            location = @Location(Kind.RETURN))
+    public static void traceExecute(@Self BtraceDemo instance, String s, @Return int result,
+            @Duration long duration) {
+        println("--------------------Calling BtraceDemo.inputHashCode--------------------");
+        println(strcat("The input is:\t", s));
+        println(strcat("The result is:\t", str(result)));
+        println(strcat("The Execution Time is:\t", str(duration / 1000000)));
+        println(strcat("The totalSleepTime is:\t", str(get(
+                field("org.apache.niolex.common.btrace.BtraceDemo", "totalSleepTime"), instance))));
+        println("------------------------------------------------------------------------");
+    }
+
 }

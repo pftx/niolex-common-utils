@@ -53,8 +53,6 @@ public class BtraceDemo {
 		return totalSleepTime;
 	}
 
-
-
 	/**
 	 * @param args
 	 * @throws InterruptedException

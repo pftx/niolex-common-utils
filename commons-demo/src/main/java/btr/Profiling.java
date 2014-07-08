@@ -43,7 +43,9 @@ import com.sun.btrace.annotations.*;
  * </ol>
  * @since 1.2
  */
-@BTrace class Profiling {
+@BTrace
+class Profiling {
+
     @Property
     Profiler swingProfiler = BTraceUtils.Profiling.newProfiler();
 
