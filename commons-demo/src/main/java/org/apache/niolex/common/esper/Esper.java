@@ -26,6 +26,7 @@ package org.apache.niolex.common.esper;
 import java.util.Date;
 import java.util.Random;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.test.ObjToStringUtil;
 import org.apache.niolex.commons.util.DateTimeUtil;
 import org.apache.niolex.commons.util.SystemUtil;
@@ -102,8 +103,9 @@ public class Esper {
         cepStatement.addListener(new CEPListener());
 
         // We generate a few ticks...
-        for (int i = 0; i < 60; i++) {
+        for (int i = 0; i < 6000; i++) {
             generateRandomTick(cepRT);
+            ThreadUtil.sleep(500);
         }
     }
 }

@@ -62,6 +62,12 @@ public class Inner {
 
         private static final long serialVersionUID = 1437330936153846177L;
 
+        class InnerInIn extends Abs implements Serializable {
+
+            private static final long serialVersionUID = -5504634539704153812L;
+
+        }
+
     }
 
     static class InnerInS extends Abs implements Serializable {

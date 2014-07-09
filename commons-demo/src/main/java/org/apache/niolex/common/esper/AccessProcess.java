@@ -116,15 +116,18 @@ public class AccessProcess {
         }
     }
 
-    public static class Subscriber {
+    public static class SubscriberL {
         public void update(String ip, long cnt) {
-            SystemUtil.println("Event received, IP: %s, count: %d.", ip, cnt);
+            SystemUtil.println("LEvent received, IP: %s, count: %d.", ip, cnt);
         }
     }
 
-    public static class Subscriber2 {
-        public void update(String ip, double cnt) {
-            SystemUtil.println("Event received, IP: %s, count: %d.", ip, cnt);
+    public static class SubscriberD {
+        public void update(String ip, Double dbl) {
+            if (dbl != null) {
+                double cnt = dbl.doubleValue();
+                SystemUtil.println("DEvent received, IP: %s, rate: %f.", ip, cnt);
+            }
         }
     }
 
@@ -136,18 +139,18 @@ public class AccessProcess {
         EPRuntime cepRT = cep.getEPRuntime();
 
         EPAdministrator cepAdm = cep.getEPAdministrator();
-        EPStatement cepStatement = cepAdm.createEPL("select ip, count(*) as cnt from " + "Access.win:time(1 sec) group by ip"
-                + " having count(*) > 120 output first every 10 seconds");
+        EPStatement cepStatement = cepAdm.createEPL("select ip, count(*) as cnt from Access.win:time(4 sec) group by ip"
+                + " having count(*) > 50 output last every 2 seconds");
 
-        //cepStatement.setSubscriber(new Subscriber());
+        cepStatement.setSubscriber(new SubscriberL());
 
-        cepStatement = cepAdm.createEPL("select ip, rate(10) as cnt from " + "Access group by ip");
-        cepStatement.setSubscriber(new Subscriber2());
+        cepStatement = cepAdm.createEPL("select ip, rate(10) as cnt from Access.win:time(10 sec) group by ip");
+        //cepStatement.setSubscriber(new SubscriberD());
 
         // We generate a few ticks...
         for (int i = 0; i < 3000; i++) {
             generateAccess(cepRT);
-            SystemUtil.sleep(1);
+            SystemUtil.sleep(50);
         }
     }
 
