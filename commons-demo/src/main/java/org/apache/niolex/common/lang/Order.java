@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.common.demo;
+package org.apache.niolex.common.lang;
 
 import static org.apache.niolex.commons.util.SystemUtil.*;
 

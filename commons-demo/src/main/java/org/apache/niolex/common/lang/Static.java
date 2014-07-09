@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.common.demo;
+package org.apache.niolex.common.lang;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -40,8 +40,8 @@ public class Static extends God {
     }
 
     public static void main() {
-        Static.println();
-        Static.print();
+        println();
+        print();
     }
 
 }
@@ -54,6 +54,7 @@ class God {
 
     public static void print() {
         System.out.println("From God__ " + cnt());
+        System.out.flush();
         new Throwable().printStackTrace();
     }
 

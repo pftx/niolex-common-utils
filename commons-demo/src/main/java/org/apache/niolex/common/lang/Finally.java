@@ -15,9 +15,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.common.demo;
+package org.apache.niolex.common.lang;
 
 /**
+ * The return value in finally will overlap the original return.
+ *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2014-4-18
@@ -26,7 +28,13 @@ public class Finally {
 
     public static void main(String[] args) {
         System.out.println("Ret value = " + retValue());
-        System.out.println("Ret Exception = " + retEx());
+        try {
+            System.out.println("Throw ex = " + throwEx());
+        } catch (Exception e) {
+            System.out.println("Exception throwed = " + e);
+        }
+        System.out.println("Ret Exception = " + retEx(null));
+        System.out.println("Ret No catch = " + retNoCatch(null));
     }
 
     @SuppressWarnings("finally")
@@ -40,16 +48,40 @@ public class Finally {
         }
     }
 
-    @SuppressWarnings({ "finally", "null" })
-    public static String retEx() {
-        Object o = null;
+    @SuppressWarnings("finally")
+    public static String throwEx() {
+        try {
+            System.out.println("In try ...");
+            return "in try return";
+        } finally {
+            System.out.println("In finally ...");
+            throw new NullPointerException();
+        }
+    }
+
+    @SuppressWarnings("finally")
+    public static String retEx(Object o) {
         try {
             System.out.println("In try ...");
             System.out.println(o.hashCode());
+            System.out.println("After try ...");
             return "in try return";
         } catch (Exception e) {
             System.out.println("In exception ...");
             return "in catch";
+        } finally {
+            System.out.println("In finally ...");
+            return "in finally";
+        }
+    }
+
+    @SuppressWarnings("finally")
+    public static String retNoCatch(Object o) {
+        try {
+            System.out.println("In try ...");
+            System.out.println(o.hashCode());
+            System.out.println("After try ...");
+            return "in try return";
         } finally {
             System.out.println("In finally ...");
             return "in finally";

@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.common.demo;
+package org.apache.niolex.common.lang;
 
 import java.io.Serializable;
 
@@ -42,13 +42,13 @@ public class Inner {
      */
     public int getK() {
 
-        class InnerIn2 extends Abs implements Serializable {
+        class InnerInFunc extends Abs implements Serializable {
 
-            private static final long serialVersionUID = 1437330936153846177L;
+            private static final long serialVersionUID = 65493165L;
 
         }
 
-        return (int) (k + InnerIn2.serialVersionUID >> 32);
+        return (int) (k + InnerInFunc.serialVersionUID >> 32);
     }
 
     /**
@@ -64,7 +64,28 @@ public class Inner {
 
     }
 
-    public static void main(String[] args) {}
+    static class InnerInS extends Abs implements Serializable {
+
+        private static final long serialVersionUID = 5674965464l;
+
+        static class InnerInSInS extends InnerInS implements Serializable {
+
+            private static final long serialVersionUID = 2872742129149123019L;
+
+        }
+
+        class InnerInSIn extends InnerInS implements Serializable {
+
+            private static final long serialVersionUID = 3968496184331651819L;
+
+        }
+
+    }
+
+    public static void main(String[] args) {
+        System.out.println("You can create inner class inside a function!!");
+        System.out.println("But no static inner class inside a function!!");
+    }
 
 }
 
