@@ -26,7 +26,7 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-10-18
  */
-public class Tree2LinkListTest {
+public class BinaryTree2DLinkedListTest {
 
 	@Test
 	public void testNormal() {
@@ -39,7 +39,7 @@ public class Tree2LinkListTest {
 		t = root.right;
 		t.left = new DLink(6);
 		t.right = new DLink(7);
-		root = Tree2LinkList.transform(root);
+		root = BinaryTree2DLinkedList.transform(root);
 		while (root != null) {
 			System.out.print(" - " + root.value);
 			t = root;
@@ -66,7 +66,7 @@ public class Tree2LinkListTest {
 		t.right = new DLink(7);
 		t = t.left;
 		t.right = new DLink(9);
-		root = Tree2LinkList.transform(root);
+		root = BinaryTree2DLinkedList.transform(root);
 		while (root != null) {
 			System.out.print(" - " + root.value);
 			t = root;

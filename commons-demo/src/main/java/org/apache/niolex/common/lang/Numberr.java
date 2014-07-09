@@ -43,5 +43,7 @@ public class Numberr {
         System.out.println("\n**** Test char range");
         System.out.println("MAX_CHAR => " + (int)Character.MAX_VALUE);
         System.out.println("MIN_CHAR => " + (int)Character.MIN_VALUE);
+        System.out.println("-Integer.MAX_VALUE => " + (-Integer.MAX_VALUE));
+        System.out.println("Integer.MIN_VALUE => " + (Integer.MIN_VALUE));
     }
 }

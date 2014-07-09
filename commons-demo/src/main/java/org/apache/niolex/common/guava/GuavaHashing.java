@@ -104,25 +104,29 @@ public class GuavaHashing {
         System.out.println("Bucket2 => " + bucket);
         for (int i = 0; i < 10; ++i) {
             System.out.println("HashTo5 => " + Hashing.consistentHash(i, 5));
-        }
-        for (int i = 0; i < 10; ++i) {
             System.out.println("HashTo6 => " + Hashing.consistentHash(i, 6));
         }
         // BloomFilter
-        BloomFilter<Person> friends = BloomFilter.create(PersonFunnel.INSTANCE, 50, 0.02);
-        for (int i = 0; i < 50; ++i) {
-            friends.put(new Person(1, "Jiyun", "Xie", 1984 + i));
+        BloomFilter<Person> friends = BloomFilter.create(PersonFunnel.INSTANCE, 500, 0.02);
+        for (int i = 0; i < 500; ++i) {
+            friends.put(new Person(i, "Jiyun", "Xie", 1984 + i));
         }
-        for (int i = 0; i < 50; ++i) {
-            if (!friends.mightContain(new Person(1, "Jiyun", "Xie", 1984 + i))) {
-                System.out.println("Error1");
+        int k = 0;
+        for (int i = 0; i < 500; ++i) {
+            if (!friends.mightContain(new Person(i, "Jiyun", "Xie", 1984 + i))) {
+                System.out.println("Error1 => " + i);
+                ++k;
             }
         }
-        for (int i = 50; i < 500; ++i) {
-            if (friends.mightContain(new Person(1, "Jiyun", "Xie", 1984 + i))) {
-                System.out.println("Error2 => " + i);
+        System.out.println("fnp => (should be 0)" + ((double)k / 500));
+        k = 0;
+        for (int i = 0; i < 1000; i += 2) {
+            if (friends.mightContain(new Person(i, "Jiyun", "Xie", 1984 + i))) {
+                //System.out.println("Error2 => " + i);
+                ++k;
             }
         }
+        System.out.println("fpp => " + ((double)k / 500));
     }
 
 }

@@ -39,6 +39,7 @@ public class Joda {
         LocalDate lastDayOfPreviousMonth = now.minusMonths(1).dayOfMonth().withMaximumValue();
         // - Print
         SystemUtil.println(lastDayOfPreviousMonth.toString());
+
         // --- 计算 11 月中第一个星期一之后的第一个星期二
         LocalDate electionDate = now.monthOfYear().setCopy(11) // November
                 .dayOfMonth() // Access Day Of Month Property
@@ -49,6 +50,7 @@ public class Joda {
                 .plusDays(1); // Gives us Tuesday
         // - Print
         SystemUtil.println(electionDate.toString());
+
         // --- 从现在开始经过两个星期之后的日期
         LocalDate then = now.plusWeeks(2);
         // - Print

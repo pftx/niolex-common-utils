@@ -20,6 +20,8 @@ package org.apache.niolex.common.link;
 import java.util.Iterator;
 import java.util.Stack;
 
+import org.apache.niolex.commons.util.MathUtil;
+
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -34,32 +36,36 @@ public class TreeSameSum {
 	 * @param root
 	 * @param k
 	 */
-	public static void treeSum(final DLink root, final int k) {
+	public static boolean treeSum(final DLink root, final int k) {
 		if (root == null) {
-			return;
+			return false;
 		}
 		Stack<Integer> s = new Stack<Integer>();
-		treePath(root, s, k, 0);
+		return treePath(root, s, k, 0);
 	}
 
-	public static void treePath(final DLink ptr, final Stack<Integer> s, final int k, int sum) {
+	public static boolean treePath(final DLink ptr, final Stack<Integer> s, final int k, int sum) {
 		sum += ptr.value;
 		s.push(ptr.value);
 		boolean isLeaf = ptr.left == null && ptr.right == null;
+		boolean left = false, right = false;
 		if (sum == k && isLeaf) {
 			// We found a path just in this stack.
+		    System.out.print("#" + k);
 			printPath(s);
+			return true;
 		} else {
 			// We can still look into it's children.
 			if (ptr.left != null) {
-				treePath(ptr.left, s, k, sum);
+			    left = treePath(ptr.left, s, k, sum);
 			}
 			if (ptr.right != null) {
 				// We can still look into it's children.
-				treePath(ptr.right, s, k, sum);
+			    right = treePath(ptr.right, s, k, sum);
 			}
 		}
 		s.pop();
+		return left | right;
 	}
 
 	/**
@@ -68,8 +74,21 @@ public class TreeSameSum {
 	private static void printPath(Stack<Integer> s) {
 		Iterator<Integer> it = s.iterator();
 		while (it.hasNext()) {
-			System.out.print(" " + it.next());
+			System.out.print(" -> " + it.next());
 		}
 		System.out.println();
 	}
+
+	public static void main(String[] args) {
+        for (int i = 0; i < 10; ++i) {
+            DLink r = BinaryTree.generateBinaryTree(20);
+            for (int j = 0; j < 1000; ++j) {
+                if (treeSum(r, MathUtil.randInt(4000))) {
+                    BinaryTree.printTree(r);
+                    System.out.println("------------------------------");
+                }
+            }
+        }
+	}
+
 }

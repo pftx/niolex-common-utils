@@ -1,9 +1,9 @@
 /**
- * DLink.java
+ * DLinkedList.java
  *
- * Copyright 2012 Niolex, Inc.
+ * Copyright 2014 the original author or authors.
  *
- * Niolex licenses this file to you under the Apache License, version 2.0
+ * We licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
  * License.  You may obtain a copy of the License at:
  *
@@ -18,32 +18,21 @@
 package org.apache.niolex.common.link;
 
 /**
- * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+ * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2012-10-18
+ * @since 2014-7-9
  */
-public class DLink {
-	DLink left;
-	int value;
-	DLink right;
+public class DLinkedList {
 
-	public DLink(int value) {
-		super();
-		this.value = value;
-	}
-
-    /**
-     * Constructor.
-     *
-     * @param left
-     * @param value
-     * @param right
-     */
-    public DLink(DLink left, int value, DLink right) {
-        super();
-        this.left = left;
-        this.value = value;
-        this.right = right;
+    public static void printList(DLink root) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(root.value);
+        while (root.right != null) {
+            root = root.right;
+            sb.append(" -> ");
+            sb.append(root.value);
+        }
+        System.out.println(sb.toString());
     }
 
 }

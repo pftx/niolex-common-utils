@@ -41,10 +41,11 @@ public class Calculate {
     private static Hours FORMAL_TIME = Hours.EIGHT;
     private static Hours RESET_TIME = Hours.ONE;
     private static DateTimeFormatter FORMATTER;
-    private static PeriodPrinter PRINTER;
+    static PeriodPrinter PRINTER;
 
     static String simpleTime1 = "4/28/2010 8:50:26 AM";
-    static String simpleTime2 = "4/28/2010 5:35:54 PM";
+    static String simpleTime2 = "4/28/2010 4:35:25 PM";
+    static String simpleTime3 = "4/28/2010 5:51:54 PM";
 
 
     static {
@@ -52,7 +53,7 @@ public class Calculate {
         PRINTER = new PeriodFormatterBuilder().appendHours().appendSuffix(
                 " hour", " hours").appendSeparator(" and ").appendMinutes()
                 .appendSuffix(" min", " minutes").appendSeparator(" ").appendSeconds()
-                .appendSuffix(" second", " seconds").toPrinter();
+                .appendSuffix(" sec", " seconds").toPrinter();
     }
 
     /**
@@ -65,7 +66,12 @@ public class Calculate {
         //- Parse
         DateTime start = FORMATTER.parseDateTime(simpleTime1);
         DateTime end = FORMATTER.parseDateTime(simpleTime2);
+        calcWorkTime(start, end);
+        DateTime dead = FORMATTER.parseDateTime(simpleTime3);
+        calcWorkTime(start, dead);
+    }
 
+    public static void calcWorkTime(DateTime start, DateTime end) {
         long worked = new Duration(start, end).minus(FORMAL_TIME.plus(RESET_TIME).toStandardDuration()).getMillis();
 
         StringBuffer sb = new StringBuffer();
