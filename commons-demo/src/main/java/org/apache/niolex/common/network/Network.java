@@ -28,58 +28,34 @@ import java.net.InetSocketAddress;
  */
 public class Network {
 
+    static final int SLEEP_TIME = 10;
+
     /**
      * @param args
+     * @throws Exception
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         System.out.println("\n**** Test DNS Lookup");
-        try {
-            String name = "www.baidu.com";
-            InetAddress[] addresses = InetAddress.getAllByName(name);
-            for(int i = 0; i < addresses.length; ++i) {
-                System.out.println(name+"["+i+"] : " + addresses[i].toString());
-            }
-        } catch(Exception uhe) {
-        }
+        String name = "www.baidu.com";
+        listDNS(name);
 
         System.out.println("\n**** Test DNS Cache");
-        try {
-            String name = "test";
-            InetAddress[] addresses = InetAddress.getAllByName(name);
-            for(int i = 0; i < addresses.length; ++i) {
-                System.out.println(name+"["+i+"] : " + addresses[i].getHostAddress());
-            }
-            System.out.println("Sleep 10sec...");
-            Thread.sleep(10000);
-            addresses = InetAddress.getAllByName(name);
-            for(int i = 0; i < addresses.length; ++i) {
-                System.out.println(name+"["+i+"] : " + addresses[i].getHostAddress());
-            }
-            System.out.println("Sleep 10sec...");
-            Thread.sleep(10000);
-            addresses = InetAddress.getAllByName(name);
-            for(int i = 0; i < addresses.length; ++i) {
-                System.out.println(name+"["+i+"] : " + addresses[i].getHostAddress());
-            }
-            System.out.println("Sleep 10sec...");
-            Thread.sleep(10000);
-            addresses = InetAddress.getAllByName(name);
-            for(int i = 0; i < addresses.length; ++i) {
-                System.out.println(name+"["+i+"] : " + addresses[i].getHostAddress());
-            }
-            System.out.println("Sleep 5sec...");
-            Thread.sleep(5000);
-            addresses = InetAddress.getAllByName(name);
-            for(int i = 0; i < addresses.length; ++i) {
-                System.out.println(name+"["+i+"] : " + addresses[i].getHostAddress());
-            }
-        } catch(Exception uhe) {
-        }
-
+        name = "hi.com";
+        listDNS(name);
+        System.out.println("Sleep 10sec...");
+        Thread.sleep(SLEEP_TIME);
+        listDNS(name);
 
         System.out.println("\n**** Test InetSocketAddress");
         System.out.println("InetSocketAddress[1.2.3.4] = " + new InetSocketAddress("1.2.3.4", 808));
         System.out.println("InetSocketAddress[www.baidu.com] = " + new InetSocketAddress("www.baidu.com", 808));
+    }
+
+    public static void listDNS(String name) throws Exception {
+        InetAddress[] addresses = InetAddress.getAllByName(name);
+        for(int i = 0; i < addresses.length; ++i) {
+            System.out.println(name+"["+i+"] : " + addresses[i].getHostAddress());
+        }
     }
 
 }

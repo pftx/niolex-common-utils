@@ -28,6 +28,7 @@ public class Truncate {
      * @param args
      */
     public static void main(String[] args) {
+        System.out.println("数字的溢出是具有连续性的！");
         int i = Short.MAX_VALUE - 2;
         short s;
         for (int k = 0; k < 10; ++k) {
@@ -35,12 +36,15 @@ public class Truncate {
             System.out.println("INT " + i + ", SHT " + s);
             ++i;
         }
-        i = Integer.MAX_VALUE - 2;
+
+        System.out.println("在截断之后还是有连续性。");
+        i = Integer.MAX_VALUE - 4;
         for (int k = 0; k < 10; ++k) {
             s = (short) i;
             System.out.println("INT " + i + ", SHT " + s);
             ++i;
         }
+
     }
 
 }

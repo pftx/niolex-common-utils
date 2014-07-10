@@ -35,9 +35,10 @@ public class IntListMain {
 	 */
 	public static void main(String[] args) {
 		StopWatch w = new StopWatch(1);
-		IntList inList = new ArrayIntList();
 		w.begin(true);
+		// This is slower!
 		for (int i = 0; i < 1000; ++i) {
+		    IntList inList = new ArrayIntList(10000);
 			Stop s = w.start();
 			for (int j = 0; j < 10000; ++j) {
 				inList.add(j);
@@ -46,10 +47,11 @@ public class IntListMain {
 		}
 		w.done();
 		w.print();
-
-		ArrayList<Integer> oList = new ArrayList<Integer>();
+		// ------------
+		w = new StopWatch(1);
 		w.begin(true);
 		for (int i = 0; i < 1000; ++i) {
+		    ArrayList<Integer> oList = new ArrayList<Integer>(10000);
 			Stop s = w.start();
 			for (int j = 0; j < 10000; ++j) {
 				oList.add(j);

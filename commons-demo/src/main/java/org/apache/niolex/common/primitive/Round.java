@@ -33,6 +33,14 @@ public class Round {
         System.out.println("ROUND(-6.6) => " + Math.round(-6.6));
         System.out.println("ROUND(-6.5) => " + Math.round(-6.5));
         System.out.println("ROUND(-6.4) => " + Math.round(-6.4));
+
+        System.out.println("对称性不成立！记住：逢5上调");
+        System.out.println("ROUND( 0.6) => " + Math.round(0.6));
+        System.out.println("ROUND( 0.5) => " + Math.round(0.5));
+        System.out.println("ROUND( 0.4) => " + Math.round(0.4));
+        System.out.println("ROUND(-0.4) => " + Math.round(-0.4));
+        System.out.println("ROUND(-0.5) => " + Math.round(-0.5));
+        System.out.println("ROUND(-0.6) => " + Math.round(-0.6));
     }
 
 }

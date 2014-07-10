@@ -27,32 +27,45 @@ import org.apache.niolex.commons.util.Runner;
 import org.apache.niolex.commons.util.SystemUtil;
 
 /**
+ * Test how many locks needed relative to the number of threads.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
  * @since 2013-1-21
  */
 public class MultipleLock {
-    private static Map<Integer, Counter> hashMap = new HashMap<Integer, Counter>();
+    private static final int THREADS = 80;
+
+    private static Map<Integer, Counter> hashMap;
     private static AtomicInteger atom = new AtomicInteger();
-    private static int THREADS = 80;
-    private static int MAX = 160;
+    private static int locksNum;
 
     /**
      * @param args
      * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
-        for (int i = 0; i < MAX; ++i) {
-            hashMap.put(i, new Counter());
-        }
-        for (int i = 0; i < 20; ++i) {
-            atom.set(0);
-            main();
+        for (int i = 10; i < 330; i *= 2) {
+            locksNum = i;
+            System.out.println("Locks - " + i);
+            test();
         }
     }
 
-    public static void main() throws InterruptedException {
+    public static void test() throws InterruptedException {
+        hashMap = new HashMap<Integer, Counter>();
+        for (int i = 0; i < locksNum; ++i) {
+            hashMap.put(i, new Counter());
+        }
+        long tt = 0;
+        for (int i = 0; i < 20; ++i) {
+            tt += main();
+        }
+        System.out.println("For Locks - " + locksNum + " AVG - " + (tt / 20));
+    }
+
+    public static long main() throws InterruptedException {
+        atom.set(0);
         // Start 10 threads to increase.
         Thread[] ts = new Thread[THREADS];
         long in = System.currentTimeMillis();
@@ -62,9 +75,14 @@ public class MultipleLock {
         for (int i = 0; i < THREADS; ++i) {
             ts[i].join();
         }
-        System.out.println("Time - " + (System.currentTimeMillis() - in));
+        long cs = System.currentTimeMillis() - in;
+        System.out.println("Time - " + (cs));
+        return cs;
     }
 
+    /**
+     * Simulate the real work here.
+     */
     public void run() {
         while (atom.incrementAndGet() < 2000) {
             inc();
@@ -72,9 +90,10 @@ public class MultipleLock {
     }
 
     public static void inc() {
-        int key = MockUtil.randInt(MAX);
+        int key = MockUtil.randInt(locksNum);
         Counter c = hashMap.get(key);
         synchronized (c) {
+            // intentionally do this.
             c.set(c.cnt() + 1);
             SystemUtil.sleep(1);
         }

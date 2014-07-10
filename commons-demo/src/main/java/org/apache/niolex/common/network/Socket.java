@@ -50,6 +50,7 @@ public class Socket {
             selector.select();
             System.out.print("Keys ? ..." + selector.selectedKeys().size());
             System.out.println("..." + selector.selectedKeys().iterator().next().interestOps());
+            Thread.sleep(10);
         }
         ch.close();
     }
