@@ -107,7 +107,7 @@ public class HTTPUtilTest extends HTTPUtil {
     public final void testDoHTTPIOE() throws Exception, Throwable {
         try {
             doHTTP("http://search.maven.org/#search%7Cga%7C1%7Cprotobuf-java",
-                            null, null, 1000, 50, false);
+                            1000, 50, false);
         } catch (NetException et) {
             System.out.println("MSG " + et.getMessage());
             assertEquals(et.getCode(), NetException.ExCode.IOEXCEPTION);
@@ -118,7 +118,7 @@ public class HTTPUtilTest extends HTTPUtil {
     @Test
     public void testDoHTTPNuLLHeader() throws Exception {
         if (SystemUtil.defined("download", "download.http")) return;
-        byte[] body = doHTTP("http://view.163.com/", null, null, 5000, 3000, false).b;
+        byte[] body = doHTTP("http://view.163.com/", 5000, 3000, false).b;
         String s = StringUtil.gbkByteToStr(body);
         assertTrue(s.length() > 1024);
         assertTrue(s.contains("网易评论频道是网易新闻中心一个包含有另一面"));
@@ -238,23 +238,33 @@ public class HTTPUtilTest extends HTTPUtil {
     @Test
     public void testPrepareWwwFormUrlEncoded() throws Exception {
         Map<String, String> params = Maps.newHashMap();
-        params.put(null, "no-cache");
+        params.put("cache-control", "no-cache");
         params.put("XXS", "Lex");
         params.put("Host", "apache");
-        String s = prepareWwwFormUrlEncoded(params);
-        assertEquals(s, "Host=apache&XXS=Lex");
+        String s = prepareWwwFormUrlEncoded(params, "ASCII");
+        assertEquals(s, "cache-control=no-cache&Host=apache&XXS=Lex");
     }
 
     @Test
     public void testPrepareWwwFormUrlEncodedNullKey() throws Exception {
-        String s = prepareWwwFormUrlEncoded(null);
+        String s = prepareWwwFormUrlEncoded(null, "GBK");
         assertEquals(s, "");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testPrepareWwwFormUrlEncodedInvalidCharset() throws Exception {
+        Map<String, String> params = Maps.newHashMap();
+        params.put("cache-control", "no-cache");
+        params.put("XXS", "Lex");
+        params.put("Host", "apache");
+        String s = prepareWwwFormUrlEncoded(params, "ASCIII");
+        assertEquals(s, "Host=apache&XXS=Lex");
     }
 
     @Test
     public void testPrepareWwwFormUrlEncodedEmpty() throws Exception {
         Map<String, String> params = Maps.newHashMap();
-        String s = prepareWwwFormUrlEncoded(params);
+        String s = prepareWwwFormUrlEncoded(params, "utf8");
         assertTrue(s.isEmpty());
     }
 
@@ -262,7 +272,7 @@ public class HTTPUtilTest extends HTTPUtil {
     public void testPrepareWwwFormUrlSingle() throws Exception {
         Map<String, String> params = Maps.newHashMap();
         params.put("Host", "apache");
-        String s = prepareWwwFormUrlEncoded(params);
+        String s = prepareWwwFormUrlEncoded(params, "ascii");
         assertEquals(s, "Host=apache");
     }
 

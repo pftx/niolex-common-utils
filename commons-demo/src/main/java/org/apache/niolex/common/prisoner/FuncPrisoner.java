@@ -218,7 +218,7 @@ public class FuncPrisoner {
                 if (max < k) max = k;
                 if (min > k) min = k;
             }
-            System.out.printf("%s\t - Avg %.2f, Max %.2f, Min %.2f\n", getName(io),
+            System.out.printf("%s\t - Avg %.2fY, Max %.2fY, Min %5.2fY\n", getName(io),
                     (total / base), (max / base2), (min / base2));
         }
     }

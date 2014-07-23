@@ -28,12 +28,15 @@ public class Finally {
 
     public static void main(String[] args) {
         System.out.println("Ret value = " + retValue());
+        System.out.println();
         try {
-            System.out.println("Throw ex = " + throwEx());
+            System.out.println("Throw ex in finally = " + throwEx());
         } catch (Exception e) {
-            System.out.println("Exception throwed = " + e);
+            System.out.println("Exception throwed in finally = " + e);
         }
-        System.out.println("Ret Exception = " + retEx(null));
+        System.out.println();
+        System.out.println("Ret Exception in try block = " + retEx(null));
+        System.out.println();
         System.out.println("Ret No catch = " + retNoCatch(null));
     }
 
@@ -68,7 +71,7 @@ public class Finally {
             return "in try return";
         } catch (Exception e) {
             System.out.println("In exception ...");
-            return "in catch";
+            throw e;
         } finally {
             System.out.println("In finally ...");
             return "in finally";

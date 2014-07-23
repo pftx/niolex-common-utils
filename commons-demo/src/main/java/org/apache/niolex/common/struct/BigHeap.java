@@ -39,6 +39,12 @@ public class BigHeap<T extends Comparable<T>> {
 		data = new Object[heapSize];
 	}
 
+	/**
+	 * Push the item into heap.
+	 *
+	 * @param t the item
+	 * @return true if success, false if heap is full
+	 */
 	public boolean push(T t) {
 		if (size == heapSize) {
 			return false;

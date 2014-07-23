@@ -18,6 +18,8 @@
 package org.apache.niolex.common.sort;
 
 /**
+ * Not finished yet.
+ *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2012-10-25

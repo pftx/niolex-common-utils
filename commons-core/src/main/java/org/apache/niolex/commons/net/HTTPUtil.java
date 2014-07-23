@@ -22,6 +22,7 @@ import static org.apache.niolex.commons.util.DateTimeUtil.SECOND;
 import static org.apache.niolex.commons.net.DownloadUtil.*;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -106,7 +107,23 @@ public abstract class HTTPUtil {
      * @throws NetException
      */
     public static final String doHTTP(String url, Map<String, String> params, boolean useGet) throws NetException {
-        Pair<Map<String, List<String>>, byte[]> res = doHTTP(url, params, REQ_HEADER, CONNECT_TIMEOUT, READ_TIMEOUT, useGet);
+        return doHTTP(url, params, CharEncoding.UTF_8, useGet);
+    }
+
+    /**
+     * Do a HTTP request.
+     *
+     * @param url the request URL
+     * @param params the request parameters
+     * @param paramCharset the charset used to send the request parameters
+     * @param useGet whether do we use the HTTP GET method
+     * @return the response body as string
+     * @throws NetException
+     */
+    public static final String doHTTP(String url, Map<String, String> params, String paramCharset, boolean useGet)
+            throws NetException {
+        Pair<Map<String, List<String>>, byte[]> res = doHTTP(url, params, paramCharset, REQ_HEADER, CONNECT_TIMEOUT,
+                READ_TIMEOUT, useGet);
         return new String(res.b, inferCharset(res.a, res.b));
     }
 
@@ -114,7 +131,23 @@ public abstract class HTTPUtil {
      * Do the HTTP request.
      *
      * @param strUrl the request URL
+     * @param connectTimeout the connection timeout
+     * @param readTimeout the data read timeout
+     * @param useGet whether do we use the HTTP GET method
+     * @return the response pair; a is response header map, b is response body
+     * @throws NetException
+     */
+    public static final Pair<Map<String, List<String>>, byte[]> doHTTP(String strUrl, int connectTimeout,
+            int readTimeout, boolean useGet) throws NetException {
+        return doHTTP(strUrl, null, null, REQ_HEADER, connectTimeout, readTimeout, useGet);
+    }
+
+    /**
+     * Do the HTTP request.
+     *
+     * @param strUrl the request URL
      * @param params the request parameters
+     * @param paramCharset the charset used to send the request parameters
      * @param headers the request headers
      * @param connectTimeout the connection timeout
      * @param readTimeout the data read timeout
@@ -123,17 +156,19 @@ public abstract class HTTPUtil {
      * @throws NetException
      */
     public static final Pair<Map<String, List<String>>, byte[]> doHTTP(String strUrl, Map<String, String> params,
-            Map<String, String> headers, int connectTimeout, int readTimeout, boolean useGet) throws NetException {
-        LOG.debug("Start HTTP request to [{}], C{}R{}.", strUrl, connectTimeout, readTimeout);
+            String paramCharset, Map<String, String> headers, int connectTimeout, int readTimeout,
+            boolean useGet) throws NetException {
+        LOG.debug("Start HTTP {} request to [{}], C{}R{}.", useGet ? "GET" : "POST", strUrl, connectTimeout,
+                readTimeout);
         InputStream in = null;
         try {
             // 1. For get, we pass parameters in URL; for post, we save it in reqBytes.
             byte[] reqBytes = null;
             if (!CollectionUtil.isEmpty(params)) {
                 if (useGet) {
-                    strUrl = strUrl + '?' + prepareWwwFormUrlEncoded(params);
+                    strUrl = strUrl + '?' + prepareWwwFormUrlEncoded(params, paramCharset);
                 } else {
-                    reqBytes = StringUtil.strToAsciiByte(prepareWwwFormUrlEncoded(params));
+                    reqBytes = StringUtil.strToAsciiByte(prepareWwwFormUrlEncoded(params, paramCharset));
                 }
             }
             URL url = new URL(strUrl); // We use Java URL to do the HTTP request.
@@ -245,20 +280,24 @@ public abstract class HTTPUtil {
      * Prepare the application/x-www-form-urlencoded HTTP parameters.
      *
      * @param params the parameters
+     * @param paramCharset the charset used to encode the parameters
      * @return the prepared parameters in String format
+     * @throws IllegalArgumentException if the parameter charset is not supported
      */
-    public static String prepareWwwFormUrlEncoded(Map<String, String> params) {
+    public static String prepareWwwFormUrlEncoded(Map<String, String> params, String paramCharset) {
         if (CollectionUtil.isEmpty(params)) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, String> entry : params.entrySet()) {
             try {
-                sb.append(URLEncoder.encode(entry.getKey(), CharEncoding.UTF_8));
+                sb.append(URLEncoder.encode(entry.getKey(), paramCharset));
                 sb.append('=');
-                sb.append(URLEncoder.encode(entry.getValue(), CharEncoding.UTF_8));
+                sb.append(URLEncoder.encode(entry.getValue(), paramCharset));
                 sb.append('&');
-            } catch (Exception e) {/*Can not Happen.*/}
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalArgumentException(e);
+            }
         }
         sb.deleteCharAt(sb.length() - 1);
         return sb.toString();

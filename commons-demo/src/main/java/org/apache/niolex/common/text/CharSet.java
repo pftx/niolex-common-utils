@@ -31,13 +31,14 @@ public class CharSet {
      * @param args
      */
     public static void main(String[] args) throws Throwable {
-        byte[] arr = StringUtil.strToUtf8Byte("abc中国lex谢佶芸");
-        String str = Base16Util.byteToBase16(arr);
-        System.out.println("Utf8 => " + str);
+        String str = "abc中国lex谢佶芸";
+        byte[] utf = StringUtil.strToUtf8Byte(str);
+        byte[] gbk = StringUtil.strToGbkByte(str);
+        String out = Base16Util.byteToBase16(utf);
+        String gbo = Base16Util.byteToBase16(gbk);
+        System.out.println("Utf8 => " + out);
         // -----
-        arr = "abc中国lex谢佶芸".getBytes("gbk");
-        str = Base16Util.byteToBase16(arr);
-        System.out.println("gbk => " + str);
+        System.out.println("gbk0 => " + gbo);
     }
 
 }
