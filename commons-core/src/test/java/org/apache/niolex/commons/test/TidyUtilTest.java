@@ -167,4 +167,12 @@ public class TidyUtilTest extends TidyUtil {
         System.out.println(s);
     }
 
+    @Test(expected=NullPointerException.class)
+    public void testGenerateCell() throws Exception {
+        StringBuilder sb = new StringBuilder();
+        boolean flag = generateCell(sb, 8, 66, null);
+        assertEquals("      66", sb.toString());
+        assertFalse(flag);
+    }
+
 }
