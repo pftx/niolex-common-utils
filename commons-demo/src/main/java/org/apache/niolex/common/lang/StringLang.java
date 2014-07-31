@@ -1,5 +1,5 @@
 /**
- * StringDemo.java
+ * StringFormal.java
  *
  * Copyright 2013 the original author or authors.
  *
@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.common.text;
+package org.apache.niolex.common.lang;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2013-4-19
+ * @since 2013-8-19
  */
-public class StringDemo {
+public class StringLang {
 
     public static String replaceAll(String oringin, String pattern, String replace) {
         Pattern p = Pattern.compile(pattern);
@@ -46,6 +46,19 @@ public class StringDemo {
      * @param args
      */
     public static void main(String[] args) {
+        String str2 = new String("GoodMorning");
+        System.out.println("\n**** String ==");
+        String str1 = "GoodMorning";
+        System.out.println("a == new String(\"a\") ? " + (str1 == str2));
+        String str3 = "Good";
+        String str4 = str3 + "Morning";
+        System.out.println("ab == not final \"a\" + \"b\" ? " + (str1 == str4));
+        final String str5 = "Good";
+        String str6 = str5 + "Morning";
+        System.out.println("ab == \"a\" + \"b\" ? " + (str1 == str6));
+        System.out.println("a == new String(\"a\").intern() ? " + (str1 == str2.intern()));
+
+        System.out.println("\n**** My replaceAll");
         System.out.println("abcdecbc => " + replaceAll("abcdecbc", "c", "*"));
         System.out.println("abcdecbc => " + replaceAll("abcdecbc", "bc", "*"));
         System.out.println("abcdecbc => " + replaceAll("abcdecbc", "b", "*"));

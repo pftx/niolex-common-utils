@@ -90,4 +90,11 @@ public class Str2Diff {
 		return arr[M][N];
 	}
 
+	public static void main(String[] args) {
+	    diff("babccbax", "babccbax");
+	    diff("fjdiejkdoadfd", "fjdiefkdoadfd");
+	    diff("odofoeodkdodod", "odofxoeodkdocdod");
+	    diff("12354752431", "53547521");
+    }
+
 }

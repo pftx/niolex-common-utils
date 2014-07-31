@@ -63,9 +63,16 @@ public class Palindrome {
 				}
 			}
 		}
-		System.out.println(str);
+		System.out.println("[" + new String(str).replace("#", ", |, ") + "]");
 		System.out.println(Arrays.toString(P));
 		return max;
+	}
+
+	public static void main(String[] args) {
+	    palindrome("babccbax");
+	    palindrome("fjdiejkdoadfd");
+	    palindrome("odofoeodkdodod");
+	    palindrome("12354752431");
 	}
 
 }

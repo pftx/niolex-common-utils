@@ -59,4 +59,16 @@ public class WordReverse {
 		return j - 1;
 	}
 
+	/**
+     * @param args
+     */
+    public static void main(String[] args) {
+        String a;
+        a = "Hello, this is a good start.";
+        System.out.println(a + "\nreverse => " + wordReverse(a));
+
+        a = "We are delighted to welcome you to SIGMOD 2014, the 2014 edition of the ACM SIGMOD International Conference on Management of Data, at Snowbird, Utah, in the Rocky Mountains of the United States.";
+        System.out.println(a + "\nreverse => " + wordReverse(a));
+    }
+
 }

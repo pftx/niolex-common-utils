@@ -72,4 +72,60 @@ public class MathUtil extends MockUtil {
         return Pair.create(avg, Math.sqrt(msr / coll.size()));
     }
 
+    /**
+     * Find the maximum value among the three parameters.
+     *
+     * @param a the parameter
+     * @param b the parameter
+     * @param c the parameter
+     * @return the maximum value
+     */
+    public static final int max(int a, int b, int c) {
+        return a > b ? (a > c ? a : c) : (b > c ? b : c);
+    }
+
+    /**
+     * Find the maximum value of the specified array.
+     *
+     * @param values the values array
+     * @return the maximum value
+     */
+    public static final int max(int ...values) {
+        int r = Integer.MIN_VALUE;
+        for (int v : values) {
+            if (v > r) {
+                r = v;
+            }
+        }
+        return r;
+    }
+
+    /**
+     * Find the minimum value among the three parameters.
+     *
+     * @param a the parameter
+     * @param b the parameter
+     * @param c the parameter
+     * @return the minimum value
+     */
+    public static final int min(int a, int b, int c) {
+        return a < b ? (a < c ? a : c) : (b < c ? b : c);
+    }
+
+    /**
+     * Find the minimum value from the specified array.
+     *
+     * @param values the values array
+     * @return the minimum value
+     */
+    public static final int min(int ...values) {
+        int r = Integer.MAX_VALUE;
+        for (int v : values) {
+            if (v < r) {
+                r = v;
+            }
+        }
+        return r;
+    }
+
 }
