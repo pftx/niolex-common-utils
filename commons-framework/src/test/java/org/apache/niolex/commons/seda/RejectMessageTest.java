@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.seda;
 
+import org.apache.niolex.commons.test.SleepStage;
+import org.apache.niolex.commons.test.TInput;
 import org.junit.Test;
 
 /**

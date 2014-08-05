@@ -18,21 +18,23 @@
 package org.apache.niolex.commons.seda;
 
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Adjuster used to dynamically adjust thread pool size of stages.
  * <br>
  * We will use an independent thread to call {@link Stage#adjustThreadPool()} periodically,
- * all the details of adjusting thread pool size are implemented there. The thread is
- * running in the daemon state, it will stop automatically if the main threads are stopped.
+ * all the details of adjusting thread pool size are implemented there. This thread is running
+ * in the daemon state, it will stop automatically if all the main threads were stopped.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-16$
  */
 public class Adjuster implements Runnable {
+    protected static final Logger LOG = LoggerFactory.getLogger(Adjuster.class);
 
 	/**
 	 * The list to save all the stages.
@@ -59,7 +61,7 @@ public class Adjuster implements Runnable {
 	 *
 	 * @param s the stage need to be adjusted.
 	 */
-	public void addStage(Stage<?> s) {
+	public synchronized void addStage(Stage<?> s) {
 		stageList.add(s);
 	}
 
@@ -97,12 +99,22 @@ public class Adjuster implements Runnable {
 		long in;
 		while (isWorking) {
 			in = System.currentTimeMillis();
-			ListIterator<Stage<?>> it = stageList.listIterator();
-			while (it.hasNext()) {
-				it.next().adjustThreadPool();
-			}
+			adjust();
 			ThreadUtil.sleep(adjustInterval - in + System.currentTimeMillis());
 		}
+	}
+
+	/**
+	 * Adjust all the stages added to this adjuster.
+	 */
+	public synchronized void adjust() {
+        for (Stage<?> s : stageList) {
+            try {
+                s.adjustThreadPool();
+            } catch (Throwable t) {
+                LOG.warn("Error occurred when adjust stage [{}].", s.getStageName(), t);
+            }
+        }
 	}
 
 	/**

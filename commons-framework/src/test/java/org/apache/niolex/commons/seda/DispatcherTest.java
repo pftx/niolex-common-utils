@@ -22,7 +22,10 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.niolex.commons.test.ConstructStage;
 import org.apache.niolex.commons.test.OrderedRunner;
+import org.apache.niolex.commons.test.SleepStage;
+import org.apache.niolex.commons.test.TInput;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -113,6 +116,8 @@ public class DispatcherTest {
     @Test
     public final void testZClear() {
         disp.clear();
+        int k = disp.getAllStages().size();
+        assertEquals(0, k);
     }
 
 }

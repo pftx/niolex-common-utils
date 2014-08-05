@@ -15,12 +15,16 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.seda;
+package org.apache.niolex.commons.test;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.seda.Dispatcher;
+import org.apache.niolex.commons.seda.Message;
+import org.apache.niolex.commons.seda.Stage;
+import org.apache.niolex.commons.seda.StageTest;
 import org.apache.niolex.commons.seda.RejectMessage.RejectType;
 
 /**
@@ -78,7 +82,7 @@ public class SleepStage extends Stage<TInput> {
 	}
 
 	public Worker getWorker() {
-		return new Worker();
+		return StageTest.newWorker(this);
 	}
 
 }

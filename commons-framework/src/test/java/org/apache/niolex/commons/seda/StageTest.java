@@ -26,6 +26,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.seda.RejectMessage.RejectType;
+import org.apache.niolex.commons.test.SleepStage;
+import org.apache.niolex.commons.test.TInput;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -35,6 +37,10 @@ import org.mockito.ArgumentCaptor;
  * @version 1.0.0, $Date: 2012-11-18$
  */
 public class StageTest {
+
+    public static <Input extends Message> Stage<Input>.Worker newWorker(Stage<Input> s) {
+        return s.new Worker();
+    }
 
 	static Dispatcher dispatcher = new Dispatcher();
 
@@ -97,6 +103,10 @@ public class StageTest {
 		assertEquals(RejectType.PROCESS_ERROR, one.a);
 		assertEquals(ss.getInputSize(), 0);
 		ss.shutdown();
+		assertNull(ss.takeMessage());
+		Thread.sleep(100);
+		assertEquals(3, ss.getStageStatus());
+		assertNull(ss.takeMessage());
 	}
 
 	/**
@@ -104,14 +114,33 @@ public class StageTest {
 	 */
 	@Test
 	public final void testWorker() {
-		SleepStage ss = new SleepStage("abc", dispatcher);
+		SleepStage ss = new SleepStage("abcdef", 123);
+		// Scenario 1. interrupt
 		SleepStage.Worker w = ss.getWorker();
 		assertTrue(w.isWorking());
 		w.setWorking(false);
 		w.interrupt();
 		assertFalse(w.isWorking());
+		ss.construct();
+		ss.subtractThread();
+		ss.subtractThread();
+		ss.subtractThread();
 		ss.shutdown();
 	}
+
+    @Test
+    public void testAdjustThreadPool() throws Exception {
+        SleepStage ss = new SleepStage("abcdef", 123);
+        ss.adjustThreadPool();
+        ss.adjustThreadPool();
+        ss.adjustThreadPool();
+        ss.shutdown();
+        Field f = Stage.class.getDeclaredField("lastAdjustTime");
+        f.setAccessible(true);
+        f.setLong(ss, 100);
+        ss.adjustThreadPool();
+        ss.adjustThreadPool();
+    }
 
 	/**
 	 * Test method for {@link org.apache.niolex.commons.seda.Stage#dropMessage()}.
@@ -145,6 +174,35 @@ public class StageTest {
 		assertTrue(a > 10000);
 		ss.dropMessage(-2);
 		ss.shutdown();
+	}
+
+	@Test(expected=NullPointerException.class)
+    public final void testDropMessageEx() throws Exception {
+	    Stage<Message> ss = new Stage<Message>("abc"){
+
+            @Override
+            protected void process(Message in, Dispatcher dispatcher) {
+                ThreadUtil.sleep(1);
+            }
+
+            /**
+             * This is the override of super method.
+             * @see org.apache.niolex.commons.seda.Stage#reject(org.apache.niolex.commons.seda.RejectMessage.RejectType, java.lang.Object, org.apache.niolex.commons.seda.Message)
+             */
+            @Override
+            protected void reject(RejectType type, Object info, Message msg) {
+                throw new NullPointerException();
+            }
+
+	    };
+
+	    TInput in = mock(TInput.class);
+        RejectMessage r = new RejectMessage(RejectType.USER_REJECT, "By Drop Message", in);
+        ss.addInput(r);
+        ss.addInput(r);
+        ss.addInput(in);
+        ss.addInput(r);
+        ss.dropMessage(1);
 	}
 
 	/**

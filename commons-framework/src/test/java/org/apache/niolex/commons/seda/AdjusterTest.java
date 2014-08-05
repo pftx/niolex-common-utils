@@ -20,6 +20,9 @@ package org.apache.niolex.commons.seda;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.seda.RejectMessage.RejectType;
+import org.apache.niolex.commons.test.SleepStage;
 import org.junit.Test;
 
 /**
@@ -51,7 +54,7 @@ public class AdjusterTest {
 		adj.addStage(new SleepStage("s10", 10));
 		Stage<?> s = mock(Stage.class);
 		adj.addStage(s);
-		Thread.sleep(30);
+		Thread.sleep(100);
 		adj.stopAdjust();
 		verify(s, atLeast(1)).adjustThreadPool();
 		// stop again.
@@ -74,5 +77,37 @@ public class AdjusterTest {
 		adj.setAdjustInterval(1230);
 		assertEquals(adj.getAdjustInterval(), 1230);
 	}
+
+    @Test
+    public void testAdjust() throws Exception {
+        Adjuster adj2 = new Adjuster();
+        Stage<Message> s1 = new Stage<Message>("abc"){
+            {
+                this.lastAdjustTime = 0;
+            }
+
+            @Override
+            protected void process(Message in, Dispatcher dispatcher) {
+                ThreadUtil.sleep(1);
+            }
+
+            /**
+             * This is the override of super method.
+             * @see org.apache.niolex.commons.seda.Stage#reject(org.apache.niolex.commons.seda.RejectMessage.RejectType, java.lang.Object, org.apache.niolex.commons.seda.Message)
+             */
+            @Override
+            protected void reject(RejectType type, Object info, Message msg) {
+                throw new NullPointerException();
+            }
+
+        };
+        adj2.addStage(mock(Stage.class));
+        adj2.addStage(s1);
+        for (int i = 0; i < 10000; ++i) {
+            s1.addInput(mock(Message.class));
+        }
+
+        adj2.adjust();
+    }
 
 }

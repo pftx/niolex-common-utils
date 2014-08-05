@@ -15,10 +15,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.seda;
+package org.apache.niolex.commons.test;
 
 import java.util.Map;
 
+import org.apache.niolex.commons.seda.Dispatcher;
 import org.apache.niolex.commons.seda.RejectMessage.RejectType;
 
 /**

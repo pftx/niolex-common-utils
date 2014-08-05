@@ -23,6 +23,9 @@ import java.util.Map;
 
 /**
  * The dispatcher used to dispatch messages into the next stage.
+ * Every dispatcher is independent from each other, construct the stages
+ * before start to use the dispatcher. Once it's running, do not add any
+ * stage into the dispatcher.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-16$
@@ -47,7 +50,7 @@ public class Dispatcher {
 	/**
 	 * Get the global instance.
 	 *
-	 * @return the global instance.
+	 * @return the global instance
 	 */
 	public static final Dispatcher getInstance() {
 		return INSTANCE;
@@ -55,6 +58,9 @@ public class Dispatcher {
 
 	/**
 	 * Register a stage with it's stage name.
+	 * <br><b>
+	 * Call this method before dispatch messages.
+	 * <b>
 	 *
 	 * @param stage the stage to register.
 	 * @return the previous value associated with this stage name, or null if there was no mapping
@@ -80,6 +86,9 @@ public class Dispatcher {
 	/**
 	 * When all the stages are set, user need to call this method to construct
 	 * the stage network.
+	 * <br><b>
+     * Call this method before dispatch messages.
+     * <b>
 	 */
 	public void construction() {
 		for (Stage<?> s : this.getAllStages()) {
@@ -92,7 +101,7 @@ public class Dispatcher {
 	 *
 	 * @param adjustInterval the adjust interval.
 	 */
-	public void startAdjust(int adjustInterval) {
+	public synchronized void startAdjust(int adjustInterval) {
 		if (adjuster == null) {
 			adjuster = new Adjuster();
 			for (Stage<?> s : this.getAllStages()) {
@@ -104,9 +113,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Shutdown all the stages in this dispatcher.
+	 * Shutdown all the stages in this dispatcher. We will stop the
+	 * adjuster if there is one.
 	 */
-	public void shutdown() {
+	public synchronized void shutdown() {
 		for (Stage<?> s : this.getAllStages()) {
 			s.shutdown();
 		}
@@ -126,10 +136,10 @@ public class Dispatcher {
 	/**
 	 * Dispatch the message to the stage with this stage name.
 	 *
-	 * @param stageName the stage name of the stage you want to dispatch.
-	 * @param msg the message need to dispatch.
-	 * @return true if dispatch success, false if stage not found.
-	 * @throws ClassCastException If this message can not be processed by the corresponding stage.
+	 * @param stageName the name of the stage you want to dispatch this message to
+	 * @param msg the message to be dispatched
+	 * @return true if dispatch success, false if stage not found
+	 * @throws ClassCastException if this message can not be processed by the corresponding stage
 	 */
 	public <T extends Message> boolean dispatch(String stageName, T msg) {
 		@SuppressWarnings("unchecked")
@@ -146,9 +156,9 @@ public class Dispatcher {
 	 * Dispatch the message to the stage with the class name of this message
 	 * as the stage name.
 	 *
-	 * @param msg the message need to dispatch.
-	 * @return true if dispatch success, false if stage not found.
-	 * @throws ClassCastException If this message can not be processed by the corresponding stage.
+	 * @param msg the message to be dispatched
+	 * @return true if dispatch success, false if stage not found
+	 * @throws ClassCastException If this message can not be processed by the corresponding stage
 	 */
 	public <T extends Message> boolean dispatch(T msg) {
 		return dispatch(msg.getClass().getName(), msg);

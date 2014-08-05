@@ -19,7 +19,6 @@ package org.apache.niolex.commons.seda;
 
 import java.text.DecimalFormat;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,7 +31,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The base class for SEDA stage implementation. User will need to subclass this to
- * add their own business logic.
+ * add their own business logic.<br>
+ * Every stage is a thread pool. So please be cautious about the number of stages
+ * in your system. Too many stages will overwhelm your JVM.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5, $Date: 2012-11-16$
@@ -75,9 +76,9 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * The maximum tolerable delay in milliseconds.
 	 * <br>
-	 * If the time to process current queue size exceeds this number, we will add
-	 * more threads into the thread pool. If the time to process current queue size
-	 * exceeds {@value #DROP_MSG_COEFFICIENT} times this number, we will start to drop messages.
+	 * If the time to process current queue size exceeds {@value #DROP_MSG_COEFFICIENT}
+	 * times this number, we will start to drop messages. User can handle the dropped
+	 * messages by a special stage if necessary.
 	 */
 	protected final int maxTolerableDelay;
 
@@ -108,7 +109,7 @@ public abstract class Stage<Input extends Message> {
      *   SHUTDOWN: Don't accept new tasks, but process queued tasks
      *   STOP:     Don't accept new tasks, don't process queued tasks,
      *             and interrupt in-progress tasks
-     *   TERMINATED: Same as STOP, plus all threads have terminated
+     *   TERMINATED: Same as STOP, plus all threads have been terminated
 	 */
 	protected volatile int stageStatus;
 	static final int RUNNING    = 0;
@@ -149,31 +150,31 @@ public abstract class Stage<Input extends Message> {
 
 	/**
 	 * Create a Stage with some default parameters.
-	 *
+	 * <pre>
 	 * We will initialize this stage with the following parameters:
 	 * use LinkedBlockingQueue for inputQueue
-	 * use default instance of Dispatcher for dispatcher
+	 * use the global instance of Dispatcher for dispatcher
 	 * use 1 for minPoolSize
 	 * use 100 for maxPoolSize
-	 * use 1000ms for maxTolerableDelay
+	 * use 1000ms for maxTolerableDelay</pre>
 	 *
-	 * @param stageName the name of this stage.
+	 * @param stageName the name of this stage
 	 */
 	public Stage(String stageName) {
-		this(stageName, new LinkedBlockingQueue<Input>(), Dispatcher.getInstance(), 1, 100, 1000);
+		this(stageName, Dispatcher.getInstance());
 	}
 
 	/**
      * Create a Stage with some default parameters.
-     *
+     * <pre>
      * We will initialize this stage with the following parameters:
      * use LinkedBlockingQueue for inputQueue
      * use 1 for minPoolSize
      * use 100 for maxPoolSize
-     * use 1000ms for maxTolerableDelay
+     * use 1000ms for maxTolerableDelay</pre>
      *
-     * @param stageName the name of this stage.
-     * @param dispatcher the dispatcher used to dispatch output.
+     * @param stageName the name of this stage
+     * @param dispatcher the dispatcher used to dispatch outputs
      */
     public Stage(String stageName, Dispatcher dispatcher) {
         this(stageName, new LinkedBlockingQueue<Input>(), dispatcher, 1, 100, 1000);
@@ -181,36 +182,33 @@ public abstract class Stage<Input extends Message> {
 
 	/**
      * Create a Stage with some default parameters.
-     *
+     * <pre>
      * We will initialize this stage with the following parameters:
      * use LinkedBlockingQueue for inputQueue
-     * use default instance of Dispatcher for dispatcher
+     * use the global instance of Dispatcher for dispatcher
      * use 1 for minPoolSize
-     * use 100 for maxPoolSize
+     * use 100 for maxPoolSize</pre>
      *
-     * @param stageName the name of this stage.
+     * @param stageName the name of this stage
      * @param maxTolerableDelay The maximum tolerable delay in milliseconds.
-     * If the time to process current queue size exceeds this number, we will add
-     * more threads into the thread pool. If the time to process current queue size
-     * exceeds {@value #DROP_MSG_COEFFICIENT} times this number, we will start to drop messages.
+     * If the time to process current queue size exceeds {@value #DROP_MSG_COEFFICIENT} times this number,
+     * we will start to drop messages.
      */
 	public Stage(String stageName, int maxTolerableDelay) {
         this(stageName, new LinkedBlockingQueue<Input>(), Dispatcher.getInstance(), 1, 100, maxTolerableDelay);
     }
 
 	/**
-	 * Create a Stage with these parameters you passed in.
+	 * Create a Stage with the specified parameters you passed in.
 	 *
-	 * @param stageName the name of this stage.
-	 * @param inputQueue the input queue user want to use.
-	 * @param dispatcher the dispatcher used to dispatch output.
-	 * @param minPoolSize the minimum thread pool size.
-	 * @param maxPoolSize the maximum thread pool size.
+	 * @param stageName the name of this stage
+	 * @param inputQueue the input queue used to store messages
+	 * @param dispatcher the dispatcher used to dispatch outputs
+	 * @param minPoolSize the minimum thread pool size
+	 * @param maxPoolSize the maximum thread pool size
 	 * @param maxTolerableDelay The maximum tolerable delay in milliseconds.
-     * If the time to process current queue size exceeds this number, we will add
-     * more threads into the thread pool. If the time to process current queue size
-     * exceeds {@value #DROP_MSG_COEFFICIENT} times this number, we will start to drop messages.
-     * User can change this behavior by override the method {@link #dropMessage(int)}
+     * If the time to process current queue size exceeds {@value #DROP_MSG_COEFFICIENT} times this number,
+     * we will start to drop messages. User can change this behavior by override the method {@link #dropMessage(int)}
 	 */
 	public Stage(String stageName, BlockingQueue<Input> inputQueue, Dispatcher dispatcher,
 			int minPoolSize, int maxPoolSize, int maxTolerableDelay) {
@@ -226,7 +224,8 @@ public abstract class Stage<Input extends Message> {
 	}
 
 	/**
-	 * The inner class to work in thread pool.
+	 * The inner class to process messages. It will create a new thread when a new instance
+	 * is created, and work as a thread pool item.
 	 *
 	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
 	 * @version 1.0.5, $Date: 2012-11-16$
@@ -248,56 +247,55 @@ public abstract class Stage<Input extends Message> {
 		}
 
 		/**
-		 * The current worker working status.
+		 * The current working status for this worker.
 		 */
 		private volatile boolean isWorking = true;
 
 		/**
-		 * All the threads inside thread pool will run this method.
-		 * We make this method final, to prevent subclass override it.
+		 * Get messages from the input queue, and process it.
+		 * We make this method final, to prevent subclass from override it.
 		 *
 		 * Override super method
 		 * @see java.lang.Runnable#run()
 		 */
 		@Override
 		public final void run() {
-			// We run this loop endlessly.
+		    Input in = null;
+		    long inTime = 0;
+
+		    // We run this loop endlessly.
 			while (stageStatus < STOP && isWorking) {
-				Input in = null;
-				long inTime = 0;
+			    // 1. Take an element from input queue, wait if necessary.
+			    try {
+			        if ((in = takeMessage()) == null) {
+			            // No input data to process, we break this loop.
+			            break;
+			        }
+	            } catch (InterruptedException e) {
+	                // Check the loop status again when interrupted.
+	                continue;
+	            }
+
+			    // 2. Process the message.
 				try {
-					if (stageStatus == RUNNING) {
-						// Take an element from input queue, wait if necessary.
-						in = inputQueue.take();
-					} else if (stageStatus == SHUTDOWN) {
-						// We are already in shutdown state, do not wait.
-						in = inputQueue.poll();
-					}
-					if (in == null) {
-						// No input data to process, we break this loop.
-						break;
-					}
 					// Calculate process time here. We minus 5us for take object time.
 					inTime = System.nanoTime() - 5000;
+
 					process(in, dispatcher);
+
+					// Add the execution count.
+                    exeCnt.incrementAndGet();
+                    // Add the execution time in us.
+                    long delta = (System.nanoTime() - inTime) / 1000;
+                    exeTime.addAndGet(delta);
 				} catch (Throwable t) {
-					// Reject the message if it's not null.
-					if (in != null) {
-						LOG.error("Error occured when process message in stage [{}].", stageName, t);
-						reject(RejectType.PROCESS_ERROR, t, in);
-					}
-				} finally {
-					if (inTime != 0) {
-					    // Add the execution count.
-					    exeCnt.incrementAndGet();
-					    // Add the execution time in us.
-					    long delta = (System.nanoTime() - inTime) / 1000;
-					    exeTime.addAndGet(delta);
-					}
+					LOG.error("Error occured when process message in stage [{}].", stageName, t);
+					reject(RejectType.PROCESS_ERROR, t, in);
 				}
 			}
+
 			if (stageStatus == SHUTDOWN) {
-				// Try to terminate this stage if it has been shutdown.
+				// Try to terminate this stage if the thread pool has been shutdown.
 				tryTerminate();
 			}
 		}
@@ -305,7 +303,7 @@ public abstract class Stage<Input extends Message> {
 		/**
 		 * Get The current worker working status.
 		 *
-		 * @return The current worker working status.
+		 * @return The current worker working status
 		 */
 		public boolean isWorking() {
 			return isWorking;
@@ -314,7 +312,7 @@ public abstract class Stage<Input extends Message> {
 		/**
 		 * Set The current worker working status.
 		 *
-		 * @param isWorking the new worker working status.
+		 * @param isWorking the new worker working status
 		 */
 		public void setWorking(boolean isWorking) {
 			this.isWorking = isWorking;
@@ -327,15 +325,34 @@ public abstract class Stage<Input extends Message> {
 			thread.interrupt();
 		}
 
+	} /* End of Worker */
+
+	/**
+	 * Take a new message from the input queue.
+	 *
+	 * @return a input message
+	 * @throws InterruptedException if interrupted by others
+	 */
+	protected Input takeMessage() throws InterruptedException {
+	    if (stageStatus == RUNNING) {
+            // Take an element from input queue, wait if necessary until an element becomes available.
+            return inputQueue.take();
+        } else if (stageStatus == SHUTDOWN) {
+            // We are already in shutdown state, do not wait.
+            return inputQueue.poll();
+        } else {
+            // Other status, means error.
+            return null;
+        }
 	}
 
 	/**
 	 * Construct the stage map in this method. We do nothing here, just a hook for subclass.
-	 *
-	 * Any subclass can override this method to get their output stage from the dispatcher and
-	 * save it to local fields for faster dispatch speed.
-	 * User can also use this method to check whether or not all the mandatory stages are
-	 * registered and do appropriate action about it.
+	 * <br>
+	 * Any subclass can override this method to get their output stages from the dispatcher and
+	 * save them to its local fields for faster dispatch speed.<br>
+	 * User can also use this method to check whether or not all the mandatory stages have been
+	 * registered and do appropriate action accordingly.
 	 */
 	public void construct() {
 		// We do nothing here.
@@ -381,24 +398,28 @@ public abstract class Stage<Input extends Message> {
 	 * Adjust the thread pool from time to time.
 	 * The {@link Adjuster} will use this method to dynamically adjust thread poll size.
 	 *
-	 * @return current thread pool size.
+	 * @return current thread pool size
 	 */
 	public int adjustThreadPool() {
 		if (System.currentTimeMillis() - lastAdjustTime < MIN_ADJUST_INTERVAL || stageStatus > RUNNING) {
-			// We will not adjust the thread pool too fast.
-			// We do not adjust a thread pool when it's not running.
+			// We will not adjust the thread pool too fast, and
+			// we do not adjust a thread pool when it's not running.
 			return currentPoolSize;
 		}
+
 		// This is the number of messages processed in this interval.
 		double intervalCnt = exeCnt.getAndSet(0);
 		// Time is the total process time in us.
 		long processTime = exeTime.getAndSet(0);
 		// the time between last adjust and this adjust.
 		long intervalTime = System.currentTimeMillis() - lastAdjustTime;
+
 		// Reset the adjust time.
 		lastAdjustTime = System.currentTimeMillis();
+
 		// The current input queue size.
 		int currentQueueSize = inputQueue.size();
+
 		// Now compute the input rate.
 		double inputRate = (currentQueueSize + intervalCnt - lastAdjustQueueSize) / intervalTime;
 		// The data consume rate.
@@ -407,19 +428,22 @@ public abstract class Stage<Input extends Message> {
 		if (processTime > 0) {
 		    processRate = intervalCnt * 1000 / processTime;
 		}
+
 		// Check drop message if necessary.
 		int dropSize = 0;
 		// The max queue size is {@value #DROP_MSG_COEFFICIENT} times the max messages we can process in the max tolerable delay.
 		int maxQueueSize = (int)(DROP_MSG_COEFFICIENT * maxTolerableDelay * processRate * currentPoolSize);
 		if (currentQueueSize >  maxQueueSize) {
-			// Too many messages, we will drop some of them, leave only half of our capacity.
+			// Too many messages, we will drop some of them, keep only half of our capacity.
 			dropSize = dropMessage(maxQueueSize / (DROP_MSG_COEFFICIENT * 2));
 			LOG.info("Too many messages in stage [{}], we droped {} messages.", stageName, dropSize);
 		}
+
 		// Reset the last queue size.
 		lastAdjustQueueSize = currentQueueSize - dropSize;
 		// Invoke the real adjust method.
 		adjustThreadPool(consumeRate, inputRate, currentQueueSize);
+
 		return currentPoolSize;
 	}
 
@@ -433,20 +457,20 @@ public abstract class Stage<Input extends Message> {
      * "org.apache.niolex.commons.seda.RejectMessage", or this message will be ignored.
      * <br><b>
      * The stage dealing the rejected messages need to be fast and effective, do not take too much time
-     * from the rejection thread pool, or that stage will reject messages, too. Which will form an
-     * infinite loop.
+     * from the rejection thread pool, or that stage will reject messages, too. Those messages will be
+     * discarded to avoid an infinite loop.
      * </b><br>
      * User can override this method to change the default behavior.
      *
-     * @param leaveCnt the number of messages to be dropped
+     * @param keepCnt the number of messages to be kept after the drop
      * @return the number of messages been dropped.
      */
-    protected int dropMessage(int leaveCnt) {
-        int size = inputQueue.size() - leaveCnt;
+    protected int dropMessage(int keepCnt) {
+        int dropCnt = inputQueue.size() - keepCnt;
         int rejectCnt = 0;
         Input in;
         try {
-            for (int i = 0; i < size; ++i) {
+            for (int i = 0; i < dropCnt; ++i) {
                 in = inputQueue.poll();
                 if (in != null) {
                     if (in instanceof RejectMessage) {
@@ -458,7 +482,7 @@ public abstract class Stage<Input extends Message> {
                     return i;
                 }
             }
-            return size;
+            return dropCnt;
         } finally {
             if (rejectCnt > 0) {
                 LOG.warn("#{} RejectMessage droped from stage [{}], this probably means bad program design.",
@@ -468,8 +492,8 @@ public abstract class Stage<Input extends Message> {
     }
 
     /**
-     * Reject this message from the stage. This means this message will not get
-     * processed correctly. User need to deal with it.
+     * Reject this message from the current stage. This means this message will not get
+     * processed correctly. User need to deal with it if necessary.
      * <br>
      * User can override this method to change the default behavior.
      *
@@ -482,6 +506,8 @@ public abstract class Stage<Input extends Message> {
      *         STAGE_BUSY then info is a reference to the stage object
      *     User can use this parameter accordingly.</pre>
      * @param msg the message been rejected
+     * @see #dropMessage(int)
+     * @see #addInput(Message)
      */
     protected void reject(RejectType type, Object info, Message msg) {
         dispatcher.dispatch(new RejectMessage(type, info, msg));
@@ -510,21 +536,25 @@ public abstract class Stage<Input extends Message> {
 
 		// We check whether we need to add, or subtract threads.
 		double thisStatus = inputRate / processRate - currentPoolSize;
+
 		// This is the core part of adjust thread pool size.
 		// We use thisStatus and the lastAdjustStatus to avoid tremble.
 		if (thisStatus > 0.6 || (thisStatus > 0 && queueSize > maxTolerableDelay * processRate * currentPoolSize)) {
 		    // We will need add threads here.
 		    int addNumber = 0;
+
 		    // Rule 1. If lastAdjustStatus < 0, then we will try not add so many threads here.
 		    if (lastAdjustStatus < 0) {
 		        addNumber = (int) (thisStatus * 0.6);
 		    } else {
 		        addNumber = (int) (thisStatus * 0.8);
 		    }
+
 		    // Rule 2. We will try to add at least one thread.
 		    if (addNumber == 0) {
 		        addNumber = 1;
 		    }
+
 		    while (addNumber-- > 0 && currentPoolSize < maxPoolSize) {
 	            addThread();
 	        }
@@ -535,6 +565,7 @@ public abstract class Stage<Input extends Message> {
 		    if (lastAdjustStatus > 0) {
 		        ++subNumber;
 		    }
+
 		    while (subNumber++ < 0 && currentPoolSize > minPoolSize) {
 	            subtractThread();
 	        }
@@ -545,10 +576,13 @@ public abstract class Stage<Input extends Message> {
 	}
 
 	/**
-	 * Shutdown this stage and the internal pool.
+	 * Shutdown this stage and the internal pool. This method will try to terminate the internal
+	 * thread pool if the input queue can be processed in a short time, otherwise it will return
+	 * immediately and let the pool to terminate itself at an appropriate time.
 	 */
 	public void shutdown() {
 		stageStatus = SHUTDOWN;
+
 		if (inputQueue.size() <= 2 * currentPoolSize) {
 			// We have only a small number of messages, we must wait until it's down.
 			// We sleep as most 5 seconds.
@@ -558,10 +592,13 @@ public abstract class Stage<Input extends Message> {
 				if (inputQueue.size() == 0)
 					break;
 			}
-			ListIterator<Worker> it = workerList.listIterator();
+
+			// Interrupt all the threads.
+            @SuppressWarnings("unchecked")
+            LinkedList<Worker> clone = (LinkedList<Worker>) workerList.clone();
 			// Signal all threads try to terminate.
-			while (it.hasNext()) {
-				it.next().interrupt();
+			for (Worker w : clone) {
+				w.interrupt();
 			}
 		}
 	}
@@ -578,9 +615,10 @@ public abstract class Stage<Input extends Message> {
 	}
 
 	/**
-	 * Add a new input message to this stage.
+	 * Add a new input message to this stage. If the current stage has been shutdown, this method
+	 * will reject this message with reject type {@link RejectType#STAGE_SHUTDOWN}.
 	 *
-	 * @param in the message need to be processed.
+	 * @param in the message needs to be processed
 	 */
 	public void addInput(Input in) {
 		if (stageStatus < SHUTDOWN) {
@@ -591,9 +629,9 @@ public abstract class Stage<Input extends Message> {
 	}
 
 	/**
-	 * Get the current input queue element size.
+	 * Get the current input queue size.
 	 *
-	 * @return the number of elements in the input queue.
+	 * @return the number of elements in the input queue
 	 */
 	public int getInputSize() {
 		return inputQueue.size();
@@ -602,7 +640,7 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * Get the current stage name.
 	 *
-	 * @return the current stage name.
+	 * @return the current stage name
 	 */
 	public String getStageName() {
 		return stageName;
@@ -611,7 +649,7 @@ public abstract class Stage<Input extends Message> {
 	/**
 	 * Get the current stage status.
 	 *
-	 * @return the current stage status.
+	 * @return the current stage status
 	 */
 	public int getStageStatus() {
 		return stageStatus;
@@ -621,8 +659,8 @@ public abstract class Stage<Input extends Message> {
 	 * Process the input, and dispatch output to the next stage if needed.
 	 * User need to implement this method in subclass.
 	 *
-	 * @param in the input message.
-	 * @param dispatcher the dispatcher used to dispatch output.
+	 * @param in the input message
+	 * @param dispatcher the dispatcher used to dispatch outputs
 	 */
 	protected abstract void process(Input in, Dispatcher dispatcher);
 

@@ -23,6 +23,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.niolex.commons.test.MockUtil;
+import org.apache.niolex.commons.test.SleepStage;
+import org.apache.niolex.commons.test.TInput;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -166,7 +168,7 @@ public class ConstructTest {
 	 */
 	@BeforeClass
 	public static final void register() {
-		latch = new CountDownLatch(computeSize);
+	    latch = new CountDownLatch(computeSize);
 		disp.register(new EndStage("e8", 8, latch));
 		disp.register(new EndStage("e20", 20, latch));
 		disp.register(new EndStage("e1", 1, latch));
