@@ -469,26 +469,24 @@ public abstract class Stage<Input extends Message> {
         int dropCnt = inputQueue.size() - keepCnt;
         int rejectCnt = 0;
         Input in;
-        try {
-            for (int i = 0; i < dropCnt; ++i) {
-                in = inputQueue.poll();
-                if (in != null) {
-                    if (in instanceof RejectMessage) {
-                        ++rejectCnt;
-                    } else {
-                        reject(RejectType.STAGE_BUSY, this, in);
-                    }
-                } else {
-                    return i;
-                }
+        for (int i = 0; i < dropCnt; ++i) {
+            in = inputQueue.poll();
+            if (in == null) {
+                break;
             }
-            return dropCnt;
-        } finally {
-            if (rejectCnt > 0) {
-                LOG.warn("#{} RejectMessage droped from stage [{}], this probably means bad program design.",
-                        rejectCnt, stageName);
+            if (in instanceof RejectMessage) {
+                ++rejectCnt;
+            } else {
+                reject(RejectType.STAGE_BUSY, this, in);
             }
         }
+
+        if (rejectCnt > 0) {
+            LOG.warn("#{} RejectMessage droped from stage [{}], this probably means bad program design.",
+                    rejectCnt, stageName);
+        }
+
+        return dropCnt;
     }
 
     /**
@@ -583,7 +581,7 @@ public abstract class Stage<Input extends Message> {
 	public void shutdown() {
 		stageStatus = SHUTDOWN;
 
-		if (inputQueue.size() <= 2 * currentPoolSize) {
+		if (inputQueue.size() <= 100 * processRate * currentPoolSize) {
 			// We have only a small number of messages, we must wait until it's down.
 			// We sleep as most 5 seconds.
 			int i = 500;

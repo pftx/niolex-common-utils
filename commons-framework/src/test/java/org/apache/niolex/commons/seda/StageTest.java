@@ -25,6 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.reflect.MethodUtil;
 import org.apache.niolex.commons.seda.RejectMessage.RejectType;
 import org.apache.niolex.commons.test.SleepStage;
 import org.apache.niolex.commons.test.TInput;
@@ -168,11 +169,22 @@ public class StageTest {
 		f.setLong(ss, 100);
 		System.out.println(ss.getInputSize());
 		int a = ss.getInputSize();
+
+		// Scenario 1. drop it.
 		ss.adjustThreadPool();
 		System.out.println(ss.getInputSize());
 		a -= ss.getInputSize();
 		assertTrue(a > 10000);
+
+		// Scenario 2. no drop.
 		ss.dropMessage(-2);
+
+		// Scenario 3. drop it.
+		for (int i = 0; i < 20000; ++i) {
+            ss.addInput(in);
+		}
+		MethodUtil.invokeMethod(ss, "tryTerminate");
+		ss.dropMessage(10);
 		ss.shutdown();
 	}
 
