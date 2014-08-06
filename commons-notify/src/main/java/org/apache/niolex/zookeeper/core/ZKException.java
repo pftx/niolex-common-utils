@@ -61,9 +61,6 @@ public class ZKException extends RuntimeException {
                 case AUTHFAILED:
                     code = Code.NO_AUTH;
                     break;
-                case SYSTEMERROR:
-                    code = Code.SYSTEM_ERROR;
-                    break;
                 case CONNECTIONLOSS:
                     code = Code.DISCONNECTED;
                     break;
@@ -73,6 +70,10 @@ public class ZKException extends RuntimeException {
                 case NODEEXISTS:
                     code = Code.NODE_EXISTS;
                     break;
+                case SYSTEMERROR:
+                default:
+                    code = Code.SYSTEM_ERROR;
+                    break;
             }
         } else if (e instanceof InterruptedException) {
             code = Code.INTERRUPT;
@@ -80,6 +81,7 @@ public class ZKException extends RuntimeException {
         return new ZKException(message, e, code);
     }
 
+    // The exception code.
     private final Code code;
 
     public ZKException(String message, Throwable cause, Code code) {

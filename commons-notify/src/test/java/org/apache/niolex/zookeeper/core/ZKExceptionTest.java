@@ -104,7 +104,7 @@ public class ZKExceptionTest {
     @Test
     public void testGetMessage3() throws Exception {
         ZKException zk = ZKException.makeInstance("not yet implemented", KeeperException.create(KeeperException.Code.APIERROR));
-        assertEquals(zk.getCode(), ZKException.Code.OTHER);
+        assertEquals(zk.getCode(), ZKException.Code.SYSTEM_ERROR);
     }
 
 }

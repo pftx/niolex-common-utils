@@ -24,7 +24,6 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
-import org.apache.niolex.commons.util.SystemUtil;
 import org.apache.niolex.zookeeper.watcher.CommonRecoverableWatcher;
 import org.apache.niolex.zookeeper.watcher.RecoverableWatcher;
 import org.apache.niolex.zookeeper.watcher.WatcherHolder;
@@ -42,6 +41,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The main Zookeeper connector, manage zookeeper and retry connection.
  * We encapsulate the common add, update, delete and watch operations for Zookeeper.
+ * <br>
+ * If user want to operate on the raw Zookeeper, use {@link #zooKeeper()}.
  *
  * @author Xie, Jiyun
  * @version 1.0.0, Date: 2012-6-10
@@ -186,14 +187,14 @@ public class ZKConnector implements Watcher {
             } catch (Exception e) {
                 // We don't care, we will retry again and again.
                 LOG.warn("Error occured when reconnect - {}, system will retry.", e.toString());
-                SystemUtil.sleep(sessionTimeout / 3);
+                ThreadUtil.sleep(sessionTimeout / 3);
             }
         }
     }
 
     /**
      * Close the connection to ZK server.
-     * 注意！一但关闭连接，请立即丢弃该对象，该对象的所有的方法的结果将不确定
+     * 注意！一但关闭连接，请立即丢弃该对象，该对象的所有的方法的行为将不确定
      */
     public void close() {
         try {
@@ -242,10 +243,10 @@ public class ZKConnector implements Watcher {
     /**
      * Attach a watcher to the path you want to watch.
      * We are using prototype for convenience, but the return type is
-     * fixed:
+     * fixed:<pre>
      *  when watch data, return byte[]
-     *  when watch children, return List<String>
-     * If user use other types as return type, a ClassCastException will throw.
+     *  when watch children, return List<String></pre>
+     * If user use other types as return type, a ClassCastException will be thrown.
      *
      * @param path the zookeeper path you want to watch
      * @param recoWatcher the recoverable watcher
@@ -488,7 +489,7 @@ public class ZKConnector implements Watcher {
     }
 
     /**
-     * Update data of a node.
+     * Update data of a node with string saved as UTF8.
      *
      * @param path the node path
      * @param data the new node data

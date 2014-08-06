@@ -20,7 +20,7 @@ package org.apache.niolex.zookeeper.core;
 import java.util.List;
 
 /**
- * The data or children change listener.
+ * The data or children change listener interface.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
