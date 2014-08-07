@@ -40,7 +40,7 @@ public class App extends ZKConnector {
     private static App APP;
 
     /**
-     * Init the global instance only once.
+     * Init the global instance only once. The second call to this method will have no effect.
      *
      * @param clusterAddress the zookeeper cluster address
      * @param sessionTimeout the zookeeper connection session timeout in milliseconds
@@ -55,7 +55,7 @@ public class App extends ZKConnector {
     /**
      * Get the global instance.
      *
-     * @return the global instance, null if not initialized.
+     * @return the global instance, null if not initialized
      */
     public static App instance() {
         return APP;

@@ -36,6 +36,13 @@ import com.google.common.collect.Maps;
 /**
  * The core class of this notify framework. Watch the changes of node data and node properties.
  * User can also change node data and node properties.
+ * <br>
+ * Users can use this class as:<pre>
+ * 1. Global configuration center.
+ * 2. Message middle-ware.
+ * 3. Signal dispatcher.
+ * etc...
+ * </pre>
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
@@ -199,7 +206,7 @@ public class Notify implements ZKListener {
     /**
      * Add this specified listener.
      *
-     * @param listener element to be appended to this notify
+     * @param listener listener to be added to this notify
      */
     public synchronized void addListener(Listener listener) {
         list.add(listener);
@@ -208,7 +215,7 @@ public class Notify implements ZKListener {
     /**
      * Remote this specified listener.
      *
-     * @param listener element to be removed from this notify, if present
+     * @param listener listener to be removed from this notify, if present
      * @return true if success, false if not found.
      */
     public synchronized boolean removeListener(Listener listener) {

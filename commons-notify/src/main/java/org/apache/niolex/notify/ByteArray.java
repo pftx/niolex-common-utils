@@ -20,7 +20,7 @@ package org.apache.niolex.notify;
 import java.util.Arrays;
 
 /**
- * Encapsulate raw byte array, to support hash map. Implement {@link #hashCode()}
+ * Encapsulate raw byte array, to support use as hash map key. Implement {@link #hashCode()}
  * and {@link #equals(Object)} inside.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>

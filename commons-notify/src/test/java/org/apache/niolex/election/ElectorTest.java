@@ -55,6 +55,7 @@ public class ElectorTest {
             System.out.println("Current Node Now run as Leader.");
 
         }};
+
     private Elector.Listener mocLi;
 
     /**

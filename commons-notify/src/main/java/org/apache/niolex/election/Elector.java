@@ -139,9 +139,9 @@ public class Elector extends ZKConnector implements ZKListener {
     }
 
     /**
-     * @return the current node zoopeeker path
+     * @return the current node zookeeper path
      */
-    public synchronized String getCurrentPath() {
+    public String getCurrentPath() {
         return selfPath;
     }
 

@@ -51,7 +51,7 @@ public class AppTest {
      * @throws IOException
      */
     @Test
-    public void testProp() throws IOException {
+    public void testInstanceProp() throws IOException {
         App app = App.instance();
         Notify notify = app.getNotify("/notify/test");
         notify.replaceProperty("a".getBytes(), "I Love it.".getBytes());
@@ -64,7 +64,7 @@ public class AppTest {
      * @throws IOException
      */
     @Test
-    public void testNull() throws IOException {
+    public void testAppNull() throws IOException {
         App app = App.instance();
         Notify notify = app.getNotify("/notify/test/tmplevt");
         assertNull(notify);
@@ -83,6 +83,17 @@ public class AppTest {
         Notify notify3 = APP.getNotify(new String("/notify/test/tmp"));
         assertNotEquals(notify1, notify2);
         assertEquals(notify3, notify2);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testClose() throws Exception {
+        App app = new App(URL, 10000);
+        app.notifyMap = null;
+        try {
+            app.getNotify("/notify/test");
+        } finally {
+            app.close();
+        }
     }
 
 }

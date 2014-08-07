@@ -19,6 +19,7 @@ package org.apache.niolex.notify;
 
 import static org.junit.Assert.*;
 
+import org.apache.niolex.commons.reflect.FieldUtil;
 import org.junit.Test;
 
 /**
@@ -69,6 +70,21 @@ public class ByteArrayTest {
         ByteArray t1 = new ByteArray(a);
         ByteArray t2 = new ByteArray(b);
         assertEquals(t1, t2);
+    }
+
+    /**
+     * Test method for {@link org.apache.niolex.notify.ByteArray#equals(java.lang.Object)}.
+     */
+    @Test
+    public void testEqualsFakeCode() {
+        byte[] a = "Hello Worldl".getBytes();
+        byte[] b = "Hello World1".getBytes();
+        assertFalse(b.equals(a));
+        ByteArray t1 = new ByteArray(a);
+        ByteArray t2 = new ByteArray(b);
+        FieldUtil.setValue(t2, "hashCode", t1.hashCode);
+        assertEquals(t1.hashCode, t2.hashCode());
+        assertNotEquals(t1, t2);
     }
 
     /**
