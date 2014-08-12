@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 public class ConnectionWorker implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(ConnectionWorker.class);
 	private static final Map<String, Executer> COMMAND_MAP = new HashMap<String, Executer>();
-	private static final ThreadLocal<String> ENDL_HOLDER = new InheritableThreadLocal<String>();
+	private static final ThreadLocal<String> ENDL_HOLDER = new ThreadLocal<String>();
 	private static String AUTH_INFO = null;
 
 	// Add all executers here.
@@ -71,6 +71,15 @@ public class ConnectionWorker implements Runnable {
 	}
 
 	/**
+	 * Set authentication info to worker.
+	 *
+	 * @param s the authentication string
+	 */
+	public static final void setAuthInfo(String s) {
+	    AUTH_INFO = s;
+	}
+
+	/**
 	 * Get the end line character for this current connection.
 	 *
 	 * @return The end line character
@@ -78,15 +87,6 @@ public class ConnectionWorker implements Runnable {
 	public static String endl() {
 	    String endl = ENDL_HOLDER.get();
 	    return endl == null ? "\n" : endl;
-	}
-
-	/**
-	 * Set authentication info to worker.
-	 *
-	 * @param s the authentication string
-	 */
-	public static final void setAuthInfo(String s) {
-	    AUTH_INFO = s;
 	}
 
 	// Scan the input stream.
@@ -170,6 +170,7 @@ public class ConnectionWorker implements Runnable {
 			}
 			Object parent = beanMap.get(path.getName());
 			int pathIdx = 1;
+
 			// We need to break this while loop.
 			Outter:
 			while (parent != null && path != null) {
@@ -260,6 +261,7 @@ public class ConnectionWorker implements Runnable {
 				++pathIdx;
 				path = path.next();
 			}
+
 			if (parent == null) {
 			    writeAndFlush("Path Not Found.");
 				continue;
@@ -267,6 +269,7 @@ public class ConnectionWorker implements Runnable {
 			if (path != null) {
 				continue;
 			}
+
 			Executer ex = COMMAND_MAP.get(comm);
 			ex.execute(parent, out, args);
 		}
@@ -329,7 +332,7 @@ public class ConnectionWorker implements Runnable {
 	 * @throws IOException
 	 */
 	protected void writeAndFlush(String s) throws IOException {
-	    out.write(StringUtil.strToAsciiByte(s + endl()));
+	    out.write(StringUtil.strToUtf8Byte(s + endl()));
 	    out.flush();
 	}
 

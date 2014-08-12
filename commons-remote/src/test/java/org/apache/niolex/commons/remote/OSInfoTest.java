@@ -43,8 +43,7 @@ public class OSInfoTest {
 	public void testGetter() throws IOException {
 		OSInfo os = new OSInfo();
 		System.out.println(os.getOsName());
-		System.out.println(os.getOsmxb());
-		System.out.println(os.getSystemInfo());
+		System.out.println(os.getSystemInfo().generateSystemInfo());
 		System.out.println(os.getOsArch());
 		System.out.println(os.getOsVersion());
 	}

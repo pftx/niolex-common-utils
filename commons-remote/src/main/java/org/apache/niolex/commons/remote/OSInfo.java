@@ -24,16 +24,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
-import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
+import org.apache.niolex.commons.codec.IntegerUtil;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.test.SystemInfo;
+import org.apache.niolex.commons.util.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,6 @@ public class OSInfo implements Invokable {
 	private static final int CPUTIME = 30;
 
 	private SystemInfo systemInfo = SystemInfo.getInstance();
-	private OperatingSystemMXBean osmxb;
 	private String osName;
 	private String osArch;
 	private String osVersion;
@@ -66,7 +65,6 @@ public class OSInfo implements Invokable {
 		osName = props.getProperty("os.name"); // 操作系统名称
 		osArch = props.getProperty("os.arch"); // 操作系统构架
 		osVersion = props.getProperty("os.version"); // 操作系统版本
-		osmxb = ManagementFactory.getOperatingSystemMXBean();
 	}
 
 	/**
@@ -78,70 +76,88 @@ public class OSInfo implements Invokable {
 	public void invoke(OutputStream out, String[] args) throws IOException {
 		final String endLine = endl();
 		StringBuilder sb = new StringBuilder();
-		sb.append("----------------").append(osName).append(' ').append(osArch);
-		sb.append(' ').append(osVersion).append("----------------").append(endLine);
+		sb.append("================").append(osName).append(' ').append(osArch);
+		sb.append(" Version ").append(osVersion).append("================").append(endLine);
+		systemInfo.refreshSystemInfo();
 
-		sb.append("Memory Info:").append(endLine);
-		final long millionSize = 1024 * 1024;
-		MemoryMXBean m = ManagementFactory.getMemoryMXBean();
-		MemoryUsage heapMem = m.getHeapMemoryUsage();
-		long totalMemorySize = heapMem.getCommitted() / millionSize;// 总的物理内存
-		long usedMemorySize = heapMem.getUsed() / millionSize;// 已使用的物理内存
-		long freePhysicalMemorySize = totalMemorySize - usedMemorySize;// 剩余的物理内存
+		// Cat 1. Memory.
+		sb.append("1. Memory Info:").append(endLine);
 
-		sb.append("    Heap Total ").append(totalMemorySize).append("MB, Used ").append(usedMemorySize);
-		sb.append("MB, Free ").append(freePhysicalMemorySize).append("MB").append(endLine);
-		List<GarbageCollectorMXBean> gcList = ManagementFactory.getGarbageCollectorMXBeans();
-		for (GarbageCollectorMXBean bean : gcList) {
-			sb.append("    ").append(bean.getName()).append(" GC Count ").append(bean.getCollectionCount());
-			sb.append(", Time ").append(bean.getCollectionTime()).append(endLine);
-		}
 		// Next is Linux memory info and disk info, windows if ignored.
 		String[] cmsArr = null;
 		if (osName.toLowerCase().startsWith("win")) {
-			//
+		    //
 		} else {
-			cmsArr = getCpuMemSwapForLinux();
+		    cmsArr = getLinuxCpuAndMemInfo();
 		}
 		if (cmsArr != null) {
-			sb.append("    ").append(cmsArr[1]).append(endLine);
-			sb.append("    ").append(cmsArr[2]).append(endLine);
+		    sb.append("    ").append(cmsArr[1]).append(endLine);
+		    sb.append("    ").append(cmsArr[2]).append(endLine);
+		}
+		MemoryUsage heapMem = systemInfo.getHeapMem();
+		long freeMem = heapMem.getCommitted() - heapMem.getUsed();
+
+		sb.append(String.format("    JVM %-8s Total %7sB, Used %7sB, Free %7sB", "Heap",
+		        IntegerUtil.formatSize(heapMem.getCommitted()),
+		        IntegerUtil.formatSize(heapMem.getUsed()), IntegerUtil.formatSize(freeMem)));
+		sb.append(endLine);
+
+		MemoryUsage nonHeap = systemInfo.getNonHeapMem();
+		freeMem = nonHeap.getCommitted() - nonHeap.getUsed();
+		sb.append(String.format("    JVM %-8s Total %7sB, Used %7sB, Free %7sB", "Non-Heap",
+		        IntegerUtil.formatSize(nonHeap.getCommitted()),
+		        IntegerUtil.formatSize(nonHeap.getUsed()), IntegerUtil.formatSize(freeMem)));
+		sb.append(endLine);
+
+		// Cat 2. GC.
+		sb.append(endLine).append("2. GC Info:").append(endLine);
+		List<GarbageCollectorMXBean> gcList = ManagementFactory.getGarbageCollectorMXBeans();
+		for (GarbageCollectorMXBean bean : gcList) {
+		    sb.append(String.format("    %-20s Collection Count %4d, Time %6dms", bean.getName() + " GC",
+		            bean.getCollectionCount(), bean.getCollectionTime()));
+		    sb.append(endLine);
 		}
 
-		sb.append(endLine).append("CPU Info:").append(endLine);
+		// Cat 3. CPU.
+		sb.append(endLine).append("3. CPU Info:").append(endLine);
 		if (osName.toLowerCase().startsWith("win")) {
-			int retn = getCpuIdleForWindows();
-			sb.append("    CPU Idle ").append(formatPercent(retn)).append(endLine);
+			int retn = getWindowsCpuIdle();
+			sb.append("    CPU Number ").append(systemInfo.getCpuNumber());
+			sb.append(" Idle ").append(formatPercent(retn)).append(endLine);
 		} else if (cmsArr != null) {
 			// We just think it's Linux.
 			sb.append("    ").append(cmsArr[0]).append(endLine);
-			sb.append("    Load Average ").append(osmxb.getSystemLoadAverage()).append(endLine);
+			sb.append("    Load Average ").append(systemInfo.getLoadAverage()).append(endLine);
 		}
 
-		sb.append(endLine).append("Disk Info:").append(endLine);
-		final long gSize = millionSize * 1024;
+		// Cat 4. Disk.
+		sb.append(endLine).append("4. Disk Info:").append(endLine);
+		final long gSize = Const.G;
 		if (osName.toLowerCase().startsWith("win")) {
 			File[] roots = File.listRoots();// 获取磁盘分区列表
 			for (int i = 0; i < roots.length; i++) {
 				File root = roots[i];
-				long freeSpace = root.getFreeSpace() / gSize;
-				long totalSpace = root.getTotalSpace() / gSize;
-				long usableSpace = root.getUsableSpace() / gSize;
-				sb.append("    Info of [").append(root).append("]:").append(endLine);
-				sb.append("        Free ").append(freeSpace).append("G, Total ").append(totalSpace);
-				sb.append("G, Usable ").append(usableSpace).append("G").append(endLine);
+				long free = root.getFreeSpace() / gSize;
+				long total = root.getTotalSpace() / gSize;
+				long usable = root.getUsableSpace() / gSize;
+				long usePer = total == 0 ? 0 : (total - free) * 100 / total;
+				sb.append("    [").append(root).append("]:");
+				sb.append(String.format(" Total %5dG, Usable %5dG, Used %2d%%",
+				        total, usable, usePer));
+				sb.append(endLine);
 			}
 		} else {
-			List<String> list = getDiskFreeForLinux();
+			List<String> list = getLinuxDiskInfo();
 			for (String s : list) {
 				sb.append("    ").append(s).append(endLine);
 			}
 		}
 
-		sb.append(endLine).append("Threads Info:").append(endLine);
-		systemInfo.refreshSystemInfo();
+		// Cat 5. Threads.
+		sb.append(endLine).append("5. Threads Info:").append(endLine);
 		sb.append("    Total Threads ").append(systemInfo.getTotalThreadCount());
 		sb.append(", Active ").append(systemInfo.getActiveThreadCount()).append(endLine);
+
 		// At the end.
 		out.write(StringUtil.strToUtf8Byte(sb.toString()));
 	}
@@ -149,7 +165,7 @@ public class OSInfo implements Invokable {
 	/**
 	 * Format integer into percent format.
 	 *
-	 * @param k
+	 * @param k the integer to be formatted
 	 * @return the percent in string format
 	 */
 	public String formatPercent(int k) {
@@ -157,11 +173,11 @@ public class OSInfo implements Invokable {
 	}
 
 	/**
-	 * 获得CPU空闲率.
+	 * Get the windows CPU idle time.
 	 *
-	 * @return 返回cpu空闲率
+	 * @return the percent of CPI idle time
 	 */
-	public int getCpuIdleForWindows() {
+	public int getWindowsCpuIdle() {
 		try {
 			String procCmd = "wmic.exe process get Caption, KernelModeTime, UserModeTime";
 			// 取进程信息
@@ -172,15 +188,15 @@ public class OSInfo implements Invokable {
 			long idle = c1[1] - c0[1];
 			return (int) (idle * 10000 / total);
 		} catch (Exception e) {
-			LOG.error("Failed to get windows CPU info.", e);
+			LOG.error("Failed to get windows CPU idle.", e);
 			return -1;
 		}
 	}
 
 	/**
-	 * 获取CPU使用时间分配情况
+	 * Get windows CPU time.
 	 *
-	 * @param proc
+	 * @param proc the process
 	 * @return CPU status
 	 */
 	public long[] getWindowsCPUTime(final Process proc) {
@@ -214,7 +230,7 @@ public class OSInfo implements Invokable {
 			retn[0] = totalTime;
 			retn[1] = idleTime;
 		} catch (Exception e) {
-			LOG.error("Failed to get windows CPU info.", e);
+			LOG.error("Failed to get windows CPU time.", e);
 		} finally {
 			if (scan != null) {
 				scan.close();
@@ -225,9 +241,10 @@ public class OSInfo implements Invokable {
 
 	/**
 	 * Get Linux CPU Info, Memory Info, and Swap Info all at the same time.
+	 *
 	 * @return the information from top result
 	 */
-	public String[] getCpuMemSwapForLinux() {
+	public String[] getLinuxCpuAndMemInfo() {
 		Scanner scan = null;
 		try {
 			Process process = Runtime.getRuntime().exec("top -b -n 1");
@@ -260,9 +277,10 @@ public class OSInfo implements Invokable {
 
 	/**
 	 * Get the Linux disk free information.
+	 *
 	 * @return the result from "df -h"
 	 */
-	public List<String> getDiskFreeForLinux() {
+	public List<String> getLinuxDiskInfo() {
 		Scanner scan = null;
 		try {
 			Process process = Runtime.getRuntime().exec("df -h");
@@ -286,10 +304,6 @@ public class OSInfo implements Invokable {
 
 	public SystemInfo getSystemInfo() {
 		return systemInfo;
-	}
-
-	public OperatingSystemMXBean getOsmxb() {
-		return osmxb;
 	}
 
 	public String getOsName() {

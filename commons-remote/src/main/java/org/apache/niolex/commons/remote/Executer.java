@@ -60,7 +60,7 @@ public abstract class Executer {
      * @throws IOException
      */
     protected static void writeAndFlush(OutputStream out, String s) throws IOException {
-        out.write(StringUtil.strToAsciiByte(s));
+        out.write(StringUtil.strToUtf8Byte(s));
         out.flush();
     }
 

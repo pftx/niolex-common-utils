@@ -167,4 +167,28 @@ public class PathTest {
 		assertEquals("Invalid Path at benc[go", p.toString());
 	}
 
+	@Test
+	public void testMakePath6()
+	        throws Exception {
+	    Path p = Path.parsePath("benc1233]");
+	    System.out.println(p);
+	    assertEquals("Invalid Path at benc1233", p.toString());
+	}
+
+	@Test
+	public void testMakePath7()
+	        throws Exception {
+	    Path p = Path.parsePath("benc[1233]a[]");
+	    System.out.println(p);
+	    assertEquals("Invalid Path at benc[1233]a[ => benc[1233]", p.toString());
+	}
+
+	@Test
+	public void testMakePath8()
+	        throws Exception {
+	    Path p = Path.parsePath("benc[1233]a{}");
+	    System.out.println(p);
+	    assertEquals("Invalid Path at benc[1233]a{ => benc[1233]", p.toString());
+	}
+
 }

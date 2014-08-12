@@ -105,7 +105,7 @@ public class BeanServer implements Runnable {
 	/**
 	 * Start this bean server to listen to telnet request.
 	 *
-	 * @return true if server started
+	 * @return true if server started successfully
 	 */
 	public boolean start() {
 		try {
@@ -159,7 +159,7 @@ public class BeanServer implements Runnable {
             } catch (SocketTimeoutException e) {
                 // Ignore the timeout exception thrown by accept.
             } catch (IOException e) {
-            	LOG.error("Can not build the connection with client.", e);
+            	LOG.error("Can not build the connection with this client.", e);
             }
         }
         LOG.info("BeanServer stoped.");

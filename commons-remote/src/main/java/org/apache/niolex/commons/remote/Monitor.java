@@ -29,12 +29,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CircularList;
 import org.apache.niolex.commons.concurrent.ConcurrentUtil;
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.util.DateTimeUtil;
 
 /**
  * Monitor the system internal status.
  *
- * User application can add the internal status as KV pair into this system,
+ * User application can add the internal status as KV pair into this monitor,
  * and we will attach a time stamp with every value and store the latest M
  * items in memory.
  *
@@ -96,12 +97,14 @@ public class Monitor implements Runnable {
 	 * @param value the current value
 	 */
 	public void addValue(String key, int value) {
-		CircularList<MonItem> set = dataMap.get(key);
-		if (set == null) {
-		    set = ConcurrentUtil.initMap(dataMap, key, new CircularList<MonItem>(maxOldItems));
+		CircularList<MonItem> list = dataMap.get(key);
+		if (list == null) {
+		    list = ConcurrentUtil.initMap(dataMap, key, new CircularList<MonItem>(maxOldItems));
 		}
+
 		MonItem e = new MonItem(value);
-		set.add(e);
+		list.add(e);
+
 		// Process all the real time connections.
 		ConcurrentLinkedQueue<OutputStream> que = realtimeMap.get(key);
 		if (que != null && !que.isEmpty()) {
@@ -145,7 +148,7 @@ public class Monitor implements Runnable {
 	/**
 	 * A connection use this method to monitor the status of the specified key.
 	 *
-	 * @param out the output stream to write results.
+	 * @param out the output stream to write results
 	 * @param key the key to monitor
 	 * @param parameter the parameter, with the following options:<pre>
 	 * Option	Meaning
@@ -174,7 +177,7 @@ public class Monitor implements Runnable {
 	/**
 	 * Print the historical information into this output stream.
 	 *
-	 * @param out the output stream to write results.
+	 * @param out the output stream to write results
 	 * @param key the key to monitor
 	 */
 	private void printHistorical(OutputStream out, String key) throws IOException {
@@ -195,7 +198,7 @@ public class Monitor implements Runnable {
 	/**
 	 * Attach the output stream for real time monitor status update.
 	 *
-	 * @param out the output stream to write results.
+	 * @param out the output stream to write results
 	 * @param key the key to monitor
 	 */
 	private void attachReadTime(OutputStream out, String key) {
@@ -211,10 +214,8 @@ public class Monitor implements Runnable {
 	 */
 	public void stop() {
 	    this.isWorking = false;
-	    try {
-	        this.thread.interrupt();
-            this.thread.join();
-        } catch (InterruptedException e) { }
+	    this.thread.interrupt();
+	    ThreadUtil.join(thread);
 	}
 
 	/**

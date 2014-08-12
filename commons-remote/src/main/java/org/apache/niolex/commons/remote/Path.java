@@ -33,7 +33,7 @@ public class Path {
 	 * @version 1.0.5, $Date: 2012-11-23$
 	 */
 	public static enum Type {
-		FIELD, MAP, ARRAY, INVALID
+		FIELD, MAP, ARRAY, INVALID;
 	}
 
 	// Path Type, default to Field.
@@ -54,8 +54,8 @@ public class Path {
 	/**
 	 * The static method to parse a Path chain from the string representation.
 	 *
-	 * @param strPath the string path.
-	 * @return the parsed Path chain.
+	 * @param strPath the string path
+	 * @return the parsed Path chain
 	 */
 	public static Path parsePath(String strPath) {
 		strPath += '.';
@@ -175,6 +175,20 @@ public class Path {
 	}
 
 	/**
+	 * Make path for field section.
+	 *
+	 * @param strPath
+	 * @param start the field start index
+	 * @param end the field end index
+	 * @return the path
+	 */
+	private static Path makePath(String strPath, int start, int end) {
+	    Path p = new Path();
+	    p.name = strPath.substring(start, end);
+	    return p;
+	}
+
+	/**
 	 * Make path for map section.
 	 *
 	 * @param strPath
@@ -203,20 +217,6 @@ public class Path {
 		Path p = makePath(strPath, start, end);
 		p.type = Type.ARRAY;
 		p.idx = idx2;
-		return p;
-	}
-
-	/**
-	 * Make path for field section.
-	 *
-	 * @param strPath
-	 * @param start the field start index
-	 * @param end the field end index
-	 * @return the path
-	 */
-	private static Path makePath(String strPath, int start, int end) {
-		Path p = new Path();
-		p.name = strPath.substring(start, end);
 		return p;
 	}
 

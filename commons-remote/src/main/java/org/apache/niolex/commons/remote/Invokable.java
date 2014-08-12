@@ -32,9 +32,9 @@ public interface Invokable {
 	/**
 	 * Do real work here.
 	 *
-	 * @param out The output stream is for write invoke result.
-	 * @param args The arguments from remote client.
-	 * It's of the following format:<pre>
+	 * @param out the output stream for users to write invoke result
+	 * @param args the arguments from remote client
+	 * It's in the following format:<pre>
 	 * Index	Explain
 	 * 0		Command Name
 	 * 1		Object Path
