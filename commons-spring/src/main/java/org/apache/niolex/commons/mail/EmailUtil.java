@@ -76,21 +76,22 @@ public class EmailUtil {
      * @throws MailException
      * @throws MessagingException
      */
-    public static void sendHtmlMail(String from, String to, String title, String text) throws MailException, MessagingException {
+    public static void sendHtmlMail(String from, String to, String title, String text)
+            throws MailException, MessagingException {
         sendMail(from, Collections.singletonList(to), title, text, null, null, true, "UTF-8");
     }
 
     /**
-     * Send an email
+     * Send an email.
      * 同步发送指定参数的邮件
      *
      * @param from the email sender
      * @param tos the email receiver list
      * @param title the email title
      * @param text the email body
-     * @param attachments a List<File> attachements
-     * @param priority priority from 1-5 higher - lower
-     * @param isHtml is the text in html format or not
+     * @param attachments a list of files attachments
+     * @param priority priority from 1-5 the smaller is higher
+     * @param isHtml is the text in HTML format or not
      * @param encoding the encoding of email, i.e. "GBK"、"UTF-8"
      * @throws MailException
      * @throws MessagingException
@@ -110,33 +111,24 @@ public class EmailUtil {
         if (tos != null) {
             toArr = tos.toArray(new String[tos.size()]);
         }
-        sendMail(from, toArr, new String[] {from}, title, text, att, priority, isHtml, encoding);
+        sendMail(from, toArr, null, title, text, att, priority, isHtml, encoding);
     }
 
     /**
+     * Send an email.
      * 同步发送指定参数的邮件
      *
-     * @param from
-     *            邮件发送人
-     * @param tos
-     *            邮件收件人
-     * @param ccs
-     *            邮件抄送人
-     * @param title
-     *            邮件标题
-     * @param text
-     *            邮件正文
-     * @param attachments
-     *            附件List<Pair<String, InputStreamSource>>
-     * @param priority
-     *            邮件优先级1-5从高到低
-     * @param isHtml
-     *            是否以html方式发送(true->是，false->否)
-     * @param encoding
-     *            邮件编码格式"GBK"、"UTF-8"等
+     * @param from the email sender
+     * @param tos the email receivers array
+     * @param ccs the carbon copiers array
+     * @param title the email title
+     * @param text the email body
+     * @param attachments the email attachments list
+     * @param priority priority from 1-5 the smaller is higher
+     * @param isHtml is the text in HTML format or not
+     * @param encoding the encoding of email, i.e. "GBK"、"UTF-8"
      * @throws MailException
      * @throws MessagingException
-     *             抛出异常
      */
     public static void sendMail(String from, String[] tos, String[] ccs, String title, String text,
             List<Pair<String, InputStreamSource>> attachments, String priority, boolean isHtml,
@@ -145,6 +137,7 @@ public class EmailUtil {
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, encoding);
 
         messageHelper.setFrom(from);
+        messageHelper.setBcc(from);
 
         if (ArrayUtils.isEmpty(tos)) {
             throw new IllegalArgumentException("<tos> can not be null or empty!");

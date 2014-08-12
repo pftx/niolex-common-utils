@@ -1,5 +1,5 @@
 /**
- * Record.java
+ * LockManager.java
  *
  * Copyright 2014 the original author or authors.
  *
@@ -15,46 +15,30 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.storage;
+package org.apache.niolex.commons.memory;
 
 /**
+ * This lock manager is used to synchronize the read and write of page from the disk volume.
+ *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2014-1-2
+ * @since 2014-8-12
  */
-public class Record {
+public class LockManager {
 
-    public static enum Type {
-        WHOLE, FIRST, MIDDLE, LAST;
+    public static LockManager getInstance() {
+        return null;
     }
 
-    public static final int MAX_SIZE = 0x3fffffff;
+    public static class Lock {
 
-    private int length;
-    private byte[] data;
-    /**
-     * @return the length
-     */
-    public int getLength() {
-        return length;
+        public void unlock() {
+            ;
+        }
     }
-    /**
-     * @param length the length to set
-     */
-    public void setLength(int length) {
-        this.length = length;
-    }
-    /**
-     * @return the data
-     */
-    public byte[] getData() {
-        return data;
-    }
-    /**
-     * @param data the data to set
-     */
-    public void setData(byte[] data) {
-        this.data = data;
+
+    public Lock lockPosition(int pos) {
+        return null;
     }
 
 }

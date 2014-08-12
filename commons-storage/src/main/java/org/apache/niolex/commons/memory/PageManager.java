@@ -1,7 +1,7 @@
 /**
- * Config.java
+ * PageManager.java
  *
- * Copyright 2013 the original author or authors.
+ * Copyright 2014 the original author or authors.
  *
  * We licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
@@ -15,13 +15,13 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.niolex.commons.storage;
+package org.apache.niolex.commons.memory;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2013-12-31
+ * @since 2014-8-12
  */
-public interface Config {
+public class PageManager {
 
 }

@@ -20,12 +20,13 @@ package org.apache.niolex.commons.storage;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 import org.apache.niolex.commons.test.Check;
 
 /**
- * One volume is a disk file, stores records in it.
- * The records are managed by page, and one page have 16K as the minimum size.
+ * One volume is a disk file, stores pages in it. One page have 16K as the minimum size.
  * We store the page size as a meta data into the volume header.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -35,7 +36,10 @@ import org.apache.niolex.commons.test.Check;
 public class Volume {
 
     /**
-     * The volume file header size.
+     * The volume header size. Volume header is 32bit, used 7 bits for now.
+     * xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+     * ^^^^ The volume header magic code.
+     *      ^^^ The page size of this volume.
      */
     private static final int VOL_HEADER_SIZE = 4;
 
@@ -49,9 +53,20 @@ public class Volume {
      */
     private static final int VOL_HEADER_MARK = 0xb1000000;
 
+    /**
+     * The page size mask.
+     */
+    private static final int VOL_PAGE_SIZE_MASK = 0xe000000;
+
+    /**
+     * The page size shift bits.
+     */
+    private static final int VOL_PAGE_SIZE_SHIFT = 25;
+
     private final String fileName;
     private Page.Size pageSize;
     private RandomAccessFile file;
+    private FileChannel channel;
     private boolean initialized;
 
     /**
@@ -65,41 +80,19 @@ public class Volume {
     }
 
     /**
-     * Initialize this volume with file header.
-     *
-     * @throws IOException
-     */
-    public synchronized void initialize() throws IOException {
-        Check.isTrue(!initialized);
-        file = new RandomAccessFile(fileName, "rwd");
-        if (file.length() > 0) {
-            readHeader();
-        } else {
-            throw new IllegalStateException("Please init the volume with page size.");
-        }
-    }
-
-    /**
-     * Read file header.
-     */
-    private void readHeader() throws IOException {
-        int header = file.readInt();
-        Check.isTrue((header & VOL_HEADER_MASK) == VOL_HEADER_MARK,
-                "This is not a valid volume file.");
-        pageSize = Page.Size.decode(header & 0xf);
-        initialized = true;
-    }
-
-    /**
-     * Initialize this volume with page size.
+     * Initialize this volume. If it's an old volume, read page size from file, else initialize a new volume
+     * with the specified page size.
      *
      * @param pageSize the page size
      * @throws IOException
      */
     public synchronized void initialize(Page.Size pageSize) throws IOException {
-        Check.isTrue(!initialized);
+        if (initialized) return;
+
         file = new RandomAccessFile(fileName, "rwd");
-        if (file.length() > 0) {
+        channel = file.getChannel();
+
+        if (file.length() > 4) {
             readHeader();
         } else {
             writeHeader(pageSize);
@@ -107,79 +100,127 @@ public class Volume {
     }
 
     /**
-     * Write file header.
+     * Initialize this volume, read volume header from the volume file. If it's a new volume, we will
+     * throw {@link IllegalStateException}
+     *
+     * @throws IllegalStateException if it's a new volume
+     * @throws IOException if I/O error occurs
+     */
+    public synchronized void initialize() throws IOException {
+        if (initialized) return;
+
+        file = new RandomAccessFile(fileName, "rwd");
+        channel = file.getChannel();
+
+        if (file.length() > 4) {
+            readHeader();
+        } else {
+            throw new IllegalStateException("Please init the new volume with page size.");
+        }
+    }
+
+    /**
+     * Read volume file header from the volume.
+     */
+    private void readHeader() throws IOException {
+        int header = file.readInt();
+        Check.isTrue((header & VOL_HEADER_MASK) == VOL_HEADER_MARK,
+                "This is not a valid volume file.");
+
+        int size = (header & VOL_PAGE_SIZE_MASK) >> VOL_PAGE_SIZE_SHIFT;
+        pageSize = Page.Size.decode(size);
+        initialized = true;
+    }
+
+    /**
+     * Write volume file header to the volume.
      *
      * @param s the page size
      */
     private void writeHeader(Page.Size s) throws IOException {
-        int header = Page.Size.encode(s) | VOL_HEADER_MARK;
+        int header = Page.Size.encode(s) << VOL_PAGE_SIZE_SHIFT | VOL_HEADER_MARK;
         file.writeInt(header);
+
+        pageSize = s;
+        initialized = true;
     }
 
     /**
-     * Close the internal file.
+     * Close the internal file of this volume.
      *
      * @throws IOException
      */
-    public void close() throws IOException {
-        file.close();
+    public synchronized void close() throws IOException {
+        if (file != null) {
+            file.close();
+            channel.close();
+        }
+
         initialized = false;
     }
 
     /**
-     * Get the page start with this address.
+     * Get the page which contains this address.
+     * <br><b>This method is not synchronized, users must use some method to avoid concurrent read
+     * and write on the same page.</b>
      *
      * @param address the page address
-     * @return the page
+     * @return the page with data read from the volume
      * @throws IOException
      */
-    public Page getPage(int address) throws IOException {
-        return getPage(new Page(pageSize, address));
+    public Page readPage(int address) throws IOException {
+        return readPage(new Page(pageSize, address));
     }
 
     /**
-     * Get the page start with this address.
+     * Get the page which contains this address.
+     * <br><b>This method is not synchronized, users must use some method to avoid concurrent read
+     * and write on the same page.</b>
      *
-     * @param p the page contains the address
-     * @return the page
+     * @param p the page to be fulfilled with data from volume
+     * @return the page with data read from the volume
      * @throws IOException
      */
-    public synchronized Page getPage(Page p) throws IOException {
+    public Page readPage(Page p) throws IOException {
         Check.isTrue(initialized);
         final int addr = p.getAddress() + VOL_HEADER_SIZE;
-        if (file.getFilePointer() != addr) {
-            file.seek(addr);
-        }
+
         byte[] data = p.getBuf();
-        int dataPos = 0, length = data.length;
-        int count = 0;
-        while ((count = file.read(data, dataPos, length - dataPos)) >= 0) {
-            dataPos += count;
-            if (dataPos == length) {
-                break;
-            }
+        Check.eq(data.length, pageSize.size(), "Invalid page size.");
+
+        int dataPos = channel.read(ByteBuffer.wrap(data), addr);
+
+        if (dataPos != data.length) {
+            throw new EOFException("File maybe corrupted, pos - " + file.getFilePointer());
         }
-        if (dataPos != length) {
-            throw new EOFException("End of file reached, pos - " + file.getFilePointer());
-        }
+
         p.setFileName(fileName);
         return p;
     }
 
     /**
      * Write the page data into disk.
+     * <br><b>This method is not synchronized, users must use some method to avoid concurrent read
+     * and write on the same page.</b>
      *
      * @param p the page to be written
      * @throws IOException
      */
-    public synchronized void setPage(Page p) throws IOException {
-        Check.isTrue(p.getSize() == pageSize);
+    public void writePage(Page p) throws IOException {
         Check.isTrue(initialized);
+
+        byte[] data = p.getBuf();
+        Check.eq(data.length, pageSize.size(), "Invalid page size.");
+
         final int addr = p.getAddress() + VOL_HEADER_SIZE;
-        if (file.getFilePointer() != addr) {
-            file.seek(addr);
-        }
-        file.write(p.getBuf());
+        channel.write(ByteBuffer.wrap(data), addr);
+    }
+
+    /**
+     * @return the page size of this volume
+     */
+    public Page.Size getPageSize() {
+        return pageSize;
     }
 
 }

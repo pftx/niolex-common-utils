@@ -92,14 +92,14 @@ public class Page {
         /**
          * Create a new Size.
          *
-         * @param size
+         * @param size the int size
          */
         private Size(int size) {
             this.size = size;
         }
 
         /**
-         * @return the size
+         * @return the int size
          */
         public int size() {
             return size;
@@ -125,7 +125,7 @@ public class Page {
      * Construct a new page with the specified size and address.
      *
      * @param size the page size
-     * @param address the page address
+     * @param address the page address inside a volume
      */
     public Page(Size size, int address) {
         super();
@@ -156,6 +156,8 @@ public class Page {
     }
 
     /**
+     * Set the address of this page. The address will be aligned by the page size.
+     *
      * @param address the address to set
      */
     public void setAddress(int address) {
@@ -163,14 +165,14 @@ public class Page {
     }
 
     /**
-     * @return the size
+     * @return the page size
      */
     public Size getSize() {
         return size;
     }
 
     /**
-     * @return the buf
+     * @return the internal data buffer
      */
     public byte[] getBuf() {
         return buf;
