@@ -1,7 +1,7 @@
 #!/bin/sh
 DIR=$1
 cd $DIR || {
-  echo "Failed to changed dir, current [$PWD] system will exit."
+  echo "Failed to changed dir, current [$PWD]. System will exit."
   exit -1
 }
 
@@ -34,8 +34,8 @@ function log()
   echo -n " "
   echo $1
 }
+
 log "Start to delete file..."
 del_file log
 del_file snapshot
-#echo
 log "Delete old logs @ [$PWD] OK."

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Add line number to the file and output it.
 
 [ -z $1 ] && {
   echo "Usage: `basename $0` file"
@@ -12,4 +13,3 @@ do
   let "i += 1"
 done <$1
 echo -------------------------
-#echo $file

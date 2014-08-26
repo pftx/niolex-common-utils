@@ -1,2 +1,4 @@
 #!/bin/bash
+# Upper case the inputs.
+
 tr 'a-z' 'A-Z'

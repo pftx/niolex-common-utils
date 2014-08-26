@@ -1,0 +1,78 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+  . /etc/bashrc
+fi
+
+# User specific aliases and functions
+ci()
+{
+        if [ "$1" = "" ] ; then
+                echo "Bug Id is not exist, Be careful!!!!"
+                return
+        fi
+
+        if grep '^[[:digit:]]*$' <<< "$1" > /dev/null ; then
+                echo
+        else
+                echo "Bug Id mush be a number, Be careful!!!"
+                return
+        fi
+
+        if [ $1 -le 5000 ] ; then
+                echo "Bug Id is less than 5000, are you sure? Be careful!!!!"
+                return
+        fi
+
+        if [ "$2" = "" ] ; then
+                echo "your comment is not exist, Be careful!!!!"
+                return
+        fi
+
+        echo "Please check whether you have changed all the follow file:"
+        echo
+
+        svn status -q
+
+        bug_id=$1
+        shift 1
+        echo
+        echo "Your commit will be: "
+        echo svn ci -m "[CUBRIDSUS-$bug_id][CR] $*"
+        echo
+
+        read -p "Please check then svn status, the Bug Id and the comment again, and input Yes to commit the code(Yes/No):" REPLY
+
+        if test "$REPLY" = "Yes" ; then
+                echo "svn commiting ..."
+                svn ci -m "[CUBRIDSUS-$bug_id][CR] $*"
+                return
+        else
+                echo "svn commit canceled."
+                return
+        fi
+}
+
+trucdb()
+{
+        cd ~/cubrid/current/databases/xdb || exit -1
+        cubrid server stop xdb
+        cubrid deletedb xdb
+        cubrid createdb --db-volume-size=20M --log-volume-size=20M -L ./log xdb en_US
+        cubrid server start xdb
+        echo "Trucate xdb done."
+}
+
+rsyncf()
+{
+        rsync -vzrtopg --progress --exclude-from= ~/
+}
+
+ipcrmall()
+{
+        for i in `ipcs | grep $USER | awk '{print $2}'`
+        do
+                sudo ipcrm -m $i
+        done
+}

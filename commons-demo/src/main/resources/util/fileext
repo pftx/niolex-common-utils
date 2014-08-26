@@ -1,6 +1,6 @@
 #!/bin/bash
 # replace the file extension.
-# usage: rfe old_extension new_extension
+# usage: fileext old_extension new_extension
 
 case $# in
   0|1)
