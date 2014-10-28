@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.remote;
 
+import static org.apache.niolex.commons.codec.IntegerUtil.formatSize;
 import static org.apache.niolex.commons.remote.ConnectionWorker.endl;
 
 import java.io.File;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
-import org.apache.niolex.commons.codec.IntegerUtil;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.test.SystemInfo;
 import org.apache.niolex.commons.util.Const;
@@ -98,15 +98,13 @@ public class OSInfo implements Invokable {
 		long freeMem = heapMem.getCommitted() - heapMem.getUsed();
 
 		sb.append(String.format("    JVM %-8s Total %7sB, Used %7sB, Free %7sB", "Heap",
-		        IntegerUtil.formatSize(heapMem.getCommitted()),
-		        IntegerUtil.formatSize(heapMem.getUsed()), IntegerUtil.formatSize(freeMem)));
+		        formatSize(heapMem.getCommitted()), formatSize(heapMem.getUsed()), formatSize(freeMem)));
 		sb.append(endLine);
 
 		MemoryUsage nonHeap = systemInfo.getNonHeapMem();
 		freeMem = nonHeap.getCommitted() - nonHeap.getUsed();
 		sb.append(String.format("    JVM %-8s Total %7sB, Used %7sB, Free %7sB", "Non-Heap",
-		        IntegerUtil.formatSize(nonHeap.getCommitted()),
-		        IntegerUtil.formatSize(nonHeap.getUsed()), IntegerUtil.formatSize(freeMem)));
+		        formatSize(nonHeap.getCommitted()), formatSize(nonHeap.getUsed()), formatSize(freeMem)));
 		sb.append(endLine);
 
 		// Cat 2. GC.
@@ -256,13 +254,11 @@ public class OSInfo implements Invokable {
 				scan.nextLine();
 				scan.nextLine();
 				scan.nextLine();
-				return new String[] { scan.nextLine(), scan.nextLine()
-						, scan.nextLine() };
+				return new String[] {scan.nextLine(), scan.nextLine(), scan.nextLine()};
 			} else {
 				scan.nextLine();
 				scan.nextLine();
-				return new String[] { scan.nextLine(), scan.nextLine()
-						, scan.nextLine() };
+				return new String[] {scan.nextLine(), scan.nextLine(), scan.nextLine()};
 			}
 
 		} catch (IOException ioe) {

@@ -205,14 +205,12 @@ public class ConnectionWorker implements Runnable {
 						parent = iter.next();
 					} else if (parent.getClass().isArray()) {
 						if (Array.getLength(parent) <= idx) {
-							writeAndFlush("Invalid Path started at "
-									+ pathIdx + "." + name + " Array Out of Bound.");
+							writeAndFlush("Invalid Path started at " + pathIdx + "." + name + " Array Out of Bound.");
 							break Outter;
 						}
 						parent = Array.get(parent, idx);
 					} else {
-						writeAndFlush("Invalid Path started at "
-								+ pathIdx + "." + name + " Not Array.");
+						writeAndFlush("Invalid Path started at " + pathIdx + "." + name + " Not Array.");
 						break Outter;
 					}
 					break;
@@ -221,8 +219,7 @@ public class ConnectionWorker implements Runnable {
 					if (parent instanceof Map<?, ?>) {
 						Map<? extends Object, ? extends Object> map = (Map<?, ?>) parent;
 						if (map.size() == 0) {
-							writeAndFlush("Map at "
-									+ pathIdx + "." + name + " Is Empty.");
+							writeAndFlush("Map at " + pathIdx + "." + name + " Is Empty.");
 							break Outter;
 						}
 						Object key = map.keySet().iterator().next();
@@ -246,14 +243,12 @@ public class ConnectionWorker implements Runnable {
 						        break Outter;
 						    }
 						} else {
-							writeAndFlush("This Map Key Type "
-									+ key.getClass().getSimpleName() + " at "
+							writeAndFlush("This Map Key Type " + key.getClass().getSimpleName() + " at "
 									+ pathIdx + "." + name + " Is Not Supported.");
 							break Outter;
 						}
 					} else {
-						writeAndFlush("Invalid Path started at "
-								+ pathIdx + "." + name + " Not Map.");
+						writeAndFlush("Invalid Path started at " + pathIdx + "." + name + " Not Map.");
 						break Outter;
 					}
 					break;
