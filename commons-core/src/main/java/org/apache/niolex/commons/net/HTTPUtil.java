@@ -55,7 +55,7 @@ public abstract class HTTPUtil {
 
     private static final int CONNECT_TIMEOUT = 6 * SECOND;
     private static final int READ_TIMEOUT = 6 * SECOND;
-    private static final int MAX_BODY_SIZE = 100 * K;
+    private static final int MAX_BODY_SIZE = 500 * K;
     private static final Map<String, String> REQ_HEADER = ImmutableMap.of("DNT", "1",
             "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/22.0",

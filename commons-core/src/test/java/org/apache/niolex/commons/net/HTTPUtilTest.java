@@ -90,7 +90,7 @@ public class HTTPUtilTest extends HTTPUtil {
         params.put("wd", "commons-core");
         String s = post("http://www.baidu.com/baidu", params);
         assertTrue(s.length() > 1024);
-        assertTrue(s.contains("百度--您的访问出错了"));
+        assertTrue(s.contains("页面不存在_百度搜索"));
     }
 
     @Test(expected=NetException.class)
