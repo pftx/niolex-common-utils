@@ -45,5 +45,12 @@ public class Numberr {
         System.out.println("MIN_CHAR => " + (int)Character.MIN_VALUE);
         System.out.println("-Integer.MAX_VALUE => " + (-Integer.MAX_VALUE));
         System.out.println("Integer.MIN_VALUE => " + (Integer.MIN_VALUE));
+
+        int j = 0;
+        for (int i = 1; i > 0; i *= 10) {
+            System.out.print(i + " ");
+            if (++j > 40) break;
+        }
+        System.out.println("Max *10 Loop - " + j);
     }
 }

@@ -68,4 +68,19 @@ public class MathUtilTest extends MathUtil {
         assertEquals(3, min(8,7,3,4,5,5,6,5));
         assertEquals(5, min(5,5,6,5,6,7,8));
     }
+
+    @Test
+    public void testSum() throws Exception {
+        assertEquals(66, sum(6,10,20,30));
+        assertEquals(43, sum(8,7,3,4,5,5,6,5));
+        assertEquals(21, sum(10,-10,Integer.MAX_VALUE, Integer.MIN_VALUE,22));
+        assertEquals(6442450941l, sum(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
+    }
+
+    @Test
+    public void testAvg() throws Exception {
+        assertEquals(Integer.MAX_VALUE, CastUtil.toInt(avg(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE)));
+        assertEquals(Integer.MIN_VALUE, CastUtil.toInt(avg(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE)));
+        assertEquals((Integer.MAX_VALUE - 2) / 5, CastUtil.toInt(avg(Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE)));
+    }
 }

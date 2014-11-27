@@ -128,4 +128,29 @@ public class MathUtil extends MockUtil {
         return r;
     }
 
+    /**
+     * Calculate the sum of the values from the specified array.
+     *
+     * @param values the values array
+     * @return the sum of the values
+     */
+    public static final long sum(int ...values) {
+        long r = 0;
+        for (int v : values) {
+            r += v;
+        }
+        return r;
+    }
+
+    /**
+     * Calculate the average of the values from the specified array.
+     *
+     * @param values the values array
+     * @return the average of the values
+     */
+    public static final double avg(int ...values) {
+        long s = sum(values);
+        return ((double)s / values.length);
+    }
+
 }
