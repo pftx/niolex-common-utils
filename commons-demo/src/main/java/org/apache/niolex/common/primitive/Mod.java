@@ -50,7 +50,7 @@ public class Mod {
     public static void countMod(int p, int r) {
         int s = (p / r);
         int y = (p % r);
-        SystemUtil.println("% d / % d = 商 %02d 除数 %02d", p, r, s, y);
+        SystemUtil.println("% d / % d = 商 %02d 余数 %02d", p, r, s, y);
     }
 
 }
