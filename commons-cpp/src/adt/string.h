@@ -120,6 +120,17 @@ public:
 		strcpy(buf, o.buf);
 	}
 
+#if __cplusplus >= 201103L
+	String(String &&o)
+	{
+		len = o.len;
+		buf = o.buf;
+		capacity = o.capacity;
+
+		o.buf = NULL;
+	}
+#endif // C++11
+
 	~String()
 	{
 		delete[] buf;
@@ -134,6 +145,16 @@ public:
 	int compare(const String &o) const
 	{
 		return strcmp(buf, o.buf);
+	}
+
+	const char *c_str() const
+	{
+		return buf;
+	}
+
+	void reserve(int new_size)
+	{
+		ensureBufSize(new_size);
 	}
 
 	/**
@@ -176,6 +197,32 @@ public:
 		strcpy(buf, o.buf);
 		return *this;
 	}
+
+#if __cplusplus >= 201103L
+	String &operator=(String &&o)
+	{
+		if (this == &o)
+			return *this;
+
+		len = o.len;
+		// We free the smaller one here.
+		if (o.capacity > capacity)
+		{
+			delete[] buf;
+
+			buf = o.buf;
+			capacity = o.capacity;
+
+			o.buf = NULL;
+		}
+		else
+		{
+			strcpy(buf, o.buf);
+		}
+
+		return *this;
+	}
+#endif // C++11
 
 	String &operator=(const char *p) throw (invalid_argument)
 	{

@@ -4,6 +4,7 @@
 #include <cstdlib>
 
 #include <iostream>
+#include <algorithm>
 #include <stdexcept>
 
 #include "string.h"
@@ -91,6 +92,11 @@ public:
 	void sort(int (*comp)(const void *p, const void *q))
 	{
 		std::qsort(head, top, sizeof(Type), comp);
+	}
+
+	void sort()
+	{
+		std::sort(head, head + top);
 	}
 
 	Type & operator [](int idx) throw (out_of_range);
