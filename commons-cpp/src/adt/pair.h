@@ -12,6 +12,10 @@ private:
 	B _b;
 
 public:
+	Pair()
+	{
+	}
+
 	Pair(const A &a, const B &b) :
 			_a(a), _b(b)
 	{

@@ -2,9 +2,11 @@
 #define _LEX_ADT_LIST_H_
 
 #include <cstdlib>
+#include <cassert>
 
 #include <iostream>
 #include <algorithm>
+#include <functional>
 #include <stdexcept>
 
 #include "string.h"
@@ -30,10 +32,11 @@ private:
 protected:
 	void assign(const List& l)
 	{
+		assert(capacity >= l.top);
 		top = 0;
 		while (top < l.top)
 		{
-			head[top] = l[top];
+			head[top] = l.head[top];
 			++top;
 		}
 	}
@@ -52,6 +55,17 @@ public:
 		assign(l);
 	}
 
+#if __cplusplus >= 201103L
+	List(List &&l) :
+			capacity(l.capacity)
+	{
+		head = l.head;
+		top = l.top;
+
+		l.head = NULL;
+	}
+#endif // C++11
+
 	List & operator =(const List &l)
 	{
 		if (this == &l)
@@ -67,6 +81,31 @@ public:
 		assign(l);
 		return *this;
 	}
+
+#if __cplusplus >= 201103L
+	List & operator =(List &&l)
+	{
+		if (this == &l)
+			return *this;
+
+		// Free the smaller one.
+		if (capacity < l.capacity)
+		{
+			delete[] head;
+			head = l.head;
+			top = l.top;
+			capacity = l.capacity;
+
+			l.head = NULL;
+		}
+		else
+		{
+			assign(l);
+		}
+
+		return *this;
+	}
+#endif // C++11
 
 	~List()
 	{
@@ -89,7 +128,7 @@ public:
 		return top == capacity;
 	}
 
-	void sort(int (*comp)(const void *p, const void *q))
+	void qsort(int (*comp)(const void *p, const void *q))
 	{
 		std::qsort(head, top, sizeof(Type), comp);
 	}
@@ -99,6 +138,11 @@ public:
 		std::sort(head, head + top);
 	}
 
+	template<typename Func>void sort(Func f)
+	{
+		std::sort(head, head + top, f);
+	}
+
 	Type & operator [](int idx) throw (out_of_range);
 	const Type & operator [](int idx) const throw (out_of_range);
 
@@ -106,7 +150,7 @@ public:
 	bool pop_back(Type &t);
 	bool pop_back(Type * pt);
 
-	void expand(int newCapacity);
+	void expand(size_t newCapacity);
 	void initAll(const Type &t);
 
 	friend ostream & operator<< <>(ostream &os, const List<Type> &li);
@@ -117,12 +161,19 @@ template<typename Type> Type & List<Type>::operator [](int idx) throw (out_of_ra
 {
 	if (idx < 0 || idx >= capacity)
 		throw out_of_range("adt::list::operator[]");
+
+	// Expand array top.
+	if (idx >= top)
+	{
+		top = idx + 1;
+	}
+
 	return *(head + idx);
 }
 
 template<typename Type> const Type & List<Type>::operator [](int idx) const throw (out_of_range)
 {
-	if (idx < 0 || idx >= capacity)
+	if (idx < 0 || idx >= (int)top)
 		throw out_of_range("adt::list::operator[] const");
 	return *(head + idx);
 }
@@ -130,7 +181,7 @@ template<typename Type> const Type & List<Type>::operator [](int idx) const thro
 template<typename Type> bool List<Type>::push_back(const Type &t)
 {
 	if (is_full())
-		return false;
+		expand(capacity * 2);
 
 	*(head + top++) = t;
 	return true;
@@ -154,13 +205,13 @@ template<typename Type> bool List<Type>::pop_back(Type * pt)
 	return true;
 }
 
-template<typename Type> void List<Type>::expand(int newCapacity)
+template<typename Type> void List<Type>::expand(size_t newCapacity)
 {
 	if (newCapacity <= capacity)
 		return;
 
 	Type *tmp = new Type[newCapacity];
-	for (int i = 0; i < top; ++i)
+	for (size_t i = 0; i < top; ++i)
 	{
 		tmp[i] = head[i];
 	}
