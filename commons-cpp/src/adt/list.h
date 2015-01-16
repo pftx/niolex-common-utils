@@ -26,8 +26,8 @@ class List
 {
 private:
 	Type *head;
-	size_t top;
-	size_t capacity;
+	int top;
+	int capacity;
 
 protected:
 	void assign(const List& l)
@@ -42,7 +42,7 @@ protected:
 	}
 
 public:
-	explicit List(size_t size = 50) :
+	explicit List(int size = 50) :
 			top(0), capacity(size)
 	{
 		head = new Type[capacity];
@@ -57,11 +57,8 @@ public:
 
 #if __cplusplus >= 201103L
 	List(List &&l) :
-			capacity(l.capacity)
+			head(l.head), top(l.top), capacity(l.capacity)
 	{
-		head = l.head;
-		top = l.top;
-
 		l.head = NULL;
 	}
 #endif // C++11
@@ -88,20 +85,13 @@ public:
 		if (this == &l)
 			return *this;
 
-		// Free the smaller one.
-		if (capacity < l.capacity)
-		{
-			delete[] head;
-			head = l.head;
-			top = l.top;
-			capacity = l.capacity;
+		delete[] head;
 
-			l.head = NULL;
-		}
-		else
-		{
-			assign(l);
-		}
+		head = l.head;
+		top = l.top;
+		capacity = l.capacity;
+
+		l.head = NULL;
 
 		return *this;
 	}
@@ -110,10 +100,12 @@ public:
 	~List()
 	{
 		delete[] head;
+
+		head = NULL;
 		capacity = -1;
 	}
 
-	size_t size() const
+	int size() const
 	{
 		return top;
 	}
@@ -138,7 +130,7 @@ public:
 		std::sort(head, head + top);
 	}
 
-	template<typename Func>void sort(Func f)
+	template<typename Func> void sort(Func f)
 	{
 		std::sort(head, head + top, f);
 	}
@@ -150,7 +142,7 @@ public:
 	bool pop_back(Type &t);
 	bool pop_back(Type * pt);
 
-	void expand(size_t newCapacity);
+	void expand(int newCapacity);
 	void initAll(const Type &t);
 
 	friend ostream & operator<< <>(ostream &os, const List<Type> &li);
@@ -173,8 +165,9 @@ template<typename Type> Type & List<Type>::operator [](int idx) throw (out_of_ra
 
 template<typename Type> const Type & List<Type>::operator [](int idx) const throw (out_of_range)
 {
-	if (idx < 0 || idx >= (int)top)
+	if (idx < 0 || idx >= top)
 		throw out_of_range("adt::list::operator[] const");
+
 	return *(head + idx);
 }
 
@@ -205,13 +198,13 @@ template<typename Type> bool List<Type>::pop_back(Type * pt)
 	return true;
 }
 
-template<typename Type> void List<Type>::expand(size_t newCapacity)
+template<typename Type> void List<Type>::expand(int newCapacity)
 {
 	if (newCapacity <= capacity)
 		return;
 
 	Type *tmp = new Type[newCapacity];
-	for (size_t i = 0; i < top; ++i)
+	for (int i = 0; i < top; ++i)
 	{
 		tmp[i] = head[i];
 	}

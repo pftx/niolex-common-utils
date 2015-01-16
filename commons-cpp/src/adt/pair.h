@@ -40,6 +40,7 @@ public:
 	{
 		return _b;
 	}
+
 };
 
 }
