@@ -1,5 +1,7 @@
 package org.apache.niolex.common.demo;
 
+import static org.apache.niolex.commons.util.DateTimeUtil.*;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
@@ -8,7 +10,6 @@ import java.util.UUID;
 
 import org.apache.niolex.commons.util.SystemUtil;
 import org.slf4j.Logger;
-
 
 /**
  * Hello world!
@@ -24,9 +25,11 @@ public abstract class App extends HttpURLConnection
         super(u);
     }
 
-    public static void main(String[] args) {
-        System.out.println((new Date()).getTime());
-        System.out.println((new Date(-13978034193460l)));
+    public static void main(String[] args) throws Exception {
+        long init = parseDateFromDateStr("2014-07-10").getTime();
+        long dual = (new Date().getTime() - init) / DAY;
+
+        System.out.println("DAYS - " + dual);
         System.out.println("\n**** Test system property");
         String fileName = SystemUtil.getSystemProperty("ConfigClient.configurationFile", "config-client-properties",
                 "config.client.property.file");

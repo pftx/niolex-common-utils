@@ -5,15 +5,51 @@ namespace adt
 
 template <> ostream & operator <<(ostream &os, const List<int> &li)
 {
-	for (int i = 0; i < li.top; i += 5)
+#define LINE_SIZE 7
+#define FIELD_WIDTH 10
+	for (int i = 0; i < li.top; ++i)
 	{
+		os.width(FIELD_WIDTH);
 		os << li[i];
-		for (int j = i + 1, k = 0; j < li.top && k < 4; ++j, ++k)
+		if (i % LINE_SIZE == LINE_SIZE - 1)
 		{
-			os << ", " << li[j];
+			os << std::endl;
 		}
-		os << std::endl;
+		else
+		{
+			os << ",";
+		}
 	}
+
+	if (li.top % LINE_SIZE != 0)
+		os << std::endl;
+#undef LINE_SIZE
+#undef FIELD_WIDTH
+	return os;
+}
+
+template <> ostream & operator <<(ostream &os, const List<long> &li)
+{
+#define LINE_SIZE 4
+#define FIELD_WIDTH 18
+	for (int i = 0; i < li.top; ++i)
+	{
+		os.width(FIELD_WIDTH);
+		os << li[i];
+		if (i % LINE_SIZE == LINE_SIZE - 1)
+		{
+			os << std::endl;
+		}
+		else
+		{
+			os << ",";
+		}
+	}
+
+	if (li.top % LINE_SIZE != 0)
+		os << std::endl;
+#undef LINE_SIZE
+#undef FIELD_WIDTH
 	return os;
 }
 

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <algorithm>
 #include <functional>
+#include <initializer_list>
 #include <stdexcept>
 
 #include "string.h"
@@ -60,6 +61,15 @@ public:
 			head(l.head), top(l.top), capacity(l.capacity)
 	{
 		l.head = NULL;
+	}
+
+	List(const std::initializer_list<Type> &il)
+	{
+		capacity = il.size();
+		head = new Type[capacity];
+		top = 0;
+		for (auto p = il.begin(); p !=il.end(); p++)
+			head[top++] = *p;
 	}
 #endif // C++11
 
@@ -229,6 +239,8 @@ template<typename T> ostream & operator <<(ostream &os, const List<T> &li)
 }
 
 template <> ostream & operator <<(ostream &os, const List<int> &li);
+
+template <> ostream & operator <<(ostream &os, const List<long> &li);
 
 template <> ostream & operator <<(ostream &os, const List<String> &li);
 
