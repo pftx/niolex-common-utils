@@ -1,0 +1,19 @@
+#!/bin/bash
+
+times=`date +"%Y%m%d_%H%M%S"`
+
+bugid=`pwd`
+bugid=${bugid//^/ }
+bugid=${bugid//-/ }
+bugid=`echo $bugid | rev | cut -d ' ' -f 1 | rev`
+
+filename="$bugid-$times.patch"
+
+echo "@ svn diff >$filename"
+svn diff >$filename
+head $filename
+
+echo "@ copy file to remote server."
+scp $filename lex@10.99.116.66:~/workbackup/
+
+echo "Done."

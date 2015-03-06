@@ -59,9 +59,9 @@ public class HTTPUtilTest extends HTTPUtil {
     @Test
     public void testGetHasEnc() throws Exception {
         if (SystemUtil.defined("download", "download.http")) return;
-        String s = get("http://www.soso.com/");
+        String s = get("http://www.sogou.com/");
         assertTrue(s.length() > 1024);
-        assertTrue(s.contains("搜搜更懂你"));
+        assertTrue(s.contains("搜狗搜索"));
     }
 
     @Test

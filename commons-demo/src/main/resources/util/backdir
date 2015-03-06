@@ -1,0 +1,15 @@
+#!/bin/bash
+
+counter=0
+for dir in `ls`
+do
+  if [[ $dir == *"^"*  ]]
+  then
+    echo backuping $dir
+    cd $dir && backup
+    cd ..
+    counter=$((counter+1))
+  fi
+done
+
+echo "Backed $counter dirs."

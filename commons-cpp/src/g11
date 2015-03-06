@@ -1,0 +1,15 @@
+#!/bin/bash
+
+file=$1
+pos=".cpp"
+
+if [[ $file == *".cpp" ]]
+then
+  out=${file%$pos}
+else
+  out=$file
+  file=$out$pos
+fi
+
+echo "Execute Command: g++ -std=c++0x -O2 -o $out $file"
+g++ -std=c++0x -O2 -o $out $file
