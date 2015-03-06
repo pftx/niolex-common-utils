@@ -1,0 +1,17 @@
+#!/bin/bash
+
+file=$1
+pos=".c"
+
+if [[ $file == *".c" ]]
+then
+  out=${file%$pos}
+else
+  out=$file
+  file=$out$pos
+fi
+
+echo "Execute Command: gcc -std=c99 -O2 -o $out $file"
+gcc -std=c99 -O2 -o $out $file
+echo "Execute ./$out"
+./$out
