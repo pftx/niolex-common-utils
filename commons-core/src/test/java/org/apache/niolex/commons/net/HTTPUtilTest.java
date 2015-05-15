@@ -48,6 +48,13 @@ public class HTTPUtilTest extends HTTPUtil {
         System.out.println(s);
     }
 
+    @Test(expected=NetException.class)
+    public void testGet404() throws Exception {
+        if (SystemUtil.defined("download", "download.http")) return;
+        String s = get("http://hometown.scau.edu.cn/course/lqbz1/0410251.html");
+        System.out.println(s);
+    }
+
     @Test
     public void testGetWithoutEnc() throws Exception {
         if (SystemUtil.defined("download", "download.http")) return;
