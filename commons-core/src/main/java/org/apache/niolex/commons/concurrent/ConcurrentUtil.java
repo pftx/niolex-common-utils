@@ -18,6 +18,8 @@
 package org.apache.niolex.commons.concurrent;
 
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Some common concurrent methods.
@@ -41,4 +43,57 @@ public class ConcurrentUtil {
         V oldValue = map.putIfAbsent(key, newValue);
         return (oldValue == null) ? newValue : oldValue;
     }
+
+    /**
+     * Shutdown the thread pool and wait until all the current tasks to be finished despite interruption.
+     *
+     * @param pool the thread pool to be terminated
+     */
+    public static final void shutdownAndAwaitTermination(ExecutorService pool) {
+        pool.shutdown(); // Disable new tasks from being submitted
+
+        while (true) {
+            try {
+                // Wait a while for existing tasks to terminate
+                if (pool.awaitTermination(60, TimeUnit.SECONDS)) {
+                    break;
+                }
+            } catch (InterruptedException ie) {
+            }
+        }
+    }
+
+    /**
+     * Shutdown the thread pool and await the specified timeout. If the current tasks can not be finished
+     * in time, the remained tasks will be cancelled.
+     *
+     * @param pool the thread pool to be terminated
+     * @param timeout the maximum time to wait
+     * @param unit the time unit of the timeout argument
+     */
+    public static final void shutdownAndAwaitTermination(ExecutorService pool, long timeout, TimeUnit unit) {
+        pool.shutdown(); // Disable new tasks from being submitted
+
+        long remain, start = System.currentTimeMillis();
+        timeout = unit.toMillis(timeout); // Convert timeout to milliseconds
+        while (true) {
+            try {
+                remain = System.currentTimeMillis() - start; // The elapsed time
+                remain = timeout - remain; // The real remained time
+
+                // If timeout, shutdown now.
+                if (remain < 1) {
+                    pool.shutdownNow();
+                    break;
+                }
+
+                // Wait a while for existing tasks to terminate
+                if (pool.awaitTermination(remain, TimeUnit.MILLISECONDS)) {
+                    break;
+                }
+            } catch (InterruptedException ie) {
+            }
+        }
+    }
+
 }

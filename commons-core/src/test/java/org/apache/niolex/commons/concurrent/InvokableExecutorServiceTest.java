@@ -57,7 +57,7 @@ public class InvokableExecutorServiceTest {
      */
     @Test
     public void testInvoker1() throws Exception {
-        InvokableExecutorService tar = new InvokableExecutorService(Executors.newFixedThreadPool(1, new SimpleThreadFactory("InvokableExecutorServiceTest#2")));
+        InvokableExecutorService tar = new InvokableExecutorService(Executors.newFixedThreadPool(1, new SimpleThreadFactory("InvokableExecutorServiceTest#1")));
         Method method = MethodUtil.getMethod(InvokableExecutorServiceTest.class, "dead", long.class);
 
         Future<String> future = tar.invoke(this, method, 1);
@@ -93,7 +93,7 @@ public class InvokableExecutorServiceTest {
      */
     @Test
     public void testInvoke() throws Exception {
-        InvokableExecutorService tar = new InvokableExecutorService(Executors.newFixedThreadPool(5, new SimpleThreadFactory("InvokableExecutorServiceTest#1")));
+        InvokableExecutorService tar = new InvokableExecutorService(Executors.newFixedThreadPool(5, new SimpleThreadFactory("InvokableExecutorServiceTest#3")));
 
         Method method = MethodUtil.getMethod(InvokableExecutorServiceTest.class, "increment", int.class);
         long in = System.currentTimeMillis();
