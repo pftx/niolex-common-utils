@@ -130,7 +130,7 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @return
+     * @return the result
      * @see java.util.concurrent.ExecutorService#shutdownNow()
      */
     public List<Runnable> shutdownNow() {
@@ -138,7 +138,7 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @return
+     * @return the result
      * @see java.util.concurrent.ExecutorService#isShutdown()
      */
     public boolean isShutdown() {
@@ -146,7 +146,7 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @return
+     * @return the result
      * @see java.util.concurrent.ExecutorService#isTerminated()
      */
     public boolean isTerminated() {
@@ -156,7 +156,7 @@ public class InvokableExecutorService implements ExecutorService {
     /**
      * @param timeout
      * @param unit
-     * @return
+     * @return the result
      * @throws InterruptedException
      * @see java.util.concurrent.ExecutorService#awaitTermination(long, java.util.concurrent.TimeUnit)
      */
@@ -166,7 +166,7 @@ public class InvokableExecutorService implements ExecutorService {
 
     /**
      * @param task
-     * @return
+     * @return the result
      * @see java.util.concurrent.ExecutorService#submit(java.util.concurrent.Callable)
      */
     public <T> Future<T> submit(Callable<T> task) {
@@ -176,7 +176,7 @@ public class InvokableExecutorService implements ExecutorService {
     /**
      * @param task
      * @param result
-     * @return
+     * @return the result
      * @see java.util.concurrent.ExecutorService#submit(java.lang.Runnable, java.lang.Object)
      */
     public <T> Future<T> submit(Runnable task, T result) {
@@ -185,7 +185,7 @@ public class InvokableExecutorService implements ExecutorService {
 
     /**
      * @param task
-     * @return
+     * @return the result
      * @see java.util.concurrent.ExecutorService#submit(java.lang.Runnable)
      */
     public Future<?> submit(Runnable task) {
@@ -194,7 +194,7 @@ public class InvokableExecutorService implements ExecutorService {
 
     /**
      * @param tasks
-     * @return
+     * @return the result
      * @throws InterruptedException
      * @see java.util.concurrent.ExecutorService#invokeAll(java.util.Collection)
      */
@@ -206,7 +206,7 @@ public class InvokableExecutorService implements ExecutorService {
      * @param tasks
      * @param timeout
      * @param unit
-     * @return
+     * @return the result
      * @throws InterruptedException
      * @see java.util.concurrent.ExecutorService#invokeAll(java.util.Collection, long, java.util.concurrent.TimeUnit)
      */
@@ -217,7 +217,7 @@ public class InvokableExecutorService implements ExecutorService {
 
     /**
      * @param tasks
-     * @return
+     * @return the result
      * @throws InterruptedException
      * @throws ExecutionException
      * @see java.util.concurrent.ExecutorService#invokeAny(java.util.Collection)
@@ -230,7 +230,7 @@ public class InvokableExecutorService implements ExecutorService {
      * @param tasks
      * @param timeout
      * @param unit
-     * @return
+     * @return the result
      * @throws InterruptedException
      * @throws ExecutionException
      * @throws TimeoutException
