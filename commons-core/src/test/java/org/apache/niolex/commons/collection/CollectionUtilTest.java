@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -339,6 +340,26 @@ public class CollectionUtilTest extends CollectionUtil {
         l.add("b");
         addAll(l, new String[0]);
         assertEquals(2, l.size());
+    }
+
+    @Test
+    public void testGetOrInit() throws Exception {
+        Map<Integer, String> testMap = new HashMap<Integer, String>();
+
+        testMap.put(33, "I am good");
+        String v = getOrInit(testMap, 33, String.class);
+        assertEquals(v, "I am good");
+
+        v = getOrInit(testMap, 34, String.class);
+        assertEquals(v.length(), 0);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetOrInitException() throws Exception {
+        Map<Integer, Integer> testMap = new HashMap<Integer, Integer>();
+
+        Integer v = getOrInit(testMap, 34, Integer.class);
+        assertEquals(v.intValue(), 0);
     }
 
 }

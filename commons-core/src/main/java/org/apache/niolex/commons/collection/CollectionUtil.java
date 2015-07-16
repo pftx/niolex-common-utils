@@ -186,4 +186,27 @@ public abstract class CollectionUtil {
         return (map != null && map.size() == 1);
     }
 
+    /**
+     * Get the map value by the specified key. If the value is null, create a new instance by
+     * the specified class, and put the new instance into the map, then return it.
+     *
+     * @param map the map to be used
+     * @param key the key to get value
+     * @param cls the class to create new instance if necessary
+     * @return the value mapped to the specified key
+     * @throws IllegalArgumentException if failed to create new instance
+     */
+    public static <K, V> V getOrInit(Map<K, V> map, K key, Class<V> cls) {
+        V v = map.get(key);
+        if (v == null) {
+            try {
+                v = cls.newInstance();
+            } catch (Exception e) {
+                throw new IllegalArgumentException("The input class can not be initialized.", e);
+            }
+            map.put(key, v);
+        }
+        return v;
+    }
+
 }
