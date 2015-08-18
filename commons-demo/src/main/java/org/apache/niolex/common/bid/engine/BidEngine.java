@@ -42,13 +42,17 @@ public class BidEngine implements Runnable {
     private static final int BUY = 0;
     private static final int SELL = 1;
 
+    // Map BidPrice => BidQueue
     @SuppressWarnings("unchecked")
     private final TreeMap<Integer, BidQueue>[] queueMaps = new TreeMap[] { new TreeMap<Integer, BidQueue>(),
             new TreeMap<Integer, BidQueue>() };
 
     private final BlockingQueue<Bid> inputQueue = new LinkedBlockingQueue<Bid>();
+
+    // Map BidID => Bid
     private final Map<Long, Bid> tradeMap = new HashMap<Long, Bid>();
     private final Stock stock;
+    private final StockBoard board;
 
     private volatile boolean isWorking = true;
     private Thread runner = null;
@@ -57,10 +61,12 @@ public class BidEngine implements Runnable {
      * Construct a new bid engine.
      *
      * @param stock the stock this bid engine is processing
+     * @param board the stock board
      */
-    public BidEngine(Stock stock) {
+    public BidEngine(Stock stock, StockBoard board) {
         super();
         this.stock = stock;
+        this.board = board;
     }
 
     /**
@@ -71,6 +77,16 @@ public class BidEngine implements Runnable {
      */
     public void putBid(Bid b) {
         inputQueue.add(b);
+    }
+
+    /**
+     * Query the Bid Id from this Bid engine.
+     *
+     * @param bidId the bid Id
+     * @return the Bid if it's being processing, null if it's done or not exist or in the input queue.
+     */
+    public Bid queryBid(long bidId) {
+        return tradeMap.get(bidId);
     }
 
     /**
@@ -201,6 +217,10 @@ public class BidEngine implements Runnable {
                 continue;
             }
 
+            if (sellQueue.isEmpty()) {
+                break;
+            }
+
             while (!sellQueue.isEmpty()) {
                 Bid sell = sellQueue.peek();
 
@@ -286,6 +306,25 @@ public class BidEngine implements Runnable {
         // Clean the trade map.
         tradeMap.remove(bidId);
 
-        target.done();
+        // Notify the board.
+        board.bidDone(target);
+    }
+
+
+    /**
+     * Get the current Bid Engine internal status.
+     *
+     * @return the status as string
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Is working? ").append(isWorking).append(" ");
+        sb.append("B[").append(queueMaps[BUY].size()).append("] ");
+        sb.append("S[").append(queueMaps[SELL].size()).append("] ");
+        sb.append("I[").append(inputQueue.size()).append("] ");
+        sb.append("P[").append(tradeMap.size()).append("]");
+
+        return sb.toString();
     }
 }

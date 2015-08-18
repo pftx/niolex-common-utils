@@ -32,7 +32,7 @@ public class Stock {
     private int openPrice;
     private int closePrice;
     private int currentPrice;
-    private int tradedAmount;
+    private long tradedAmount;
 
     /**
      * The only Constructor.
@@ -116,7 +116,7 @@ public class Stock {
     /**
      * @return the tradedAmount
      */
-    public int getTradedAmount() {
+    public long getTradedAmount() {
         return tradedAmount;
     }
 
@@ -127,6 +127,22 @@ public class Stock {
      */
     public void addTradeAmount(int amt) {
         this.tradedAmount += amt;
+    }
+
+    /**
+     * This is the override of super method.
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(stockAbbr).append(" [").append(stockCode).append("]\n");
+        sb.append("  ").append(companyName).append("\n");
+        sb.append("  O").append(openPrice).append("  C").append(closePrice).append("\n");
+        sb.append("  P").append(currentPrice / 100).append(".").append(currentPrice % 100);
+        sb.append("  T").append(tradedAmount).append("\n");
+
+        return sb.toString();
     }
 
 }

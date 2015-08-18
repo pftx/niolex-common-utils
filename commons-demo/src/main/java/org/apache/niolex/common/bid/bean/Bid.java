@@ -46,6 +46,7 @@ public class Bid {
         }
     }
 
+    // The stock to bid.
     private final int stockCode;
 
     // The user who submitted this bid.
@@ -179,10 +180,20 @@ public class Bid {
     }
 
     /**
-     * The bid is done, notify bid owner.
+     * This is the override of super method.
+     * @see java.lang.Object#toString()
      */
-    public void done() {
-        ;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(stockCode).append("] ").append(accountId).append("-").append(bidId).append("\n");
+        sb.append("         ").append(type).append(" ").append(price / 100).append(".").append(price % 100).append("\n");
+        sb.append("    T").append(tradedAmount).append(" C").append(canceledAmount).append("\n");
+
+        for (Trade t : tradeList) {
+            sb.append("   >").append(t).append("\n");
+        }
+        return sb.toString();
     }
 
 }

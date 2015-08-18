@@ -105,4 +105,14 @@ public class Trade {
         return amount;
     }
 
+    /**
+     * This is the override of super method.
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return String.format("[%s] %-3s [%s ==> %s], P%s.%s, T%s",
+                tradeId, tradeType, sellBidId, buyBidId, price / 100, price % 100, amount);
+    }
+
 }

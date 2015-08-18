@@ -33,18 +33,47 @@ import org.apache.niolex.common.bid.bean.Stock;
  */
 public class StockBoard {
 
+    // Map StockCode => Stock
     private Map<Integer, Stock> stockMap = new HashMap<Integer, Stock>();
+    // Map StockCode => BidEngine
     private Map<Integer, BidEngine> engineMap = new HashMap<Integer, BidEngine>();
 
+    /**
+     * Add a new stock into this stock board.
+     *
+     * @param stockCode the stock code
+     * @param stockAbbr the stock abbreviation
+     * @param companyName the stock owner company name
+     */
     public void addStock(int stockCode, String stockAbbr, String companyName) {
         Stock st = new Stock(companyName, stockAbbr, stockCode);
-        BidEngine be = new BidEngine(st);
+        BidEngine be = new BidEngine(st, this);
 
         stockMap.put(stockCode, st);
         engineMap.put(stockCode, be);
         be.startEngine();
     }
 
+    /**
+     * Get the stock by the given stock code.
+     *
+     * @param stockCode the stock code of the stock you want to get
+     * @return the stock if exist
+     */
+    public Stock getStock(int stockCode) {
+        return stockMap.get(stockCode);
+    }
+
+    /**
+     * Submit a new bid into this stock board.
+     *
+     * @param stockCode the stock code
+     * @param accountId the user account Id
+     * @param price the bid price
+     * @param amount the bid amount
+     * @param type the bid type
+     * @return the generated bid Id
+     */
     public long submitBid(int stockCode, long accountId, int price, int amount, char type) {
         BidEngine be = engineMap.get(stockCode);
         long bidId = IdGenerator.nextBidId();
@@ -54,5 +83,40 @@ public class StockBoard {
         return bidId;
     }
 
+    /**
+     * Query the bid by the specified bid Id.
+     *
+     * @param stockCode
+     * @param accountId
+     * @param bidId
+     * @return the specified bid if exists
+     */
+    public Bid queryBid(int stockCode, long accountId, long bidId) {
+        BidEngine be = engineMap.get(stockCode);
+        Bid b = be.queryBid(bidId);
 
+        if (b != null && b.getAccountId() == accountId) {
+            return b;
+        }
+        return null;
+    }
+
+
+    /**
+     * The bid is done, notify bid owner.
+     */
+    protected void bidDone(Bid bid) {
+        System.out.println(bid);
+    }
+
+    /**
+     * Print the internal status into the console.
+     */
+    public void printStatus() {
+        for (Stock s : stockMap.values()) {
+            System.out.print(s);
+            BidEngine be = engineMap.get(s.getStockCode());
+            System.out.println(be);
+        }
+    }
 }
