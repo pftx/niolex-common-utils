@@ -238,17 +238,32 @@ public abstract class DownloadUtil {
 	}
 
 	/**
+     * Validate the HTTP code.
+     *
+     * @param strUrl The Url to be downloaded
+     * @param httpCon The HTTP connection
+     * @throws NetException
+     * @throws IOException
+     */
+    public static void validateHttpCode(final String strUrl, HttpURLConnection httpCon) throws NetException, IOException {
+        validateHttpCode(strUrl, httpCon.getResponseCode(), httpCon.getResponseMessage());
+    }
+
+	/**
 	 * Validate the HTTP code.
 	 *
-	 * @param strUrl The Url to be downloaded.
-	 * @param httpCon The HTTP connection.
+	 * @param strUrl The Url to be downloaded
+	 * @param respCode The HTTP response code
+	 * @param respMsg The HTTP response Message
 	 * @throws NetException
 	 * @throws IOException
 	 */
-	public static void validateHttpCode(final String strUrl, HttpURLConnection httpCon) throws NetException, IOException {
-        if (!IntegerUtil.isIn(httpCon.getResponseCode(), HTTP_OK, HTTP_NOT_AUTHORITATIVE,
+	public static void validateHttpCode(final String strUrl, int respCode, String respMsg)
+	        throws NetException, IOException {
+        if (!IntegerUtil.isIn(respCode, HTTP_OK, HTTP_NOT_AUTHORITATIVE,
                 HTTP_MOVED_PERM, HTTP_MOVED_TEMP)) {
-            throw new NetException(NetException.ExCode.INVALID_SERVER_RESPONSE, "File " + strUrl + " invalid response [" + httpCon.getResponseMessage() + "]");
+            throw new NetException(NetException.ExCode.INVALID_SERVER_RESPONSE, "File "
+                + strUrl + " invalid response [" + respMsg + "]");
         }
 	}
 

@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.net;
 
+import static java.net.HttpURLConnection.*;
 import static org.apache.niolex.commons.util.Const.K;
 import static org.apache.niolex.commons.util.DateTimeUtil.SECOND;
 import static org.apache.niolex.commons.net.DownloadUtil.*;
@@ -29,6 +30,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -144,6 +146,7 @@ public abstract class HTTPUtil {
 
     /**
      * Do the HTTP request.
+     * We will take care of resource release and HTTP-30X redirect to new location.
      *
      * @param strUrl the request URL
      * @param params the request parameters
@@ -160,9 +163,14 @@ public abstract class HTTPUtil {
             boolean useGet) throws NetException {
         LOG.debug("Start HTTP {} request to [{}], C{}R{}.", useGet ? "GET" : "POST", strUrl, connectTimeout,
                 readTimeout);
+
         InputStream in = null;
+        boolean inErrorStatus = true; // If this value is true, we disconnect the socket connection.
+        HttpURLConnection httpCon = null;
+
         try {
-            // 1. For get, we pass parameters in URL; for post, we save it in reqBytes.
+            // 1. Prepare x-www-form-urlencoded HTTP parameters.
+            // For GET, we pass parameters in URL; for POST, we save it in reqBytes.
             byte[] reqBytes = null;
             if (!CollectionUtil.isEmpty(params)) {
                 if (useGet) {
@@ -172,20 +180,24 @@ public abstract class HTTPUtil {
                 }
             }
             URL url = new URL(strUrl); // We use Java URL to do the HTTP request.
+
+            // 2. Create a connection and validate the connection type.
+            // At this time, no real socket connection was established. Just an Java object was created.
             URLConnection ucon = url.openConnection();
-            ucon.setConnectTimeout(connectTimeout);
-            ucon.setReadTimeout(readTimeout);
-            // 2. validate to Connection type.
             if (!(ucon instanceof HttpURLConnection)) {
                 throw new NetException(NetException.ExCode.INVALID_URL_TYPE, "The request is not in HTTP protocol.");
             }
-            final HttpURLConnection httpCon = (HttpURLConnection) ucon;
-            // 3. We add all the request headers.
+            httpCon = (HttpURLConnection) ucon;
+
+            // 3. Add all the request headers and do proper configuration.
             if (headers != null) {
                 for (Map.Entry<String, String> entry : headers.entrySet()) {
                     httpCon.addRequestProperty(entry.getKey(), entry.getValue());
                 }
             }
+            httpCon.setConnectTimeout(connectTimeout);
+            httpCon.setReadTimeout(readTimeout);
+
             // 4. For get or no parameter, we do not output data; for post, we pass parameters in Body.
             if (reqBytes == null) {
                 httpCon.setDoOutput(false);
@@ -196,24 +208,47 @@ public abstract class HTTPUtil {
                 httpCon.setDoOutput(true);
             }
             httpCon.setDoInput(true);
+            httpCon.setInstanceFollowRedirects(true);
+
+            // Network connection created at this time.
             httpCon.connect();
+
             // 5. do output if needed.
             if (reqBytes != null) {
                 StreamUtil.writeAndClose(httpCon.getOutputStream(), reqBytes);
             }
-            // 6. Get the input stream.
+
+            // 6. Get the input stream and validate the response code. Do manual redirect here.
             in = httpCon.getInputStream();
             final int contentLength = httpCon.getContentLength();
-            validateHttpCode(strUrl, httpCon);
-            byte[] ret = null;
+            final int httpResponseCode = httpCon.getResponseCode();
+            if (httpResponseCode == HTTP_MOVED_PERM || httpResponseCode == HTTP_MOVED_TEMP) {
+                // HttpURLConnection by design won't automatically redirect from HTTP to HTTPS (or vice versa).
+                // We need to handle it manually.
+                String location = httpCon.getHeaderField("Location");
+                String cookies = httpCon.getHeaderField("Set-Cookie");
+
+                Map<String, String> newHeaders = new HashMap<String, String>(headers);
+                newHeaders.put("Referer", strUrl);
+                newHeaders.put("Cookie", cookies);
+
+                LOG.debug("Going to redirect to new URL [{}].", location);
+                return doHTTP(location, null, null, newHeaders, connectTimeout, readTimeout, true);
+            }
+
+            validateHttpCode(strUrl, httpResponseCode, httpCon.getResponseMessage());
+
             // 7. Read response byte array according to the strategy.
+            byte[] ret = null;
             if (contentLength > 0) {
                 ret = commonDownload(contentLength, in);
             } else {
                 ret = unusualDownload(strUrl, in, MAX_BODY_SIZE, true);
             }
+
             // 8. Parse the response headers.
             LOG.debug("Succeeded to execute HTTP request to [{}], response size {}.", strUrl, ret.length);
+            inErrorStatus = false; // HTTP being processed correctly, HTTP connection can be reused.
             return Pair.create(httpCon.getHeaderFields(), ret);
         } catch (NetException e) {
             LOG.info(e.getMessage());
@@ -225,6 +260,11 @@ public abstract class HTTPUtil {
         } finally {
             // Close the input stream.
             StreamUtil.closeStream(in);
+            // If the stream is not completely consumed, the underlying socket connection can not be reused,
+            // so we need to disconnect it for this case to release system resource.
+            if (inErrorStatus && httpCon != null) {
+                httpCon.disconnect();
+            }
         }
     }
 
