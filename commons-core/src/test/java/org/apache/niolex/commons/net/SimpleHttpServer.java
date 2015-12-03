@@ -49,13 +49,14 @@ public class SimpleHttpServer {
     public static void main(String[] args) throws Exception {
         //addr, backlog
         server = HttpServer.create(new InetSocketAddress(8985), 100);
-        InfoHandler info = new InfoHandler();
-        server.createContext("/", info);
-        server.createContext("/info", info);
+        server.createContext("/", new RedirectHandler());
+        server.createContext("/info", new InfoHandler());
         server.createContext("/utf8", new UTF8Handler());
         server.createContext("/gbk", new GBKHandler());
         server.createContext("/get", new GetHandler());
         server.createContext("/post", new PostHandler());
+        server.createContext("/baidu1", new BiduHandler1());
+        server.createContext("/baidu2", new BiduHandler2());
         // creates a default executor
         server.setExecutor(Executors.newFixedThreadPool(10));
         server.start();
@@ -66,6 +67,15 @@ public class SimpleHttpServer {
             //delay
             server.stop(0);
             server = null;
+        }
+    }
+
+    static class RedirectHandler implements HttpHandler {
+        public void handle(HttpExchange t) throws IOException {
+            Headers headers = t.getResponseHeaders();
+            headers.add("Location", "/info");
+            t.sendResponseHeaders(302, 0);
+            t.getResponseBody().close();
         }
     }
 
@@ -107,6 +117,16 @@ public class SimpleHttpServer {
 
     static class GetHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
+            String method = t.getRequestMethod();
+            if (!method.equals("GET")) {
+                Headers headers = t.getResponseHeaders();
+                headers.set("Location", "/post");
+                headers.set("Content-Type", "text/html");
+                t.sendResponseHeaders(307, 0);
+                t.getResponseBody().close();
+                return;
+            }
+
             // add the required response header for a PDF file
             Headers h = t.getResponseHeaders();
             h.add("Content-Type", "image/jpeg");
@@ -148,6 +168,24 @@ public class SimpleHttpServer {
     static void badRequest(HttpExchange t) throws IOException {
         t.sendResponseHeaders(400, 0);
         t.getResponseBody().close();
+    }
+
+    static class BiduHandler1 implements HttpHandler {
+        public void handle(HttpExchange t) throws IOException {
+            Headers headers = t.getResponseHeaders();
+            headers.add("Location", "https://www.baidu.com/");
+            t.sendResponseHeaders(301, 0);
+            t.getResponseBody().close();
+        }
+    }
+
+    static class BiduHandler2 implements HttpHandler {
+        public void handle(HttpExchange t) throws IOException {
+            Headers headers = t.getResponseHeaders();
+            headers.add("Location", "https://www.baidu.com/");
+            t.sendResponseHeaders(302, 0);
+            t.getResponseBody().close();
+        }
     }
 
 }

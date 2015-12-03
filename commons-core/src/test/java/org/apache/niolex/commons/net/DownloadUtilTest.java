@@ -242,7 +242,7 @@ public class DownloadUtilTest {
             validateHttpCode("http://dd.ku.cn", con);
         } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.INVALID_SERVER_RESPONSE);
-            assertEquals("INVALID_SERVER_RESPONSE: File http://dd.ku.cn invalid response [Msg 303]", e.getMessage());
+            assertEquals("INVALID_SERVER_RESPONSE: File http://dd.ku.cn invalid response 303 [Msg 303]", e.getMessage());
             return;
         }
         assertTrue(false);
@@ -255,7 +255,7 @@ public class DownloadUtilTest {
             validateHttpCode("http://dd.ku.cn", con);
         } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.INVALID_SERVER_RESPONSE);
-            assertEquals("INVALID_SERVER_RESPONSE: File http://dd.ku.cn invalid response [Msg 403]", e.getMessage());
+            assertEquals("INVALID_SERVER_RESPONSE: File http://dd.ku.cn invalid response 403 [Msg 403]", e.getMessage());
             return;
         }
         assertTrue(false);

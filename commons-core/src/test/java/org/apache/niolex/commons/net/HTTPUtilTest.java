@@ -19,12 +19,17 @@ package org.apache.niolex.commons.net;
 
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.apache.niolex.commons.codec.StringUtil;
+import org.apache.niolex.commons.net.NetException.ExCode;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
@@ -66,9 +71,14 @@ public class HTTPUtilTest extends HTTPUtil {
     @Test
     public void testGetHasEnc() throws Exception {
         if (SystemUtil.defined("download", "download.http")) return;
-        String s = get("http://www.sogou.com/");
-        assertTrue(s.length() > 1024);
-        assertTrue(s.contains("搜狗搜索"));
+        try {
+            String s = get("http://www.sogou.com/");
+            assertTrue(s.length() > 1024);
+            assertTrue(s.contains("搜狗搜索"));
+        } catch (NetException e) {
+            assertEquals(e.getCode(), ExCode.IOEXCEPTION);
+            assertTrue(e.getCause() instanceof SSLHandshakeException);
+        }
     }
 
     @Test
@@ -281,6 +291,16 @@ public class HTTPUtilTest extends HTTPUtil {
         params.put("Host", "apache");
         String s = prepareWwwFormUrlEncoded(params, "ascii");
         assertEquals(s, "Host=apache");
+    }
+
+    @Test
+    public void testCleanupHttpURLConnection() throws Exception {
+        HttpURLConnection con = mock(HttpURLConnection.class);
+        cleanupHttpURLConnection(true, null);
+        cleanupHttpURLConnection(false, null);
+        cleanupHttpURLConnection(true, con);
+        cleanupHttpURLConnection(false, con);
+        verify(con, times(1)).disconnect();
     }
 
 }

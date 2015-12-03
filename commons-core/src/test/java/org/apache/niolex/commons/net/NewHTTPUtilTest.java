@@ -19,6 +19,7 @@ package org.apache.niolex.commons.net;
 
 import static org.junit.Assert.*;
 
+import java.net.HttpURLConnection;
 import java.util.Map;
 
 import org.junit.AfterClass;
@@ -49,7 +50,8 @@ public class NewHTTPUtilTest extends HTTPUtil {
     }
 
     @Test
-    public void testGetWithoutEnc() throws Exception {
+    public void testGetRedirect() throws Exception {
+        HttpURLConnection.setFollowRedirects(false);
         String s = get(PREFIX);
         String response = "Use /get to download a JPG";
         assertEquals(s, response);
@@ -69,10 +71,17 @@ public class NewHTTPUtilTest extends HTTPUtil {
         assertEquals(s, response);
     }
 
-
     @Test(expected=NetException.class)
     public void testGetError() throws Exception {
         get(PREFIX + "post");
+    }
+
+    @Test
+    public void testPostRedirect() throws Exception {
+        Map<String, String> params = Maps.newHashMap();
+        params.put("inputT", "18400");
+        byte[] b = doHTTP(PREFIX + "get", params, "iso8859-1", null, 500, 500, false).b;
+        assertArrayEquals(b, "inputT=18400".getBytes());
     }
 
     @Test
@@ -91,6 +100,18 @@ public class NewHTTPUtilTest extends HTTPUtil {
         String s = post(PREFIX + "post", params);
         String response = "tn=baidu&rsv_sug1=8&rsv_sug=0&inputT=18400&ie=gb2312&rsv_spt=3&rsv_sug4=624&wd=%E8%B0%A2%E4%BD%B6%E8%8A%B8&rsv_sug3=11&rsv_bp=0";
         assertEquals(s, response);
+    }
+
+    @Test
+    public void testGetBaidu1() throws Exception {
+        String s = get(PREFIX + "baidu1");
+        assertTrue(s.contains("百度一下，你就知道"));
+    }
+
+    @Test
+    public void testGetBaidu2() throws Exception {
+        String s = get(PREFIX + "baidu2");
+        assertTrue(s.contains("百度一下，你就知道"));
     }
 
 }

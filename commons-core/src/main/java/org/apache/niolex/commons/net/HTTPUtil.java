@@ -260,11 +260,22 @@ public abstract class HTTPUtil {
         } finally {
             // Close the input stream.
             StreamUtil.closeStream(in);
-            // If the stream is not completely consumed, the underlying socket connection can not be reused,
-            // so we need to disconnect it for this case to release system resource.
-            if (inErrorStatus && httpCon != null) {
-                httpCon.disconnect();
-            }
+            // Cleanup the HTTP connection.
+            cleanupHttpURLConnection(inErrorStatus, httpCon);
+        }
+    }
+
+    /**
+     * Cleanup the HTTP connection so that JVM can release the network resources.
+     *
+     * @param inErrorStatus whether we are in error status when using the HTTP connection
+     * @param httpCon the http connection instance
+     */
+    public static void cleanupHttpURLConnection(boolean inErrorStatus, HttpURLConnection httpCon) {
+        // If the stream is not completely consumed, the underlying socket connection can not be reused,
+        // so we need to disconnect it for this case to release system resource.
+        if (inErrorStatus && httpCon != null) {
+            httpCon.disconnect();
         }
     }
 

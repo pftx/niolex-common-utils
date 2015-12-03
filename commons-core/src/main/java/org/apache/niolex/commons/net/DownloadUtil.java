@@ -263,7 +263,7 @@ public abstract class DownloadUtil {
         if (!IntegerUtil.isIn(respCode, HTTP_OK, HTTP_NOT_AUTHORITATIVE,
                 HTTP_MOVED_PERM, HTTP_MOVED_TEMP)) {
             throw new NetException(NetException.ExCode.INVALID_SERVER_RESPONSE, "File "
-                + strUrl + " invalid response [" + respMsg + "]");
+                + strUrl + " invalid response " + respCode + " [" + respMsg + "]");
         }
 	}
 
