@@ -25,7 +25,7 @@ import java.util.concurrent.CountDownLatch;
  * This is a waiting utility for clients to wait for the response and in the mean time hold the thread.
  * <br><pre>
  * The correct use sequence will be:
- * 1. call WaitOn<E> init(Object key) to generate the wait on object.
+ * 1. call WaitOn&lt;E&gt; init(Object key) to generate the wait on object.
  * 2. start the other part to process your request.
  * 3. call E waitForResult(Object key, long time) to wait for the result.
  * </pre>
