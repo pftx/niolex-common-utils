@@ -57,6 +57,7 @@ public class SimpleHttpServer {
         server.createContext("/post", new PostHandler());
         server.createContext("/baidu1", new BiduHandler1());
         server.createContext("/baidu2", new BiduHandler2());
+        server.createContext("/zero", new ZeroLengthHandler());
         // creates a default executor
         server.setExecutor(Executors.newFixedThreadPool(10));
         server.start();
@@ -185,6 +186,16 @@ public class SimpleHttpServer {
             headers.add("Location", "https://www.baidu.com/");
             t.sendResponseHeaders(302, 0);
             t.getResponseBody().close();
+        }
+    }
+
+    static class ZeroLengthHandler implements HttpHandler {
+        public void handle(HttpExchange t) throws IOException {
+            t.sendResponseHeaders(201, 0);
+            Headers headers = t.getResponseHeaders();
+            headers.add("Location", "/info");
+            OutputStream os = t.getResponseBody();
+            os.close();
         }
     }
 

@@ -80,7 +80,7 @@ public class NewHTTPUtilTest extends HTTPUtil {
     public void testPostRedirect() throws Exception {
         Map<String, String> params = Maps.newHashMap();
         params.put("inputT", "18400");
-        byte[] b = doHTTP(PREFIX + "get", params, null, "iso8859-1", null, 500, 500, HTTPMethod.POST).b;
+        byte[] b = doHTTP(PREFIX + "get", params, null, "iso8859-1", null, 500, 500, HTTPMethod.POST).z;
         assertArrayEquals(b, "inputT=18400".getBytes());
     }
 
@@ -133,6 +133,18 @@ public class NewHTTPUtilTest extends HTTPUtil {
     public void testGetBaidu2() throws Exception {
         String s = get(PREFIX + "baidu2");
         assertTrue(s.contains("百度一下，你就知道"));
+    }
+
+    @Test(expected=NetException.class)
+    public void testGetZeroLength() throws Exception {
+        String s = get(PREFIX + "zero");
+        System.out.println(s);
+    }
+
+    @Test(expected=NetException.class)
+    public void testPostZeroLength() throws Exception {
+        String s = post(PREFIX + "zero", "Hello, World!");
+        System.out.println(s);
     }
 
 }

@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.file.FileUtil;
+import org.apache.niolex.commons.net.HTTPMethod;
 import org.apache.niolex.commons.net.HTTPUtil;
 import org.apache.niolex.commons.net.NetException;
 
@@ -60,7 +61,7 @@ public class Post {
      * @throws NetException
      */
     private static String doHTTP(Map<String, String> params) throws NetException {
-        return HTTPUtil.doHTTP(URL, params, "gbk", false);
+        return HTTPUtil.doHTTP(URL, params, null, "gbk", HTTPMethod.POST);
     }
 
 }

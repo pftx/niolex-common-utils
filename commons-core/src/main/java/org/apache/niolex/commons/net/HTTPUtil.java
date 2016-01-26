@@ -18,9 +18,9 @@
 package org.apache.niolex.commons.net;
 
 import static java.net.HttpURLConnection.*;
+import static org.apache.niolex.commons.net.DownloadUtil.*;
 import static org.apache.niolex.commons.util.Const.K;
 import static org.apache.niolex.commons.util.DateTimeUtil.SECOND;
-import static org.apache.niolex.commons.net.DownloadUtil.*;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.CharEncoding;
-import org.apache.niolex.commons.bean.Pair;
+import org.apache.niolex.commons.bean.Triple;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.commons.stream.StreamUtil;
@@ -56,16 +56,20 @@ import com.google.common.collect.ImmutableMap;
  */
 public abstract class HTTPUtil {
 
+    /**
+     * The demo request headers. User can use this as a base and add more headers into it.
+     */
+    public static final Map<String, String> REQ_HEADER = ImmutableMap.of("DNT", "1",
+            "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/24.0",
+            "Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3",
+            "Cache-Control", "no-cache");
+
     private static final Logger LOG = LoggerFactory.getLogger(HTTPUtil.class);
 
     private static final int CONNECT_TIMEOUT = 6 * SECOND;
     private static final int READ_TIMEOUT = 6 * SECOND;
     private static final int MAX_BODY_SIZE = 500 * K;
-    private static final Map<String, String> REQ_HEADER = ImmutableMap.of("DNT", "1",
-            "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/24.0",
-            "Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3",
-            "Cache-Control", "no-cache");
 
     /**
      * Do a HTTP get request.
@@ -87,7 +91,20 @@ public abstract class HTTPUtil {
      * @throws NetException
      */
     public static final String get(String url, Map<String, String> params) throws NetException {
-        return doHTTP(url, params, HTTPMethod.GET);
+        return get(url, params, CharEncoding.UTF_8);
+    }
+
+    /**
+     * Do a HTTP get request.
+     *
+     * @param url the request URL
+     * @param params the request parameters
+     * @param paramCharset the charset used to send the request parameters
+     * @return the response body as string
+     * @throws NetException
+     */
+    public static final String get(String url, Map<String, String> params, String paramCharset) throws NetException {
+        return doHTTP(url, params, null, paramCharset, HTTPMethod.GET);
     }
 
     /**
@@ -99,45 +116,45 @@ public abstract class HTTPUtil {
      * @throws NetException
      */
     public static final String post(String url, Map<String, String> params) throws NetException {
-        return doHTTP(url, params, HTTPMethod.POST);
+        return post(url, params, CharEncoding.UTF_8);
     }
 
     /**
      * Do a HTTP post request.
      *
      * @param url the request URL
-     * @param postBody the request body to be posted, will be encoded as application/json
+     * @param params the request parameters, will be encoded as application/x-www-form-urlencoded
+     * @param paramCharset the charset used to send the request parameters
+     * @return the response body as string
+     * @throws NetException
+     */
+    public static final String post(String url, Map<String, String> params, String paramCharset) throws NetException {
+        return doHTTP(url, params, null, paramCharset, HTTPMethod.POST);
+    }
+
+    /**
+     * Do a HTTP post request.
+     *
+     * @param url the request URL
+     * @param postBody the request body to be posted, will be sent as application/json
      * @return the response body as string
      * @throws NetException
      */
     public static final String post(String url, String postBody) throws NetException {
-        return doHTTP(url, postBody, HTTPMethod.POST);
+        return post(url, postBody, CharEncoding.UTF_8);
     }
 
     /**
-     * Do a HTTP request.
+     * Do a HTTP post request.
      *
      * @param url the request URL
-     * @param postBody the request body to be posted, will be encoded as application/json
-     * @param method the HTTP method to be used
+     * @param postBody the request body to be posted, will be sent as application/json
+     * @param postCharset the charset used to send the post body
      * @return the response body as string
      * @throws NetException
      */
-    public static final String doHTTP(String url, String postBody, HTTPMethod method) throws NetException {
-        return doHTTP(url, null, postBody, CharEncoding.UTF_8, method);
-    }
-
-    /**
-     * Do a HTTP request.
-     *
-     * @param url the request URL
-     * @param params the request parameters
-     * @param method the HTTP method to be used
-     * @return the response body as string
-     * @throws NetException
-     */
-    public static final String doHTTP(String url, Map<String, String> params, HTTPMethod method) throws NetException {
-        return doHTTP(url, params, null, CharEncoding.UTF_8, method);
+    public static final String post(String url, String postBody, String postCharset) throws NetException {
+        return doHTTP(url, null, postBody, postCharset, HTTPMethod.POST);
     }
 
     /**
@@ -147,16 +164,27 @@ public abstract class HTTPUtil {
      * @param url the request URL
      * @param params the request parameters
      * @param postBody the request body to be posted, will be encoded as application/json
-     * @param paramCharset the charset used to send the request parameters
+     * @param reqCharset the charset used to send the request parameters
      * @param method the HTTP method to be used
      * @return the response body as string
      * @throws NetException
      */
-    protected static final String doHTTP(String url, Map<String, String> params, String postBody, String paramCharset,
+    public static final String doHTTP(String url, Map<String, String> params, String postBody, String reqCharset,
             HTTPMethod method) throws NetException {
-        Pair<Map<String, List<String>>, byte[]> res = doHTTP(url, params, postBody, paramCharset, REQ_HEADER,
-                CONNECT_TIMEOUT, READ_TIMEOUT, method);
-        return new String(res.b, inferCharset(res.a, res.b));
+        Triple<Integer, Map<String, List<String>>, byte[]> res = doHTTP(url, params, postBody, reqCharset,
+                REQ_HEADER, CONNECT_TIMEOUT, READ_TIMEOUT, method);
+        if (res.z == null) {
+            throw new NetException(NetException.ExCode.INVALID_SERVER_RESPONSE, "URL " + url + " response code "
+                    + res.x + " [There is no data.]");
+        }
+
+        String rest = new String(res.z, inferCharset(res.y, res.z));
+
+        if (res.x >= 400) {
+            throw new NetException(NetException.ExCode.INVALID_SERVER_RESPONSE, "URL " + url + " response code "
+                    + res.x + " [Response size " + rest.length() + "]");
+        }
+        return rest;
     }
 
     /**
@@ -166,10 +194,10 @@ public abstract class HTTPUtil {
      * @param connectTimeout the connection timeout
      * @param readTimeout the data read timeout
      * @param method the HTTP method to be used
-     * @return the response pair; a is response header map, b is response body
+     * @return the response triple: x is response code, y is response header map, z is response body
      * @throws NetException
      */
-    public static final Pair<Map<String, List<String>>, byte[]> doHTTP(String strUrl, int connectTimeout,
+    public static final Triple<Integer, Map<String, List<String>>, byte[]> doHTTP(String strUrl, int connectTimeout,
             int readTimeout, HTTPMethod method) throws NetException {
         return doHTTP(strUrl, null, null, null, REQ_HEADER, connectTimeout, readTimeout, method);
     }
@@ -181,20 +209,19 @@ public abstract class HTTPUtil {
      *
      * @param strUrl the request URL
      * @param params the request parameters
-     * @param postBody the request body to be posted, will be encoded as application/json
-     * @param paramCharset the charset used to send the request parameters
-     * @param headers the request headers
+     * @param postBody the request body to be posted, will be sent as application/json
+     * @param reqCharset the charset used to send the request parameters
+     * @param reqHeaders the request headers
      * @param connectTimeout the connection timeout
      * @param readTimeout the data read timeout
      * @param method the HTTP method to be used
-     * @return the response pair; a is response header map, b is response body
+     * @return the response triple: x is response code, y is response header map, z is response body
      * @throws NetException
      */
-    public static final Pair<Map<String, List<String>>, byte[]> doHTTP(String strUrl, Map<String, String> params,
-            String postBody, String paramCharset, Map<String, String> headers, int connectTimeout, int readTimeout,
+    public static final Triple<Integer, Map<String, List<String>>, byte[]> doHTTP(String strUrl, Map<String, String> params,
+            String postBody, String reqCharset, Map<String, String> reqHeaders, int connectTimeout, int readTimeout,
             HTTPMethod method) throws NetException {
-        LOG.debug("Start HTTP {} request to [{}], C{}R{}.", method.name(), strUrl, connectTimeout,
-                readTimeout);
+        LOG.debug("Start HTTP {} request to [{}], C{}R{}.", method.name(), strUrl, connectTimeout, readTimeout);
 
         InputStream in = null;
         boolean inErrorStatus = true; // If this value is true, we disconnect the socket connection.
@@ -206,15 +233,22 @@ public abstract class HTTPUtil {
             byte[] reqBytes = null;
             String contentType = null;
 
+            // We use UTF8 as the default charset.
+            if (reqCharset == null) {
+                reqCharset = CharEncoding.UTF_8;
+            }
+
+            // Process the <params> map.
             if (!CollectionUtil.isEmpty(params)) {
                 if (method.passParametersInURL()) {
-                    strUrl = strUrl + '?' + prepareWwwFormUrlEncoded(params, paramCharset);
+                    strUrl = strUrl + '?' + prepareWwwFormUrlEncoded(params, reqCharset);
                 } else {
-                    reqBytes = StringUtil.strToAsciiByte(prepareWwwFormUrlEncoded(params, paramCharset));
-                    contentType = "application/x-www-form-urlencoded";
+                    reqBytes = StringUtil.strToAsciiByte(prepareWwwFormUrlEncoded(params, reqCharset));
+                    contentType = "application/x-www-form-urlencoded; charset=" + reqCharset;
                 }
             }
 
+            // Process the post body.
             if (!StringUtil.isBlank(postBody)) {
                 if (method.passParametersInURL()) {
                     throw new IllegalArgumentException("You must use HTTP POST method when you set postBody.");
@@ -225,8 +259,8 @@ public abstract class HTTPUtil {
                 }
 
                 // Translate postBody into bytes.
-                reqBytes = postBody.getBytes(paramCharset);
-                contentType = "application/json";
+                reqBytes = postBody.getBytes(reqCharset);
+                contentType = "application/json; charset=" + reqCharset;
             }
             URL url = new URL(strUrl); // We use Java URL to do the HTTP request.
 
@@ -239,8 +273,8 @@ public abstract class HTTPUtil {
             httpCon = (HttpURLConnection) ucon;
 
             // 3. Add all the request headers and do proper configuration.
-            if (headers != null) {
-                for (Map.Entry<String, String> entry : headers.entrySet()) {
+            if (reqHeaders != null) {
+                for (Map.Entry<String, String> entry : reqHeaders.entrySet()) {
                     httpCon.addRequestProperty(entry.getKey(), entry.getValue());
                 }
             }
@@ -268,9 +302,7 @@ public abstract class HTTPUtil {
                 StreamUtil.writeAndClose(httpCon.getOutputStream(), reqBytes);
             }
 
-            // 6. Get the input stream and validate the response code. Do manual redirect here.
-            in = httpCon.getInputStream();
-            final int contentLength = httpCon.getContentLength();
+            // 6. Validate the response code. Do manual redirect here.
             final int httpResponseCode = httpCon.getResponseCode();
             if (httpResponseCode == HTTP_MOVED_PERM || httpResponseCode == HTTP_MOVED_TEMP) {
                 // HttpURLConnection by design won't automatically redirect from HTTP to HTTPS (or vice versa).
@@ -278,7 +310,7 @@ public abstract class HTTPUtil {
                 String location = httpCon.getHeaderField("Location");
                 String cookies = httpCon.getHeaderField("Set-Cookie");
 
-                Map<String, String> newHeaders = new HashMap<String, String>(headers);
+                Map<String, String> newHeaders = new HashMap<String, String>(reqHeaders);
                 newHeaders.put("Referer", strUrl);
                 newHeaders.put("Cookie", cookies);
 
@@ -286,20 +318,30 @@ public abstract class HTTPUtil {
                 return doHTTP(location, null, null, null, newHeaders, connectTimeout, readTimeout, method);
             }
 
-            validateHttpCode(strUrl, httpResponseCode, httpCon.getResponseMessage());
-
-            // 7. Read response byte array according to the strategy.
-            byte[] ret = null;
-            if (contentLength > 0) {
-                ret = commonDownload(contentLength, in);
+            // 7. Get the input stream. If error occurs, try the error stream.
+            if (httpResponseCode >= 400) {
+                in = httpCon.getErrorStream();
             } else {
-                ret = unusualDownload(strUrl, in, MAX_BODY_SIZE, true);
+                in = httpCon.getInputStream();
             }
 
-            // 8. Parse the response headers.
-            LOG.debug("Succeeded to execute HTTP request to [{}], response size {}.", strUrl, ret.length);
+            byte[] ret = null;
+
+            // 7. Read response byte array according to the condition.
+            if (in != null) {
+                final int contentLength = httpCon.getContentLength();
+                if (contentLength > 0) {
+                    ret = commonDownload(contentLength, in);
+                } else {
+                    ret = unusualDownload(strUrl, in, MAX_BODY_SIZE, true);
+                }
+
+                LOG.debug("Succeeded to execute HTTP request to [{}], response size {}.", strUrl, ret.length);
+            }
+
+            // 8. Prepare the result.
             inErrorStatus = false; // HTTP being processed correctly, HTTP connection can be reused.
-            return Pair.create(httpCon.getHeaderFields(), ret);
+            return Triple.create(httpResponseCode, httpCon.getHeaderFields(), ret);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (NetException e) {
