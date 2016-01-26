@@ -80,8 +80,29 @@ public class NewHTTPUtilTest extends HTTPUtil {
     public void testPostRedirect() throws Exception {
         Map<String, String> params = Maps.newHashMap();
         params.put("inputT", "18400");
-        byte[] b = doHTTP(PREFIX + "get", params, "iso8859-1", null, 500, 500, false).b;
+        byte[] b = doHTTP(PREFIX + "get", params, null, "iso8859-1", null, 500, 500, HTTPMethod.POST).b;
         assertArrayEquals(b, "inputT=18400".getBytes());
+    }
+
+    @Test
+    public void testPostJson() throws Exception {
+        String body = "This needs to be json JIFE(#$R.";
+        String s = post(PREFIX + "post", body);
+        assertEquals(s, body);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testPostInvalid1() throws Exception {
+        Map<String, String> params = Maps.newHashMap();
+        params.put("inputT", "18400");
+        doHTTP(PREFIX + "get", params, "FillIn this too.", "iso8859-1", null, 500, 500, HTTPMethod.GET);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testPostInvalid2() throws Exception {
+        Map<String, String> params = Maps.newHashMap();
+        params.put("inputT", "18400");
+        doHTTP(PREFIX + "get", params, "FillIn this too.", "iso8859-1", null, 500, 500, HTTPMethod.POST);
     }
 
     @Test

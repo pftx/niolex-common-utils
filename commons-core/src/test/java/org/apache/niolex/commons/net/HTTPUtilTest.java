@@ -113,7 +113,7 @@ public class HTTPUtilTest extends HTTPUtil {
     @Test(expected=NetException.class)
     public void testDoHTTPInvalidURL() throws Exception {
         try {
-            doHTTP(DownloadUtilTest.JAR, null, true);
+            doHTTP(DownloadUtilTest.JAR, "", HTTPMethod.GET);
         } catch (NetException e) {
             assertEquals(e.getCode(), NetException.ExCode.INVALID_URL_TYPE);
             throw e;
@@ -124,7 +124,7 @@ public class HTTPUtilTest extends HTTPUtil {
     public final void testDoHTTPIOE() throws Exception, Throwable {
         try {
             doHTTP("http://search.maven.org/#search%7Cga%7C1%7Cprotobuf-java",
-                            1000, 50, false);
+                            1000, 50, HTTPMethod.POST);
         } catch (NetException et) {
             System.out.println("MSG " + et.getMessage());
             assertEquals(et.getCode(), NetException.ExCode.IOEXCEPTION);
@@ -135,7 +135,7 @@ public class HTTPUtilTest extends HTTPUtil {
     @Test
     public void testDoHTTPNuLLHeader() throws Exception {
         if (SystemUtil.defined("download", "download.http")) return;
-        byte[] body = doHTTP("http://view.163.com/", 5000, 3000, false).b;
+        byte[] body = doHTTP("http://view.163.com/", 5000, 3000, HTTPMethod.GET).b;
         String s = StringUtil.gbkByteToStr(body);
         assertTrue(s.length() > 1024);
         assertTrue(s.contains("网易评论频道是网易新闻中心一个包含有另一面"));
