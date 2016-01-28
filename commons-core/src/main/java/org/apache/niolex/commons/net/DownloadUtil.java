@@ -56,7 +56,7 @@ public abstract class DownloadUtil {
 	// ---
 	private static final int BUFFER_SIZE = 16 * K;
 	private static final int MATERIAL_SIZE = 30 * K;
-	private static final int MAX_SIZE = 10 * M;
+	private static final int MAX_SIZE = 20 * M;
 	private static final int MIN_SIZE = 10;
 
 	/**
@@ -79,8 +79,8 @@ public abstract class DownloadUtil {
 	 * Download the file pointed by the url and return the content as byte array.
 	 *
 	 * @param strUrl
-	 *            The Url to be downloaded.
-	 * @return The file content as byte array.
+	 *            The Url to be downloaded
+	 * @return The file content as byte array
 	 * @throws NetException
 	 */
 	public static byte[] downloadFile(String strUrl) throws NetException {
@@ -91,10 +91,10 @@ public abstract class DownloadUtil {
 	 * Download the file pointed by the url and return the content as byte array.
 	 *
 	 * @param strUrl
-	 *            The Url to be downloaded.
+	 *            The Url to be downloaded
 	 * @param maxFileSize
-     *            Max file size in BYTEs.
-	 * @return The file content as byte array.
+     *            Max file size in BYTEs
+	 * @return The file content as byte array
 	 * @throws NetException
 	 */
 	public static byte[] downloadFile(String strUrl, int maxFileSize) throws NetException {
@@ -105,15 +105,15 @@ public abstract class DownloadUtil {
 	 * Download the file pointed by the url and return the content as byte array.
 	 *
 	 * @param strUrl
-	 *            The Url to be downloaded.
+	 *            The Url to be downloaded
 	 * @param connectTimeout
-	 *            Connect timeout in milliseconds.
+	 *            Connect timeout in milliseconds
 	 * @param readTimeout
-	 *            Read timeout in milliseconds.
+	 *            Read timeout in milliseconds
 	 * @param maxFileSize
-	 *            Max file size in BYTE.
-	 * @param useCache Whether we use thread local cache or not.
-	 * @return The file content as byte array.
+	 *            Max file size in BYTEs
+	 * @param useCache Whether we use thread local cache or not
+	 * @return The file content as byte array
 	 * @throws NetException
 	 */
 	public static byte[] downloadFile(String strUrl, int connectTimeout, int readTimeout, int maxFileSize,
@@ -127,21 +127,25 @@ public abstract class DownloadUtil {
 			ucon.setReadTimeout(readTimeout);
 			ucon.setDoOutput(false);
 			ucon.setDoInput(true);
+
 			ucon.connect();
-			final int contentLength = ucon.getContentLength();
-			validateContentLength(strUrl, contentLength, maxFileSize);
 			if (ucon instanceof HttpURLConnection) {
 			    validateHttpCode(strUrl, (HttpURLConnection) ucon);
 			}
+
 			in = ucon.getInputStream(); // Get the input stream.
+			final int contentLength = ucon.getContentLength();
+			validateContentLength(strUrl, contentLength, MIN_SIZE, maxFileSize);
+
 			byte[] ret = null;
 			// Create the byte array buffer according to the strategy.
 			if (contentLength > 0) {
-			    ret = commonDownload(contentLength, in);
+			    ret = commonDownload(in, contentLength);
             } else {
-                ret = unusualDownload(strUrl, in, maxFileSize, useCache);
+                ret = unusualDownload(in, MIN_SIZE, maxFileSize, strUrl, useCache);
             }
 			LOG.debug("Succeeded to download file [{}] size {}.", strUrl, ret.length);
+
 			return ret;
 		} catch (NetException e) {
 		    LOG.info(e.getMessage());
@@ -159,12 +163,12 @@ public abstract class DownloadUtil {
 	/**
 	 * The common process of download a size known file.
 	 *
-	 * @param size the file size.
-	 * @param in the input stream.
-	 * @return the file content.
+	 * @param in the input stream
+	 * @param size the file size
+	 * @return the file content
 	 * @throws IOException
 	 */
-	public static byte[] commonDownload(final int size, InputStream in) throws IOException {
+	public static byte[] commonDownload(InputStream in, final int size) throws IOException {
 	    byte[] byteBuf = new byte[size];
 	    int count, total = 0;
         // Start to download file.
@@ -178,20 +182,23 @@ public abstract class DownloadUtil {
 	/**
 	 * The unusual process of download a size unknown file.
 	 *
-	 * @param strUrl The Url to be downloaded.
-	 * @param in the input stream.
-	 * @param maxFileSize Max file size in BYTE.
-	 * @param useCache Whether we use thread local cache or not.
+	 * @param in the input stream
+	 * @param minFileSize Minimum file size in BYTEs
+	 * @param maxFileSize Max file size in BYTEs
+	 * @param strUrl The Url to be downloaded
+	 * @param useCache Whether we use thread local cache or not
 	 * @return the file content.
-	 * @throws IOException
 	 * @throws NetException
+	 * @throws IOException
 	 */
-	public static byte[] unusualDownload(String strUrl, InputStream in, int maxFileSize, Boolean useCache)
-	        throws IOException, NetException {
+	public static byte[] unusualDownload(InputStream in, int minFileSize, int maxFileSize, String strUrl,
+	        Boolean useCache) throws NetException, IOException {
 	    byte[] byteBuf = getByteBuffer(useCache == null ? useThreadLocalCache : useCache);
+
 	    byte[] ret = null;
         int count, total = 0;
         final int size = byteBuf.length;
+
         // Start to download file.
         while ((count = in.read(byteBuf, total, size - total)) > 0) {
             total += count;
@@ -214,24 +221,27 @@ public abstract class DownloadUtil {
             } while ((count = in.read(byteBuf)) > 0);
             ret = bos.toByteArray();
         }
-        validateContentLength(strUrl, ret.length, maxFileSize);
+
+        validateContentLength(strUrl, ret.length, minFileSize, maxFileSize);
         return ret;
 	}
 
 	/**
 	 * Validate the content length.
 	 *
-	 * @param strUrl The Url to be downloaded.
-	 * @param contentLength The content Length from HTTP header.
-	 * @param maxFileSize Max file size in BYTEs.
+	 * @param strUrl The Url to be downloaded
+	 * @param contentLength The content Length from HTTP header
+	 * @param minFileSize Minimum file size in BYTEs
+	 * @param maxFileSize Maximum file size in BYTEs
 	 * @throws NetException
 	 */
-	public static void validateContentLength(final String strUrl, final int contentLength, final int maxFileSize) throws NetException {
+	public static void validateContentLength(final String strUrl, final int contentLength, final int minFileSize,
+	        final int maxFileSize) throws NetException {
 	    if (contentLength > maxFileSize) {
             throw new NetException(NetException.ExCode.FILE_TOO_LARGE, "File " + strUrl +
                     " content size [" + contentLength + "], max allowed [" + maxFileSize + "] too large; download stoped.");
         }
-        if (contentLength != -1 && contentLength < MIN_SIZE) {
+        if (contentLength != -1 && contentLength < minFileSize) {
             throw new NetException(NetException.ExCode.FILE_TOO_SMALL, "File " + strUrl +
                     " content size [" + contentLength + "] too small, it indicates error.");
         }
@@ -258,8 +268,7 @@ public abstract class DownloadUtil {
 	 * @throws NetException
 	 * @throws IOException
 	 */
-	public static void validateHttpCode(final String strUrl, int respCode, String respMsg)
-	        throws NetException, IOException {
+	public static void validateHttpCode(final String strUrl, int respCode, String respMsg) throws NetException {
         if (!IntegerUtil.isIn(respCode, HTTP_OK, HTTP_NOT_AUTHORITATIVE,
                 HTTP_MOVED_PERM, HTTP_MOVED_TEMP)) {
             throw new NetException(NetException.ExCode.INVALID_SERVER_RESPONSE, "File "
@@ -270,7 +279,7 @@ public abstract class DownloadUtil {
 	/**
 	 * Get the byte buffer according to user strategy.
 	 *
-	 * @param useCache Whether we use thread local cache or not.
+	 * @param useCache whether we use thread local cache or not
 	 * @return the byte buffer
 	 */
 	public static byte[] getByteBuffer(boolean useCache) {

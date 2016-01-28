@@ -21,6 +21,7 @@ package org.apache.niolex.commons.net;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -301,6 +302,19 @@ public class HTTPUtilTest extends HTTPUtil {
         cleanupHttpURLConnection(true, con);
         cleanupHttpURLConnection(false, con);
         verify(con, times(1)).disconnect();
+    }
+
+    @Test
+    public void testCheckAndDownloadDataNull() throws Exception {
+        byte[] ret = checkAndDownloadData("not yet implemented", 500, null);
+        assertNull(ret);
+    }
+
+    @Test
+    public void testCheckAndDownloadDataZero() throws Exception {
+        InputStream input = mock(InputStream.class);
+        byte[] ret = checkAndDownloadData("not yet implemented", 0, input);
+        assertNull(ret);
     }
 
 }

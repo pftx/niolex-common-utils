@@ -191,7 +191,7 @@ public class SimpleHttpServer {
 
     static class ZeroLengthHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
-            t.sendResponseHeaders(201, 0);
+            t.sendResponseHeaders(201, -1);
             Headers headers = t.getResponseHeaders();
             headers.add("Location", "/info");
             OutputStream os = t.getResponseBody();

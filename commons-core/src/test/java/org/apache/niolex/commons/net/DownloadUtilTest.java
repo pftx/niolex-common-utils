@@ -141,7 +141,7 @@ public class DownloadUtilTest {
 
     @Test
     public void testUnusualDownload() throws Exception {
-        byte[] abc = unusualDownload("aa/bb", new InternalInputStream(34), 55, null);
+        byte[] abc = unusualDownload(new InternalInputStream(34), 1, 55, "aa/bb", null);
         assertEquals(abc.length, 34);
     }
 
@@ -149,7 +149,7 @@ public class DownloadUtilTest {
     public void testUnusualDownloadSmallFile() throws Exception {
         InputStream in = new ByteArrayInputStream(new byte[5]);
         try {
-            unusualDownload("aa/bb", in, 512, true);
+            unusualDownload(in, 10, 512, "aa/bb", true);
         } catch (NetException e) {
             assertEquals(e.getCode(), NetException.ExCode.FILE_TOO_SMALL);
             throw e;
@@ -159,7 +159,7 @@ public class DownloadUtilTest {
     @Test(expected=NetException.class)
     public void testUnusualDownloadTooLarge() throws Exception {
         try {
-            byte[] abc = unusualDownload("aa/bb", new InternalInputStream(9340), 5055, false);
+            byte[] abc = unusualDownload(new InternalInputStream(9340), 1, 5055, "aa/bb", false);
             assertEquals(abc.length, 34);
         } catch (NetException e) {
             assertEquals(e.getCode(), NetException.ExCode.FILE_TOO_LARGE);
@@ -170,7 +170,7 @@ public class DownloadUtilTest {
     @Test(expected=NetException.class)
     public void testUnusualDownloadSuperLarge() throws Exception {
         try {
-            byte[] abc = unusualDownload("aa/bb", new InternalInputStream(934000), 17 * Const.K, false);
+            byte[] abc = unusualDownload(new InternalInputStream(934000), 3, 17 * Const.K, "aa/bb", false);
             assertEquals(abc.length, 34);
         } catch (NetException e) {
             assertEquals(e.getCode(), NetException.ExCode.FILE_TOO_LARGE);
@@ -181,7 +181,7 @@ public class DownloadUtilTest {
     @Test
     public void testUnusualDownloadLargeButWeWant() throws Exception {
         final int size = 33 * Const.K;
-        byte[] abc = unusualDownload("aa/bb", new InternalInputStream(size), size, false);
+        byte[] abc = unusualDownload(new InternalInputStream(size), 5, size, "aa/bb", false);
         assertEquals(abc.length, size);
     }
 
@@ -263,15 +263,15 @@ public class DownloadUtilTest {
 
     @Test
     public void testValidateContentLength() throws Exception {
-        validateContentLength("not yet implemented", 200, 210);
-        validateContentLength("not yet implemented", -1, 210);
-        validateContentLength("not yet implemented", 210, 210);
+        validateContentLength("not yet implemented", 200, 5, 210);
+        validateContentLength("not yet implemented", -1, 5, 210);
+        validateContentLength("not yet implemented", 210, 5, 210);
     }
 
     @Test
     public void testValidateContentLengthTooSmall() {
         try {
-            validateContentLength("not yet implemented", 9, 210);
+            validateContentLength("not yet implemented", 9, 10, 210);
         } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.FILE_TOO_SMALL);
             assertEquals("FILE_TOO_SMALL: File not yet implemented content size [9] too small, it indicates error.", e.getMessage());
@@ -283,7 +283,7 @@ public class DownloadUtilTest {
     @Test
     public void testValidateContentLengthTooSmall2() {
         try {
-            validateContentLength("not yet implemented", 0, 210);
+            validateContentLength("not yet implemented", 0, 5, 210);
         } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.FILE_TOO_SMALL);
             assertEquals("FILE_TOO_SMALL: File not yet implemented content size [0] too small, it indicates error.", e.getMessage());
@@ -295,7 +295,7 @@ public class DownloadUtilTest {
     @Test
     public void testValidateContentLengthTooLarge() {
         try {
-            validateContentLength("not yet implemented", 211, 210);
+            validateContentLength("not yet implemented", 211, 5, 210);
         } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.FILE_TOO_LARGE);
             assertEquals("FILE_TOO_LARGE: File not yet implemented content size [211], max allowed [210] too large; download stoped.", e.getMessage());
@@ -307,7 +307,7 @@ public class DownloadUtilTest {
     @Test
     public void testValidateContentLengthTooLarge2() {
         try {
-            validateContentLength("not yet implemented", 21100, 234);
+            validateContentLength("not yet implemented", 21100, 5, 234);
         } catch (NetException e) {
             assertEquals(e.getCode(), ExCode.FILE_TOO_LARGE);
             assertEquals("FILE_TOO_LARGE: File not yet implemented content size [21100], max allowed [234] too large; download stoped.", e.getMessage());

@@ -19,9 +19,10 @@ package org.apache.niolex.commons.net;
 
 import static java.net.HttpURLConnection.*;
 import static org.apache.niolex.commons.net.DownloadUtil.*;
-import static org.apache.niolex.commons.util.Const.K;
+import static org.apache.niolex.commons.util.Const.M;
 import static org.apache.niolex.commons.util.DateTimeUtil.SECOND;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -69,7 +70,7 @@ public abstract class HTTPUtil {
 
     private static final int CONNECT_TIMEOUT = 6 * SECOND;
     private static final int READ_TIMEOUT = 6 * SECOND;
-    private static final int MAX_BODY_SIZE = 500 * K;
+    private static final int MAX_BODY_SIZE = 15 * M;
 
     /**
      * Do a HTTP get request.
@@ -324,20 +325,9 @@ public abstract class HTTPUtil {
             } else {
                 in = httpCon.getInputStream();
             }
-
-            byte[] ret = null;
-
-            // 7. Read response byte array according to the condition.
-            if (in != null) {
-                final int contentLength = httpCon.getContentLength();
-                if (contentLength > 0) {
-                    ret = commonDownload(contentLength, in);
-                } else {
-                    ret = unusualDownload(strUrl, in, MAX_BODY_SIZE, true);
-                }
-
-                LOG.debug("Succeeded to execute HTTP request to [{}], response size {}.", strUrl, ret.length);
-            }
+            final int contentLength = httpCon.getContentLength();
+            // Read response byte array according to the condition.
+            byte[] ret = checkAndDownloadData(strUrl, contentLength, in);
 
             // 8. Prepare the result.
             inErrorStatus = false; // HTTP being processed correctly, HTTP connection can be reused.
@@ -357,6 +347,34 @@ public abstract class HTTPUtil {
             // Cleanup the HTTP connection.
             cleanupHttpURLConnection(inErrorStatus, httpCon);
         }
+    }
+
+    /**
+     * Download data from the input stream, and check the data size if necessary.
+     *
+     * @param strUrl the Url to be downloaded
+     * @param contentLength the content Length from HTTP header
+     * @param in the input stream
+     * @return the downloaded bytes
+     * @throws NetException
+     * @throws IOException
+     */
+    public static byte[] checkAndDownloadData(final String strUrl, final int contentLength, InputStream in)
+            throws NetException, IOException {
+        byte[] ret = null;
+
+        // 7. Read response byte array according to the condition.
+        if (in != null && contentLength != 0) {
+            if (contentLength > 0) {
+                ret = commonDownload(in, contentLength);
+            } else {
+                ret = unusualDownload(in, 0, MAX_BODY_SIZE, strUrl, Boolean.TRUE);
+            }
+
+            LOG.debug("Succeeded to execute HTTP request to [{}], response size {}.", strUrl, ret.length);
+        }
+
+        return ret;
     }
 
     /**
