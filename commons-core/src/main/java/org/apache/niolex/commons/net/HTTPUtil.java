@@ -62,7 +62,7 @@ public abstract class HTTPUtil {
      */
     public static final Map<String, String> REQ_HEADER = ImmutableMap.of("DNT", "1",
             "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/24.0",
+            "User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36",
             "Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3",
             "Cache-Control", "no-cache");
 
