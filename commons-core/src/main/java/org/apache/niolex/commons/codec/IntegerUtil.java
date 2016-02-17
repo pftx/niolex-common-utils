@@ -24,7 +24,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.niolex.commons.util.Const;
 
 /**
- * Encode & Decode integers.
+ * Encode &amp; Decode integers.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2012-11-11$

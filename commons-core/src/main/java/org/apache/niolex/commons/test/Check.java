@@ -77,7 +77,7 @@ public class Check extends Validate {
     }
 
     /**
-     * Check that a <= b <= c, otherwise we throw IllegalArgumentException
+     * Check that a &lt;= b &lt;= c, otherwise we throw IllegalArgumentException
      *
      * @param a
      * @param b
@@ -89,7 +89,7 @@ public class Check extends Validate {
     }
 
     /**
-     * Check that a <= b <= c, otherwise we throw IllegalArgumentException
+     * Check that a &lt;= b &lt;= c, otherwise we throw IllegalArgumentException
      *
      * @param a
      * @param b

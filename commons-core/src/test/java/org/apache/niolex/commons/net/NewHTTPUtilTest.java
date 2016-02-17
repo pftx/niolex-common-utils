@@ -107,7 +107,7 @@ public class NewHTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testPost() throws Exception {
-        Map<String, String> params = Maps.newHashMap();
+        Map<String, String> params = Maps.newTreeMap();
         params.put("wd", "谢佶芸");
         params.put("ie", "gb2312");
         params.put("inputT", "18400");
@@ -119,7 +119,7 @@ public class NewHTTPUtilTest extends HTTPUtil {
         params.put("rsv_sug4", "624");
         params.put("tn", "baidu");
         String s = post(PREFIX + "post", params);
-        String response = "tn=baidu&rsv_sug1=8&rsv_sug=0&inputT=18400&ie=gb2312&rsv_spt=3&rsv_sug4=624&wd=%E8%B0%A2%E4%BD%B6%E8%8A%B8&rsv_sug3=11&rsv_bp=0";
+        String response = "ie=gb2312&inputT=18400&rsv_bp=0&rsv_spt=3&rsv_sug=0&rsv_sug1=8&rsv_sug3=11&rsv_sug4=624&tn=baidu&wd=%E8%B0%A2%E4%BD%B6%E8%8A%B8";
         assertEquals(s, response);
     }
 

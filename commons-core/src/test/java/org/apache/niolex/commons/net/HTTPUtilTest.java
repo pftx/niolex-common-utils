@@ -256,12 +256,12 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testPrepareWwwFormUrlEncoded() throws Exception {
-        Map<String, String> params = Maps.newHashMap();
+        Map<String, String> params = Maps.newTreeMap();
         params.put("cache-control", "no-cache");
         params.put("XXS", "Lex");
         params.put("Host", "apache");
         String s = prepareWwwFormUrlEncoded(params, "ASCII");
-        assertEquals(s, "cache-control=no-cache&Host=apache&XXS=Lex");
+        assertEquals(s, "Host=apache&XXS=Lex&cache-control=no-cache");
     }
 
     @Test

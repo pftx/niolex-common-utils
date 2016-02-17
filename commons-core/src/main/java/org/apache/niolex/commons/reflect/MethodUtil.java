@@ -265,8 +265,8 @@ public class MethodUtil {
      * assigned from the specified parameter types.
      * <pre>
      * We have mainly two kinds of relax considered here:
-     *  1. long <= int <= short (Small type can be relaxed to a larger type for primitives)
-     *  2. int <= Integer or Integer <= int (Auto boxing and un-boxing)
+     *  1. long &lt;= int &lt;= short (Small type can be relaxed to a larger type for primitives)
+     *  2. int &lt;= Integer or Integer &lt;= int (Auto boxing and un-boxing)
      * </pre>
      * <b>Caution! We can not do relax on wrapper types!</b>
      *

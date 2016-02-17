@@ -266,7 +266,6 @@ public abstract class DownloadUtil {
 	 * @param respCode The HTTP response code
 	 * @param respMsg The HTTP response Message
 	 * @throws NetException
-	 * @throws IOException
 	 */
 	public static void validateHttpCode(final String strUrl, int respCode, String respMsg) throws NetException {
         if (!IntegerUtil.isIn(respCode, HTTP_OK, HTTP_NOT_AUTHORITATIVE,

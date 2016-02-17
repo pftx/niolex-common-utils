@@ -39,8 +39,8 @@ import org.apache.niolex.commons.util.Const;
  * }
  * Arrays will be translate like this:
  * (length)[
- *   0 => aaa
- *   1 => bbb
+ *   0 =&gt; aaa
+ *   1 =&gt; bbb
  *   ...
  * ]
  * </pre>

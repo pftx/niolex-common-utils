@@ -24,11 +24,11 @@ import java.lang.reflect.Proxy;
 /**
  * ProxyUtil是一个用来通过反射机制来动态创建Java对象的代理的工具类
  * 请注意用来创建代理的Java对象必须是面向接口的，否则无法成功创建代理
- *
+ * <pre>
  * 目前提供的功能如下：
- * 1. public static final <T> T newProxyInstance(Object host, ProxyHandler h)
+ * 1. public static final &lt;T&gt; T newProxyInstance(Object host, ProxyHandler h)
  * 动态创建一个对象的Java代理,请注意用来创建代理的Java对象必须是面向接口的，否则无法成功创建代理
- *
+ * </pre>
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */

@@ -22,9 +22,9 @@ import java.io.IOException;
 
 /**
  * PropUtil是一个用来管理properties配置文件的工具类
- *
+ * <pre>
  * 目前提供的功能如下：
- * 1-1. public static final void loadConfig(String resource, Class<T> cls)
+ * 1-1. public static final void loadConfig(String resource, Class&lt;T&gt; cls)
  * 从class path中加载指定名字的配置文件
  *
  * 1-2. public static final void loadConfig(String fileName)
@@ -68,7 +68,7 @@ import java.io.IOException;
  *
  * 6-3. public static boolean getBoolean(String key, boolean defaultValue)
  * 从配置文件中读取布尔类型的配置
- *
+ * </pre>
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */

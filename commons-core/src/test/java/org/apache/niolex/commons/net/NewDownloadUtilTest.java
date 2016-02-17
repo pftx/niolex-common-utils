@@ -64,7 +64,7 @@ public class NewDownloadUtilTest extends DownloadUtil {
     }
 
     final static String URL = "http://fe.bdimg.com/tangram/2.0.2.5.js";
-    final static String FTP = "ftp://ftp:ftp@ftp.speed.hinet.net/test_001m.zip";
+    final static String FTP = "ftp://ftp.sjtu.edu.cn/centos/RPM-GPG-KEY-CentOS-7";
     final static String SMALL = NewDownloadUtilTest.class.getResource("Small.txt").toExternalForm();
 
     @Test
@@ -86,7 +86,7 @@ public class NewDownloadUtilTest extends DownloadUtil {
     public void testDownloadFtp() throws NetException {
         if (SystemUtil.defined("download", "download.ftp")) return;
         byte[] data = downloadFile(FTP, 30000, 30000, 1049902, false);
-        assertEquals(1049902, data.length);
+        assertEquals(1690, data.length);
     }
 
     @Test(expected=NetException.class)

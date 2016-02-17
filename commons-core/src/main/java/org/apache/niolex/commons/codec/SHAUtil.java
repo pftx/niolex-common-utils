@@ -18,7 +18,6 @@
 package org.apache.niolex.commons.codec;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * SHAUtil是一个用来产生SHA签名和校验SHA签名的工具类
@@ -40,7 +39,7 @@ public abstract class SHAUtil extends CipherUtil {
      *
      * @param plainTexts 用来产生SHA签名的字符串列表
      * @return 输入字符串列表的SHA签名
-     * @throws NoSuchAlgorithmException 当用户的JDK不支持SHA哈希算法时
+     * @throws IllegalStateException 当用户的JDK不支持SHA哈希算法时
      */
     public static final String sha1(String... plainTexts) {
         MessageDigest md = getInstance("SHA");
@@ -56,7 +55,7 @@ public abstract class SHAUtil extends CipherUtil {
      * @param sha1 用来进行校验的SHA签名
      * @param plainTexts 用来进行校验的字符串列表
      * @return 如果通过返回true，失败返回false
-     * @throws NoSuchAlgorithmException 当用户的JDK不支持SHA哈希算法时
+     * @throws IllegalStateException 当用户的JDK不支持SHA哈希算法时
      */
     public static final boolean sha1Check(String sha1, String... plainTexts) {
         return sha1.equalsIgnoreCase(sha1(plainTexts));

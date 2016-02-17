@@ -45,7 +45,6 @@ public class RC2Coder extends BaseCoder {
      * 初始化密钥和IV参数
      *
      * @param key
-     * @throws Exception
      */
     @Override
     public void initKey(String key) {

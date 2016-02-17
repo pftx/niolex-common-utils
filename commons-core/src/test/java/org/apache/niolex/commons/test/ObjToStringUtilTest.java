@@ -120,12 +120,12 @@ public class ObjToStringUtilTest extends ObjToStringUtil {
 
     @Test
     public void testMap() {
-        Map<String, String> map = Maps.newHashMap();
+        Map<String, String> map = Maps.newTreeMap();
         map.put("a", "1");
         map.put("b", "2");
         map.put("author", "Xie, Jiyun");
         String s = objToString(map).replace(LINE_SP, "#");
-        String e = "{#  author=Xie, Jiyun#  b=2#  a=1#}";
+        String e = "{#  a=1#  author=Xie, Jiyun#  b=2#}";
         assertEquals(e, s);
     }
 

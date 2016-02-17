@@ -25,13 +25,13 @@ import org.apache.niolex.commons.bean.Pair;
  * KVBase64Util自己并不实现Base64的功能，而是封装了apache的commons库里的相关功能。
  * 本类依赖于commons-codec-1.3.jar+
  *
- * 目前提供的功能如下：
+ * 目前提供的功能如下：<pre>
  * 1. public static String kvToBase64(byte[] key, byte[] value)
  * 将KV的byte数组转换成64进制字符串
  *
- * 2. public static Pair<byte[], byte[]> base64toKV(String str)
+ * 2. public static Pair&lt;byte[], byte[]&gt; base64toKV(String str)
  * 将64进制字符串转换成KV byte数组
- *
+ * </pre>
  * @see org.apache.commons.codec.binary.Base64
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5

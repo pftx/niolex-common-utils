@@ -106,7 +106,7 @@ public class BeanUtil {
      *
      * @param toClass the class to be introspected
      * @return the hash map
-     * @throws IntrospectionException
+     * @throws IntrospectionException if an exception occurs during introspection.
      */
     public static Map<String, Method> prepareWriteMethodMap(Class<?> toClass) throws IntrospectionException {
         BeanInfo toInfo = Introspector.getBeanInfo(toClass);

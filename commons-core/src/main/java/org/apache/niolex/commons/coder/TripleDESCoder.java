@@ -17,7 +17,6 @@
  */
 package org.apache.niolex.commons.coder;
 
-import java.io.IOException;
 import java.security.Key;
 import java.security.spec.KeySpec;
 
@@ -50,7 +49,6 @@ public class TripleDESCoder extends BaseCoder {
      * RC4(ARCFOUR)         key size must be between 40 and 1024 bits
      * </pre>
      *
-     * </code>
      */
 
     public static final String ALGORITHM = "DESede";
@@ -63,7 +61,6 @@ public class TripleDESCoder extends BaseCoder {
      * 初始化密钥和IV参数
      *
      * @param key
-     * @throws IOException
      */
     @Override
     public void initKey(String key) {

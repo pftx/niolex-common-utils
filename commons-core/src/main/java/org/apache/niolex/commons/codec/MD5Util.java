@@ -18,7 +18,6 @@
 package org.apache.niolex.commons.codec;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * MD5Util是一个用来产生MD5签名和校验MD5签名的工具类
@@ -55,7 +54,7 @@ public abstract class MD5Util extends CipherUtil {
      * @param md5 用来进行校验的MD5签名
      * @param plainTexts 用来进行校验的字符串列表
      * @return 如果通过返回true，失败返回false
-     * @throws NoSuchAlgorithmException 当用户的JDK不支持MD5哈希算法时
+     * @throws IllegalStateException 当用户的JDK不支持MD5哈希算法时
      */
     public static final boolean md5Check(String md5, String... plainTexts) {
         String digest = md5(plainTexts);

@@ -197,7 +197,7 @@ public abstract class StringUtil extends StringUtils {
      * @return the result string
      */
     public static final String join(String sep, Collection<String> strs) {
-        return join(strs, sep);
+        return concat(strs, sep);
     }
 
 	/**
@@ -207,7 +207,7 @@ public abstract class StringUtil extends StringUtils {
 	 * @param sep the separator
 	 * @return the result string
 	 */
-	public static final String join(Collection<String> strs, String sep) {
+	public static final String concat(Collection<String> strs, String sep) {
 		if (strs == null || strs.size() == 0) {
 			return "";
 		}

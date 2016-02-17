@@ -35,7 +35,7 @@ import com.google.common.hash.Hashing;
  *
  * This class is mean for use in high concurrency, Applications developers need to call prepare
  * to supply all the nodes(or supply in the constructor). And call add or remove at runtime
- * to adjust the hash ring. We will copy the whole hash ring in add & remove method to achieve
+ * to adjust the hash ring. We will copy the whole hash ring in add &amp; remove method to achieve
  * high concurrency without using any lock.
  *
  * It was originally copied from Tom White's implementation found here:

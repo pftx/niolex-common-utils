@@ -28,10 +28,10 @@ import com.esotericsoftware.reflectasm.MethodAccess;
  * private methods, please use {@link org.apache.niolex.commons.reflect.MethodUtil}
  * </p><pre>
  * 目前提供的功能如下：
- * 1. public static final String[] getMethods(Class<?> clazz)
+ * 1. public static final String[] getMethods(Class&lt;?&gt; clazz)
  * 获取一个Java类定义的所有非私有方法
  *
- * 2. public static final MethodAccess getMethodAccess(Class<?> clazz)
+ * 2. public static final MethodAccess getMethodAccess(Class&lt;?&gt; clazz)
  * 获取一个Java类所对应的方法操作类
  *
  * 3. public static final Object invokeMethod(String methodName, Object host, Object[] args)

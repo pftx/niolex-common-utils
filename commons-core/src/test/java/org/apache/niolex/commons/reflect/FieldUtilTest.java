@@ -78,11 +78,26 @@ public class FieldUtilTest extends FieldUtil {
         getValue(bean, "earn");
     }
 
+    public static class I {
+        public static int VER = 201;
+        public int i = 101;
+    }
+
+    public static class F extends I {
+        public static final long S_VER = 303;
+        public final short f = 405;
+    }
+
     @Test
     public void testGetFields() throws Exception {
-        List<Field> fields = FieldUtil.getAllFields(String.class);
+        List<Field> fields = FieldUtil.getAllFields(F.class);
+        int i = 0;
+        while (i < fields.size()) {
+            if (fields.get(i).getName().startsWith("$")) fields.remove(i);
+            else ++i;
+        }
         System.out.println("String fields => " + fields);
-        Assert.assertEquals(fields.size(), 7);
+        Assert.assertEquals(4, fields.size());
     }
 
     @Test

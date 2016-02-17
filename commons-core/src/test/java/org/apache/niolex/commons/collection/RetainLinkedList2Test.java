@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.niolex.commons.collection.RetainLinkedList;
 import org.junit.Test;
 
 /**

@@ -36,7 +36,6 @@ public interface Coder {
      * 初始化密钥和IV参数
      *
      * @param key
-     * @throws Exception
      */
     public void initKey(String key);
 
