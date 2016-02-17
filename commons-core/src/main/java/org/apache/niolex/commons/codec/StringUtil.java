@@ -76,6 +76,16 @@ public abstract class StringUtil extends StringUtils {
      */
     public static final Charset ISO8859_1 = Charset.forName(CharEncoding.ISO_8859_1);
 
+    /**
+     * Sixteen-bit Unicode Transformation Format, The byte order specified by a mandatory initial byte-order mark
+     * (either order accepted on input, big-endian used on output)
+     * <p>
+     * Every implementation of the Java platform is required to support this character encoding.
+     *
+     * @see <a href="http://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     */
+    public static final Charset UTF_16 = Charset.forName(CharEncoding.UTF_16);
+
 	/**
 	 * Translate UTF8 encoded byte array to String.
 	 *

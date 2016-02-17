@@ -161,6 +161,10 @@ public class HTTPClient {
     protected void processCookie(Map<String, List<String>> respHeaders) {
         List<String> cookies = respHeaders.get("Set-Cookie");
 
+        if (cookies == null) {
+            cookies = respHeaders.get("set-cookie");
+        }
+
         if (CollectionUtil.isEmpty(cookies))
             return;
 

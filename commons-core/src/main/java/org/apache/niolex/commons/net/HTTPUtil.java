@@ -30,7 +30,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -400,43 +399,65 @@ public abstract class HTTPUtil {
      */
     public static final Charset inferCharset(Map<String, List<String>> headers, byte[] body) {
         // Case 1. Infer charset from headers.
-        String charSet = null;
+        String rawCharSet = null;
         for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
             if ("Content-Type".equalsIgnoreCase(entry.getKey())) {
                 List<String> list = entry.getValue();
                 if (!CollectionUtil.isEmpty(list)) {
                     String s = list.get(0);
-                    int idx = s.indexOf("charset=");
+                    int idx = s.toLowerCase().indexOf("charset");
                     if (idx > 0) {
-                        charSet = s.substring(idx + 8).trim();
+                        rawCharSet = s.substring(idx + 7);
                     }
                 }
                 break;
             }
         }
+
         // Case 2. Infer charset from body.
-        if (charSet == null) {
-            String s = StringUtil.asciiByteToStr(Arrays.copyOfRange(body, 0, 400));
-            int idx = s.indexOf("charset=");
+        if (rawCharSet == null) {
+            int length = body.length < 512 ? body.length : 512;
+            String s = new String(body, 0, length, StringUtil.US_ASCII);
+
+            int idx = s.toLowerCase().indexOf("charset");
             if (idx > 0) {
-                idx += 8;
-                char ch = s.charAt(idx);
-                if (ch == '\'' || ch == '"') ++idx;
-                final int start = idx;
-                for (; idx < 400; ++idx) {
-                    ch = s.charAt(idx);
-                    if (ch == '\'' || ch == '"') {
-                        break;
-                    }
-                }
-                charSet = s.substring(start, idx);
+                idx += 7;
+                int end = s.length() > idx + 20 ? idx + 20 : s.length();
+                rawCharSet = s.substring(idx, end);
             }
         }
+
         // Case 3. Use default.
-        if (charSet == null) {
+        if (rawCharSet == null) {
             return StringUtil.UTF_8;
         }
-        return Charset.forName(charSet);
+
+        return retrieveCharsetFromString(rawCharSet);
+    }
+
+    /**
+     * Retrieve the charset from the string, we will remove ' " = etc from the string to
+     * get the real charset name.
+     *
+     * @param rawCharSet the raw charset in string
+     * @return the inferred charset
+     */
+    public static final Charset retrieveCharsetFromString(String rawCharSet) {
+        int idx = 0, end = rawCharSet.length();
+
+        while (idx < end) {
+            char ch = rawCharSet.charAt(idx);
+            if (ch == '\'' || ch == '"' || ch == ' ' || ch == '=') ++idx;
+            else break;
+        }
+        final int start = idx;
+
+        while (idx < end) {
+            char ch = rawCharSet.charAt(idx);
+            if (ch == '\'' || ch == '"' || ch == ' '|| ch == ';') break;
+            else ++idx;
+        }
+        return Charset.forName(rawCharSet.substring(start, idx));
     }
 
     /**

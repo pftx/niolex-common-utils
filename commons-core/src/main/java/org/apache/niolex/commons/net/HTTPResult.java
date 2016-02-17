@@ -31,11 +31,11 @@ import java.util.Map;
  */
 public class HTTPResult {
 
-    private int respCode;
-    private Map<String, List<String>> respHeaders;
-    private byte[] respBody;
+    private final int respCode;
+    private final Map<String, List<String>> respHeaders;
+    private final byte[] respBody;
     private String respBodyStr;
-    private HTTPClient client;
+    private final HTTPClient client;
 
     /**
      * Construct a new HTTP result.
@@ -68,6 +68,16 @@ public class HTTPResult {
     }
 
     /**
+     * Get the HTTP response Header by the specified key.
+     *
+     * @param key the Header key
+     * @return the Header values
+     */
+    public List<String> getHeader(String key) {
+        return respHeaders.get(key);
+    }
+
+    /**
      * @return the HTTP response body as bytes
      */
     public byte[] getRespBody() {
@@ -89,6 +99,15 @@ public class HTTPResult {
      */
     public HTTPClient client() {
         return client;
+    }
+
+    /**
+     * This is the override of super method.
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return String.format("%s Body Size [%d]", respHeaders.get(null), respBody == null ? -1 : respBody.length);
     }
 
 }

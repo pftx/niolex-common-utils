@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
+
 public class HTTPResultTest {
     Map<String, List<String>> respHeaders = new HashMap<String, List<String>>();
     HTTPClient cli = new HTTPClient("http://finance.sina.com.cn/realstock/company/sh000001/nc.shtml", "utf8");
@@ -75,6 +77,25 @@ public class HTTPResultTest {
         System.out.println(s5);
         String s6 = cli.generateURL("./././../../index.html");
         assertEquals(s5, s6);
+    }
+
+    @Test
+    public void testGetHeader() throws Exception {
+        respHeaders.put("Content-Type", Lists.newArrayList("text/html; encoding=gzip"));
+        assertNull(r.getHeader("abc"));
+        assertNotNull(r.getHeader("Content-Type"));
+    }
+
+    @Test
+    public void testToString1() throws Exception {
+        respHeaders.put(null, Lists.newArrayList("HTTP 1.1 200 OK"));
+        assertEquals("[HTTP 1.1 200 OK] Body Size [16]", r.toString());
+    }
+
+    @Test
+    public void testToString2() throws Exception {
+        HTTPResult r2 = new HTTPResult(202, respHeaders, null, cli);
+        assertEquals("null Body Size [-1]", r2.toString());
     }
 
 }
