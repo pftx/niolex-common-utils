@@ -58,6 +58,7 @@ public class SimpleHttpServer {
         server.createContext("/baidu1", new BiduHandler1());
         server.createContext("/baidu2", new BiduHandler2());
         server.createContext("/zero", new ZeroLengthHandler());
+        server.createContext("/chunk", new ChunkHandler());
         // creates a default executor
         server.setExecutor(Executors.newFixedThreadPool(10));
         server.start();
@@ -73,9 +74,11 @@ public class SimpleHttpServer {
 
     static class RedirectHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
+            cleanBody(t.getRequestBody());
+
             Headers headers = t.getResponseHeaders();
             headers.add("Location", "/info");
-            t.sendResponseHeaders(302, 0);
+            t.sendResponseHeaders(302, -1);
             t.getResponseBody().close();
         }
     }
@@ -83,6 +86,8 @@ public class SimpleHttpServer {
     static class InfoHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
             String response = "Use /get to download a JPG";
+            cleanBody(t.getRequestBody());
+
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
@@ -93,6 +98,8 @@ public class SimpleHttpServer {
     static class UTF8Handler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
             String response = "广大程序员普遍拥有如下特性：缺乏运动、想象力丰富、技术卓越";
+            cleanBody(t.getRequestBody());
+
             Headers h = t.getResponseHeaders();
             h.add("Content-Type", " text/html;charset=utf-8");
             byte[] data = response.getBytes(StringUtil.UTF_8);
@@ -106,6 +113,8 @@ public class SimpleHttpServer {
     static class GBKHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
             String response = ";charset='gbk';今年的夏日夜空格外灿烂---水星之夜、超级月亮之夜，还有牧夫座流星雨之夜！还有伟大祖国的神十遨游在夜空！";
+            cleanBody(t.getRequestBody());
+
             Headers h = t.getResponseHeaders();
             h.add("Content-Type", " text/html");
             byte[] data = response.getBytes("GBK");
@@ -118,12 +127,14 @@ public class SimpleHttpServer {
 
     static class GetHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
+            cleanBody(t.getRequestBody());
+
             String method = t.getRequestMethod();
             if (!method.equals("GET")) {
                 Headers headers = t.getResponseHeaders();
                 headers.set("Location", "/post");
                 headers.set("Content-Type", "text/html");
-                t.sendResponseHeaders(307, 0);
+                t.sendResponseHeaders(307, -1);
                 t.getResponseBody().close();
                 return;
             }
@@ -167,34 +178,62 @@ public class SimpleHttpServer {
     }
 
     static void badRequest(HttpExchange t) throws IOException {
-        t.sendResponseHeaders(400, 0);
+        cleanBody(t.getRequestBody());
+
+        t.sendResponseHeaders(400, -1);
         t.getResponseBody().close();
     }
 
     static class BiduHandler1 implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
+            cleanBody(t.getRequestBody());
+
             Headers headers = t.getResponseHeaders();
             headers.add("Location", "https://www.baidu.com/");
-            t.sendResponseHeaders(301, 0);
+            t.sendResponseHeaders(301, -1);
             t.getResponseBody().close();
         }
     }
 
     static class BiduHandler2 implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
+            cleanBody(t.getRequestBody());
+
             Headers headers = t.getResponseHeaders();
             headers.add("Location", "https://www.baidu.com/");
-            t.sendResponseHeaders(302, 0);
+            t.sendResponseHeaders(302, -1);
             t.getResponseBody().close();
         }
     }
 
+    static void cleanBody(InputStream in) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
+        StreamUtil.transferAndClose(in, bos, 1024);
+    }
+
     static class ZeroLengthHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
+            cleanBody(t.getRequestBody());
+
             t.sendResponseHeaders(201, -1);
             Headers headers = t.getResponseHeaders();
             headers.add("Location", "/info");
             OutputStream os = t.getResponseBody();
+            os.close();
+        }
+    }
+
+    static class ChunkHandler implements HttpHandler {
+        public void handle(HttpExchange t) throws IOException {
+            cleanBody(t.getRequestBody());
+
+            t.sendResponseHeaders(200, 0);
+            Headers headers = t.getResponseHeaders();
+            headers.add("Location", "/info");
+            OutputStream os = t.getResponseBody();
+
+            String data = "This is chunk, no length.";
+            os.write(data.getBytes());
             os.close();
         }
     }

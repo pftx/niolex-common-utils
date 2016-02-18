@@ -147,4 +147,10 @@ public class NewHTTPUtilTest extends HTTPUtil {
         System.out.println(s);
     }
 
+    @Test
+    public void testDownload() throws Exception {
+        byte[] data = DownloadUtil.downloadFile(PREFIX + "chunk");
+        String s = new String(data);
+        assertEquals("This is chunk, no length.", s);
+    }
 }
