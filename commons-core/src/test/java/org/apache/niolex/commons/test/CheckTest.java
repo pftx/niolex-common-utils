@@ -111,4 +111,27 @@ public class CheckTest {
         between(6, 7, 8, "not yet implemented");
     }
 
+    @Test
+    public void testBetweenDouble() throws Exception {
+        between(6.0, 6.0, 6d, "not yet implemented");
+        between(6d, 6d, 7d, "not yet implemented");
+        between(6d, 7d, 7d, "not yet implemented");
+        between(6d, 7d, 8d, "not yet implemented");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBtDouble1() throws Exception {
+        between(0.1, 0.10000000000001, 0.1, "not yet implemented");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBtDouble2() throws Exception {
+        between(0.1000000002, 0.10000000000001, 0.11, "not yet implemented");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBtDouble3() throws Exception {
+        between(0.1000000001, 0.10000000000001, 0.100001, "not yet implemented");
+    }
+
 }

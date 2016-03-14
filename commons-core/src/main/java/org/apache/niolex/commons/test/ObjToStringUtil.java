@@ -56,17 +56,17 @@ public abstract class ObjToStringUtil implements Const {
     /**
      * The indent used in format object.
      */
-    public static final int INDENT = 2;
+    private static final int INDENT = 2;
 
     /**
      * The line separator length.
      */
-    public static final int LSP_LEN = LINE_SP.length();
+    private static final int LSP_LEN = LINE_SP.length();
 
     /**
      * The string used to generate indent.
      */
-    public static final String INDENT_STR = "                         ";
+    private static final String INDENT_STR = "                         ";
 
     /**
      * translate general objects into string.

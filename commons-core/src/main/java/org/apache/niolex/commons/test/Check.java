@@ -102,4 +102,18 @@ public class Check extends Validate {
         }
     }
 
+    /**
+     * Check that a &lt;= b &lt;= c, otherwise we throw IllegalArgumentException
+     *
+     * @param a
+     * @param b
+     * @param c
+     * @param msg
+     */
+    public static void between(double a, double b, double c, String msg) {
+        if (b > c || a > b) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
 }
