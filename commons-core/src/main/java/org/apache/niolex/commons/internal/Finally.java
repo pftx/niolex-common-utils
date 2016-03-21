@@ -32,12 +32,12 @@ public class Finally {
     /**
      * Use read lock to invoke this method.
      *
-     * @param lock
-     * @param proxy
-     * @param method
-     * @param args
+     * @param lock the lock
+     * @param proxy the proxy
+     * @param method the method
+     * @param args the arguments
      * @return the result
-     * @throws Throwable
+     * @throws Throwable if necessary
      */
     public static Object useReadLock(ReentrantReadWriteLock lock, Object proxy, Method method, Object[] args)
             throws Throwable {
@@ -52,12 +52,12 @@ public class Finally {
     /**
      * Use write lock to invoke this method.
      *
-     * @param lock
-     * @param proxy
-     * @param method
-     * @param args
+     * @param lock the lock
+     * @param proxy the proxy
+     * @param method the method
+     * @param args the arguments
      * @return the result
-     * @throws Throwable
+     * @throws Throwable if necessary
      */
     public static Object useWriteLock(ReentrantReadWriteLock lock, Object proxy, Method method, Object[] args)
             throws Throwable {

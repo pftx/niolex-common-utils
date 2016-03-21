@@ -42,14 +42,14 @@ public class FinallyTest extends Finally {
     private int writeCnt = 0;
 
     public void readTest(int k) {
-        blocker.release("r", "1");
         readCnt += k;
+        blocker.release("r", "1");
         ThreadUtil.sleep(80);
     }
 
     public void writeTest(int k) {
-        blocker.release("w", "1");
         writeCnt += k;
+        blocker.release("w", "1");
         ThreadUtil.sleep(80);
     }
 
@@ -77,7 +77,7 @@ public class FinallyTest extends Finally {
         WaitOn<String> wait = blocker.init("r");
         Runner.run(this, "letsRead", 3);
         Runner.run(this, "letsRead", 4);
-        wait.waitForResult(50);
+        wait.waitForResult(150);
         ThreadUtil.sleep(5);
         Runner.run(this, "letsWrite", 5);
         ThreadUtil.sleep(5);

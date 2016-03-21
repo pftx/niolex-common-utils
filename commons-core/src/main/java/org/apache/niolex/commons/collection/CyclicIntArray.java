@@ -50,7 +50,7 @@ public class CyclicIntArray {
     /**
      * Create a CyclicIntArray with this specified size.
      *
-     * @param size
+     * @param size the array size
      */
     public CyclicIntArray(int size) {
         super();

@@ -76,7 +76,7 @@ public abstract class HTTPUtil {
      *
      * @param url the request URL
      * @return the response body as string
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final String get(String url) throws NetException {
         return get(url, null);
@@ -88,7 +88,7 @@ public abstract class HTTPUtil {
      * @param url the request URL
      * @param params the request parameters
      * @return the response body as string
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final String get(String url, Map<String, String> params) throws NetException {
         return get(url, params, CharEncoding.UTF_8);
@@ -101,7 +101,7 @@ public abstract class HTTPUtil {
      * @param params the request parameters
      * @param paramCharset the charset used to send the request parameters
      * @return the response body as string
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final String get(String url, Map<String, String> params, String paramCharset) throws NetException {
         return doHTTP(url, params, null, paramCharset, HTTPMethod.GET);
@@ -113,7 +113,7 @@ public abstract class HTTPUtil {
      * @param url the request URL
      * @param params the request parameters, will be encoded as application/x-www-form-urlencoded
      * @return the response body as string
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final String post(String url, Map<String, String> params) throws NetException {
         return post(url, params, CharEncoding.UTF_8);
@@ -126,7 +126,7 @@ public abstract class HTTPUtil {
      * @param params the request parameters, will be encoded as application/x-www-form-urlencoded
      * @param paramCharset the charset used to send the request parameters
      * @return the response body as string
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final String post(String url, Map<String, String> params, String paramCharset) throws NetException {
         return doHTTP(url, params, null, paramCharset, HTTPMethod.POST);
@@ -138,7 +138,7 @@ public abstract class HTTPUtil {
      * @param url the request URL
      * @param postBody the request body to be posted, will be sent as application/json
      * @return the response body as string
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final String post(String url, String postBody) throws NetException {
         return post(url, postBody, CharEncoding.UTF_8);
@@ -151,7 +151,7 @@ public abstract class HTTPUtil {
      * @param postBody the request body to be posted, will be sent as application/json
      * @param postCharset the charset used to send the post body
      * @return the response body as string
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final String post(String url, String postBody, String postCharset) throws NetException {
         return doHTTP(url, null, postBody, postCharset, HTTPMethod.POST);
@@ -167,7 +167,7 @@ public abstract class HTTPUtil {
      * @param reqCharset the charset used to send the request parameters
      * @param method the HTTP method to be used
      * @return the response body as string
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final String doHTTP(String url, Map<String, String> params, String postBody, String reqCharset,
             HTTPMethod method) throws NetException {
@@ -195,7 +195,7 @@ public abstract class HTTPUtil {
      * @param readTimeout the data read timeout
      * @param method the HTTP method to be used
      * @return the response triple: x is response code, y is response header map, z is response body
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final Triple<Integer, Map<String, List<String>>, byte[]> doHTTP(String strUrl, int connectTimeout,
             int readTimeout, HTTPMethod method) throws NetException {
@@ -216,7 +216,7 @@ public abstract class HTTPUtil {
      * @param readTimeout the data read timeout
      * @param method the HTTP method to be used
      * @return the response triple: x is response code, y is response header map, z is response body
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public static final Triple<Integer, Map<String, List<String>>, byte[]> doHTTP(String strUrl, Map<String, String> params,
             String postBody, String reqCharset, Map<String, String> reqHeaders, int connectTimeout, int readTimeout,
@@ -355,8 +355,8 @@ public abstract class HTTPUtil {
      * @param contentLength the content Length from HTTP header
      * @param in the input stream
      * @return the downloaded bytes
-     * @throws NetException
-     * @throws IOException
+     * @throws NetException if necessary
+     * @throws IOException if necessary
      */
     public static byte[] checkAndDownloadData(final String strUrl, final int contentLength, InputStream in)
             throws NetException, IOException {

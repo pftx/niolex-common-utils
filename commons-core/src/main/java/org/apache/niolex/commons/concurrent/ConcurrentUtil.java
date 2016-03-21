@@ -34,6 +34,9 @@ public class ConcurrentUtil {
      * Init the map with this new value if this key is absent in the specified map;
      * otherwise we return the old value associated with this key.
      *
+     * @param <K> the key type
+     * @param <V> the value type
+     *
      * @param map the map you want to init
      * @param key the key you want to init
      * @param newValue the new value ready to put into this map

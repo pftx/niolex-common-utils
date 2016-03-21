@@ -159,6 +159,7 @@ public abstract class TidyUtil {
      * @param colLen the columns length
      * @param titles the columns titles
      * @param values the table body
+     * @return the generated table
      */
 	public static final String generateTable(int[] colLen, String[] titles, Object ...values) {
         StringBuilder sb = new StringBuilder();

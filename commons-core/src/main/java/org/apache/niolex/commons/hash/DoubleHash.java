@@ -161,6 +161,8 @@ public class DoubleHash<T> {
      * Get the pair of server nodes by this key. We guarantee the first and second node are
      * not the same.<br>
      *
+     * @param <K> the key type
+     *
      * @param key the key to be hashed
      * @param funnel the funnel to be used
      * @return the pair of server nodes

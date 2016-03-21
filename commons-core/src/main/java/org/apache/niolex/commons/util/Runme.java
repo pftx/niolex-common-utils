@@ -93,7 +93,8 @@ public abstract class Runme extends Thread {
 
 	/**
 	 * Set the sleep interval between each run.
-	 * @param sleepInterval
+	 *
+	 * @param sleepInterval the sleep internal in milliseconds
 	 */
 	public void setSleepInterval(long sleepInterval) {
 		this.sleepInterval = sleepInterval;
@@ -101,7 +102,8 @@ public abstract class Runme extends Thread {
 
 	/**
 	 * Set whether you need we to sleep a little time before run.
-	 * @param sleep
+	 *
+	 * @param sleep the initial sleep flag
 	 */
 	public void setInitialSleep(boolean sleep) {
 		this.isWorking = sleep;

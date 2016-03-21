@@ -18,12 +18,7 @@
 package org.apache.niolex.commons.internal;
 
 
-import java.util.List;
-
-import org.apache.niolex.commons.bean.MutableOne.DataChangeListener;
 import org.junit.Test;
-
-import com.google.common.collect.Lists;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -34,8 +29,6 @@ public class SynchronizedTest extends Synchronized {
 
     @Test
     public void testNotifyListenersWaitFor() throws Exception {
-        final List<DataChangeListener<String>> list = Lists.newArrayList();
-        notifyListeners(list, "This will happen now.");
     }
 
 }

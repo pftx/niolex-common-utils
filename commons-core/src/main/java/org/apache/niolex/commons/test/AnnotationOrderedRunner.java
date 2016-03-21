@@ -58,6 +58,9 @@ public class AnnotationOrderedRunner extends BlockJUnit4ClassRunner {
 
 	/**
 	 * default initializer, just invoke super.
+	 *
+	 * @param klass the test class
+	 * @throws InitializationError if the test class is malformed
 	 */
 	public AnnotationOrderedRunner(Class<?> klass) throws InitializationError {
 		super(klass);

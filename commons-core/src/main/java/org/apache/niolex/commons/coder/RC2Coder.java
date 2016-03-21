@@ -44,7 +44,7 @@ public class RC2Coder extends BaseCoder {
     /**
      * 初始化密钥和IV参数
      *
-     * @param key
+     * @param key the base 64 encoded key
      */
     @Override
     public void initKey(String key) {
@@ -56,8 +56,8 @@ public class RC2Coder extends BaseCoder {
     /**
      * 更安全的初始化密钥和IV参数
      *
-     * @param key
-     * @throws Exception
+     * @param key the base 64 encoded key
+     * @throws Exception if necessary
      */
     public void secureInitKey(String key) throws Exception {
         byte[] keyData = Base64Util.base64toByte(key);
@@ -82,9 +82,9 @@ public class RC2Coder extends BaseCoder {
     /**
      * 加密
      *
-     * @param data
+     * @param data the data to be encrypted
      * @return the object
-     * @throws Exception
+     * @throws Exception if necessary
      */
     @Override
     public byte[] encrypt(byte[] data) throws Exception {
@@ -97,9 +97,9 @@ public class RC2Coder extends BaseCoder {
     /**
      * 解密
      *
-     * @param data
+     * @param data the data to be decrypted
      * @return the object
-     * @throws Exception
+     * @throws Exception if necessary
      */
     @Override
     public byte[] decrypt(byte[] data) throws Exception {

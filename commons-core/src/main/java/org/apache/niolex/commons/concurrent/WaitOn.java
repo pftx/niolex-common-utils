@@ -49,7 +49,7 @@ public class WaitOn<E> {
 	/**
 	 * The only constructor. Initialize with the wait latch.
 	 *
-	 * @param latch
+	 * @param latch the latch to be used to count down
 	 */
 	public WaitOn(CountDownLatch latch) {
 		super();
@@ -89,7 +89,7 @@ public class WaitOn<E> {
 	/**
 	 * Release the wait thread with result.
 	 *
-	 * @param result
+	 * @param result the result to be returned
 	 */
 	public void release(E result) {
 		this.result = result;

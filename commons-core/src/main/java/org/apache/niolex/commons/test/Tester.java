@@ -41,8 +41,8 @@ public class Tester {
     /**
      * Test whether two integers equals each other.
      *
-     * @param a
-     * @param b
+     * @param a the value a
+     * @param b the value b
      * @return true if equal, false if not
      */
     public static final boolean equal(int a, int b) {
@@ -52,8 +52,8 @@ public class Tester {
     /**
      * Test whether two float equals each other.
      *
-     * @param a
-     * @param b
+     * @param a the value a
+     * @param b the value b
      * @return true if equal, false if not
      */
     public static final boolean equal(float a, float b) {
@@ -63,8 +63,8 @@ public class Tester {
     /**
      * Test whether two double equals each other.
      *
-     * @param a
-     * @param b
+     * @param a the value a
+     * @param b the value b
      * @return true if equal, false if not
      */
     public static final boolean equal(double a, double b) {
@@ -73,6 +73,11 @@ public class Tester {
 
     /**
      * Test whether the value b set between a and c.
+     *
+     * @param a the value a
+     * @param b the value b
+     * @param c the value c
+     * @return true if between, false if not
      */
     public static final boolean between(int a, int b, int c) {
         return a <= b && b <= c;
@@ -81,9 +86,9 @@ public class Tester {
     /**
      * Test whether the value b set between a and c.
      *
-     * @param a
-     * @param b
-     * @param c
+     * @param a the value a
+     * @param b the value b
+     * @param c the value c
      * @return true if between, false if not
      */
     public static final boolean between(double a, double b, double c) {

@@ -43,13 +43,16 @@ public abstract class GZipUtil {
      * @param data
      *            待压缩数据
      * @return byte[] 压缩后的数据
-     * @throws IOException
      */
-    public static final byte[] compress(byte[] data) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        GZIPOutputStream zout = new GZIPOutputStream(out);
-        StreamUtil.writeAndClose(zout, data);
-        return out.toByteArray();
+    public static final byte[] compress(byte[] data) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            GZIPOutputStream zout = new GZIPOutputStream(out);
+            StreamUtil.writeAndClose(zout, data);
+            return out.toByteArray();
+        } catch (IOException ioe) {
+            throw new IllegalStateException (ioe);
+        }
     }
 
     /**
@@ -58,43 +61,46 @@ public abstract class GZipUtil {
      * @param data
      *            待压缩的数据
      * @return byte[] 解压缩后的数据
-     * @throws IOException
      */
-    public static final byte[] decompress(byte[] data) throws IOException {
-        GZIPInputStream zin = new GZIPInputStream(new ByteArrayInputStream(data));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        StreamUtil.transferAndClose(zin, out, 10240);
-        return out.toByteArray();
+    public static final byte[] decompress(byte[] data) {
+        try {
+            GZIPInputStream zin = new GZIPInputStream(new ByteArrayInputStream(data));
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            StreamUtil.transferAndClose(zin, out, 10240);
+            return out.toByteArray();
+        } catch (IOException ioe) {
+            throw new IllegalStateException (ioe);
+        }
     }
 
     /**
      * 压缩字符串
      *
-     * @param str 准备压缩的字符串
+     * @param str
+     *            准备压缩的字符串
      * @return 压缩后的二进制数组
-     * @throws IOException
      */
-    public static final byte[] compressString(String str) throws IOException {
+    public static final byte[] compressString(String str) {
         return compress(str.getBytes(StringUtil.UTF_8));
     }
 
     /**
      * 解压缩字符串
      *
-     * @param data 准备解压的数据
+     * @param data
+     *            准备解压的数据
      * @return 解压后的字符串
-     * @throws IOException
      */
-    public static final String decompressString(byte[] data) throws IOException {
+    public static final String decompressString(byte[] data) {
         return new String(decompress(data), StringUtil.UTF_8);
     }
 
     /**
      * 压缩对象，使用Json作为内部表现形式
      *
-     * @param value
+     * @param value the object to be compressed
      * @return 压缩后的数据
-     * @throws IOException
+     * @throws IOException if something goes wrong in Jackson JSON
      */
     public static byte[] compressObj(Object value) throws IOException {
         return compress(JacksonUtil.obj2bin(value));
@@ -103,32 +109,32 @@ public abstract class GZipUtil {
     /**
      * 解压缩对象，使用Json作为内部表现形式
      *
-     * @param <T>
-     * @param data
-     * @param valueType
+     * @param <T> the value class type
+     * @param data the binary data
+     * @param valueType the value class type
      * @return 解压后的对象
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
+     * @throws JsonParseException if something goes wrong in Jackson JSON
+     * @throws JsonMappingException if something goes wrong in Jackson JSON
+     * @throws IOException if something goes wrong in Jackson JSON
      */
-    public static final <T> T decompressObj(byte[] data, Class<T> valueType) throws JsonParseException, JsonMappingException,
-            IOException {
+    public static final <T> T decompressObj(byte[] data, Class<T> valueType) throws JsonParseException,
+            JsonMappingException, IOException {
         return JacksonUtil.bin2Obj(decompress(data), valueType);
     }
 
     /**
      * 解压缩对象，使用Json作为内部表现形式
      *
-     * @param <T>
-     * @param data
-     * @param valueType
+     * @param <T> the value class type
+     * @param data the binary data
+     * @param valueType the value class type
      * @return 解压后的对象
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
+     * @throws JsonParseException if something goes wrong in Jackson JSON
+     * @throws JsonMappingException if something goes wrong in Jackson JSON
+     * @throws IOException if something goes wrong in Jackson JSON
      */
-    public static final <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException, JsonMappingException,
-            IOException {
+    public static final <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException,
+            JsonMappingException, IOException {
         return JacksonUtil.bin2Obj(decompress(data), valueType);
     }
 

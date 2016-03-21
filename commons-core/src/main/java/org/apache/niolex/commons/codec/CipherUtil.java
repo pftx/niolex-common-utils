@@ -82,13 +82,13 @@ public abstract class CipherUtil {
      * For some kind of cipher, e.g. RSA, can not handle bytes larger than a fixed block size.
      * So, this method is just for this kind of cipher to handle large bytes.
      *
-     * @param cipher
-     * @param blockSize
-     * @param input
+     * @param cipher cipher for encryption and decryption
+     * @param blockSize the process block size
+     * @param input the input buffer
      * @return the processed bytes
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
-     * @throws ShortBufferException
+     * @throws IllegalBlockSizeException if the block size is invalid
+     * @throws BadPaddingException the decrypted data is not bounded by the appropriate padding bytes
+     * @throws ShortBufferException if the given output buffer is too small to hold the result
      */
     public static byte[] process(Cipher cipher, int blockSize, byte[] input) throws IllegalBlockSizeException,
             BadPaddingException, ShortBufferException {

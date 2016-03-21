@@ -17,9 +17,6 @@
  */
 package org.apache.niolex.commons.internal;
 
-import java.util.List;
-
-import org.apache.niolex.commons.bean.MutableOne.DataChangeListener;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -27,14 +24,5 @@ import org.apache.niolex.commons.bean.MutableOne.DataChangeListener;
  * @since 2013-6-14
  */
 public class Synchronized {
-
-    /**
-     * Notify all the listeners in a synchronized block.
-     *
-     * @param list the listeners
-     * @param one the new data
-     */
-    public static <T> void notifyListeners(List<DataChangeListener<T>> list, T one) {
-    }
 
 }

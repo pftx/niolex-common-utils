@@ -43,13 +43,16 @@ public abstract class ZLibUtil {
      * @param data
      *            待压缩数据
      * @return byte[] 压缩后的数据
-     * @throws IOException
      */
-    public static byte[] compress(byte[] data) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DeflaterOutputStream zout = new DeflaterOutputStream(out);
-        StreamUtil.writeAndClose(zout, data);
-        return out.toByteArray();
+    public static byte[] compress(byte[] data) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            DeflaterOutputStream zout = new DeflaterOutputStream(out);
+            StreamUtil.writeAndClose(zout, data);
+            return out.toByteArray();
+        } catch (IOException ioe) {
+            throw new IllegalStateException (ioe);
+        }
     }
 
     /**
@@ -58,23 +61,25 @@ public abstract class ZLibUtil {
      * @param data
      *            待压缩的数据
      * @return byte[] 解压缩后的数据
-     * @throws IOException
      */
-    public static byte[] decompress(byte[] data) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        InflaterOutputStream zos = new InflaterOutputStream(bos);
-        StreamUtil.writeAndClose(zos, data);
-        return bos.toByteArray();
+    public static byte[] decompress(byte[] data) {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            InflaterOutputStream zos = new InflaterOutputStream(bos);
+            StreamUtil.writeAndClose(zos, data);
+            return bos.toByteArray();
+        } catch (IOException ioe) {
+            throw new IllegalStateException (ioe);
+        }
     }
 
     /**
      * 压缩字符串
      *
-     * @param str
+     * @param str 准备压缩的字符串
      * @return 压缩后的数据
-     * @throws IOException
      */
-    public static final byte[] compressString(String str) throws IOException {
+    public static final byte[] compressString(String str) {
         byte[] data = str.getBytes(StringUtil.UTF_8);
         return compress(data);
     }
@@ -82,11 +87,10 @@ public abstract class ZLibUtil {
     /**
      * 解压缩字符串
      *
-     * @param data
+     * @param data 准备解压的数据
      * @return 解压后的字符串
-     * @throws IOException
      */
-    public static final String decompressString(byte[] data) throws IOException {
+    public static final String decompressString(byte[] data) {
         data = decompress(data);
         return new String(data, StringUtil.UTF_8);
     }
@@ -94,9 +98,9 @@ public abstract class ZLibUtil {
     /**
      * 压缩对象，使用Json作为内部表现形式
      *
-     * @param value
+     * @param value the object to be compressed
      * @return the compressed data
-     * @throws IOException
+     * @throws IOException if something goes wrong in Jackson JSON
      */
     public static byte[] compressObj(Object value) throws IOException {
         return compress(JacksonUtil.obj2bin(value));
@@ -105,13 +109,13 @@ public abstract class ZLibUtil {
     /**
      * 解压缩对象
      *
-     * @param <T>
-     * @param data
-     * @param valueType
+     * @param <T> the value class type
+     * @param data the binary data
+     * @param valueType the value class type
      * @return the object
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
+     * @throws JsonParseException if something goes wrong in Jackson JSON
+     * @throws JsonMappingException if something goes wrong in Jackson JSON
+     * @throws IOException if something goes wrong in Jackson JSON
      */
     public static final <T> T decompressObj(byte[] data, Class<T> valueType) throws JsonParseException, JsonMappingException,
             IOException {
@@ -121,13 +125,13 @@ public abstract class ZLibUtil {
     /**
      * 解压缩对象
      *
-     * @param <T>
-     * @param data
-     * @param valueType
+     * @param <T> the value class type
+     * @param data the binary data
+     * @param valueType the value class type
      * @return the object
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
+     * @throws JsonParseException if something goes wrong in Jackson JSON
+     * @throws JsonMappingException if something goes wrong in Jackson JSON
+     * @throws IOException if something goes wrong in Jackson JSON
      */
     @SuppressWarnings("unchecked")
     public static final <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException, JsonMappingException,

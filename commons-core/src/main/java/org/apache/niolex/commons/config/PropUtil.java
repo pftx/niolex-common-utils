@@ -85,7 +85,7 @@ public abstract class PropUtil {
      * @throws IllegalArgumentException 假如文件中含有非法字符
      * @throws NullPointerException 假如文件名是null
      */
-    public static final <T> void loadConfig(String resource, Class<T> cls) throws IOException {
+    public static final void loadConfig(String resource, Class<?> cls) throws IOException {
         PROPS.load(cls.getResourceAsStream(resource));
     }
 

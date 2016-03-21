@@ -81,7 +81,7 @@ public abstract class DownloadUtil {
 	 * @param strUrl
 	 *            The Url to be downloaded
 	 * @return The file content as byte array
-	 * @throws NetException
+	 * @throws NetException if necessary
 	 */
 	public static byte[] downloadFile(String strUrl) throws NetException {
 		return downloadFile(strUrl, CONNECT_TIMEOUT, READ_TIMEOUT, MAX_SIZE, null);
@@ -95,7 +95,7 @@ public abstract class DownloadUtil {
 	 * @param maxFileSize
      *            Max file size in BYTEs
 	 * @return The file content as byte array
-	 * @throws NetException
+	 * @throws NetException if necessary
 	 */
 	public static byte[] downloadFile(String strUrl, int maxFileSize) throws NetException {
 	    return downloadFile(strUrl, CONNECT_TIMEOUT, READ_TIMEOUT, maxFileSize, null);
@@ -114,7 +114,7 @@ public abstract class DownloadUtil {
 	 *            Max file size in BYTEs
 	 * @param useCache Whether we use thread local cache or not
 	 * @return The file content as byte array
-	 * @throws NetException
+	 * @throws NetException if necessary
 	 */
 	public static byte[] downloadFile(String strUrl, int connectTimeout, int readTimeout, int maxFileSize,
 	        Boolean useCache) throws NetException {
@@ -166,7 +166,7 @@ public abstract class DownloadUtil {
 	 * @param in the input stream
 	 * @param size the file size
 	 * @return the file content
-	 * @throws IOException
+	 * @throws IOException if necessary
 	 */
 	public static byte[] commonDownload(InputStream in, final int size) throws IOException {
 	    byte[] byteBuf = new byte[size];
@@ -188,8 +188,8 @@ public abstract class DownloadUtil {
 	 * @param strUrl The Url to be downloaded
 	 * @param useCache Whether we use thread local cache or not
 	 * @return the file content.
-	 * @throws NetException
-	 * @throws IOException
+	 * @throws NetException if necessary
+	 * @throws IOException if necessary
 	 */
 	public static byte[] unusualDownload(InputStream in, int minFileSize, int maxFileSize, String strUrl,
 	        Boolean useCache) throws NetException, IOException {
@@ -233,7 +233,7 @@ public abstract class DownloadUtil {
 	 * @param contentLength The content Length from HTTP header
 	 * @param minFileSize Minimum file size in BYTEs
 	 * @param maxFileSize Maximum file size in BYTEs
-	 * @throws NetException
+	 * @throws NetException if necessary
 	 */
 	public static void validateContentLength(final String strUrl, final int contentLength, final int minFileSize,
 	        final int maxFileSize) throws NetException {
@@ -252,8 +252,8 @@ public abstract class DownloadUtil {
      *
      * @param strUrl The Url to be downloaded
      * @param httpCon The HTTP connection
-     * @throws NetException
-     * @throws IOException
+     * @throws NetException if necessary
+     * @throws IOException if necessary
      */
     public static void validateHttpCode(final String strUrl, HttpURLConnection httpCon) throws NetException, IOException {
         validateHttpCode(strUrl, httpCon.getResponseCode(), httpCon.getResponseMessage());
@@ -265,7 +265,7 @@ public abstract class DownloadUtil {
 	 * @param strUrl The Url to be downloaded
 	 * @param respCode The HTTP response code
 	 * @param respMsg The HTTP response Message
-	 * @throws NetException
+	 * @throws NetException if necessary
 	 */
 	public static void validateHttpCode(final String strUrl, int respCode, String respMsg) throws NetException {
         if (!IntegerUtil.isIn(respCode, HTTP_OK, HTTP_NOT_AUTHORITATIVE,

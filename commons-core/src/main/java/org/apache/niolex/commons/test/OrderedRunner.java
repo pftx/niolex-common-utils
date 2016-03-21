@@ -37,6 +37,9 @@ public class OrderedRunner extends BlockJUnit4ClassRunner {
 
 	/**
 	 * default initializer, just invoke super.
+	 *
+	 * @param klass the test class
+     * @throws InitializationError if the test class is malformed
 	 */
 	public OrderedRunner(Class<?> klass) throws InitializationError {
 		super(klass);

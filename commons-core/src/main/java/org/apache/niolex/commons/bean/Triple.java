@@ -31,9 +31,15 @@ public class Triple<X, Y, Z> {
     /**
      * Create a Triple with the specified value.
      *
+     * @param <X> the first data type
+     * @param <Y> the second data type
+     * @param <Z> the third data type
+     *
      * @param x the first data
      * @param y the second data
      * @param z the third data
+     *
+     * @return the created bean
      */
     public static <X, Y, Z> Triple<X, Y, Z> create(X x, Y y, Z z) {
         return new Triple<X, Y, Z>(x, y, z);
@@ -55,9 +61,9 @@ public class Triple<X, Y, Z> {
     /**
      * Create a Triple with the specified value.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the first data
+     * @param y the second data
+     * @param z the third data
      */
     public Triple(X x, Y y, Z z) {
         super();

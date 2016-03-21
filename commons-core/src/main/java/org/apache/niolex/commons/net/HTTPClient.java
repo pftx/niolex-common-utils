@@ -111,7 +111,7 @@ public class HTTPClient {
      * @param path the request path relative to the end point
      * @param params the request parameters
      * @return the HTTP result
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public HTTPResult get(String path, Map<String, String> params) throws NetException {
         Triple<Integer, Map<String, List<String>>, byte[]> res = doHTTP(generateURL(path), params, null, charset,
@@ -127,7 +127,7 @@ public class HTTPClient {
      * @param path the request path relative to the end point
      * @param params the request parameters
      * @return the HTTP result
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public HTTPResult post(String path, Map<String, String> params) throws NetException {
         Triple<Integer, Map<String, List<String>>, byte[]> res = doHTTP(generateURL(path), params, null, charset,
@@ -143,7 +143,7 @@ public class HTTPClient {
      * @param path the request path relative to the end point
      * @param json the request parameters in JSON format
      * @return the HTTP result
-     * @throws NetException
+     * @throws NetException if necessary
      */
     public HTTPResult post(String path, String json) throws NetException {
         Triple<Integer, Map<String, List<String>>, byte[]> res = doHTTP(generateURL(path), null, json, charset,

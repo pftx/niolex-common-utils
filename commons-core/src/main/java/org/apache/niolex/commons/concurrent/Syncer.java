@@ -92,6 +92,8 @@ public class Syncer implements InvocationHandler {
      * Decorate the host object by this Syncer using the regex patterns to match methods.
      * <b>We are using Java proxy technique, only delegate the interfaces.</b>
      *
+     * @param <T> the return object type
+     *
      * @param host the host object for this decoration
      * @param readRegex the read regex
      * @param writeRegex the write regex
@@ -108,6 +110,8 @@ public class Syncer implements InvocationHandler {
     /**
      * Decorate the host object by this Syncer using the annotations to match methods.
      * <b>We are using Java proxy technique, only delegate the interfaces.</b>
+     *
+     * @param <T> the return object type
      *
      * @param host the host object for this decoration
      * @return the decorated object

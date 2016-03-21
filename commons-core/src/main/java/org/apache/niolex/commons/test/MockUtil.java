@@ -69,7 +69,7 @@ public abstract class MockUtil {
     /**
      * Generate a random array.
      *
-     * @param length
+     * @param length the array length
      * @return the result
      */
     public static final int[] randIntArray(int length) {
@@ -83,7 +83,7 @@ public abstract class MockUtil {
     /**
      * Generates random bytes and places them into a byte array.
      *
-     * @param length
+     * @param length the array length
      * @return the result
      */
     public static final byte[] randByteArray(int length) {

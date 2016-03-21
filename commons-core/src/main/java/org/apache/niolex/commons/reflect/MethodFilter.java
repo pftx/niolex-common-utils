@@ -129,6 +129,8 @@ public class MethodFilter implements Filter {
     /**
      * If include interfaces, we automatically includes super and include
      * abstract methods too.
+     *
+     * @return this
      */
     public MethodFilter includeInterfaces() {
         this.includeSuper = true;
@@ -139,6 +141,8 @@ public class MethodFilter implements Filter {
 
     /**
      * Include all the super methods.
+     *
+     * @return this
      */
     public MethodFilter includeSuper() {
         this.includeSuper = true;
@@ -147,6 +151,8 @@ public class MethodFilter implements Filter {
 
     /**
      * Include all the static methods.
+     *
+     * @return this
      */
     public MethodFilter includeStatic() {
         this.includeStatic = true;
@@ -155,6 +161,8 @@ public class MethodFilter implements Filter {
 
     /**
      * Include all the synthetic methods.
+     *
+     * @return this
      */
     public MethodFilter includeSynthetic() {
         this.includeSynthetic = true;
@@ -163,6 +171,8 @@ public class MethodFilter implements Filter {
 
     /**
      * Include all the abstract methods.
+     *
+     * @return this
      */
     public MethodFilter includeAbstract() {
         this.includeAbstract = true;
@@ -173,6 +183,7 @@ public class MethodFilter implements Filter {
      * Set the method name. This method is a short cut of {@link #methodName(String)}.
      *
      * @param methodName the methodName to set
+     * @return this
      */
     public MethodFilter n(String methodName) {
         return methodName(methodName);
@@ -182,6 +193,7 @@ public class MethodFilter implements Filter {
      * Set the method name.
      *
      * @param methodName the methodName to set
+     * @return this
      */
     public MethodFilter methodName(String methodName) {
         this.methodName = methodName;
@@ -192,6 +204,7 @@ public class MethodFilter implements Filter {
      * Set the method return type. This method is a short cut of {@link #returnType(Class)}.
      *
      * @param returnType the returnType to set
+     * @return this
      */
     public MethodFilter r(Class<?> returnType) {
         return returnType(returnType);
@@ -201,6 +214,7 @@ public class MethodFilter implements Filter {
      * Set the method return type.
      *
      * @param returnType the returnType to set
+     * @return this
      */
     public MethodFilter returnType(Class<?> returnType) {
         this.returnType = returnType;
@@ -211,6 +225,7 @@ public class MethodFilter implements Filter {
      * Set the method parameter types. This method is a short cut of {@link #parameterTypes(Class[])}.
      *
      * @param parameterTypes the parameterTypes to set
+     * @return this
      */
     public MethodFilter p(Class<?>... parameterTypes) {
         return parameterTypes(parameterTypes);
@@ -220,6 +235,7 @@ public class MethodFilter implements Filter {
      * Set the method parameter types.
      *
      * @param parameterTypes the parameterTypes to set
+     * @return this
      */
     public MethodFilter parameterTypes(Class<?>[] parameterTypes) {
         this.parameterTypes = parameterTypes;

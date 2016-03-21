@@ -67,8 +67,8 @@ public class DirMonitor extends FileMonitor implements FileMonitor.EventListener
     /**
      * Overload super Constructor, and add this as event listener.
      *
-     * @param monitorInterval
-     * @param filePathName
+     * @param monitorInterval the monitor interval in milliseconds
+     * @param filePathName the file path
      */
     public DirMonitor(int monitorInterval, String filePathName) {
         super(monitorInterval, filePathName);

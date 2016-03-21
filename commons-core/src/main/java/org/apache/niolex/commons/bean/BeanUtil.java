@@ -53,6 +53,9 @@ public class BeanUtil {
      * Merge the non null properties from the source bean to the target bean.
      * We will not merge default numeric primitives(0 for int long etc, 0.0 for float double).
      *
+     * @param <To> the type of the target bean
+     * @param <From> the type of the source bean
+     *
      * @param to the target bean
      * @param from the source bean
      * @return the target bean
@@ -63,6 +66,9 @@ public class BeanUtil {
 
     /**
      * Merge the non null properties from the source bean to the target bean.
+     *
+     * @param <To> the type of the target bean
+     * @param <From> the type of the source bean
      *
      * @param to the target bean
      * @param from the source bean
@@ -141,6 +147,8 @@ public class BeanUtil {
 
     /**
      * Merge the non null properties from the map to the target bean.
+     *
+     * @param <To> the type of the target bean
      *
      * @param to the target bean
      * @param from the source map

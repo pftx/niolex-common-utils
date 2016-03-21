@@ -29,6 +29,8 @@ public class One<T> {
     /**
      * Create an One with this specified value.
      *
+     * @param <T> the value type
+     *
      * @param t the value inside
      * @return the created object
      */
@@ -56,7 +58,7 @@ public class One<T> {
     }
 
     /**
-     * Returns true if this instance contains a null reference.
+     * @return true if this instance contains a null reference.
      */
     public boolean absent() {
         return a == null;

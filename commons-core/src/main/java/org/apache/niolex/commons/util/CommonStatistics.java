@@ -55,9 +55,9 @@ public class CommonStatistics {
         /**
          * <pre>
          * If the data set size is odd, then median is the middle number.
-         * i.e. 1 2 3 4 5 => median = 3
+         * i.e. 1 2 3 4 5 =&gt; median = 3
          * If the data set size is even, then median is the average of the two middle number.
-         * i.e. 1 2 3 4 5 6 => median = 3.5
+         * i.e. 1 2 3 4 5 6 =&gt; median = 3.5
          * </pre>
          */
         public double median = -1;

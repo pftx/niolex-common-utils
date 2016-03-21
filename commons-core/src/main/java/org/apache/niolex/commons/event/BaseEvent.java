@@ -32,6 +32,9 @@ public class BaseEvent<V> implements Event<V> {
     /**
      * Create a new BaseEvent to wrap this value. The event type will
      * be the class name of the specified value.
+     *
+     * @param <K> the value type
+     *
      * @param value the event value
      * @return the event
      */
@@ -52,8 +55,8 @@ public class BaseEvent<V> implements Event<V> {
     /**
      * The only constructor.
      *
-     * @param eventType
-     * @param eventValue
+     * @param eventType the event type
+     * @param eventValue the event value
      */
     public BaseEvent(String eventType, V eventValue) {
         super();

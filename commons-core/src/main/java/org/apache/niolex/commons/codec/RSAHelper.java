@@ -127,7 +127,7 @@ public abstract class RSAHelper {
 
 	/**
 	 * Encode public key into xml string.
-	 * @param key
+	 * @param key the public key
 	 * @return the encoded key
 	 */
     public static String encodePublicKeyToXml(PublicKey key) {
@@ -147,7 +147,7 @@ public abstract class RSAHelper {
 
     /**
      * Encode private key to xml string.
-     * @param key
+     * @param key the private key
      * @return the encoded key
      */
     public static String encodePrivateKeyToXml(PrivateKey key) {
@@ -174,7 +174,7 @@ public abstract class RSAHelper {
 
     /**
      * Decode public key from XML string.
-     * @param xml
+     * @param xml the key encoding XML
      * @return the decoded key
      */
     public static PublicKey decodePublicKeyFromXml(String xml) {
@@ -194,7 +194,7 @@ public abstract class RSAHelper {
 
     /**
      * Decode private key from XML string.
-     * @param xml
+     * @param xml the key encoding XML
      * @return the decoded key
      */
     public static PrivateKey decodePrivateKeyFromXml(String xml) {

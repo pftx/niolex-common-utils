@@ -43,7 +43,7 @@ public class AESCoder extends BaseCoder {
     /**
      * 初始化密钥和IV参数
      *
-     * @param key
+     * @param key the base 64 encoded key
      */
     @Override
     public void initKey(String key) {
@@ -55,9 +55,9 @@ public class AESCoder extends BaseCoder {
     /**
      * 加密
      *
-     * @param data
+     * @param data the data to be encrypted
      * @return the encrypted data
-     * @throws Exception
+     * @throws Exception if necessary
      */
     @Override
     public byte[] encrypt(byte[] data) throws Exception {
@@ -70,9 +70,9 @@ public class AESCoder extends BaseCoder {
     /**
      * 解密
      *
-     * @param data
+     * @param data the data to be decrypted
      * @return the decrypted data
-     * @throws Exception
+     * @throws Exception if necessary
      */
     @Override
     public byte[] decrypt(byte[] data) throws Exception {

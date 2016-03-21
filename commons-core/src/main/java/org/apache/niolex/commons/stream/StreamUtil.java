@@ -37,6 +37,7 @@ public class StreamUtil {
 	 * Close the specified stream. It's OK if the parameter is null.
 	 *
 	 * @param s the stream to be closed
+	 * @return any execution thrown during close the closeable
 	 */
 	public static final Exception closeStream(Closeable s) {
 		return SystemUtil.close(s);
@@ -48,6 +49,7 @@ public class StreamUtil {
 	 * @param in the input stream
 	 * @param data the byte array to put data
 	 * @return the number of bytes read from the input stream
+	 * @throws IOException if necessary
 	 */
 	public static final int readData(InputStream in, byte[] data) throws IOException {
 	    int dataPos = 0, length = data.length;

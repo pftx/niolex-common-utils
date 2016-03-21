@@ -44,7 +44,7 @@ public class InvokableExecutorService implements ExecutorService {
      * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
      * @version 1.0.0
      * @since 2015-5-26
-     * @param <V>
+     * @param <V> the return value type
      */
     private static class Invoker<V> implements Runnable {
 
@@ -56,10 +56,10 @@ public class InvokableExecutorService implements ExecutorService {
         /**
          * Construct a new Invoker.
          *
-         * @param method
-         * @param host
-         * @param args
-         * @param fu
+         * @param method the method to be invoked
+         * @param host the object the underlying method is invoked from
+         * @param args the arguments used for the method call
+         * @param fu the future used to store result
          */
         public Invoker(Method method, Object host, Object[] args, SimpleFuture<V> fu) {
             super();
@@ -101,6 +101,8 @@ public class InvokableExecutorService implements ExecutorService {
      * Invoke the given method in the internal thread pool.
      * User can get the result (or exception) by the returned future.
      *
+     * @param <V> the return value type
+     *
      * @param host the host object of the method
      * @param method the method to be invoked
      * @param args the arguments to be used
@@ -114,7 +116,7 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @param command
+     * @param command the command to be executed
      * @see java.util.concurrent.Executor#execute(java.lang.Runnable)
      */
     public void execute(Runnable command) {
@@ -154,10 +156,10 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @param timeout
-     * @param unit
+     * @param timeout the timeout
+     * @param unit the timeout unit
      * @return the result
-     * @throws InterruptedException
+     * @throws InterruptedException if interrupted
      * @see java.util.concurrent.ExecutorService#awaitTermination(long, java.util.concurrent.TimeUnit)
      */
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
@@ -165,7 +167,7 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @param task
+     * @param task the task to be executed
      * @return the result
      * @see java.util.concurrent.ExecutorService#submit(java.util.concurrent.Callable)
      */
@@ -174,8 +176,8 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @param task
-     * @param result
+     * @param task the task to be executed
+     * @param result the result to be returned
      * @return the result
      * @see java.util.concurrent.ExecutorService#submit(java.lang.Runnable, java.lang.Object)
      */
@@ -184,7 +186,7 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @param task
+     * @param task the task to be executed
      * @return the result
      * @see java.util.concurrent.ExecutorService#submit(java.lang.Runnable)
      */
@@ -193,9 +195,9 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @param tasks
+     * @param tasks the tasks to be executed
      * @return the result
-     * @throws InterruptedException
+     * @throws InterruptedException if interrupted
      * @see java.util.concurrent.ExecutorService#invokeAll(java.util.Collection)
      */
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
@@ -203,11 +205,11 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @param tasks
-     * @param timeout
-     * @param unit
+     * @param tasks the tasks to be executed
+     * @param timeout the timeout
+     * @param unit the timeout unit
      * @return the result
-     * @throws InterruptedException
+     * @throws InterruptedException if interrupted
      * @see java.util.concurrent.ExecutorService#invokeAll(java.util.Collection, long, java.util.concurrent.TimeUnit)
      */
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
@@ -216,10 +218,10 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @param tasks
+     * @param tasks the task to be executed
      * @return the result
-     * @throws InterruptedException
-     * @throws ExecutionException
+     * @throws InterruptedException if interrupted
+     * @throws ExecutionException if exception thrown during method invoke
      * @see java.util.concurrent.ExecutorService#invokeAny(java.util.Collection)
      */
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
@@ -227,13 +229,13 @@ public class InvokableExecutorService implements ExecutorService {
     }
 
     /**
-     * @param tasks
-     * @param timeout
-     * @param unit
+     * @param tasks the task to be executed
+     * @param timeout the timeout
+     * @param unit the timeout unit
      * @return the result
-     * @throws InterruptedException
-     * @throws ExecutionException
-     * @throws TimeoutException
+     * @throws InterruptedException if interrupted
+     * @throws ExecutionException if exception thrown during method invoke
+     * @throws TimeoutException if timeout
      * @see java.util.concurrent.ExecutorService#invokeAny(java.util.Collection, long, java.util.concurrent.TimeUnit)
      */
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)

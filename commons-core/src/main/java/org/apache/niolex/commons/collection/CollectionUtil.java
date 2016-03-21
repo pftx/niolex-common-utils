@@ -35,8 +35,10 @@ public abstract class CollectionUtil {
 	/**
 	 * Concatenating all the parameters into one list.
 	 *
-	 * @param collection
-	 * @param args
+	 * @param <E> the element type
+	 *
+	 * @param collection the collection to be concatenated
+	 * @param args the arguments to be concatenated
 	 * @return the result
 	 */
 	public static final <E> List<E> concat(Collection<E> collection, E ...args) {
@@ -49,8 +51,10 @@ public abstract class CollectionUtil {
 	/**
 	 * Concatenating all the parameters into one list.
 	 *
-	 * @param args
-	 * @return the result
+	 * @param <E> the element type
+	 *
+	 * @param args the arguments to be concatenated
+	 * @return the result of all the arguments concatenated
 	 */
 	public static final <E> List<E> concat(E ...args) {
 		List<E> dest = new ArrayList<E>(args.length);
@@ -61,9 +65,11 @@ public abstract class CollectionUtil {
 	/**
 	 * Concatenating all the parameters into one list.
 	 *
-	 * @param collection1
-	 * @param collection2
-	 * @return the result
+	 * @param <E> the element type
+	 *
+	 * @param collection1 the collection to be concatenated
+	 * @param collection2 the collection to be concatenated
+	 * @return the result of all the arguments concatenated
 	 */
 	public static final <E> List<E> concat(Collection<E> collection1, Collection<E> collection2) {
 		List<E> dest = new ArrayList<E>(collection1.size() + collection2.size());
@@ -75,9 +81,11 @@ public abstract class CollectionUtil {
 	/**
 	 * Concatenating all the parameters into one list.
 	 *
-	 * @param array1
-	 * @param array2
-	 * @return the result
+	 * @param <E> the element type
+	 *
+	 * @param array1 the array to be concatenated
+	 * @param array2 the array to be concatenated
+	 * @return the result of all the arguments concatenated
 	 */
 	public static final <E> List<E> concat(E[] array1, E[] array2) {
 	    List<E> dest = new ArrayList<E>(array1.length + array2.length);
@@ -89,9 +97,11 @@ public abstract class CollectionUtil {
 	/**
 	 * Concatenating all the parameters into one list.
 	 *
-	 * @param element
-	 * @param args
-	 * @return the result
+	 * @param <E> the element type
+	 *
+	 * @param element the element to be concatenated
+	 * @param args the collection to be concatenated
+	 * @return the result of all the arguments concatenated
 	 */
 	public static final <E> List<E> concat(E element, Collection<E> args) {
 		List<E> dest = new ArrayList<E>(1 + args.size());
@@ -102,6 +112,8 @@ public abstract class CollectionUtil {
 
 	/**
 	 * Add all the elements in args into collection.
+	 *
+	 * @param <E> the element type
 	 *
 	 * @param collection the collection used to add elements
 	 * @param args the elements to be added
@@ -114,6 +126,8 @@ public abstract class CollectionUtil {
 
 	/**
 	 * Make a copy of the parameter.
+	 *
+	 * @param <E> the element type
 	 *
 	 * @param args the collection to be copied
 	 * @return the result
@@ -130,8 +144,10 @@ public abstract class CollectionUtil {
 	 * Pair.a will be the left list minus the intersection
 	 * Pair.b will be the right list minus the intersection
 	 *
-	 * @param left
-	 * @param right
+	 * @param <E> the element type
+	 *
+	 * @param left the left collection
+	 * @param right the right collection
 	 * @return the Pair of the results
 	 */
 	public static final <E> Pair<List<E>, List<E>> intersection(Collection<E> left, Collection<E> right) {
@@ -189,6 +205,9 @@ public abstract class CollectionUtil {
     /**
      * Get the map value by the specified key. If the value is null, create a new instance by
      * the specified class, and put the new instance into the map, then return it.
+     *
+     * @param <K> the key type
+     * @param <V> the value type
      *
      * @param map the map to be used
      * @param key the key to get value

@@ -40,13 +40,14 @@ import org.slf4j.LoggerFactory;
 public abstract class FileUtil {
     private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);
 
-
     /**
      * Store binary data into local disk.<br>
      * Shortcut of {@link #setBinaryFileContentToFileSystem(String, byte[])}
      *
-     * @param pathname the file path name
-     * @param raw the data to store
+     * @param pathname
+     *            the file path name
+     * @param raw
+     *            the data to store
      * @return true if file store success
      */
     public static boolean setBin(String pathname, byte[] raw) {
@@ -56,8 +57,10 @@ public abstract class FileUtil {
     /**
      * Store binary data into local disk.
      *
-     * @param pathname the file path name
-     * @param raw the data to store
+     * @param pathname
+     *            the file path name
+     * @param raw
+     *            the data to store
      * @return true if file store success
      */
     public static boolean setBinaryFileContentToFileSystem(String pathname, byte[] raw) {
@@ -79,9 +82,12 @@ public abstract class FileUtil {
      * Store the string into local file system.<br>
      * Shortcut of {@link #setCharacterFileContentToFileSystem(String, String, Charset)}
      *
-     * @param pathname the file path and name
-     * @param content the string to store
-     * @param charset the charset to use
+     * @param pathname
+     *            the file path and name
+     * @param content
+     *            the string to store
+     * @param charset
+     *            the charset to use
      * @return true if file store success
      */
     public static boolean setStr(String pathname, String content, Charset charset) {
@@ -91,9 +97,12 @@ public abstract class FileUtil {
     /**
      * Store the string into local file system.
      *
-     * @param pathname the file path and name
-     * @param content the string to store
-     * @param charset the charset to use
+     * @param pathname
+     *            the file path and name
+     * @param content
+     *            the string to store
+     * @param charset
+     *            the charset to use
      * @return true if file store success
      */
     public static boolean setCharacterFileContentToFileSystem(String pathname, String content, Charset charset) {
@@ -107,7 +116,8 @@ public abstract class FileUtil {
      * @param pathname
      *            The file path and file name.
      * @return The file content as byte array.
-     * @throws IllegalStateException If file larger than 10 MB.
+     * @throws IllegalStateException
+     *             If file larger than 10 MB.
      */
     public static byte[] getBin(String pathname) {
         return getBinaryFileContentFromFileSystem(pathname);
@@ -119,7 +129,8 @@ public abstract class FileUtil {
      * @param pathname
      *            The file path and file name.
      * @return The file content as byte array.
-     * @throws IllegalStateException If file larger than 10 MB.
+     * @throws IllegalStateException
+     *             If file larger than 10 MB.
      */
     public static byte[] getBinaryFileContentFromFileSystem(String pathname) {
         return getBinaryFileContentFromFileSystem(pathname, Const.M * 10);
@@ -130,9 +141,11 @@ public abstract class FileUtil {
      *
      * @param pathname
      *            The file path and file name.
-     * @param maxSize The max file size.
+     * @param maxSize
+     *            The max file size.
      * @return The file content as byte array.
-     * @throws IllegalStateException If file too large.
+     * @throws IllegalStateException
+     *             If file too large.
      */
     public static byte[] getBinaryFileContentFromFileSystem(String pathname, final int maxSize) {
         InputStream in = null;
@@ -159,18 +172,20 @@ public abstract class FileUtil {
      *
      * @param pathname
      *            The file path and file name.
+     * @param cls
+     *            the class used to load configuration file.
      * @return The file content as byte array, or null if encounter exception.
      */
-    public static <T> byte[] getBinaryFileContentFromClassPath(String pathname, Class<T> cls) {
-    	try {
-    	    InputStream in = cls.getResourceAsStream(pathname);
-    	    if (in != null) {
-    	        ByteArrayOutputStream out = new ByteArrayOutputStream(10240);
-    	        StreamUtil.transferAndClose(in, out, 4096);
-    	        return out.toByteArray();
-    	    }
-    	} catch (Exception e) {
-    		LOG.warn("Error occured while read file [{}] from class [{}]; reason - {}", pathname, cls, e.toString());
+    public static byte[] getBinaryFileContentFromClassPath(String pathname, Class<?> cls) {
+        try {
+            InputStream in = cls.getResourceAsStream(pathname);
+            if (in != null) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream(10240);
+                StreamUtil.transferAndClose(in, out, 4096);
+                return out.toByteArray();
+            }
+        } catch (Exception e) {
+            LOG.warn("Error occured while read file [{}] from class [{}]; reason - {}", pathname, cls, e.toString());
         }
         return null;
     }
@@ -208,11 +223,13 @@ public abstract class FileUtil {
      *
      * @param pathname
      *            The file path and file name.
+     * @param cls
+     *            the class used to load configuration file.
      * @param encoding
      *            The file encoding.
      * @return The file content as string.
      */
-    public static <T> String getCharacterFileContentFromClassPath(String pathname, Class<T> cls, Charset encoding) {
+    public static String getCharacterFileContentFromClassPath(String pathname, Class<?> cls, Charset encoding) {
         byte[] data = getBinaryFileContentFromClassPath(pathname, cls);
         return data == null ? null : new String(data, encoding);
     }

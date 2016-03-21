@@ -45,7 +45,7 @@ public class DESCoder extends BaseCoder {
     /**
      * 初始化密钥和IV参数
      *
-     * @param key
+     * @param key the base 64 encoded key
      */
     @Override
     public void initKey(String key) {
@@ -67,9 +67,9 @@ public class DESCoder extends BaseCoder {
     /**
      * 加密
      *
-     * @param data
+     * @param data the data to be encrypted
      * @return the object
-     * @throws Exception
+     * @throws Exception if necessary
      */
     @Override
     public byte[] encrypt(byte[] data) throws Exception {
@@ -82,9 +82,9 @@ public class DESCoder extends BaseCoder {
     /**
      * 解密
      *
-     * @param data
+     * @param data the data to be decrypted
      * @return the object
-     * @throws Exception
+     * @throws Exception if necessary
      */
     @Override
     public byte[] decrypt(byte[] data) throws Exception {
@@ -97,7 +97,7 @@ public class DESCoder extends BaseCoder {
     /**
      * Encode multiple string together into a Base64 string
      *
-     * @param args
+     * @param args the arguments to be encoded
      * @return the object
      */
     public String encodes(String... args) {
@@ -127,7 +127,7 @@ public class DESCoder extends BaseCoder {
     /**
      * Decode the argument into plain text
      *
-     * @param arg
+     * @param arg the argument to be decoded
      * @return the plain text
      */
     public String decodes(String arg) {

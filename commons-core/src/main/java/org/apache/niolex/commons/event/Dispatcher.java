@@ -62,7 +62,7 @@ public interface Dispatcher {
 	 * <br>
 	 * If e instance of {@link Event}, we dispatch it, otherwise we call {@link BaseEvent#create(Object)} to wrap it.
 	 *
-	 * @param e
+	 * @param e the event object
 	 */
 	public void fireEvent(Object e);
 

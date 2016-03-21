@@ -30,6 +30,9 @@ public class Pair<A, B> {
     /**
      * Create a Pair with this specified value.
      *
+     * @param <T> the first data type
+     * @param <P> the second data type
+     *
      * @param t the first parameter
      * @param p the second parameter
      * @return the created object
@@ -52,8 +55,8 @@ public class Pair<A, B> {
 	/**
 	 * Create a Pair with the specified value.
 	 *
-	 * @param a
-	 * @param b
+	 * @param a the first value
+	 * @param b the second value
 	 */
 	public Pair(A a, B b) {
 		super();

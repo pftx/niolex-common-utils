@@ -35,25 +35,25 @@ public interface Coder {
     /**
      * 初始化密钥和IV参数
      *
-     * @param key
+     * @param key the base 64 encoded key
      */
     public void initKey(String key);
 
     /**
      * 加密
      *
-     * @param data
+     * @param data the data to be encrypted
      * @return the encrypted data
-     * @throws Exception
+     * @throws Exception if necessary
      */
     public byte[] encrypt(byte[] data) throws Exception;
 
     /**
      * 解密
      *
-     * @param data
+     * @param data the data to be decrypted
      * @return the decrypted data
-     * @throws Exception
+     * @throws Exception if necessary
      */
     public byte[] decrypt(byte[] data) throws Exception;
 
@@ -62,7 +62,7 @@ public interface Coder {
      *
      * @param str the input string
      * @return the encoded string
-     * @throws Exception
+     * @throws Exception if necessary
      */
     public String encode(String str) throws Exception;
 
@@ -71,7 +71,7 @@ public interface Coder {
      *
      * @param str the input string
      * @return the decoded string
-     * @throws Exception
+     * @throws Exception if necessary
      */
     public String decode(String str) throws Exception;
 }
