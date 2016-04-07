@@ -193,7 +193,7 @@ public abstract class ObjToStringUtil implements Const {
      */
     private static final void printObject(Object o, StringBuilder sb, int indentation) {
         sb.append("{").append(LINE_SP);
-        for (Field f : o.getClass().getDeclaredFields()) {
+        for (Field f : FieldUtil.getAllFields(o.getClass())) {
             if (f.isSynthetic() || (f.getModifiers() & Modifier.STATIC) > 0)
                 continue;
             printObjectItem(f.getName(), FieldUtil.getFieldValue(o, f), sb, indentation);

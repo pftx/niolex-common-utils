@@ -28,6 +28,8 @@ public class TesterTest extends Tester {
         assertTrue(equal(3.0,  3.0000000000000002));
         assertTrue(equal(3.0,  3.0000000000000003));
         assertFalse(equal(3.0, 3.000000000000002));
+        assertTrue(equal(3 * 0.1, 0.3));
+        assertFalse(3 * 0.1 == 0.3);
     }
 
 
