@@ -30,6 +30,9 @@ import com.google.common.collect.Lists;
 
 /**
  * Monitoring the file changes from the file system and notify users.
+ * <p>
+ * Since JDK 1.7, there are official WatchService, so I will make this class simple and clean, user
+ * can switch to JDK solution in higher JDK environment.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -126,7 +129,7 @@ public class FileMonitor implements Runnable {
      * @see java.lang.Runnable#run()
      */
     @Override
-    public void run() {
+    public synchronized void run() {
         // Check file exists.
         if (!file.exists()) {
             if (fileExists) {

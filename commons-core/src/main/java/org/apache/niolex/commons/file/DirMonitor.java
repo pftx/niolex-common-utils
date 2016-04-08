@@ -65,7 +65,7 @@ public class DirMonitor extends FileMonitor implements FileMonitor.EventListener
     protected Boolean isDir;
 
     /**
-     * Overload super Constructor, and add this as event listener.
+     * Inherit super Constructor, and add this as event listener.
      *
      * @param monitorInterval the monitor interval in milliseconds
      * @param filePathName the file path

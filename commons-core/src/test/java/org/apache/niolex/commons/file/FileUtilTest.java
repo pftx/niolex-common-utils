@@ -37,7 +37,7 @@ import org.junit.Test;
 public class FileUtilTest extends FileUtil {
 
     static Charset UTF8 = StringUtil.UTF_8;
-    static String PREX = System.getProperty("user.home") + "/tmpdqj";
+    static String PREX = System.getProperty("user.home") + "/tmpj";
     static String str1 = "可以对每个连接设置当前的时区，相关描述参见5.10.8节，“MySQL服务器时区支持”。TIMESTAMP值"
             + "结构复杂数据的可视化：欧文提供数据库结构，管理界面的容易简单，图形显示对视觉复杂。";
 

@@ -19,6 +19,9 @@ package org.apache.niolex.commons.test;
 
 /**
  * The tester to help check the value equals and between the range.
+ * <p>
+ * For float and double, there are some kind of calculation inaccuracy.
+ * If we can tolerate the minor inaccuracy, and consider them as equal, we need this class.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -50,25 +53,52 @@ public class Tester {
     }
 
     /**
-     * Test whether two float equals each other.
+     * Test whether two long integers equals each other.
+     *
+     * @param a the value a
+     * @param b the value b
+     * @return true if equal, false if not
+     */
+    public static final boolean equal(long a, long b) {
+        return a == b;
+    }
+
+    /**
+     * Test whether two float equals each other. Two NaN are not considered as equal.
      *
      * @param a the value a
      * @param b the value b
      * @return true if equal, false if not
      */
     public static final boolean equal(float a, float b) {
-        return between(-FLOAT_INACCURACY, (a - b), FLOAT_INACCURACY);
+        // Test NaN first.
+        if (a != a || b != b) {
+            return false;
+        }
+
+        int i = Float.floatToRawIntBits(a);
+        int j = Float.floatToRawIntBits(b);
+
+        return between(-1, i - j, 1);
     }
 
     /**
-     * Test whether two double equals each other.
+     * Test whether two double equals each other. Two NaN are not considered as equal.
      *
      * @param a the value a
      * @param b the value b
      * @return true if equal, false if not
      */
     public static final boolean equal(double a, double b) {
-        return between(-DOUBLE_INACCURACY, (a - b), DOUBLE_INACCURACY);
+        // Test NaN first.
+        if (a != a || b != b) {
+            return false;
+        }
+
+        long i = Double.doubleToRawLongBits(a);
+        long j = Double.doubleToRawLongBits(b);
+
+        return between(-1, i - j, 1);
     }
 
     /**
@@ -80,6 +110,18 @@ public class Tester {
      * @return true if between, false if not
      */
     public static final boolean between(int a, int b, int c) {
+        return a <= b && b <= c;
+    }
+
+    /**
+     * Test whether the value b set between a and c.
+     *
+     * @param a the value a
+     * @param b the value b
+     * @param c the value c
+     * @return true if between, false if not
+     */
+    public static final boolean between(long a, long b, long c) {
         return a <= b && b <= c;
     }
 

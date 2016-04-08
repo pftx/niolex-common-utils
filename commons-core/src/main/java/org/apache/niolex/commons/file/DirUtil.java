@@ -63,22 +63,22 @@ public class DirUtil {
      * Delete the directory or file represented by this pathname.
      *
      * @param pathname the pathname of the directory or file
-     * @param byForce whether we should recursively delete children.
+     * @param recursive whether we should recursively delete children.
      * @return true if deleted or file not exist, false otherwise
      */
-    public static final boolean delete(String pathname, boolean byForce) {
+    public static final boolean delete(String pathname, boolean recursive) {
         File file = new File(pathname);
-        return delete(file, byForce);
+        return delete(file, recursive);
     }
 
     /**
      * Delete the directory or file represented by this file.
      *
      * @param file the file to be deleted
-     * @param byForce whether we should recursively delete children.
+     * @param recursive whether we should recursively delete children.
      * @return true if deleted or file not exist, false otherwise
      */
-    public static final boolean delete(File file, boolean byForce) {
+    public static final boolean delete(File file, boolean recursive) {
         if (!file.exists()) {
             return true;
         }
@@ -87,7 +87,7 @@ public class DirUtil {
             if (ArrayUtils.isEmpty(files)) {
                 return file.delete();
             }
-            if (byForce) {
+            if (recursive) {
                 for (File f: files) {
                     delete(f, true);
                 }

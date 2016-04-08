@@ -46,21 +46,23 @@ import org.junit.runner.RunWith;
 @RunWith(AnnotationOrderedRunner.class)
 public class DirMonitorTest {
 
-    static final String TMP = System.getProperty("user.home") + "/tmp";
+    static final String TMP = System.getProperty("user.home") + "/tmpd";
     static final String FILE = TMP + "/dir-monitor";
     static DirMonitor monitor;
 
     @BeforeClass
     public static void testDirMonitor() throws Exception {
+        DirUtil.mkdirsIfAbsent(TMP);
         DirUtil.delete(FILE, true);
         monitor = new DirMonitor(10, FILE);
         assertNull(monitor.currentChildren());
+        assertNull(monitor.isDir);
     }
 
     @AfterClass
     public static void stop() {
         monitor.stop();
-        DirUtil.delete(FILE, true);
+        DirUtil.delete(TMP, true);
     }
 
     final Blocker<String> blocker = new Blocker<String>();
@@ -68,7 +70,8 @@ public class DirMonitorTest {
     final Counter ad = new Counter();
     final Counter rm = new Counter();
     final Counter de = new Counter();
-    final Counter cld = new Counter();
+    final Counter addCld = new Counter();
+    final Counter rmCld = new Counter();
 
     ChildrenListener cli = new ChildrenListener() {
 
@@ -77,18 +80,13 @@ public class DirMonitorTest {
             switch (type) {
                 case CREATE:
                     cr.inc();
-                    break;
-                case ADD_CHILDREN:
-                    ad.inc();
-                    break;
-                case REMOVE_CHILDREN:
-                    rm.inc();
+                    blocker.release("s", "");
                     break;
                 case DELETE:
                     de.inc();
+                    blocker.release("s", "");
                     break;
             }
-            blocker.release("s", "");
             System.out.println(type + " " + happenTime);
         }
 
@@ -100,11 +98,11 @@ public class DirMonitorTest {
                     break;
                 case ADD_CHILDREN:
                     ad.inc();
-                    cld.set(list.size());
+                    addCld.set(list.size());
                     break;
                 case REMOVE_CHILDREN:
                     rm.inc();
-                    cld.set(list.size());
+                    rmCld.set(list.size());
                     break;
                 case DELETE:
                     de.inc();
@@ -112,7 +110,8 @@ public class DirMonitorTest {
             }
             blocker.release("s", "");
             System.out.println(type + " " + list + " ALL " + monitor.currentChildren());
-        }};
+        }
+    };
 
 
     @Test
@@ -130,12 +129,13 @@ public class DirMonitorTest {
 
     @Test
     @Order(2)
-    public void testAdd() throws Exception {
+    public void testAddDir() throws Exception {
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.init("s");
         DirUtil.mkdirsIfAbsent(FILE + "/a");
         wait.waitForResult(1000);
         assertEquals(1, ad.cnt());
+        assertEquals(1, addCld.cnt());
         monitor.removeListener(cli);
         assertTrue(monitor.isDir());
         assertEquals(1, monitor.currentChildren().size());
@@ -143,13 +143,13 @@ public class DirMonitorTest {
 
     @Test
     @Order(3)
-    public void testAgain() throws Exception {
+    public void testAddFile() throws Exception {
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.init("s");
         FileUtil.setCharacterFileContentToFileSystem(FILE + "/tmp.txt", "File", StringUtil.US_ASCII);
-        wait.waitForResult(2000);
+        wait.waitForResult(1000);
         assertEquals(1, ad.cnt());
-        assertEquals(1, cld.cnt());
+        assertEquals(1, addCld.cnt());
         monitor.removeListener(cli);
         assertTrue(monitor.isDir());
         assertEquals(2, monitor.currentChildren().size());
@@ -164,7 +164,7 @@ public class DirMonitorTest {
         FileUtil.setCharacterFileContentToFileSystem(FILE + "/a/dir.txt", "Lex is the Best!!", StringUtil.US_ASCII);
         wait.waitForResult(30);
         assertEquals(0, ad.cnt());
-        assertEquals(0, cld.cnt());
+        assertEquals(0, addCld.cnt());
         boolean b = monitor.removeListener(cli);
         assertTrue(b);
         assertEquals(2, monitor.currentChildren().size());
@@ -179,7 +179,7 @@ public class DirMonitorTest {
         DirUtil.delete(FILE + "/a", true);
         wait.waitForResult(1500);
         assertEquals(1, rm.cnt());
-        assertEquals(1, cld.cnt());
+        assertEquals(1, rmCld.cnt());
         boolean b = monitor.removeListener(cli);
         assertTrue(b);
         assertEquals(1, monitor.currentChildren().size());
@@ -203,8 +203,9 @@ public class DirMonitorTest {
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.init("s");
         DirUtil.mkdirsIfAbsent(FILE + "/a");
-        wait.waitForResult(2000);
+        wait.waitForResult(3000);
         assertEquals(1, ad.cnt());
+        assertEquals(1, addCld.cnt());
         assertEquals(1, monitor.currentChildren().size());
         monitor.removeListener(cli);
 
@@ -214,7 +215,7 @@ public class DirMonitorTest {
 
             @Override
             public void notify(EventType type, long happenTime) {
-                blocker.release("s", "");
+                blocker.release("q", "");
             }
 
             @Override
@@ -230,25 +231,29 @@ public class DirMonitorTest {
         wait = blocker.init("s");
 
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/dir-monitor/not-dir.txt", "It's not a DIR", StringUtil.US_ASCII);
-        wait.waitForResult(1000);
+        wait.waitForResult(3000);
         assertEquals(1, cld.cnt());
+        assertFalse(monitor2.isDir());
+
+        wait = blocker.init("q");
+        FileOutputStream fo = new FileOutputStream(TMP + "/dir-monitor/not-dir.txt");
+        StreamUtil.writeAndClose(fo, "Add More".getBytes());
+        wait.waitForResult(2000);
+        assertFalse(monitor2.isDir());
+
         boolean b = monitor2.removeListener(cli);
         assertTrue(b);
-        assertFalse(monitor2.isDir());
-        FileOutputStream fo = new FileOutputStream(TMP + "/dir-monitor/not-dir.txt");
-        wait = blocker.init("s");
-        StreamUtil.writeAndClose(fo, "Add More".getBytes());
-        wait.waitForResult(1000);
-        assertFalse(monitor2.isDir());
     }
 
     @Test
+    @Order(8)
     public void testNotify() throws Exception {
         monitor.notify(EventType.NOT_DIR, 0);
         monitor.notify(EventType.ADD_CHILDREN, 0);
     }
 
     @Test
+    @Order(9)
     public void testNotifyNull() throws Exception {
         monitor.notify(null, 0);
     }
