@@ -80,11 +80,11 @@ public class DirMonitorTest {
             switch (type) {
                 case CREATE:
                     cr.inc();
-                    blocker.release("s", "");
+                    blocker.release("su", "");
                     break;
                 case DELETE:
                     de.inc();
-                    blocker.release("s", "");
+                    blocker.release("su", "");
                     break;
             }
             System.out.println(type + " " + happenTime);
@@ -118,7 +118,7 @@ public class DirMonitorTest {
     @Order(1)
     public void testCreate() throws Exception {
         monitor.addListener(cli);
-        WaitOn<String> wait = blocker.init("s");
+        WaitOn<String> wait = blocker.init("su");
         DirUtil.mkdirsIfAbsent(FILE);
         wait.waitForResult(1000);
         assertEquals(1, cr.cnt());
@@ -189,7 +189,7 @@ public class DirMonitorTest {
     @Order(6)
     public void testDelete() throws Exception {
         monitor.addListener(cli);
-        WaitOn<String> wait = blocker.init("s");
+        WaitOn<String> wait = blocker.init("su");
         while (!DirUtil.delete(TMP + "/dir-monitor", true)) ThreadUtil.sleepAtLeast(1);
         wait.waitForResult(2000);
         assertEquals(1, de.cnt());
