@@ -25,6 +25,10 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.JavaType;
 
 /**
+ * With the two methods {@link #compress(byte[])} and {@link #decompress(byte[])}, we can implement all
+ * the other methods here. So with this ABC, the compressor implementor will not need to implement them
+ * again.
+ *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2016-4-8
