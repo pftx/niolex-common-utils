@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.compress;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,11 +41,11 @@ public class ZLibUtilTest {
     static byte[] data = FileUtil.getBinaryFileContentFromClassPath("Data.txt", GZipUtilTest.class);
 
     @Test
-    public void doSmoke() throws IOException {
+    public void doSmoke1() throws IOException {
         String in = "我是中国人好高骛远、南辕北辙、缘木求鱼、刻舟求剑→亡羊补牢→鞍前马后、承上启下、与时俱进、荣辱与共！";
-        System.out.println("Original size => " + in.getBytes("utf-8").length);
+        System.out.println();
         byte[] data = ZLibUtil.compressString(in);
-        System.out.println("Compressed size => " + data.length);
+        System.out.println("Original size => " + in.getBytes("utf-8").length + ", Compressed size => " + data.length);
         String actual = ZLibUtil.decompressString(data);
         Assert.assertEquals(in, actual);
     }
@@ -53,20 +53,22 @@ public class ZLibUtilTest {
     @Test
     public void doSmoke2() throws IOException {
         String in = "中国是儒家,中国人是儒家思想,因为中国崇尚祖先的教化,保守,专制,封建,不可以向权威和上级提出挑战,而是要顺从,提倡循规蹈矩,老成温厚.";
-        System.out.println("Original size => " + in.getBytes("utf-8").length);
+        System.out.println();
         byte[] data = ZLibUtil.compressString(in);
-        System.out.println("Compressed size => " + data.length);
+        System.out.println("Original size => " + in.getBytes("utf-8").length + ", Compressed size => " + data.length);
         String actual = ZLibUtil.decompressString(data);
         Assert.assertEquals(in, actual);
     }
 
     @Test
     public void doSmoke3() throws IOException {
-        System.out.println("Original size => " + data.length);
         byte[] q = ZLibUtil.compress(data);
-        System.out.println("Compressed size => " + q.length);
+        System.out.println("Original size => " + data.length + ", Compressed size => " + q.length);
         Assert.assertEquals(data.length, 54757);
         Assert.assertEquals(q.length, 18029);
+        byte[] r = ZLibUtil.decompress(q);
+
+        Assert.assertArrayEquals(data, r);
     }
 
     @Test
@@ -101,4 +103,9 @@ public class ZLibUtilTest {
 	    assertEquals(m.get(0), t);
 	    assertEquals(m.get(1), r);
 	}
+
+    @Test
+    public void testGetInstance() throws Exception {
+        assertTrue(ZLibUtil.getInstance() instanceof ZLiber);
+    }
 }

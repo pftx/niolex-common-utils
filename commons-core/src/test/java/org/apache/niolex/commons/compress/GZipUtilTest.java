@@ -17,8 +17,7 @@
  */
 package org.apache.niolex.commons.compress;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,4 +104,8 @@ public class GZipUtilTest {
         assertEquals(m.get(1), r);
     }
 
+    @Test
+    public void testGetInstance() throws Exception {
+        assertTrue(GZipUtil.getInstance() instanceof GZiper);
+    }
 }

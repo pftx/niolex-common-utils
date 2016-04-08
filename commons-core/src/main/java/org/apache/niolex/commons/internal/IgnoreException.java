@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.internal;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.charset.Charset;
@@ -24,6 +26,10 @@ import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import org.apache.niolex.commons.stream.StreamUtil;
 
 /**
  * We ignore all the exceptions in this class.
@@ -102,6 +108,50 @@ public class IgnoreException {
             return Charset.forName(charsetName);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /**
+     * Create a new GZIPOutputStream.
+     *
+     * @param out the parameter using to invoke the constructor of GZIPOutputStream
+     * @return the created object
+     */
+    public static GZIPOutputStream newGZIPOutputStream(OutputStream out) {
+        try {
+            return new GZIPOutputStream(out, 1024);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Create a new GZIPInputStream.
+     *
+     * @param in the parameter using to invoke the constructor of GZIPInputStream
+     * @return the created object
+     */
+    public static GZIPInputStream newGZIPInputStream(InputStream in) {
+        try {
+            return new GZIPInputStream(in, 1024);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Transfer all the data from the input stream to the output stream and close both of them.
+     *
+     * @param in the input stream
+     * @param out the output stream
+     * @param bufSize the transfer buffer size
+     * @return the number of bytes transfered
+     */
+    public static int transferAndClose(InputStream in, OutputStream out, final int bufSize) {
+        try {
+            return StreamUtil.transferAndClose(in, out, bufSize);
+        } catch (Exception e) {
+            return -1;
         }
     }
 

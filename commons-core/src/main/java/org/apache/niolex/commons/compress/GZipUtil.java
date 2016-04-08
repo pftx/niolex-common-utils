@@ -17,14 +17,8 @@
  */
 package org.apache.niolex.commons.compress;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
-import org.apache.niolex.commons.codec.StringUtil;
-import org.apache.niolex.commons.stream.StreamUtil;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.JavaType;
@@ -37,6 +31,17 @@ import org.codehaus.jackson.type.JavaType;
  */
 public abstract class GZipUtil {
 
+    // The internal instance to make the new API compatible with the old API.
+    private static final GZiper GZIP = new GZiper();
+
+    /**
+     * Get the internal compressor.
+     *
+     * @return the internal compressor
+     */
+    public static final Compressor getInstance() {
+        return GZIP;
+    }
     /**
      * 压缩
      *
@@ -45,14 +50,7 @@ public abstract class GZipUtil {
      * @return byte[] 压缩后的数据
      */
     public static final byte[] compress(byte[] data) {
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            GZIPOutputStream zout = new GZIPOutputStream(out);
-            StreamUtil.writeAndClose(zout, data);
-            return out.toByteArray();
-        } catch (IOException ioe) {
-            throw new IllegalStateException (ioe);
-        }
+        return GZIP.compress(data);
     }
 
     /**
@@ -63,14 +61,7 @@ public abstract class GZipUtil {
      * @return byte[] 解压缩后的数据
      */
     public static final byte[] decompress(byte[] data) {
-        try {
-            GZIPInputStream zin = new GZIPInputStream(new ByteArrayInputStream(data));
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            StreamUtil.transferAndClose(zin, out, 10240);
-            return out.toByteArray();
-        } catch (IOException ioe) {
-            throw new IllegalStateException (ioe);
-        }
+        return GZIP.decompress(data);
     }
 
     /**
@@ -81,7 +72,7 @@ public abstract class GZipUtil {
      * @return 压缩后的二进制数组
      */
     public static final byte[] compressString(String str) {
-        return compress(str.getBytes(StringUtil.UTF_8));
+        return GZIP.compressString(str);
     }
 
     /**
@@ -92,7 +83,7 @@ public abstract class GZipUtil {
      * @return 解压后的字符串
      */
     public static final String decompressString(byte[] data) {
-        return new String(decompress(data), StringUtil.UTF_8);
+        return GZIP.decompressString(data);
     }
 
     /**
@@ -103,7 +94,7 @@ public abstract class GZipUtil {
      * @throws IOException if something goes wrong in Jackson JSON
      */
     public static byte[] compressObj(Object value) throws IOException {
-        return compress(JacksonUtil.obj2bin(value));
+        return GZIP.compressObj(value);
     }
 
     /**
@@ -119,7 +110,7 @@ public abstract class GZipUtil {
      */
     public static final <T> T decompressObj(byte[] data, Class<T> valueType) throws JsonParseException,
             JsonMappingException, IOException {
-        return JacksonUtil.bin2Obj(decompress(data), valueType);
+        return GZIP.decompressObj(data, valueType);
     }
 
     /**
@@ -135,7 +126,7 @@ public abstract class GZipUtil {
      */
     public static final <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException,
             JsonMappingException, IOException {
-        return JacksonUtil.bin2Obj(decompress(data), valueType);
+        return GZIP.decompressObj(data, valueType);
     }
 
 }

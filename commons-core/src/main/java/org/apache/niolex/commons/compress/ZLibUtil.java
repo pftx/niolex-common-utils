@@ -17,13 +17,8 @@
  */
 package org.apache.niolex.commons.compress;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterOutputStream;
 
-import org.apache.niolex.commons.codec.StringUtil;
-import org.apache.niolex.commons.stream.StreamUtil;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.JavaType;
@@ -37,6 +32,18 @@ import org.codehaus.jackson.type.JavaType;
  */
 public abstract class ZLibUtil {
 
+    // The internal instance to make the new API compatible with the old API.
+    private static final ZLiber ZLIB = new ZLiber();
+
+    /**
+     * Get the internal compressor.
+     *
+     * @return the internal compressor
+     */
+    public static final Compressor getInstance() {
+        return ZLIB;
+    }
+
     /**
      * 压缩
      *
@@ -45,32 +52,18 @@ public abstract class ZLibUtil {
      * @return byte[] 压缩后的数据
      */
     public static byte[] compress(byte[] data) {
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            DeflaterOutputStream zout = new DeflaterOutputStream(out);
-            StreamUtil.writeAndClose(zout, data);
-            return out.toByteArray();
-        } catch (IOException ioe) {
-            throw new IllegalStateException (ioe);
-        }
+        return ZLIB.compress(data);
     }
 
     /**
      * 解压缩
      *
      * @param data
-     *            待压缩的数据
+     *            待解压缩的数据
      * @return byte[] 解压缩后的数据
      */
     public static byte[] decompress(byte[] data) {
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            InflaterOutputStream zos = new InflaterOutputStream(bos);
-            StreamUtil.writeAndClose(zos, data);
-            return bos.toByteArray();
-        } catch (IOException ioe) {
-            throw new IllegalStateException (ioe);
-        }
+        return ZLIB.decompress(data);
     }
 
     /**
@@ -80,8 +73,7 @@ public abstract class ZLibUtil {
      * @return 压缩后的数据
      */
     public static final byte[] compressString(String str) {
-        byte[] data = str.getBytes(StringUtil.UTF_8);
-        return compress(data);
+        return ZLIB.compressString(str);
     }
 
     /**
@@ -91,8 +83,7 @@ public abstract class ZLibUtil {
      * @return 解压后的字符串
      */
     public static final String decompressString(byte[] data) {
-        data = decompress(data);
-        return new String(data, StringUtil.UTF_8);
+        return ZLIB.decompressString(data);
     }
 
     /**
@@ -103,7 +94,7 @@ public abstract class ZLibUtil {
      * @throws IOException if something goes wrong in Jackson JSON
      */
     public static byte[] compressObj(Object value) throws IOException {
-        return compress(JacksonUtil.obj2bin(value));
+        return ZLIB.compressObj(value);
     }
 
     /**
@@ -119,7 +110,7 @@ public abstract class ZLibUtil {
      */
     public static final <T> T decompressObj(byte[] data, Class<T> valueType) throws JsonParseException, JsonMappingException,
             IOException {
-    	return JacksonUtil.bin2Obj(decompress(data), valueType);
+    	return ZLIB.decompressObj(data, valueType);
     }
 
     /**
@@ -133,10 +124,9 @@ public abstract class ZLibUtil {
      * @throws JsonMappingException if something goes wrong in Jackson JSON
      * @throws IOException if something goes wrong in Jackson JSON
      */
-    @SuppressWarnings("unchecked")
     public static final <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException, JsonMappingException,
             IOException {
-    	return (T)JacksonUtil.bin2Obj(decompress(data), valueType);
+        return ZLIB.decompressObj(data, valueType);
     }
 
 }

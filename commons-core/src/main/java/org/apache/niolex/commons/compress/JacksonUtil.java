@@ -137,7 +137,6 @@ public abstract class JacksonUtil {
      * Convert the string data into the original Object.
      *
      * @param <T> the java bean type
-     *
      * @param s the string data
      * @param valueType the Java class type
      * @return the object
@@ -151,7 +150,6 @@ public abstract class JacksonUtil {
      * Convert the string data into the original Object.
      *
      * @param <T> the java bean type
-     *
      * @param s the string data
      * @param valueType the Java class type
      * @return the object
@@ -166,7 +164,6 @@ public abstract class JacksonUtil {
      * Convert the string data into the original Object.
      *
      * @param <T> the java bean type
-     *
      * @param s the string data
      * @param valueType the Java class type
      * @return the object

@@ -22,6 +22,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -139,18 +140,75 @@ public class StreamUtilTest extends StreamUtil {
 	    writeUTF8IgnoreException(out, "This is so good");
 	}
 
+	@Test
+	public void testWriteAndCloseOK() throws Exception {
+	    ByteArrayOutputStream out = new ByteArrayOutputStream();
+	    byte[] arr = MockUtil.randByteArray(15);
+
+	    writeAndClose(out, arr);
+	    assertArrayEquals(out.toByteArray(), arr);
+	}
+
     @Test(expected=IOException.class)
     public void testWriteAndClose() throws Exception {
         OutputStream out = mock(OutputStream.class);
         doThrow(new IOException("This")).when(out).write(null);
+        try {
         writeAndClose(out, null);
+        } finally {
+        verify(out).close();
+        }
     }
 
     @Test(expected=IOException.class)
     public void testTransferAndClose() throws Exception {
         InputStream in = mock(InputStream.class);
         doThrow(new IOException("Mock")).when(in).read(any(byte[].class));
-        transferAndClose(in, mock(OutputStream.class), 1024);
+        doThrow(new IOException("Mock")).when(in).close();
+        OutputStream out = mock(OutputStream.class);
+        doThrow(new IOException("Mock")).when(out).close();
+        try {
+        transferAndClose(in, out, 1024);
+        } finally {
+        verify(in).close();
+        verify(out).close();
+        }
+    }
+
+    @Test
+    public void testTransferAndCloseOK() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] arr = MockUtil.randByteArray(15);
+        ByteArrayInputStream in = new ByteArrayInputStream(arr);
+        ByteArrayInputStream spyin = spy(in);
+
+        transferAndClose(spyin, out, 100);
+        assertArrayEquals(out.toByteArray(), arr);
+
+        verify(spyin).close();
+    }
+
+    @Test
+    public void testWriteAndCloseIgnoreExceptionOK() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] arr = MockUtil.randByteArray(15);
+
+        writeAndCloseIgnoreException(out, arr);
+        assertArrayEquals(out.toByteArray(), arr);
+    }
+
+    @Test
+    public void testWriteAndCloseIgnoreExceptionNOK() throws Exception {
+        OutputStream out = mock(OutputStream.class);
+        doThrow(new IOException("This")).when(out).write(null);
+        writeAndCloseIgnoreException(out, null);
+        verify(out).write(null);
+        verify(out).close();
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testWriteAndCloseIgnoreException() throws Exception {
+        writeAndCloseIgnoreException(null, null);
     }
 
 }

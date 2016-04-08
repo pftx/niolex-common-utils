@@ -54,4 +54,20 @@ public class IgnoreExceptionTest extends IgnoreException {
         populateLocalAddresses(null);
     }
 
+    @Test
+    public void testNewGZIPOutputStream() throws Exception {
+        newGZIPOutputStream(null);
+    }
+
+    @Test
+    public void testNewGZIPInputStream() throws Exception {
+        newGZIPInputStream(null);
+    }
+
+    @Test
+    public void testTransferAndClose() throws Exception {
+        int i = transferAndClose(null, null, -1);
+        assertEquals(-1, i);
+    }
+
 }

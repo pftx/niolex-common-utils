@@ -24,6 +24,8 @@ import java.io.OutputStream;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.util.SystemUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Some common function for input and output streams.
@@ -32,6 +34,7 @@ import org.apache.niolex.commons.util.SystemUtil;
  * @version 1.0.0, Date: 2012-7-4
  */
 public class StreamUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(StreamUtil.class);
 
 	/**
 	 * Close the specified stream. It's OK if the parameter is null.
@@ -85,6 +88,7 @@ public class StreamUtil {
 	    try {
 	        out.write(StringUtil.strToUtf8Byte(s));
 	    } catch (IOException e) {
+	        LOG.info("IOException occurred in writeUTF8IgnoreException: {}", e.getMessage());
 	    }
 	}
 
@@ -104,23 +108,44 @@ public class StreamUtil {
 	}
 
 	/**
+	 * Write the data to the output stream and close it. Any I/O error occurred during the write or close
+	 * will be ignored.
+	 *
+	 * @param out the output stream
+	 * @param data the data to be written
+	 */
+	public static final void writeAndCloseIgnoreException(OutputStream out, byte[] data) {
+	    try {
+	        out.write(data);
+	    } catch (IOException e) {
+	        LOG.info("IOException occurred in writeAndCloseIgnoreException: {}", e.getMessage());
+	    } finally {
+	        closeStream(out);
+	    }
+	}
+
+	/**
 	 * Transfer all the data from the input stream to the output stream and close both of them.
 	 *
 	 * @param in the input stream
 	 * @param out the output stream
 	 * @param bufSize the transfer buffer size
+	 * @return the number of bytes transfered
 	 * @throws IOException if necessary
 	 */
-	public static void transferAndClose(InputStream in, OutputStream out, final int bufSize) throws IOException {
+	public static int transferAndClose(InputStream in, OutputStream out, final int bufSize) throws IOException {
 	    try {
 	        byte[] data = new byte[bufSize];
-	        int len;
+	        int len, cnt = 0;
 	        while ((len = in.read(data)) != -1) {
 	            out.write(data, 0, len);
+	            cnt += len;
 	        }
+
+	        return cnt;
 	    } finally {
-	        in.close();
-	        out.close();
+	        closeStream(in);
+	        closeStream(out);
 	    }
 	}
 
