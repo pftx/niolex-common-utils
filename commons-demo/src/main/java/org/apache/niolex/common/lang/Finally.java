@@ -29,13 +29,16 @@ public class Finally {
     public static void main(String[] args) {
         System.out.println("Ret value = " + retValue());
         System.out.println();
+
         try {
             System.out.println("Throw ex in finally = " + throwEx());
         } catch (Exception e) {
             System.out.println("Exception throwed in finally = " + e);
         }
+
         System.out.println();
         System.out.println("Ret Exception in try block = " + retEx(null));
+
         System.out.println();
         System.out.println("Ret No catch = " + retNoCatch(null));
     }

@@ -1,7 +1,7 @@
 /**
- * BitsOp.java
+ * StaticInner.java
  *
- * Copyright 2014 the original author or authors.
+ * Copyright 2016 the original author or authors.
  *
  * We licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the
@@ -20,27 +20,33 @@ package org.apache.niolex.common.lang;
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since 2014-7-8
+ * @since 2016-3-28
  */
-public class BitsOp {
+public class StaticInner {
+
+    private static void println() {
+        System.out.println("From Outer");
+    }
+
+    public static class Inner {
+        private static void hi() {
+            System.out.print("Hi, ");
+            println();
+        }
+    }
 
     /**
      * @param args
      */
     public static void main(String[] args) {
-        System.out.println("\n**** Bits Op");
-        System.out.println("-128 >> 3 ? " + (-128 >> 3));
-        System.out.println("-127 >> 1 ? " + (-127 >> 1));
-        System.out.println("-128 >>> 3 ? " + (-128 >>> 3));
-        System.out.println("~-128 ? " + (~-128));
-        System.out.println("1L << 63 ? " + (1L << 63));
-        System.out.println("1L << 64 ? " + (1L << 64));
-        System.out.println("1L << 200 ? " + (1L << 200));
-
-        System.out.println("\n**** Test operator priority");
-        System.out.println("1L << 63 << 1 ? " + (1L << 63 << 1));
-        System.out.println("(1L << 63) << 1 ? " + ((1L << 63) << 1));
-        System.out.println("7 & ~1 = " + (7 & ~1));
+        Inner.hi();
     }
 
+}
+
+class Bc {
+    public void test() {
+        // The method hi() from the type StaticInner.Inner is not visible
+        // StaticInner.Inner.hi();
+    }
 }
