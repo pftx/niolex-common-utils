@@ -53,7 +53,7 @@ public class App extends ZKConnector {
     }
 
     /**
-     * Get the global instance.
+     * Get the global instance. Call {@link #init(String, int)} if null returned.
      *
      * @return the global instance, null if not initialized
      */

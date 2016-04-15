@@ -93,7 +93,7 @@ public class Notify implements ZKListener {
     private volatile List<String> children;
 
     /**
-     * Create a new notify under this bash path.
+     * Create a new notify under this base path.
      *
      * @param zkConn the ZK connector.
      * @param basePath the ZK base path of this notify. It's fixed for one notify.
