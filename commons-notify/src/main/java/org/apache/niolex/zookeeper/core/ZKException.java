@@ -20,7 +20,7 @@ package org.apache.niolex.zookeeper.core;
 import org.apache.zookeeper.KeeperException;
 
 /**
- * The RuntimeException thrown in the commons framework of zookeeper wrapper.
+ * The RuntimeException thrown in the commons-notify framework of zookeeper wrapper.
  *
  * @author Xie, Jiyun
  */
@@ -54,6 +54,7 @@ public class ZKException extends RuntimeException {
         if (e instanceof RuntimeException) {
             throw (RuntimeException) e;
         }
+
         Code code = Code.OTHER;
         if (e instanceof KeeperException) {
             switch (((KeeperException) e).code()) {

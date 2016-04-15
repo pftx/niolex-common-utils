@@ -24,6 +24,7 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.zookeeper.watcher.CommonRecoverableWatcher;
 import org.apache.niolex.zookeeper.watcher.RecoverableWatcher;
 import org.apache.niolex.zookeeper.watcher.WatcherHolder;
@@ -187,7 +188,8 @@ public class ZKConnector implements Watcher {
             } catch (Exception e) {
                 // We don't care, we will retry again and again.
                 LOG.warn("Error occured when reconnect - {}, system will retry.", e.toString());
-                ThreadUtil.sleep(sessionTimeout / 3);
+                // Sleep random times, to avoid herds effect.
+                ThreadUtil.sleep(MockUtil.randInt(sessionTimeout / 3, sessionTimeout));
             }
         }
     }

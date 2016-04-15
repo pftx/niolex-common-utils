@@ -85,7 +85,7 @@ public class Elector extends ZKConnector implements ZKListener {
     private volatile String leaderPath;
 
     /**
-     * Create a new Elector under this bash path.<br>
+     * Create a new Elector under this base path.<br>
      * User need to call {@link #register(String)} to register this node if he
      * want to elect the leader.
      *
@@ -118,7 +118,7 @@ public class Elector extends ZKConnector implements ZKListener {
             return false;
         }
         selfPath = this.createNode(basePath + "/Elector-", StringUtil.strToUtf8Byte(address), true, true);
-        LOG.info("A new Elector join with path: {}.", selfPath);
+        LOG.info("A new Elector joined with path: {}.", selfPath);
         this.onChildrenChange(watchChildren(basePath, this));
         return true;
     }

@@ -11,7 +11,7 @@ import org.junit.Test;
  */
 public class AppTest {
 
-    public static final String URL = "localhost:9181";
+    public static final String URL = "127.0.0.1:9181";
     public static final App APP;
 
     static {
