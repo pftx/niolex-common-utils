@@ -33,7 +33,7 @@ public interface RecoverableWatcher extends Watcher {
      * The watcher type. We have two types:<pre>
      *  DATA        - watch node data
      *  CHILDREN    - watch node children
-     * <pre>
+     * </pre>
      * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
      * @version 1.0.0
      * @since 2013-12-5

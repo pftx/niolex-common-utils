@@ -104,7 +104,7 @@ public class ZKConnector implements Watcher {
     /**
      * Make a connection to zookeeper, and wait until connected.
      *
-     * @throws IOException
+     * @throws IOException in cases of network failure
      */
     protected synchronized void connectToZookeeper() throws IOException {
         if (connected()) {
@@ -247,9 +247,10 @@ public class ZKConnector implements Watcher {
      * We are using prototype for convenience, but the return type is
      * fixed:<pre>
      *  when watch data, return byte[]
-     *  when watch children, return List<String></pre>
+     *  when watch children, return List&lt;String&gt;</pre>
      * If user use other types as return type, a ClassCastException will be thrown.
      *
+     * @param <T> the return type
      * @param path the zookeeper path you want to watch
      * @param recoWatcher the recoverable watcher
      * @return the current result
@@ -482,8 +483,8 @@ public class ZKConnector implements Watcher {
      * @param data the node data
      * @param createMode the create mode of this node
      * @return the actual path of the created node
-     * @throws KeeperException
-     * @throws InterruptedException
+     * @throws KeeperException if the server returns a non-zero error code
+     * @throws InterruptedException if the transaction is interrupted
      */
     protected String doCreateNode(String path, byte[] data, CreateMode createMode)
             throws KeeperException, InterruptedException {

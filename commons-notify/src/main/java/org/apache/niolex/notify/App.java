@@ -44,7 +44,7 @@ public class App extends ZKConnector {
      *
      * @param clusterAddress the zookeeper cluster address
      * @param sessionTimeout the zookeeper connection session timeout in milliseconds
-     * @throws IOException
+     * @throws IOException in cases of network failure
      */
     public synchronized static void init(String clusterAddress, int sessionTimeout) throws IOException {
         if (APP == null) {
@@ -68,7 +68,7 @@ public class App extends ZKConnector {
      *
      * @param clusterAddress the zookeeper cluster address
      * @param sessionTimeout the zookeeper connection session timeout in milliseconds
-     * @throws IOException
+     * @throws IOException in cases of network failure
      */
     public App(String clusterAddress, int sessionTimeout) throws IOException {
         super(clusterAddress, sessionTimeout);
