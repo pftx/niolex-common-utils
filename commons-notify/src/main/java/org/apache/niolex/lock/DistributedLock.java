@@ -156,6 +156,9 @@ public abstract class DistributedLock implements Lock {
         release();
     }
 
+    /**
+     * Initialize the wait variables.
+     */
     protected void initWait() {
         exception = null;
         latch = new CountDownLatch(1);

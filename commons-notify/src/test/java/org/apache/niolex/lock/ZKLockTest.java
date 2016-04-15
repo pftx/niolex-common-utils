@@ -64,7 +64,7 @@ public class ZKLockTest {
     @Test
     public void testWholeLock3() throws Exception {
         ZKLock lock1 = new ZKLock(ZKC, BS);
-        ZKLock lock2 = new ZKLock(ZKC, BS);
+        ZKLock lock2 = new ZKLock(ZKC, BS + "/");
         ZKLock lock3 = new ZKLock(ZKC, BS);
 
         lock1.lock();
@@ -119,7 +119,8 @@ public class ZKLockTest {
 
     @Test
     public void testAddAuthInfo() throws Exception {
-        System.out.println("not yet implemented");
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        lock1.addAuthInfo("abc", "lex");
     }
 
     @Test
