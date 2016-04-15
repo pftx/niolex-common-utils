@@ -2,15 +2,25 @@ package org.apache.niolex.lock;
 
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.niolex.commons.bean.One;
+import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.reflect.FieldUtil;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.util.Runner;
 import org.apache.niolex.notify.AppTest;
 import org.apache.niolex.zookeeper.core.ZKConnector;
+import org.apache.niolex.zookeeper.core.ZKException;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,6 +43,8 @@ public class ZKLockTest {
      */
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
+        List<String> c = ZKC.getChildren(BS);
+        assertEquals(0, c.size());
         ZKC.close();
     }
 
@@ -59,6 +71,8 @@ public class ZKLockTest {
 
         lock2.unlock();
         System.out.println("testWholeLock2 done.");
+        // Unlock again.
+        lock2.unlock();
     }
 
     @Test
@@ -94,43 +108,178 @@ public class ZKLockTest {
 
     @Test
     public void testInitLock() throws Exception {
-        System.out.println("not yet implemented");
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        ZKLock lock2 = new ZKLock(ZKC, BS + "/");
+        ZKLock lock3 = new ZKLock(ZKC, BS);
+        ZKLock lock4 = new ZKLock(ZKC, BS + "/");
+
+        lock1.lock();
+
+        One<Thread> th1 = One.create(null);
+        Future<Object> fu1 = Runner.run(th1, lock2, "lockInterruptibly");
+        ThreadUtil.sleep(10);
+
+        One<Thread> th2 = One.create(null);
+        Future<Object> fu2 = Runner.run(th2, lock3, "lockInterruptibly");
+        ThreadUtil.sleep(50);
+
+        lock1.unlock();
+
+        fu1.get();
+        assertFalse(lock1.locked());
+        assertTrue(lock2.locked());
+        assertFalse(lock3.locked());
+        assertFalse(lock4.tryLock());
+
+        FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
+        try {
+            lock1.checkLockStatus();
+            assertTrue(false);
+        } catch (IllegalStateException e) {
+            assertEquals("Invalid zookeeper data, current path not found.", e.getMessage());
+        }
+
+        lock2.unlock();
+
+        fu2.get();
+
+        assertFalse(lock1.locked());
+        assertFalse(lock2.locked());
+        assertTrue(lock3.locked());
+
+        lock3.unlock();
     }
 
-    @Test
+    @Test(expected=ZKException.class)
     public void testWatchLock() throws Exception {
-        System.out.println("not yet implemented");
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
+        FieldUtil.setValue(lock1, "watchPath", "/a/b/b");
+        lock1.watchLock();
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testWatchLock2() throws Exception {
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        FieldUtil.setValue(lock1, "watchPath", "/a/b/b");
+        lock1.watchLock();
     }
 
     @Test
     public void testRelease() throws Exception {
-        System.out.println("not yet implemented");
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        assertTrue(lock1.initLock());
+        FieldUtil.setValue(lock1, "watchPath", "/a/b/b");
+        try {
+        lock1.watchLock();
+        } finally {
+        lock1.unlock();
+        }
     }
 
     @Test
     public void testZKLockStringIntString() throws Exception {
-        System.out.println("not yet implemented");
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        lock1.lock();
+        FieldUtil.setValue(lock1, "watchPath", "/a/b/b");
+        lock1.watchLock();
+
+        ZKLock lock2 = new ZKLock(ZKC, BS);
+        assertFalse(lock2.initLock());
+        try {
+        FieldUtil.setValue(lock2, "watchPath", "/a/b/b");
+        lock2.watchLock();
+        } finally {
+            lock1.unlock();
+            lock2.unlock();
+        }
     }
 
-    @Test
+    @Test(expected=ZKException.class)
     public void testZKLockZKConnectorString() throws Exception {
-        System.out.println("not yet implemented");
+        ZooKeeper zk = mock(ZooKeeper.class);
+        ZKConnector zkc = mock(ZKConnector.class);
+        when(zkc.zooKeeper()).thenReturn(zk);
+
+        KeeperException ke = KeeperException.create(KeeperException.Code.APIERROR);
+        when(zk.exists(anyString(), any(Watcher.class))).thenThrow(ke);
+
+        ZKLock lock1 = new ZKLock(zkc, BS);
+
+        FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
+        lock1.watchLock();
     }
 
-    @Test
+    @Test(expected=IllegalStateException.class)
     public void testAddAuthInfo() throws Exception {
         ZKLock lock1 = new ZKLock(ZKC, BS);
         lock1.addAuthInfo("abc", "lex");
+        lock1.watchLock();
     }
 
-    @Test
+    @Test(expected=IllegalStateException.class)
     public void testCheckLockStatus() throws Exception {
-        System.out.println("not yet implemented");
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
+        lock1.checkLockStatus();
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testCheckLockStatus2() throws Exception {
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        ZKLock lock2 = new ZKLock(ZKC, BS);
+        lock2.lock();
+        try {
+            FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
+            lock1.checkLockStatus();
+        } finally {
+            lock2.unlock();
+        }
     }
 
     @Test
     public void testProcess() throws Exception {
-        System.out.println("not yet implemented");
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        Watcher w = FieldUtil.getValue(lock1, "watcher");
+        lock1.lock();
+
+        w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
+        w.process(new WatchedEvent(Watcher.Event.EventType.NodeCreated, Watcher.Event.KeeperState.Disconnected, ""));
+
+        lock1.unlock();
+    }
+
+    @Test
+    public void testProcess2() throws Exception {
+        ZooKeeper zk = mock(ZooKeeper.class);
+        ZKConnector zkc = mock(ZKConnector.class);
+        when(zkc.zooKeeper()).thenReturn(zk);
+        when(zkc.connected()).thenReturn(false, false, true);
+
+        KeeperException ke = KeeperException.create(KeeperException.Code.APIERROR);
+        when(zk.exists(anyString(), any(Watcher.class))).thenThrow(ke);
+
+        ZKLock lock1 = new ZKLock(zkc, BS);
+
+        FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
+        Watcher w = FieldUtil.getValue(lock1, "watcher");
+        w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
+    }
+
+    @Test
+    public void testProcess3() throws Exception {
+        ZooKeeper zk = mock(ZooKeeper.class);
+        ZKConnector zkc = mock(ZKConnector.class);
+        when(zkc.zooKeeper()).thenReturn(zk);
+        when(zkc.connected()).thenReturn(false, false, true);
+
+        when(zk.exists(anyString(), any(Watcher.class))).thenReturn(new Stat());
+
+        ZKLock lock1 = new ZKLock(zkc, BS);
+
+        FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
+        Watcher w = FieldUtil.getValue(lock1, "watcher");
+        w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
     }
 
 }
