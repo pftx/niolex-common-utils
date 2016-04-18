@@ -287,12 +287,12 @@ public class DistributedLockTest extends DistributedLock {
         ThreadUtil.sleep(100);
 
         latch.countDown();
-        assertEquals(1, initLock);
-        assertEquals(1, watchLock);
-        assertEquals(0, release);
 
         try {
             fu.get();
+            assertEquals(1, initLock);
+            assertEquals(1, watchLock);
+            assertEquals(0, release);
         } catch (ExecutionException e) {
             throw e.getCause();
         }
@@ -311,13 +311,13 @@ public class DistributedLockTest extends DistributedLock {
         ThreadUtil.sleep(100);
 
         latch.countDown();
-        assertEquals(1, initLock);
-        assertEquals(2, isLockReady);
-        assertEquals(1, watchLock);
 
         try {
             Boolean r = fu.get();
             assertFalse(r);
+            assertEquals(1, initLock);
+            assertEquals(2, isLockReady);
+            assertEquals(1, watchLock);
         } catch (ExecutionException e) {
             throw e.getCause();
         }
