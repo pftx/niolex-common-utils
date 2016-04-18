@@ -21,9 +21,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.niolex.zookeeper.core.ZKConnector;
 import org.apache.niolex.zookeeper.core.ZKException;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.Stat;
@@ -44,12 +47,10 @@ public class ZKLock extends DistributedLock implements Closeable {
 
     private final ZKConnector zkc;
     private final String basePath;
-    private final ExistsWather watcher = new ExistsWather();
 
     private volatile String selfPath = null;
     private volatile String watchPath = null;
     private volatile boolean locked = false;
-    private volatile boolean released = false;
 
     /**
      * The Constructor to create a {@link ZKConnector} inside it.
@@ -98,10 +99,9 @@ public class ZKLock extends DistributedLock implements Closeable {
      * @see org.apache.niolex.lock.DistributedLock#initLock()
      */
     @Override
-    protected boolean initLock() {
-        released = false;
+    protected void initLock() {
+        locked = false;
         selfPath = zkc.createNode(basePath + "/lock-", null, true, true);
-        return checkLockStatus();
     }
 
     /**
@@ -129,7 +129,18 @@ public class ZKLock extends DistributedLock implements Closeable {
      *
      * @return true if we got the lock
      */
-    protected boolean checkLockStatus() {
+    @Override
+    protected boolean isLockReady() {
+        // Invalid usage.
+        if (selfPath == null) {
+            throw new IllegalStateException("Lock not initialized or already released.");
+        }
+
+        // Already locked.
+        if (locked) {
+            return true;
+        }
+
         List<String> children = zkc.getChildren(basePath);
         String self = makeChildPath(selfPath);
 
@@ -168,39 +179,54 @@ public class ZKLock extends DistributedLock implements Closeable {
      * @see org.apache.niolex.lock.DistributedLock#watchLock()
      */
     @Override
-    protected void watchLock() {
+    protected void watchLock() throws InterruptedException {
         if (watchPath == null) {
-            release();
             throw new IllegalStateException("Should not call this method at this moment.");
         }
 
         try {
-            Stat s = zkc.zooKeeper().exists(watchPath, watcher);
+            CountDownLatch latch = new CountDownLatch(1);
+            Stat s = zkc.zooKeeper().exists(watchPath, new ExistsWather(latch));
             if (s == null) {
-                // If s is null, then the node doesn't exist. We need to redo checkLockStatus().
-                while (s == null) {
-                    if (checkLockStatus()) {
-                        lockReady(null);
-                        break;
-                    } else
-                        s = zkc.zooKeeper().exists(watchPath, watcher);
-                }
+                return;
+            } else {
+                latch.await();
             }
-        } catch (Exception e) {
-            // Exception occurred, we need to release the resources.
-            release();
+        } catch (KeeperException e) {
             throw ZKException.makeInstance("ZKLock internal error.", e);
         }
     }
 
     /**
      * This is the override of super method.
-     * @see org.apache.niolex.lock.DistributedLock#release()
+     * @see org.apache.niolex.lock.DistributedLock#watchLock(long, java.util.concurrent.TimeUnit)
      */
     @Override
-    protected void release() {
+    protected boolean watchLock(long timeout, TimeUnit unit) throws InterruptedException {
+        if (watchPath == null) {
+            throw new IllegalStateException("Should not call this method at this moment.");
+        }
+
+        try {
+            CountDownLatch latch = new CountDownLatch(1);
+            Stat s = zkc.zooKeeper().exists(watchPath, new ExistsWather(latch));
+            if (s == null) {
+                return true;
+            } else {
+                return latch.await(timeout, unit);
+            }
+        } catch (KeeperException e) {
+            throw ZKException.makeInstance("ZKLock internal error.", e);
+        }
+    }
+
+    /**
+     * This is the override of super method.
+     * @see org.apache.niolex.lock.DistributedLock#releaseLock()
+     */
+    @Override
+    protected void releaseLock() {
         if (selfPath != null) {
-            released = true;
             zkc.deleteNode(selfPath);
             if (locked)
                 LOG.debug("Lock released with path [{}].", selfPath);
@@ -217,7 +243,20 @@ public class ZKLock extends DistributedLock implements Closeable {
      * @version 1.0.0
      * @since 2016-4-14
      */
-    private class ExistsWather implements Watcher {
+    public class ExistsWather implements Watcher {
+
+        // The latch used to wait for the lock to be ready.
+        private final CountDownLatch latch;
+
+        /**
+         * Constructor.
+         *
+         * @param latch the latch used to notify event
+         */
+        public ExistsWather(CountDownLatch latch) {
+            super();
+            this.latch = latch;
+        }
 
         /**
          * This is the override of super method.
@@ -225,33 +264,16 @@ public class ZKLock extends DistributedLock implements Closeable {
          */
         @Override
         public void process(WatchedEvent event) {
-            boolean lockAquired = false;
-
-            // Lock already released, do not watch any more.
-            if (released) {
-                return;
-            }
-
             // Each watch can be triggered only once.
             // We need to make sure do this thing right.
-            if (event.getType() == Watcher.Event.EventType.None) {
-                // If event type is none, then something wrong with the zookeeper.
-                while (!zkc.connected())
-                    zkc.waitForConnectedTillDeath();
-            } else {
-                lockAquired = checkLockStatus();
-            }
-
-            if (lockAquired) {
-                // Notify super class lock is ready.
-                lockReady(null);
-            } else {
-                // Watch again.
-                try {
-                    watchLock();
-                } catch (RuntimeException exception) {
-                    lockReady(exception);
+            try {
+                if (event.getType() == Watcher.Event.EventType.None) {
+                    // If event type is none, then something wrong with the zookeeper.
+                    while (!zkc.connected())
+                        zkc.waitForConnectedTillDeath();
                 }
+            } finally {
+                latch.countDown();
             }
         }
 

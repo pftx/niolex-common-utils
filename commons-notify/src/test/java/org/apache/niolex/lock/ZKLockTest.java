@@ -2,9 +2,11 @@ package org.apache.niolex.lock;
 
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +22,6 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.Stat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -133,7 +134,7 @@ public class ZKLockTest {
 
         FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
         try {
-            lock1.checkLockStatus();
+            lock1.isLockReady();
             assertTrue(false);
         } catch (IllegalStateException e) {
             assertEquals("Invalid zookeeper data, current path not found.", e.getMessage());
@@ -150,7 +151,7 @@ public class ZKLockTest {
         lock3.unlock();
     }
 
-    @Test(expected=ZKException.class)
+    @Test
     public void testWatchLock() throws Exception {
         ZKLock lock1 = new ZKLock(ZKC, BS);
         FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
@@ -158,17 +159,34 @@ public class ZKLockTest {
         lock1.watchLock();
     }
 
-    @Test(expected=NullPointerException.class)
-    public void testWatchLock2() throws Exception {
+
+    @Test
+    public void testIsLockReadyLocked() throws Exception {
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
+        FieldUtil.setValue(lock1, "locked", true);
+        assertTrue(lock1.isLockReady());
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testIsLockReadyNoWatchPath() throws Exception {
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
+        lock1.isLockReady();
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testIsLockReadyIll() throws Exception {
         ZKLock lock1 = new ZKLock(ZKC, BS);
         FieldUtil.setValue(lock1, "watchPath", "/a/b/b");
-        lock1.watchLock();
+        lock1.isLockReady();
     }
 
     @Test
-    public void testRelease() throws Exception {
+    public void testReleaseLock() throws Exception {
         ZKLock lock1 = new ZKLock(ZKC, BS);
-        assertTrue(lock1.initLock());
+        lock1.initLock();
+        assertTrue(lock1.isLockReady());
         FieldUtil.setValue(lock1, "watchPath", "/a/b/b");
         try {
         lock1.watchLock();
@@ -185,7 +203,8 @@ public class ZKLockTest {
         lock1.watchLock();
 
         ZKLock lock2 = new ZKLock(ZKC, BS);
-        assertFalse(lock2.initLock());
+        lock2.initLock();
+        assertFalse(lock2.isLockReady());
         try {
         FieldUtil.setValue(lock2, "watchPath", "/a/b/b");
         lock2.watchLock();
@@ -218,29 +237,23 @@ public class ZKLockTest {
     }
 
     @Test(expected=IllegalStateException.class)
-    public void testCheckLockStatus() throws Exception {
-        ZKLock lock1 = new ZKLock(ZKC, BS);
-        FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
-        lock1.checkLockStatus();
-    }
-
-    @Test(expected=IllegalStateException.class)
-    public void testCheckLockStatus2() throws Exception {
-        ZKLock lock1 = new ZKLock(ZKC, BS);
-        ZKLock lock2 = new ZKLock(ZKC, BS);
-        lock2.lock();
-        try {
-            FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
-            lock1.checkLockStatus();
-        } finally {
-            lock2.unlock();
+        public void testIsLockReady2() throws Exception {
+            ZKLock lock1 = new ZKLock(ZKC, BS);
+            ZKLock lock2 = new ZKLock(ZKC, BS);
+            lock2.lock();
+            try {
+                FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
+                lock1.isLockReady();
+            } finally {
+                lock2.unlock();
+            }
         }
-    }
 
     @Test
     public void testProcess() throws Exception {
         ZKLock lock1 = new ZKLock(ZKC, BS);
-        Watcher w = FieldUtil.getValue(lock1, "watcher");
+        CountDownLatch latch = new CountDownLatch(1);
+        Watcher w = lock1.new ExistsWather(latch);
         lock1.lock();
 
         w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
@@ -251,6 +264,45 @@ public class ZKLockTest {
 
     @Test
     public void testProcess2() throws Exception {
+        ZKConnector zkc = mock(ZKConnector.class);
+        when(zkc.connected()).thenReturn(false, false, true);
+
+        ZKLock lock1 = new ZKLock(zkc, BS);
+
+        FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
+        CountDownLatch latch = new CountDownLatch(1);
+        Watcher w = lock1.new ExistsWather(latch);
+        w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testProcess3() throws Exception {
+        ZKConnector zkc = mock(ZKConnector.class);
+        when(zkc.connected()).thenReturn(false, false, true);
+        doThrow(new NullPointerException()).when(zkc).waitForConnectedTillDeath();
+
+        ZKLock lock1 = new ZKLock(zkc, BS);
+        CountDownLatch latch = new CountDownLatch(1);
+        Watcher w = lock1.new ExistsWather(latch);
+
+        w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testWatchLockLongTimeUnitEx() throws Exception {
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        lock1.watchLock(100, TimeUnit.MICROSECONDS);
+    }
+
+    @Test
+    public void testWatchLockLongTimeUnit() throws Exception {
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
+        lock1.watchLock(100, TimeUnit.MILLISECONDS);
+    }
+
+    @Test(expected=ZKException.class)
+    public void testWatchLockLongTimeUnitZKEX() throws Exception {
         ZooKeeper zk = mock(ZooKeeper.class);
         ZKConnector zkc = mock(ZKConnector.class);
         when(zkc.zooKeeper()).thenReturn(zk);
@@ -262,24 +314,7 @@ public class ZKLockTest {
         ZKLock lock1 = new ZKLock(zkc, BS);
 
         FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
-        Watcher w = FieldUtil.getValue(lock1, "watcher");
-        w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
-    }
-
-    @Test
-    public void testProcess3() throws Exception {
-        ZooKeeper zk = mock(ZooKeeper.class);
-        ZKConnector zkc = mock(ZKConnector.class);
-        when(zkc.zooKeeper()).thenReturn(zk);
-        when(zkc.connected()).thenReturn(false, false, true);
-
-        when(zk.exists(anyString(), any(Watcher.class))).thenReturn(new Stat());
-
-        ZKLock lock1 = new ZKLock(zkc, BS);
-
-        FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
-        Watcher w = FieldUtil.getValue(lock1, "watcher");
-        w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
+        lock1.watchLock(100, TimeUnit.MILLISECONDS);
     }
 
 }

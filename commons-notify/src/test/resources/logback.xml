@@ -26,6 +26,18 @@
         </filter>
     </appender>
 
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <Append>false</Append>
+        <file>./logs/file.log</file>
+        <encoder>
+            <pattern>${log_pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <Target>System.out</Target>
         <encoder>
@@ -51,5 +63,6 @@
 
     <root level="WARN">
         <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="FILE" />
     </root>
 </configuration>
