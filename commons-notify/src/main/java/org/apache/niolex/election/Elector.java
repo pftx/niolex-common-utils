@@ -163,9 +163,9 @@ public class Elector extends ZKConnector implements ZKListener {
         if (CollectionUtil.isEmpty(list)) {
             return;
         }
-        Collections.sort(list);
+
         // The absolute leader path.
-        String leader = basePath + "/" + list.get(0);
+        String leader = basePath + "/" + Collections.min(list);
         if (leader.equals(leaderPath)) {
             return;
         } else {

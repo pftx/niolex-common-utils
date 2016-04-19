@@ -64,6 +64,8 @@ public class ElectorTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         EL = new Elector(AppTest.URL, 10000, BS, LI);
+        if (EL.exists(BS))
+            EL.deleteTree(BS);
         EL.makeSurePathExists(BS);
     }
 
@@ -130,7 +132,7 @@ public class ElectorTest {
         verify(mocLi, times(0)).runAsLeader();
         verify(mocLi, times(1)).leaderChange("3rd");
 
-        list.remove(0);
+        list.remove(2);
         el.onChildrenChange(list);
         verify(mocLi, times(0)).runAsLeader();
         verify(mocLi, times(1)).leaderChange("3rd");
