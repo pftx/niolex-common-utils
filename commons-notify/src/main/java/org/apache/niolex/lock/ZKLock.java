@@ -101,7 +101,9 @@ public class ZKLock extends DistributedLock implements Closeable {
      */
     @Override
     protected void initLock() {
-        locked = false;
+        if (locked) {
+            throw new IllegalStateException("Lock not released, Please unlock it first.");
+        }
         selfPath = zkc.createNode(basePath + "/lock-", null, true, true);
     }
 

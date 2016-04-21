@@ -151,6 +151,19 @@ public class ZKLockTest {
         lock3.unlock();
     }
 
+
+    @Test(expected=IllegalStateException.class)
+    public void testInitLockAgain() throws Exception {
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        lock1.lock();
+
+        try {
+            lock1.initLock();
+        } finally {
+            lock1.unlock();
+        }
+    }
+
     @Test
     public void testWatchLock() throws Exception {
         ZKLock lock1 = new ZKLock(ZKC, BS);
