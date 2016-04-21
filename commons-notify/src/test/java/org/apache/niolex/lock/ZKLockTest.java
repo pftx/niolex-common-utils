@@ -37,6 +37,10 @@ public class ZKLockTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         ZKC = new ZKConnector(AppTest.URL, 10000);
+        String bb = "/locl/zkc";
+
+        if (ZKC.exists(bb))
+            ZKC.deleteTree(bb);
     }
 
     /**
