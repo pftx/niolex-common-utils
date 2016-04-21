@@ -34,7 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The DistributedLock powered by Zookeeper.
+ * The DistributedLock powered by Zookeeper.<br><b>
+ * This implementation is non-reentrant, and you should not share it between different threads.</b>
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0

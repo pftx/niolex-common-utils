@@ -108,7 +108,7 @@ public class InvokableExecutorServiceTest {
         long out = System.currentTimeMillis();
 
         System.out.println("Submit job time - " + (out - in));
-        assertTrue((out - in) < 15);
+        assertTrue((out - in) < 50);
 
         ConcurrentUtil.shutdownAndAwaitTermination(tar);
         assertEquals(45, ai.get());
