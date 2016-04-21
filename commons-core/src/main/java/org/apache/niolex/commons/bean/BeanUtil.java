@@ -21,6 +21,13 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.io.StreamCorruptedException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +54,43 @@ public class BeanUtil {
      */
     public static final String toString(Object obj) {
         return ObjToStringUtil.objToString(obj);
+    }
+
+    /**
+     * Serialize the object.
+     *
+     * @param s the object to be serialized
+     * @return the byte array
+     * @throws IOException if an I/O error occurs while writing
+     */
+    public static final byte[] toBytes(Serializable s) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+        oos.writeObject(s);
+        oos.close();
+
+        return bos.toByteArray();
+    }
+
+    /**
+     * Translate the byte array to Java object.
+     *
+     * @param data the byte array
+     * @return the java object
+     * @throws IOException Any of the usual Input/Output related exceptions
+     * @throws ClassNotFoundException Class of a serialized object cannot be found
+     * @throws StreamCorruptedException Control information in the stream is inconsistent
+     */
+    public static final Object toObject(byte[] data) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+
+        try {
+            return ois.readObject();
+        } finally {
+            ois.close();
+        }
     }
 
     /**

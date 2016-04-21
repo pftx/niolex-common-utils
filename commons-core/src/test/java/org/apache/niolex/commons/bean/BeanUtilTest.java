@@ -20,6 +20,7 @@ package org.apache.niolex.commons.bean;
 
 import static org.junit.Assert.*;
 
+import java.io.StreamCorruptedException;
 import java.util.Map;
 
 import org.apache.niolex.commons.util.Const;
@@ -416,5 +417,25 @@ public class BeanUtilTest extends BeanUtil {
         assertFalse(isNumericPrimitiveDefaultValue(Long.class, 1));
         assertFalse(isNumericPrimitiveDefaultValue(Object.class, 1));
         assertFalse(isNumericPrimitiveDefaultValue(String.class, "Lex"));
+    }
+
+    @Test
+    public void testToBytes() throws Exception {
+        String s = "生成此名称的新副本。对此名称的组件进行的后续更改不会影响新副本，反之亦然。 ";
+        byte[] data = toBytes(s);
+        Object o = toObject(data);
+
+        assertTrue(o instanceof String);
+        System.out.println(o);
+    }
+
+    @Test(expected=StreamCorruptedException.class)
+    public void testToObject() throws Exception {
+        byte[] arr = "not yet implemented StreamCorruptedException".getBytes();
+        arr[0] = (byte) 0xac;
+        arr[1] = (byte) 0xed;
+        arr[2] = 0;
+        arr[3] = 5;
+        toObject(arr);
     }
 }
