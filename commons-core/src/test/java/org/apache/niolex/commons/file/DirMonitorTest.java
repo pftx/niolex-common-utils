@@ -32,6 +32,7 @@ import org.apache.niolex.commons.file.FileMonitor.EventType;
 import org.apache.niolex.commons.stream.StreamUtil;
 import org.apache.niolex.commons.test.AnnotationOrderedRunner;
 import org.apache.niolex.commons.test.AnnotationOrderedRunner.Order;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.apache.niolex.commons.test.Counter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -40,15 +41,17 @@ import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
- * @version 1.0.0
+ * @version 1.0.1
  * @since 2013-7-23
  */
+@SuppressWarnings("incomplete-switch")
 @RunWith(AnnotationOrderedRunner.class)
 public class DirMonitorTest {
 
     static final String TMP = System.getProperty("user.home") + "/tmpd";
     static final String FILE = TMP + "/dir-monitor";
     static DirMonitor monitor;
+    static boolean isLinux;
 
     @BeforeClass
     public static void testDirMonitor() throws Exception {
@@ -57,6 +60,10 @@ public class DirMonitorTest {
         monitor = new DirMonitor(10, FILE);
         assertNull(monitor.currentChildren());
         assertNull(monitor.isDir);
+        String osName = SystemUtil.getSystemProperty("os.name");
+        if (osName.equalsIgnoreCase("Linux")) {
+        	isLinux = true;
+        }
     }
 
     @AfterClass
@@ -75,7 +82,7 @@ public class DirMonitorTest {
 
     ChildrenListener cli = new ChildrenListener() {
 
-        @Override
+		@Override
         public void notify(EventType type, long happenTime) {
             switch (type) {
                 case CREATE:
@@ -130,6 +137,8 @@ public class DirMonitorTest {
     @Test
     @Order(2)
     public void testAddDir() throws Exception {
+    	if (isLinux) ThreadUtil.sleepAtLeast(1001);
+    	
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.init("s");
         DirUtil.mkdirsIfAbsent(FILE + "/a");
@@ -144,6 +153,8 @@ public class DirMonitorTest {
     @Test
     @Order(3)
     public void testAddFile() throws Exception {
+    	if (isLinux) ThreadUtil.sleepAtLeast(1001);
+    	
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.init("s");
         FileUtil.setCharacterFileContentToFileSystem(FILE + "/tmp.txt", "File", StringUtil.US_ASCII);
@@ -158,6 +169,8 @@ public class DirMonitorTest {
     @Test
     @Order(4)
     public void testAddAnother() throws Exception {
+    	if (isLinux) ThreadUtil.sleepAtLeast(1001);
+    	
         System.out.println("---------------");
         monitor.addListener(cli);
         WaitOn<String> wait = blocker.init("s");

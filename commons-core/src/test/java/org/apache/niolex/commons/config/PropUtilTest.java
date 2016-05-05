@@ -32,7 +32,7 @@ public class PropUtilTest {
     public static final void init() {
         try {
             PropUtil.loadConfig("config.properties", PropUtilTest.class);
-            String f = PropUtilTest.class.getResource("new.properties").toExternalForm().substring(6);
+            String f = PropertiesWrapperTest.trimProtocol(PropUtilTest.class.getResource("new.properties").toExternalForm());
             System.out.println("f => " + f);
             PropUtil.loadConfig(f);
         } catch (IOException e) {

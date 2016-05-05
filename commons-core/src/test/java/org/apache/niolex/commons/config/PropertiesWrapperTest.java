@@ -33,12 +33,22 @@ import org.junit.Test;
 public class PropertiesWrapperTest {
 
     static PropertiesWrapper props = new PropertiesWrapper();
+    
+    static String trimProtocol(String s) {
+    	int i = s.indexOf(':');
+    	while (s.charAt(i + 1) == '/') {
+    		++i;
+    	}
+    	return s.substring(i);
+    }
 
     @BeforeClass
     public static final void init() {
         try {
             props.load("config.properties", PropertiesWrapperTest.class);
-            String f = PropertiesWrapperTest.class.getResource("new.properties").toExternalForm().substring(6);
+            String q = PropertiesWrapperTest.class.getResource("new.properties").toExternalForm();
+            System.out.println("q => " + q);
+            String f = trimProtocol(q);
             System.out.println("f => " + f);
             props.load(f);
         } catch (IOException e) {
@@ -66,14 +76,15 @@ public class PropertiesWrapperTest {
 
     @Test
     public void testPropertiesWrapperF() throws Exception {
-        String f = PropertiesWrapperTest.class.getResource("new.properties").toExternalForm().substring(6);
+        String f = trimProtocol(PropertiesWrapperTest.class.getResource("new.properties").toExternalForm());
         PropertiesWrapper prop = new PropertiesWrapper(f);
         Assert.assertEquals("您好！", prop.getProperty("greeting"));
     }
 
-    @Test
+    @SuppressWarnings("resource")
+	@Test
     public void testLoad() throws Exception {
-        String f = PropertiesWrapperTest.class.getResource("new.properties").toExternalForm().substring(6);
+        String f = trimProtocol(PropertiesWrapperTest.class.getResource("new.properties").toExternalForm());
         FileInputStream in = new FileInputStream(f);
         in = spy(in);
         PropertiesWrapper p = new PropertiesWrapper();

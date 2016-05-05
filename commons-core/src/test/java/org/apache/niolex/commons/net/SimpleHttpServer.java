@@ -200,7 +200,7 @@ public class SimpleHttpServer {
             cleanBody(t.getRequestBody());
 
             Headers headers = t.getResponseHeaders();
-            headers.add("Location", "https://www.baidu.com/");
+            headers.add("Location", "http://dict.cn/");
             t.sendResponseHeaders(302, -1);
             t.getResponseBody().close();
         }

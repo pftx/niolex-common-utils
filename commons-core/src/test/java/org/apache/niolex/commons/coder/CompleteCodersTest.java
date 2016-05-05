@@ -17,8 +17,11 @@
  */
 package org.apache.niolex.commons.coder;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -31,11 +34,12 @@ import com.google.common.collect.Lists;
 public class CompleteCodersTest {
 
     public void encodeAndDecodeEmpty(Coder coder) throws Exception {
-        final String in = "";
+        final String in = ".";
         final String mid = coder.encode(in);
         final String out = coder.decode(mid);
         System.out.println("MIDDLE " + mid);
         System.out.println(in + " => " + out);
+        assertEquals(in, out);
         System.out.println("------------------");
     }
 
@@ -45,6 +49,7 @@ public class CompleteCodersTest {
         final String out = coder.decode(mid);
         System.out.println("MIDDLE " + mid);
         System.out.println(in + " => " + out);
+        assertEquals(in, out);
         System.out.println("------------------");
     }
 
@@ -75,6 +80,14 @@ public class CompleteCodersTest {
         coder = new DESCoder();
         coder.initKey(KeyUtil.genKey("DES", 0, 56));
         list.add(coder);
+        
+        // ---------Linux very slow.
+        String osName = SystemUtil.getSystemProperty("os.name");
+        if (osName.equalsIgnoreCase("Linux")) {
+        	process(list);
+        	return;
+        }
+        
         // ---- RC2Coder 256
         coder = new RC2Coder();
         coder.initKey(KeyUtil.genKey("RC2", 128, 256));

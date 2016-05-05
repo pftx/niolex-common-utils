@@ -24,11 +24,13 @@ import java.util.EnumMap;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.concurrent.Blocker;
+import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.concurrent.WaitOn;
 import org.apache.niolex.commons.file.FileMonitor.EventListener;
 import org.apache.niolex.commons.file.FileMonitor.EventType;
 import org.apache.niolex.commons.test.AnnotationOrderedRunner;
 import org.apache.niolex.commons.test.AnnotationOrderedRunner.Order;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,12 +48,17 @@ public class FileMonitorTest {
 
     static final String TMP = System.getProperty("user.home") + "/tmpf";
     static FileMonitor monitor;
+    static boolean isLinux;
 
     @BeforeClass
     public static void testFileMonitor() throws Exception {
         DirUtil.mkdirsIfAbsent(TMP);
         DirUtil.delete(TMP + "/file-monitor", true);
         monitor = new FileMonitor(10, TMP + "/file-monitor");
+        String osName = SystemUtil.getSystemProperty("os.name");
+        if (osName.equalsIgnoreCase("Linux")) {
+        	isLinux = true;
+        }
     }
 
     @AfterClass
@@ -92,6 +99,8 @@ public class FileMonitorTest {
     @Test
     @Order(2)
     public void testUpdateFile() throws Exception {
+    	if (isLinux) ThreadUtil.sleepAtLeast(1001);
+    	
         boolean b = monitor.removeListener(listn);
         assertFalse(b);
         monitor.addListener(listn);
@@ -110,7 +119,7 @@ public class FileMonitorTest {
         DirUtil.delete(TMP + "/file-monitor", true);
         wait.waitForResult(1000);
         assertEquals(1, map.get(EventType.CREATE).intValue());
-        assertEquals(1, map.get(EventType.UPDATE).intValue());
+    	assertEquals(1, map.get(EventType.UPDATE).intValue());
         assertEquals(1, map.get(EventType.DELETE).intValue());
         boolean b = monitor.removeListener(listn);
         assertTrue(b);
@@ -125,13 +134,16 @@ public class FileMonitorTest {
         DirUtil.mkdirsIfAbsent(TMP + "/file-monitor");
         wait.waitForResult(1000);
         assertEquals(2, map.get(EventType.CREATE).intValue());
-        assertEquals(1, map.get(EventType.UPDATE).intValue());
+        if (!isLinux)
+        	assertEquals(1, map.get(EventType.UPDATE).intValue());
         assertEquals(1, map.get(EventType.DELETE).intValue());
     }
 
     @Test
     @Order(5)
     public void testUpdateDir() throws Exception {
+    	if (isLinux) ThreadUtil.sleepAtLeast(1001);
+    	
         WaitOn<String> wait = blocker.init("s");
 
         DirUtil.mkdirsIfAbsent(TMP + "/file-monitor/tmp");
@@ -144,6 +156,8 @@ public class FileMonitorTest {
     @Test
     @Order(6)
     public void testUpdateInnerFile() throws Exception {
+    	if (isLinux) ThreadUtil.sleepAtLeast(1001);
+    	
         WaitOn<String> wait = blocker.init("s");
 
         FileUtil.setCharacterFileContentToFileSystem(TMP + "/file-monitor/tmp.txt", "Lex", StringUtil.US_ASCII);
