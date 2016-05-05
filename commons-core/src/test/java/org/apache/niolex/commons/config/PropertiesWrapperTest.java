@@ -82,7 +82,7 @@ public class PropertiesWrapperTest {
     }
 
     @SuppressWarnings("resource")
-	@Test
+    @Test
     public void testLoad() throws Exception {
         String f = trimProtocol(PropertiesWrapperTest.class.getResource("new.properties").toExternalForm());
         FileInputStream in = new FileInputStream(f);
