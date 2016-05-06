@@ -129,7 +129,8 @@ public class ZKConnector implements Watcher {
      * Override super method
      * @see org.apache.zookeeper.Watcher#process(org.apache.zookeeper.WatchedEvent)
      */
-    @Override
+	@Override
+	@SuppressWarnings("incomplete-switch")
     public void process(WatchedEvent event) {
         LOG.info("ZK Connection status changed to: {}.", event.getState());
         switch (event.getState()) {

@@ -26,6 +26,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+@SuppressWarnings("resource")
 public class ZKLockTest {
 
     private static String BS = "/lock/zkc/tmp-" + MockUtil.randInt(100, 999);
@@ -62,7 +63,7 @@ public class ZKLockTest {
         System.out.println("testWholeLock1 done.");
     }
 
-    @Test
+	@Test
     public void testWholeLock2() throws Exception {
         ZKLock lock1 = new ZKLock(ZKC, BS);
         ZKLock lock2 = new ZKLock(ZKC, BS);
