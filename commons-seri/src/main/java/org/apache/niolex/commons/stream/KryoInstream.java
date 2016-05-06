@@ -59,6 +59,7 @@ public class KryoInstream {
 	 * Read object from the internal stream, this method will not close the stream.
 	 * You can call it repeatedly.
 	 *
+	 * @param <T> the object type
 	 * @param clazz the object class
 	 * @return the object
 	 */

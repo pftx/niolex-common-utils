@@ -43,6 +43,7 @@ public class ProtoStuffUtil {
 	/**
 	 * Serialize one object using protocol stuff.
 	 *
+	 * @param <T> the object type
 	 * @param o the object to be serialized
 	 * @return the byte array
 	 */
@@ -56,6 +57,7 @@ public class ProtoStuffUtil {
 	/**
 	 * Parse one object of type <code>type</code> from the byte array.
 	 *
+	 * @param <T> the object type
 	 * @param data the object represented in wire format
 	 * @param type the object type
 	 * @return the object

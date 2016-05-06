@@ -79,7 +79,7 @@ public abstract class SmileUtil {
      *
      * @param o the object needs to be serialized
      * @return the binary array
-     * @throws IOException
+     * @throws IOException if I / O related error happened
      */
     public static final byte[] obj2bin(Object o) throws IOException {
         return mapper.writeValueAsBytes(o);
@@ -88,10 +88,11 @@ public abstract class SmileUtil {
     /**
      * Convert the binary data into the original Object.
      *
+     * @param <T> the java bean type
      * @param bin the binary array data
      * @param valueType the Java class type
      * @return the java bean
-     * @throws IOException
+     * @throws IOException if I / O related error happened
      */
     public static final <T> T bin2Obj(byte[] bin, Class<T> valueType) throws IOException {
         return mapper.readValue(bin, valueType);
@@ -100,10 +101,11 @@ public abstract class SmileUtil {
     /**
      * Convert the binary data into the original Object.
      *
+     * @param <T> the java bean type
      * @param bin the binary array data
      * @param valueType the Java class type
      * @return the java bean
-     * @throws IOException
+     * @throws IOException if I / O related error happened
      */
     @SuppressWarnings("unchecked")
     public static final <T> T bin2Obj(byte[] bin, JavaType valueType) throws IOException {
@@ -113,10 +115,11 @@ public abstract class SmileUtil {
     /**
      * Convert the binary data into the original Object.
      *
+     * @param <T> the java bean type
      * @param bin the binary array data
      * @param valueType the Java class type
      * @return the java bean
-     * @throws IOException
+     * @throws IOException if I / O related error happened
      */
     @SuppressWarnings("unchecked")
     public static final <T> T bin2Obj(byte[] bin, TypeReference<T> valueType) throws IOException {
@@ -128,7 +131,7 @@ public abstract class SmileUtil {
      *
      * @param out the output stream used to write the output
      * @param value the object to be written
-     * @throws IOException
+     * @throws IOException if I / O related error happened
      */
     public static final void writeObj(OutputStream out, Object value) throws IOException {
     	mapper.writeValue(out, value);
@@ -137,10 +140,11 @@ public abstract class SmileUtil {
     /**
      * Read object from the specified input stream.
      *
+     * @param <T> the object type
      * @param in the input stream to read data from
      * @param valueType the Java class type
      * @return the java bean
-     * @throws IOException
+     * @throws IOException if I / O related error happened
      */
     public static final <T> T readObj(InputStream in, Class<T> valueType) throws IOException {
         return mapper.readValue(in, valueType);
@@ -149,10 +153,11 @@ public abstract class SmileUtil {
     /**
      * Read object from the specified input stream.
      *
+     * @param <T> the object type
      * @param in the input stream to read data from
      * @param valueType the Java class type
      * @return the java bean
-     * @throws IOException
+     * @throws IOException if I / O related error happened
      */
     @SuppressWarnings("unchecked")
     public static final <T> T readObj(InputStream in, JavaType valueType) throws IOException {
@@ -162,10 +167,11 @@ public abstract class SmileUtil {
     /**
      * Read object from the specified input stream.
      *
+     * @param <T> the object type
      * @param in the input stream to read data from
      * @param valueType the Java class type
      * @return the java bean
-     * @throws IOException
+     * @throws IOException if I / O related error happened
      */
     @SuppressWarnings("unchecked")
     public static final <T> T readObj(InputStream in, TypeReference<T> valueType) throws IOException {

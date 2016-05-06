@@ -74,6 +74,7 @@ public class ProtoUtil {
 	/**
 	 * Parse one object of type <code>type</code> from the byte array.
 	 *
+	 * @param <T> the object type
 	 * @param data the binary data
 	 * @param type the object type
 	 * @return the object
