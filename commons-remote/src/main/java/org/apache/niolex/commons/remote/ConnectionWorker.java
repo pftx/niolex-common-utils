@@ -148,6 +148,7 @@ public class ConnectionWorker implements Runnable {
 	 *
 	 * @throws IOException
 	 */
+	@SuppressWarnings("incomplete-switch")
 	public void execute() throws IOException {
 		while (scan.hasNextLine()) {
 			final String line = scan.nextLine();

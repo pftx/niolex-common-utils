@@ -48,6 +48,7 @@ public class UnClosedFileRead {
 
     }
 
+    @SuppressWarnings("resource")
     public static void main(String[] args) throws IOException, Throwable {
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("D:\\home\\tmp\\out.obj"));
         out.writeObject(new Benchmark());
