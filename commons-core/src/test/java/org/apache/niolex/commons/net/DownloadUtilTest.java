@@ -97,6 +97,17 @@ public class DownloadUtilTest {
 			throw et;
 		}
 	}
+	
+	@Test(expected=NetException.class)
+	public final void testDownloadFile404() throws Exception, Throwable {
+	    try {
+	        downloadFile("https://floatingsun.net/articles/thrift-vs-protocol-buffers",
+	                10000, 10000, 1000, false);
+	    } catch (NetException et) {
+	        assertEquals(et.getCode(), NetException.ExCode.IOEXCEPTION);
+	        throw et;
+	    }
+	}
 
 	@Test(expected=NetException.class)
 	public final void testDownloadFileTooLarge() throws NetException {

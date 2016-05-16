@@ -36,6 +36,21 @@ public class SimpleThreadFactoryTest {
     public void testSimpleThreadFactory() throws Exception {
         factory = new SimpleThreadFactory("thread-fac-test");
     }
+    
+    @Test
+    public void testDaemonThread() throws Exception {
+        factory = new SimpleThreadFactory("thread-fac-test-d", true);
+        Thread t = factory.newThread(new Runnable() {
+
+            @Override
+            public void run() {
+            }
+            
+        });
+        
+        assertEquals(t.getName(), "thread-fac-test-d-0");
+        assertEquals(true, t.isDaemon());
+    }
 
     @Test
     public void testNewThread() throws Exception {

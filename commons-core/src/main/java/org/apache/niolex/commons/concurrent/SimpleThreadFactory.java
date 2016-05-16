@@ -32,17 +32,30 @@ public class SimpleThreadFactory implements ThreadFactory {
     // The internal thread group.
     private final ThreadGroup threadGroup;
     private final String threadGroupName;
+    private final boolean isDaemon;
     private int cnt = 0;
 
     /**
-     * The only Constructor, we will create a ThreadGroup internally.
+     * The simple Constructor, we will create a ThreadGroup internally to manage all the threads
+     * create by this factory.
      *
      * @param threadGroupName the internal thread group name
      */
     public SimpleThreadFactory(String threadGroupName) {
+        this(threadGroupName, false);
+    }
+    
+    /**
+     * The full Constructor, we will create a ThreadGroup internally.
+     *
+     * @param threadGroupName the internal thread group name
+     * @param isDaemon mark the created threads as either a daemon thread or a user thread
+     */
+    public SimpleThreadFactory(String threadGroupName, boolean isDaemon) {
         super();
         this.threadGroup = new ThreadGroup(threadGroupName);
         this.threadGroupName = threadGroupName;
+        this.isDaemon = isDaemon;
     }
 
 
@@ -53,7 +66,9 @@ public class SimpleThreadFactory implements ThreadFactory {
      */
     @Override
     public Thread newThread(Runnable r) {
-        return new Thread(threadGroup, r, threadGroupName + "-" + cnt++);
+        Thread t = new Thread(threadGroup, r, threadGroupName + "-" + cnt++);
+        t.setDaemon(isDaemon);
+        return t;
     }
 
     /**
