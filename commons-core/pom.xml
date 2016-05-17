@@ -38,7 +38,7 @@
 			<version>[1.9.0,2.0.0)</version>
 		</dependency>
 		<dependency>
-			<groupId>com.esotericsoftware.reflectasm</groupId>
+			<groupId>com.esotericsoftware</groupId>
 			<artifactId>reflectasm</artifactId>
 			<version>[1.01,2.00)</version>
 		</dependency>
