@@ -47,9 +47,17 @@ public class PerfTest {
 	private static int outerIteration = 100;
 
 	abstract class MyPerformance extends MultiPerformance {
+	    
+	    public int size;
 
         public MyPerformance() {
             super(threadsCount, innerIteration, outerIteration);
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            System.out.println("\tSize " + size);
         }
 
 	}
@@ -74,6 +82,7 @@ public class PerfTest {
 			ooo.writeObject(q);
 			ooo.close();
 			byte[] bs = bos.toByteArray();
+			if (size == 0) size = bs.length;
 			KryoInstream iii = new KryoInstream(new ByteArrayInputStream(bs));
 			Benchmark cp = iii.readObject(Benchmark.class);
 			Bean t = iii.readObject(Bean.class);
@@ -106,6 +115,7 @@ public class PerfTest {
 				SmileUtil.writeObj(bos, bench);
 				SmileUtil.writeObj(bos, q);
 				byte[] bs = bos.toByteArray();
+				if (size == 0) size = bs.length;
 				SmileProxy iii = new SmileProxy(new ByteArrayInputStream(bs));
 				Benchmark cp = iii.readObject(Benchmark.class);
 				Bean t = iii.readObject(Bean.class);
@@ -141,6 +151,7 @@ public class PerfTest {
 				JacksonUtil.writeObj(bos, bench);
 				JacksonUtil.writeObj(bos, q);
 				byte[] bs = bos.toByteArray();
+				if (size == 0) size = bs.length;
 				JsonProxy iii = new JsonProxy(new ByteArrayInputStream(bs));
 				Benchmark cp = iii.readObject(Benchmark.class);
 				Bean t = iii.readObject(Bean.class);
@@ -168,6 +179,7 @@ public class PerfTest {
 	    @Override
 	    protected void run() {
 	        byte[] bs = ProtoStuffUtil.seriMulti(new Object[] {bench, q});
+	        if (size == 0) size = bs.length;
 	        Type[] types = new Type[] {Benchmark.class, Bean.class};
 	        Object[] back = ProtoStuffUtil.parseMulti(bs, types);
 	        Benchmark cp = (Benchmark) back[0];
