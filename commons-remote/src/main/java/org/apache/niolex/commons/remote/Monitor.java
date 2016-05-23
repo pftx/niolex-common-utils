@@ -155,6 +155,7 @@ public class Monitor implements Runnable {
 	 * Watch	Watch the historical and real time statistics.
 	 * Real		Only need the real time statistics.
 	 * History	(Default)Only need the historical statistics.</pre>
+	 * @throws IOException if I/O related error occurred
 	 */
 	public void doMonitor(OutputStream out, String key, String parameter) throws IOException {
 	    switch (parameter.charAt(0)) {

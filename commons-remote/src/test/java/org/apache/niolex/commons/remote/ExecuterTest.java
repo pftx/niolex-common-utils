@@ -47,8 +47,8 @@ public class ExecuterTest {
 
     @Test
     public void testGetter() throws Exception {
-        new Executer.Getter().execute(new BeanServerStart.A(), out, null);
-        assertEquals("{^  `ids` : [ 1, 2, 3, 4, 5 ],^  `names` : [ `Adam`, `Shalve`, `Bob` ],^  `i` : 128,^  `b` : false,^  `by` : 3,^  `map` : {^    `1` : `Good`^  },^  `smap` : {^    `this.[is].good` : `See You!`,^    `test` : `but`^  },^  `set` : [ `Goog Morning`, `This is Good`, `中文` ]^}^", getStr());
+        new Executer.Getter().execute(new BeanServerStart.B(), out, null);
+        assertEquals("{^  `msg` : `Please invoke me!`^}^", getStr());
     }
 
     @Test

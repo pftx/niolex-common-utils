@@ -278,7 +278,7 @@ public class ConnectionWorker implements Runnable {
 	 * @param comm the command name
 	 * @param args the command arguments
 	 * @return TRUE if command processed, FALSE if not, null if need exit
-	 * @throws IOException
+	 * @throws IOException if I/O related error occurred
 	 */
 	protected Boolean commonProcess(String comm, String[] args) throws IOException {
 	    // Change End Of Line

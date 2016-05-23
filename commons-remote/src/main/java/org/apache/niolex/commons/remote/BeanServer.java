@@ -87,7 +87,7 @@ public class BeanServer implements Runnable {
 	/**
 	 * Replaces the entry for a key only if currently mapped to a given value. This is equivalent to
 	 * <pre>
-	 *    if (map.containsKey(key) && map.get(key).equals(oldValue)) {
+	 *    if (map.containsKey(key) &amp;&amp; map.get(key).equals(oldValue)) {
 	 *        map.put(key, newValue);
 	 *        return true;
 	 *    } else return false;</pre>
