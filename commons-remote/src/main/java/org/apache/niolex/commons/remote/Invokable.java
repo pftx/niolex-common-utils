@@ -40,7 +40,7 @@ public interface Invokable {
 	 * 1		Object Path
 	 * 2		Extension Argument 1 (Optional)
 	 * 3		Extension Argument 2 (Optional)</pre>
-	 * @throws IOException
+	 * @throws IOException if I/O related error occurred
 	 */
 	public void invoke(OutputStream out, String[] args) throws IOException;
 

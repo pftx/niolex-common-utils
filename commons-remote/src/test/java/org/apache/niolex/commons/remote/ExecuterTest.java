@@ -24,11 +24,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.codec.StringUtil;
-import org.apache.niolex.commons.util.DateTimeUtil;
+import org.apache.niolex.commons.collection.CyclicIntArray;
 import org.junit.Test;
 
 /**
@@ -48,27 +47,28 @@ public class ExecuterTest {
 
     @Test
     public void testGetter() throws Exception {
-        new Executer.Getter().execute(new ReentrantLock(), out, null);
-        assertEquals("{^  `holdCount` : 0,^  `queueLength` : 0,^  `fair` : false,^  `heldByCurrentThread` : false,^  `locked` : false^}^", getStr());
+        new Executer.Getter().execute(new BeanServerStart.A(), out, null);
+        assertEquals("{^  `ids` : [ 1, 2, 3, 4, 5 ],^  `names` : [ `Adam`, `Shalve`, `Bob` ],^  `i` : 128,^  `b` : false,^  `by` : 3,^  `map` : {^    `1` : `Good`^  },^  `smap` : {^    `this.[is].good` : `See You!`,^    `test` : `but`^  },^  `set` : [ `Goog Morning`, `This is Good`, `中文` ]^}^", getStr());
     }
 
     @Test
     public void testLister() throws Exception {
-        new Executer.Lister().execute(new Date(), out, null);
+        new Executer.Lister().execute(new Date(6), out, null);
         assertEquals("All Fields Of Date^    gcal^    jcal^    fastTime^    cdate^    defaultCenturyStart^    serialVersionUID^    wtb^    ttb^---^", getStr());
     }
 
     @Test
     public void testSetterParam() throws Exception {
-        new Executer.Setter().execute(new Date(), out, new String[] {"a", "b"});
+        new Executer.Setter().execute(new CyclicIntArray(5), out, new String[] {"a", "b"});
         assertEquals("Invalid Command.^", getStr());
     }
 
     @Test
     public void testSetter() throws Exception {
-        Date d = new Date();
-        new Executer.Setter().execute(d, out, new String[] {"a", "b", "fastTime", "9283901232"});
-        assertEquals("1970-04-18 18:51:41.232", DateTimeUtil.formatDate2LongStr(d));
+        CyclicIntArray d = new CyclicIntArray(6);
+        assertEquals(0, d.getHead());
+        new Executer.Setter().execute(d, out, new String[] {"a", "b", "head", "100"});
+        assertEquals(100, d.getHead());
         assertEquals("Set Field Success.^", getStr());
     }
 

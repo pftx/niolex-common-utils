@@ -17,26 +17,16 @@
  */
 package org.apache.niolex.commons.remote;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.test.AnnotationOrderedRunner;
-import org.apache.niolex.commons.test.Benchmark;
-import org.apache.niolex.commons.test.MockUtil;
-import org.apache.niolex.commons.test.SystemInfo;
-import org.apache.niolex.commons.test.Benchmark.Bean;
-import org.apache.niolex.commons.test.Benchmark.Group;
-import org.apache.niolex.commons.util.Runme;
 import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,61 +40,18 @@ import org.junit.runner.RunWith;
 public class BeanServerTest {
 	BeanServer beanS = new BeanServer();
 
-	class B implements Invokable {
-
-		private String msg = "Please invoke me!";
-
-		/**
-		 * Override super method
-		 * @throws IOException
-		 * @see org.apache.niolex.commons.remote.Invokable#invoke()
-		 */
-		@Override
-		public void invoke(OutputStream out, String[] args) throws IOException {
-			System.out.println("I am invoked.");
-			out.write(StringUtil.strToAsciiByte("I am invoked." + ConnectionWorker.endl()));
-		}
-
-		public String getMsg() {
-			return msg;
-		}
-
-	}
-
-	class A {
-		int[] ids = new int[] {1, 2, 3, 4, 5};
-		String[] names = new String[] {"Adam", "Shalve", "Bob"};
-		Group group = Group.makeGroup();
-		Integer i = new Integer(128);
-		final Boolean b = Boolean.FALSE;
-		Byte by = new Byte((byte) 3);
-		Map<Integer, String> map = new HashMap<Integer, String>();
-		Map<String, String> smap = new HashMap<String, String>();
-		Map<String, Object> bmap = new HashMap<String, Object>();
-		Map<Object, Object> imap = new HashMap<Object, Object>();
-		Set<String> set = new HashSet<String>();
-
-		public A() {
-			map.put(1, "Good");
-			smap.put("test", "but");
-			smap.put("this.[is].good", "See You!");
-			bmap.put("b", new Bean(3, "Bean", 12212, new Date()));
-			bmap.put("c", Benchmark.makeBenchmark());
-			bmap.put("invoke", new B());
-			bmap.put("os", new OSInfo());
-			imap.put(new Date(), new Bean(3, "Bean", 12212, new Date()));
-			set.add("Goog Morning");
-			set.add("This is Good");
-			set.add("中文");
-		}
-	}
-
 	/**
 	 * Test method for {@link org.apache.niolex.commons.remote.BeanServer#putIfAbsent(String, Object)}.
 	 */
 	@Test
 	public void testPutIfAbsent() {
 		Object o = beanS.putIfAbsent("fail2", "Not yet implemented");
+		assertNull(o);
+		o = beanS.putIfAbsent("fail2", "Not this.");
+		assertEquals("Not yet implemented", o);
+		Object s = beanS.remove("fail2");
+		assertEquals("Not yet implemented", s);
+		o = beanS.remove("fail2");
 		assertNull(o);
 	}
 
@@ -113,7 +60,8 @@ public class BeanServerTest {
 	 */
 	@Test
 	public void testRemove() {
-		beanS.remove("fail");
+	    Object o = beanS.remove("fail");
+	    assertNull(o);
 	}
 
 	/**
@@ -121,9 +69,21 @@ public class BeanServerTest {
 	 */
 	@Test
 	public void testReplace() {
-		beanS.replace("fail", "Not yet implemented", "New value");
+		assertFalse(beanS.replace("fail", "Not yet implemented", "New value"));
+		Object o = beanS.putIfAbsent("fail", "Not yet implemented");
+        assertNull(o);
+		assertTrue(beanS.replace("fail", "Not yet implemented", "New value"));
+		Object s = beanS.remove("fail");
+		assertEquals("New value", s);
 	}
 
+    @Test
+    public void testStartError() throws Exception {
+        beanS.setPort(18373);
+        assertTrue(beanS.start());
+        assertFalse(beanS.start());
+        beanS.stop();
+    }
 	/**
 	 * Test method for {@link org.apache.niolex.commons.remote.BeanServer#setPort(int)}.
 	 */
@@ -149,16 +109,14 @@ public class BeanServerTest {
             socArr[i] = so;
         }
         Socket so = new Socket();
-        try {
-            so.connect(new InetSocketAddress("localhost", 8373), 1000);
-        } finally {
-            byte[] b = new byte[200];
-            int k = so.getInputStream().read(b);
-            String s = new String(b, 0, k, StringUtil.US_ASCII);
-            System.out.println("x get result: " + s);
-            assertEquals("Too many connections.\n", s);
-        }
+        so.connect(new InetSocketAddress("localhost", 8373), 1000);
+        byte[] b = new byte[200];
+        int k = so.getInputStream().read(b);
+        String s = new String(b, 0, k, StringUtil.US_ASCII);
+        System.out.println("x get result: " + s);
+        assertEquals("Too many connections.\n", s);
         SystemUtil.close(so);
+        
         for (int i = 0; i < 10; ++i) {
             SystemUtil.close(socArr[i]);
         }
@@ -168,33 +126,6 @@ public class BeanServerTest {
     @AnnotationOrderedRunner.Order(3)
     public void testStop() throws Exception {
         beanS.stop();
-    }
-
-    /**
-     * Test method for {@link org.apache.niolex.commons.remote.BeanServer#start()}.
-     * @throws InterruptedException
-     */
-    public static void main(String[] args) throws InterruptedException {
-        ConnectionWorker.setAuthInfo("abcD");
-        BeanServerTest test = new BeanServerTest();
-        test.beanS.putIfAbsent("bench", Benchmark.makeBenchmark());
-        test.beanS.putIfAbsent("group", test.new A());
-        test.beanS.putIfAbsent("system", SystemInfo.getInstance());
-        final Monitor m = new Monitor(10);
-        test.beanS.putIfAbsent("cdc", m);
-        Runme rme = new Runme() {
-
-            @Override
-            public void runMe() {
-                m.addValue("test.me", MockUtil.randInt(200));
-            }
-
-        };
-        rme.setSleepInterval(1000);
-        rme.start();
-        test.beanS.start();
-        Thread.sleep(3000000);
-        test.beanS.stop();
     }
 
 }

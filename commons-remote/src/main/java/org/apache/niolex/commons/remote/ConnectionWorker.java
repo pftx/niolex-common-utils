@@ -108,7 +108,7 @@ public class ConnectionWorker implements Runnable {
 	 * @param socket the socket to work with
 	 * @param map the global bean map
 	 * @param connectionNumber the connection number counter
-	 * @throws IOException
+	 * @throws IOException if I/O related error occurred
 	 */
 	public ConnectionWorker(Socket socket, ConcurrentHashMap<String, Object> map, AtomicInteger connectionNumber)
 	        throws IOException {
@@ -146,7 +146,7 @@ public class ConnectionWorker implements Runnable {
 	 * Execute the command here.
 	 * The main work is to find the correct target object and execute the command on it.
 	 *
-	 * @throws IOException
+	 * @throws IOException if I/O related error occurred
 	 */
 	@SuppressWarnings("incomplete-switch")
 	public void execute() throws IOException {
@@ -325,7 +325,7 @@ public class ConnectionWorker implements Runnable {
 	 * end of the string, then flush the output stream.
 	 *
 	 * @param s the string to be written
-	 * @throws IOException
+	 * @throws IOException if I/O related error occurred
 	 */
 	protected void writeAndFlush(String s) throws IOException {
 	    out.write(StringUtil.strToUtf8Byte(s + endl()));

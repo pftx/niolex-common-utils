@@ -57,7 +57,7 @@ public abstract class Executer {
      *
      * @param out the output stream
      * @param s the string to be written
-     * @throws IOException
+     * @throws IOException if I/O related error occurred
      */
     protected static void writeAndFlush(OutputStream out, String s) throws IOException {
         out.write(StringUtil.strToUtf8Byte(s));
@@ -76,6 +76,7 @@ public abstract class Executer {
 	 * 1		Object Path
 	 * 2		Extension Argument 1 (Optional)
 	 * 3		Extension Argument 2 (Optional)</pre>
+	 * @throws IOException if I/O related error occurred
 	 */
 	public abstract void execute(Object o, OutputStream out, String[] args) throws IOException;
 

@@ -177,7 +177,7 @@ public class Path {
 	/**
 	 * Make path for field section.
 	 *
-	 * @param strPath
+	 * @param strPath the string path
 	 * @param start the field start index
 	 * @param end the field end index
 	 * @return the path
@@ -191,9 +191,9 @@ public class Path {
 	/**
 	 * Make path for map section.
 	 *
-	 * @param strPath
-	 * @param start
-	 * @param end
+	 * @param strPath the string path
+	 * @param start the field start index
+	 * @param end the field end index
 	 * @param substring the map key
 	 * @return the path
 	 */
@@ -207,9 +207,9 @@ public class Path {
 	/**
 	 * Make path for array section.
 	 *
-	 * @param strPath
-	 * @param start
-	 * @param end
+	 * @param strPath the string path
+	 * @param start the field start index
+	 * @param end the field end index
 	 * @param idx2 the array index
 	 * @return the path
 	 */
