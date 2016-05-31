@@ -19,7 +19,6 @@ package org.apache.niolex.commons.collection;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.niolex.commons.collection.CachePerformance.MulLRUCache;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.test.MockUtil;
 
@@ -29,9 +28,8 @@ import org.apache.niolex.commons.test.MockUtil;
  * @since May 27, 2016
  */
 public class CacheRuntime {
-    private static final int CACHE_SIZE = 20000;
-    private static final Cache<Integer, Integer> cache1 = new ConcurrentLRUCache<Integer, Integer>(CACHE_SIZE);
-    private static final Cache<Integer, Integer> cache2 = new MulLRUCache<Integer, Integer>(new LRUHashMap<Integer, Integer>(CACHE_SIZE));
+    
+    private static final int CACHE_SIZE = 100000;
     
     private static int calcV(int k) {
         return (k + 2) * 5;
@@ -43,6 +41,7 @@ public class CacheRuntime {
     private static class From1 implements Runnable {
         
         private Cache<Integer, Integer> cache;
+        protected volatile boolean isWorking = true;
 
         public From1(Cache<Integer, Integer> cache) {
             super();
@@ -55,15 +54,15 @@ public class CacheRuntime {
          */
         @Override
         public void run() {
-            long in = System.currentTimeMillis();
-            for (int i = 0; i < CACHE_SIZE; ++i) {
-                cache.put(i, calcV(i));
+            while (isWorking) {
+                long in = System.currentTimeMillis();
+                for (int i = 0; i < CACHE_SIZE; ++i) {
+                    cache.put(i, calcV(i));
+                }
+                if (From1Time == 0)
+                    From1Time = System.currentTimeMillis() - in;
+                ThreadUtil.sleep(66);
             }
-            ThreadUtil.sleep(100);
-            for (int i = 0; i < CACHE_SIZE; ++i) {
-                cache.put(i, calcV(i));
-            }
-            From1Time = System.currentTimeMillis() - in;
             System.out.println("From1 done.");
         }
         
@@ -72,6 +71,7 @@ public class CacheRuntime {
     private static class FromMax implements Runnable {
         
         private Cache<Integer, Integer> cache;
+        protected volatile boolean isWorking = true;
         
         public FromMax(Cache<Integer, Integer> cache) {
             super();
@@ -84,15 +84,15 @@ public class CacheRuntime {
          */
         @Override
         public void run() {
-            long in = System.currentTimeMillis();
-            for (int i = CACHE_SIZE; i > 0; --i) {
-                cache.put(i, calcV(i));
+            while (isWorking) {
+                long in = System.currentTimeMillis();
+                for (int i = CACHE_SIZE; i > 0; --i) {
+                    cache.put(i, calcV(i));
+                }
+                if (FromMaxTime == 0)
+                    FromMaxTime = System.currentTimeMillis() - in;
+                ThreadUtil.sleep(68);
             }
-            ThreadUtil.sleep(100);
-            for (int i = CACHE_SIZE; i > 0; --i) {
-                cache.put(i, calcV(i));
-            }
-            FromMaxTime = System.currentTimeMillis() - in;
             System.out.println("FromMax done.");
         }
         
@@ -116,7 +116,7 @@ public class CacheRuntime {
         public void run() {
             while (isWorking) {
                 int k = MockUtil.randInt(CACHE_SIZE * 10);
-                if (k < CACHE_SIZE * 5)
+                if (k > CACHE_SIZE * 8)
                     ThreadUtil.sleep(1);
                 cache.put(k, calcV(k));                
             }
@@ -147,16 +147,17 @@ public class CacheRuntime {
          */
         @Override
         public void run() {
-            int run = put ? CACHE_SIZE * 5 : CACHE_SIZE * 20;
+            int run = put ? CACHE_SIZE * 2 : CACHE_SIZE * 10;
             long in = System.currentTimeMillis();
             while (run-- > 0) {
                 int k = MockUtil.randInt(CACHE_SIZE);
                 Integer v = cache.get(k);
                 if (v == null) {
                     NIL.incrementAndGet();
-                    if (put)
+                    if (put) {
                         cache.put(k, calcV(k));                
-                    ThreadUtil.sleep(1);
+                        ThreadUtil.sleep(1);
+                    }
                 } else if (v == calcV(k)) {
                     VALID.incrementAndGet();
                 } else {
@@ -178,14 +179,21 @@ public class CacheRuntime {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-        main1(cache1);
-        main1(cache2);
+        final int ARR_SIZE = 4;
+        Cache<Integer, Integer>[] ca = CacheCompareSingleThread.newArray(CACHE_SIZE, ARR_SIZE);
+        
+        main1(ca[0]);
+        main1(ca[1]);
+        main1(ca[2]);
+        main1(ca[3]);
     }
     
     public static void main1(Cache<Integer, Integer> cache) throws Exception {
-        Thread thr1 = new Thread(new From1(cache));
-        Thread thr2 = new Thread(new FromMax(cache));
+        From1 f1 = new From1(cache);
+        FromMax f2 = new FromMax(cache);
         Evil e = new Evil(cache);
+        Thread thr1 = new Thread(f1);
+        Thread thr2 = new Thread(f2);
         Thread thr3 = new Thread(e);
         thr3.setDaemon(true);
         
@@ -193,14 +201,13 @@ public class CacheRuntime {
         thr2.start();
         ThreadUtil.sleep(10);
         thr3.start();
-
-        ThreadUtil.sleep(10);
+        ThreadUtil.sleep(20);
         
         Thread[] th = new Thread[5];
         Query[] qu = new Query[5];
         
         for (int i = 0; i < 5; ++i) {
-            qu[i] = new Query(cache1, (i == 0 ? true : false));
+            qu[i] = new Query(cache, false);
             th[i] = new Thread(qu[i]);
             th[i].start();
         }
@@ -211,11 +218,14 @@ public class CacheRuntime {
             qTime += qu[i].time();
         }
         
+        f1.isWorking = false;
+        f2.isWorking = false;
         e.isWorking = false;
         thr1.join();
         thr2.join();
+        thr3.join();
         
-        System.out.println("INSERT " + (From1Time + FromMaxTime) + ", QRY " + qTime);
+        System.out.println("INSERT " + (From1Time + FromMaxTime) + ", QRY " + qTime + ", SIZE " + cache.size());
         long v = VALID.getAndSet(0), n = NIL.getAndSet(0);
         System.out.println("HIT " + v + ", WRG " + WRONG.getAndSet(0) + ", MIS " + n + " HIT RATE " + (v / (double)(v + n)));
     }

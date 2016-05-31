@@ -1,5 +1,5 @@
 /**
- * CacheCompare.java
+ * CacheCompareSingleThread.java
  *
  * Copyright 2016 the original author or authors.
  *
@@ -17,16 +17,20 @@
  */
 package org.apache.niolex.commons.collection;
 
-import org.apache.niolex.commons.collection.CachePerformance.MulLRUCache;
+import java.util.Collections;
+import java.util.Map;
+
 import org.apache.niolex.commons.test.Check;
 import org.apache.niolex.commons.test.MockUtil;
+
+import com.google.common.cache.CacheBuilder;
 
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 2.1.2
  * @since May 27, 2016
  */
-public class CacheCompare {
+public class CacheCompareSingleThread {
     
     public static void put(Cache<String, Integer> c, int size) {
         for (int i = 0x100000; i < 0x100000 + size; ++i) {
@@ -34,24 +38,33 @@ public class CacheCompare {
         }
     }
     
-    public static void rand(Cache<String, Integer> c1, Cache<String, Integer> c2, int size) {
+    public static Integer getValue(int k) {
+        return k * 3 + 5;
+    }
+    
+    public static void replace(Cache<String, Integer> c, int size) {
+        for (int i = 0x100000; i < 0x100000 + size; ++i) {
+            c.put(Integer.toHexString(i), getValue(i));
+        }
+    }
+    
+    public static void rand(Cache<String, Integer>[] ca, final int length, int size) {
         int kks = size;
         int put = 0, get = 0;
         while (kks-- > 0) {
             int s = MockUtil.randInt(100, 200);
             if (s > 195) {
                 int i = MockUtil.randInt(100, 200) + 0x100000 + size;
-                c1.put(Integer.toHexString(i), i + 3);
-                c2.put(Integer.toHexString(i), i + 3);
+                for (int ss = 0; ss < length; ++ss) 
+                    ca[ss].put(Integer.toHexString(i), i + 3);
                 ++put;
             } else {
                 int i = MockUtil.randInt(0, size) + 0x100000;
-                Integer k1 = c1.get(Integer.toHexString(i));
-                Integer k2 = c2.get(Integer.toHexString(i));
-                if (k1 != null)
-                    Check.eq(i + 3, k1, "Not eq 1: " + (i + 3) + " " + k1);
-                if (k2 != null)
-                    Check.eq(i + 3, k2, "Not eq 2: " + (i + 3) + " " + k2);
+                for (int ss = 0; ss < length; ++ss) {
+                    Integer k1 = ca[ss].get(Integer.toHexString(i));
+                    if (k1 != null)
+                        Check.eq(getValue(i), k1, "Not eq " + ss + ": " + (i + 3) + " " + k1);
+                }
                 ++get;
             }
         }
@@ -65,7 +78,7 @@ public class CacheCompare {
             if (k == null)
                 ++nul;
             else
-                Check.eq(i + 3, k, "Not eq: " + (i + 3) + " " + k);
+                Check.eq(getValue(i), k, "Not eq: " + (i + 3) + " " + k);
         }
         return nul;
     }
@@ -77,53 +90,80 @@ public class CacheCompare {
             if (k == null)
                 ++nul;
             else
-                Check.eq(i + 3, k, "Not eq: " + (i + 3) + " " + k);
+                Check.eq(getValue(i), k, "Not eq: " + (i + 3) + " " + k);
         }
         return nul;
+    }
+    
+    public static <K, V> Cache<K, V>[] newArray(final int cacheSize, final int cacheNumber) {
+        @SuppressWarnings("unchecked")
+        Cache<K, V>[] ca = new Cache[cacheNumber];
+        
+        ca[0] = new ConcurrentLRUCache<K, V>(cacheSize);
+        Map<K, V> sync = Collections.synchronizedMap(new LRUHashMap<K, V>(cacheSize));
+        ca[1] = MapAsCache.newInstance(sync);
+        ca[2] = new SegmentLFUCache<K, V>(cacheSize, 32);
+        com.google.common.cache.Cache<K, V> guawaMap = CacheBuilder.newBuilder().maximumSize(cacheSize).build();
+        ca[3] = MapAsCache.newInstance(guawaMap.asMap());
+        
+        System.out.println("0 - ConcurrentLRUCache, 1 - Sync LRUHashMap, 2 - SegmentLRUCache, 3 - Guawa");
+        
+        return ca;
     }
 
     /**
      * @param args
+     * 单线程的表现，可以看下表，我们认为1 - Sync LRUHashMap, 2 - SegmentLRUCache是比较好的。
+     * 编号   插入替换查询删除
+     * Conc 0   2   3   4   3
+     * Map  1   3   1   3   1
+     * Seg  2   1   2   1   4
+     * Guawa3   4   4   2   2
      */
     public static void main(String[] args) {
-        int size = 100000;
-        @SuppressWarnings("unchecked")
-        Cache<String, Integer>[] ca = new Cache[2];
-        ca[0] = new ConcurrentLRUCache<String, Integer>(size);
-        ca[1] = new MulLRUCache<String, Integer>(new LRUHashMap<String, Integer>(size));
+        final int ARR_SIZE = 4;
+        final int CACHE_SIZE = 100000;
+        Cache<String, Integer>[] ca = newArray(CACHE_SIZE, ARR_SIZE);
         
-        System.out.println("1 - Map, 0 - Cache");
+        System.out.println("\nSingle Thread test.\n");
         
         System.out.println("Insertion time:");
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < ARR_SIZE; ++i) {
             long in = System.nanoTime();
-            put(ca[i], size + 100);
+            put(ca[i], CACHE_SIZE);
+            System.out.println(i + " " + (System.nanoTime() - in));
+        }
+        
+        System.out.println("Replace time:");
+        for (int i = 0; i < ARR_SIZE; ++i) {
+            long in = System.nanoTime();
+            replace(ca[i], CACHE_SIZE + 100);
             System.out.println(i + " " + (System.nanoTime() - in));
         }
         
         System.out.println("Size:");
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < ARR_SIZE; ++i) {
             System.out.println(i + " " + ca[i].size());
         }
         
-        rand(ca[0], ca[1], size);
+        rand(ca, ca.length, CACHE_SIZE);
         
         System.out.println("Query time:");
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < ARR_SIZE; ++i) {
             long in = System.nanoTime();
-            int c = get(ca[i], size);
+            int c = get(ca[i], CACHE_SIZE);
             System.out.println(i + " " + (System.nanoTime() - in) + " MISSED: " + c);
         }
         
         System.out.println("Remove time:");
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < ARR_SIZE; ++i) {
             long in = System.nanoTime();
-            int c = remove(ca[i], size);
+            int c = remove(ca[i], CACHE_SIZE);
             System.out.println(i + " " + (System.nanoTime() - in) + " MISSED: " + c);
         }
         
         System.out.println("Size:");
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < ARR_SIZE; ++i) {
             System.out.println(i + " " + ca[i].size());
         }
         

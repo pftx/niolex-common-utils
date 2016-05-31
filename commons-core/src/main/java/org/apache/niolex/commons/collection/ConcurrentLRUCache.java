@@ -24,6 +24,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.niolex.commons.test.Check;
 
 /**
+ * The concurrent implementation of LRU Cache.
+ * Every entry has a lock, and the whole LRU linked list share a lock.
  * <br>
  * We use 3Q algorithm to simplify LRU:<br>
  * The single LRU list is split to three parts. Every part is compared with it's header.
@@ -306,7 +308,7 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
      */
     @SuppressWarnings("unchecked")
     public ConcurrentLRUCache(int maxSize) {
-        Check.lt(50, maxSize, "The parameter 'maxSize' must greater than 50");
+        Check.lt(50, maxSize, "The parameter 'maxSize' must greater than 50.");
         this.maxSize = maxSize;
         this.entrySize = (int) (maxSize / 0.75);
         victimSize = (maxSize - 4) / 3;

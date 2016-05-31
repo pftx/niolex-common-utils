@@ -23,7 +23,7 @@ package org.apache.niolex.commons.collection;
  * @see LRUHashMap
  * @see ConcurrentLRUCache
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
- * @version 0.1.8
+ * @version 2.1.2
  * @since May 26, 2016
  */
 public interface Cache<K, V> {

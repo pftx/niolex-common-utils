@@ -32,7 +32,6 @@ public class CachePerformance {
     private static final int ONE_RUN = 1000;
     private static final int ITERATION = 100;
     
-    private static Cache<Integer, Integer> mainCache;
     private static int current = 0;
     
     private static synchronized Pair<Integer, Integer> getNextBatch() {
@@ -44,7 +43,7 @@ public class CachePerformance {
         protected final ThreadLocal<Integer> min = new ThreadLocal<Integer>();
         protected final ThreadLocal<Integer> max = new ThreadLocal<Integer>();
 
-        public Base() {
+        public Base(Cache<Integer, Integer> mainCache) {
             // super(threadsNumber, innerIteration, outerIteration);
             super(7, 1, ITERATION * 2);
             this.cache = mainCache;
@@ -58,6 +57,10 @@ public class CachePerformance {
     }
     
     private static class Insert extends Base {
+
+        public Insert(Cache<Integer, Integer> mainCache) {
+            super(mainCache);
+        }
 
         /**
          * This is the override of super method.
@@ -84,6 +87,10 @@ public class CachePerformance {
     
     private static class Query extends Base {
         
+        public Query(Cache<Integer, Integer> mainCache) {
+            super(mainCache);
+        }
+
         /**
          * This is the override of super method.
          * @see org.apache.niolex.commons.test.MultiPerformance#run()
@@ -116,75 +123,28 @@ public class CachePerformance {
      * @param args
      */
     public static void main(String[] args) {
-        Cache<Integer, Integer> cache1 = new ConcurrentLRUCache<Integer, Integer>(100000);
-        Cache<Integer, Integer> cache2 = new MulLRUCache<Integer, Integer>(new LRUHashMap<Integer, Integer>(100000));
+        final int ARR_SIZE = 4;
+        final int CACHE_SIZE = 100000;
+        Cache<Integer, Integer>[] ca = CacheCompareSingleThread.newArray(CACHE_SIZE, ARR_SIZE);
         
-        mainCache = cache1;
-        current = 0;
-        System.out.print("ConcurrentLRUCache ");
-        new Insert().start();
-        System.out.println("Size: " + mainCache.size());
+        System.out.println("7 Threads test.");
         
-        mainCache = cache2;
-        current = 0;
-        System.out.print("MulLRUCacheHashMap ");
-        new Insert().start();
-        System.out.println("Size: " + mainCache.size());
+        System.out.println("Insertion.");
+        for (int i = 0; i < ARR_SIZE; ++i) {
+            current = 0;
+            new Insert(ca[i]).start();
+            System.out.println("Size: " + ca[i].size());
+        }
         
-        mainCache = cache1;
-        current = 0;
-        System.out.print("ConcurrentLRUCache ");
-        new Query().start();
-        System.out.println("V " + VALID.getAndSet(0) + ", WRG " + WRONG.getAndSet(0) + ", NIL " + NIL.getAndSet(0));
-        mainCache = cache2;
-        current = 0;
-        System.out.print("MulLRUCacheHashMap ");
-        new Query().start();
-        System.out.println("V " + VALID.getAndSet(0) + ", WRG " + WRONG.getAndSet(0) + ", NIL " + NIL.getAndSet(0));
+        
+        
+        System.out.println("Query.");
+        for (int i = 0; i < ARR_SIZE; ++i) {
+            current = 0;
+            new Query(ca[i]).start();
+            System.out.println("Size: " + ca[i].size());
+            System.out.println("V " + VALID.getAndSet(0) + ", WRG " + WRONG.getAndSet(0) + ", NIL " + NIL.getAndSet(0));
+        }
     }
-
-    public static class MulLRUCache<K, V> implements Cache<K, V> {
-        private LRUHashMap<K, V> map;
-
-        public MulLRUCache(LRUHashMap<K, V> map) {
-            this.map = map;
-        }
-
-        /**
-         * This is the override of super method.
-         * @see org.apache.niolex.commons.collection.Cache#size()
-         */
-        @Override
-        public synchronized int size() {
-            return map.size();
-        }
-
-        /**
-         * This is the override of super method.
-         * @see org.apache.niolex.commons.collection.Cache#get(java.lang.Object)
-         */
-        @Override
-        public synchronized V get(K key) {
-            return map.get(key);
-        }
-
-        /**
-         * This is the override of super method.
-         * @see org.apache.niolex.commons.collection.Cache#put(java.lang.Object, java.lang.Object)
-         */
-        @Override
-        public synchronized V put(K key, V value) {
-            return map.put(key, value);
-        }
-
-        /**
-         * This is the override of super method.
-         * @see org.apache.niolex.commons.collection.Cache#remove(java.lang.Object)
-         */
-        @Override
-        public synchronized V remove(K key) {
-            return map.remove(key);
-        }
-        
-    }
+    
 }
