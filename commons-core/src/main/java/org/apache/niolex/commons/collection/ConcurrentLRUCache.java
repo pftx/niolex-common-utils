@@ -144,7 +144,8 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
         /**
          * Find a victim. If we found one, we will remove it from the LRU list.
          * 
-         * @return the victim
+         * @param victimSize the maximum number of victims to walk through
+         * @return the victim we found, or {@code null} if no victim can be found
          */
         public ItemEntry<K, V> findVictim(int victimSize) {
             linkLock.lock();
@@ -156,11 +157,12 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
                         // Victim found. Deal with re-construct the list.
                         
                         // 1. Paste the walked list to the head.
-                        tail.linkNext = head;
-                        head.linkPrev = tail;
-                        head = cur.linkNext;
-                        cur.linkNext.linkPrev = null;
-                        
+                        if (cur != tail) {
+                            tail.linkNext = head;
+                            head.linkPrev = tail;
+                            head = cur.linkNext;
+                            cur.linkNext.linkPrev = null;
+                        }
                         // 2. Re construct the tail.
                         tail = cur.linkPrev;
                         cur.linkPrev.linkNext = null;

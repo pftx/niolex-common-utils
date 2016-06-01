@@ -32,7 +32,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * we decrease the count.
  * <br>
  * We use lock-free technique to get item from cache, so it's super fast to read cache.
- * We only add lock when update cache.
+ * We only use lock when update cache.
  * 
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 2.1.2
@@ -101,8 +101,8 @@ public class SegmentLFUCache<K, V> implements Cache<K, V> {
      * A segment is considered as a LFUHashMap. except than we do special optimization
      * for map read as lock free operation.
      * 
-     * <p>We use stub object for map header and LFU list header, so we do not need to
-     * consider null link problem.
+     * <p>We use stub object for map header and LFU link head, so we do not need to consider
+     * the null link problem when add item into map and remove item from map.
      * 
      * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
      * @version 2.1.2
@@ -195,7 +195,7 @@ public class SegmentLFUCache<K, V> implements Cache<K, V> {
          * @param key the key
          * @param value the value
          */
-        protected void addNewItemUnderLock(int hash, K key, V value) {
+        protected final void addNewItemUnderLock(int hash, K key, V value) {
             ItemEntry<K, V> head = entryFor(hash);
             ItemEntry<K,V> e = new ItemEntry<K,V>(key, value, hash);
             
@@ -206,27 +206,44 @@ public class SegmentLFUCache<K, V> implements Cache<K, V> {
             head.mapNext = e;
             
             // Link LFU.
-            e.linkPrev = LFUHead;
-            e.linkNext = LFUHead.linkNext;
-            LFUHead.linkNext.linkPrev = e;
-            LFUHead.linkNext = e;
+            addItemIntoLinkAfterThisUnderLock(e, LFUHead);
             
             ++itemSize;
         }
         
         /**
-         * Remove the specified item from this map and the related LFU list.
+         * Link the specified item into the LFU linked list after the specified item.
          * 
-         * @param e the map item
+         * @param e the new item to be inserted into list
+         * @param after the item used to insert the new item after this one
          */
-        protected void removeItemUnderLock(ItemEntry<K,V> e) {
+        protected final void addItemIntoLinkAfterThisUnderLock(ItemEntry<K,V> e, ItemEntry<K,V> after) {
+            e.linkPrev = after;
+            e.linkNext = after.linkNext;
+            after.linkNext.linkPrev = e;
+            after.linkNext = e;
+        }
+        
+        /**
+         * Remove the specified item from this map.
+         * 
+         * @param e the map item to be removed
+         */
+        protected final void removeItemFromMapUnderLock(ItemEntry<K,V> e) {
             e.mapPrev.mapNext = e.mapNext;
             e.mapNext.mapPrev = e.mapPrev;
             
+            --itemSize;
+        }
+        
+        /**
+         * Remove the specified item from the related LFU list.
+         * 
+         * @param e the LFU linked item to be removed
+         */
+        protected final void removeItemFromLinkUnderLock(ItemEntry<K,V> e) {
             e.linkPrev.linkNext = e.linkNext;
             e.linkNext.linkPrev = e.linkPrev;
-            
-            --itemSize;
         }
         
         /**
@@ -234,6 +251,7 @@ public class SegmentLFUCache<K, V> implements Cache<K, V> {
          * 
          * @param hash the key hash
          * @param key the key
+         * @param value the value
          * @return the old value if item exists, {@code null} if not found
          */
         protected V put(int hash, K key, V value) {
@@ -273,7 +291,8 @@ public class SegmentLFUCache<K, V> implements Cache<K, V> {
                 }
                 
                 // Item found, remove it.
-                removeItemUnderLock(e);
+                removeItemFromMapUnderLock(e);
+                removeItemFromLinkUnderLock(e);
                 return e.value;
             } finally {
                 w.unlock();
@@ -302,17 +321,12 @@ public class SegmentLFUCache<K, V> implements Cache<K, V> {
                 
                 while (tail != LFUHead) {
                     if (++visits > batchSize) {
-                        // Visit too much, we stop and put head here.
+                        // Visit too much, we stop and put head here, so the visited item will not be visited again in the next eviction.
                         
                         // Remove head.
-                        LFUHead.linkPrev.linkNext = LFUHead.linkNext;
-                        LFUHead.linkNext.linkPrev = LFUHead.linkPrev;
-                        
+                        removeItemFromLinkUnderLock(LFUHead);
                         // Re-add head.
-                        LFUHead.linkNext = tail.linkNext;
-                        tail.linkNext.linkPrev = LFUHead;
-                        LFUHead.linkPrev = tail;
-                        tail.linkNext = LFUHead;
+                        addItemIntoLinkAfterThisUnderLock(LFUHead, tail);
                         
                         return 0;
                     }
@@ -320,7 +334,24 @@ public class SegmentLFUCache<K, V> implements Cache<K, V> {
                     // Check entry visit count.
                     if (--tail.visits <= 0) {
                         // Victim found, remove it.
-                        removeItemUnderLock(tail);
+                        removeItemFromMapUnderLock(tail);
+                        
+                        // After remove from map, we need to remove it from LFU linked list.
+                        if (tail.linkNext == LFUHead) {
+                            // In this case, we just found it the first time, do not need to re-assign head.
+                            removeItemFromLinkUnderLock(tail);
+                        } else {
+                            // In this case, we remove head, and then put head to replace tail in place.
+                            // Remove head.
+                            removeItemFromLinkUnderLock(LFUHead);
+                            
+                            // We use LFUHead to replace tail.
+                            LFUHead.linkPrev = tail.linkPrev;
+                            LFUHead.linkNext = tail.linkNext;
+                            // We remove item from linked list manually. 
+                            tail.linkPrev.linkNext = LFUHead;
+                            tail.linkNext.linkPrev = LFUHead;
+                        }
                         return 1;
                     }
                     
@@ -407,7 +438,7 @@ public class SegmentLFUCache<K, V> implements Cache<K, V> {
     }
 
     /**
-     * Creates a new, empty SegmentLFUCache.
+     * Creates a new, empty SegmentLFUCache. The {@literal maxSize} must greater than 2048.
      * 
      * @param maxSize the max number of cache items to store
      * @param concurrencyLevel the estimated number of concurrently updating threads.

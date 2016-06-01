@@ -4,6 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
+import org.apache.niolex.commons.collection.ConcurrentLRUCache.ItemEntry;
+import org.apache.niolex.commons.collection.ConcurrentLRUCache.TableEntry;
+import org.apache.niolex.commons.collection.ConcurrentLRUCache.ThreeQLRUList;
+import org.apache.niolex.commons.concurrent.ThreadUtil;
+import org.apache.niolex.commons.reflect.FieldUtil;
 
 public class ConcurrentLRUCacheTest {
     
@@ -75,15 +80,127 @@ public class ConcurrentLRUCacheTest {
         assertNull(i);
         assertEquals(2, cache.size());
     }
-
+    
+    @Test(expected=NullPointerException.class)
+    public void testPutEx() throws Exception {
+        FieldUtil.setValue(cache, "lruList", null);
+        cache.put("duie", 44);
+    }
+    
+    @Test
+    public void testPutNoVictim() throws Exception {
+        for (int i = 100; i < 201; ++ i) {
+            cache.put("duie-" + i, i);
+        }
+        assertEquals(100, cache.size());
+        ThreeQLRUList<String, Integer> tq = new ThreeQLRUList<String, Integer>();
+        FieldUtil.setValue(cache, "lruList", tq);
+        cache.put("duie", 44);
+        assertEquals(101, cache.size());
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testPutBadVictim() throws Exception {
+        ConcurrentLRUCache<String, Integer> cache2 = new ConcurrentLRUCache<String, Integer>(100);
+        for (int i = 100; i < 201; ++ i) {
+            cache2.put("duie-" + i, i);
+        }
+        assertEquals(100, cache2.size());
+        ThreeQLRUList<String, Integer> tq = FieldUtil.getValue(cache2, "lruList");
+        
+        for (int i = 100; i < 201; ++ i) {
+            cache.put("duie-" + i, i);
+        }
+        assertEquals(100, cache.size());
+        FieldUtil.setValue(cache, "lruList", tq);
+        cache.put("duie", 44);
+        assertEquals(100, cache.size());
+    }
+    
+    @Test
+    public void testPutBadVictim2() throws Exception {
+        ConcurrentLRUCache<String, Integer> cache2 = new ConcurrentLRUCache<String, Integer>(100);
+        for (int i = 100; i < 201; ++ i) {
+            cache2.put("duie-" + i, i);
+        }
+        assertEquals(100, cache2.size());
+        ThreeQLRUList<String, Integer> tq = FieldUtil.getValue(cache2, "lruList");
+        
+        for (int i = 100; i < 201; ++ i) {
+            cache.put("duie-" + i, i);
+        }
+        assertEquals(100, cache.size());
+        FieldUtil.setValue(cache, "lruList", tq);
+        
+        ItemEntry<String, Integer> e2 = FieldUtil.getValue(tq, "tail");
+        ItemEntry<String, Integer> e3 = new ItemEntry<String, Integer>();
+        
+        FieldUtil.setValue(e2, "mapPrev", e2);
+        FieldUtil.setValue(e2, "mapNext", e3);
+        
+        cache.put("duie", 44);
+        assertEquals(101, cache.size());
+    }
+    
     @Test
     public void testRemove() throws Exception {
         assertNull(cache.remove("duie"));
     }
+    
+    @Test(expected=NullPointerException.class)
+    public void testRemoveEx() throws Exception {
+        cache.put("duie", 44);
+        FieldUtil.setValue(cache, "lruList", null);
+        assertNull(cache.remove("duie"));
+    }
+    
+    @Test
+    public void testThreeQLRUList() throws Exception {
+        ThreeQLRUList<String, Integer> tq = new ThreeQLRUList<String, Integer>();
+        ItemEntry<String,Integer> entry = tq.findVictim(3);
+        assertNull(entry);
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testThreeQLRUListNullHeader() throws Exception {
+        ThreeQLRUList<String, Integer> tq = new ThreeQLRUList<String, Integer>();
+        ItemEntry<String,Integer> e1 = new ItemEntry<String,Integer>();
+        FieldUtil.setValue(tq, "tail", e1);
+        tq.pushHeaderTime(100);
+        tq.pushHeaderTime(1000);
+        tq.pushHeaderTime(10000);
+        ItemEntry<String,Integer> entry = tq.findVictim(3);
+        assertNull(entry);
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testThreeQLRUListNullEntryAdd() throws Exception {
+        ThreeQLRUList<String, Integer> tq = new ThreeQLRUList<String, Integer>();
+        ItemEntry<String,Integer> e1 = new ItemEntry<String,Integer>();
+        FieldUtil.setValue(tq, "head", e1);
+        tq.pushHeaderTime(100);
+        tq.pushHeaderTime(1000);
+        tq.pushHeaderTime(10000);
+        tq.addEntry(null);
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testThreeQLRUListNullEntryRm() throws Exception {
+        ThreeQLRUList<String, Integer> tq = new ThreeQLRUList<String, Integer>();
+        ItemEntry<String,Integer> e1 = new ItemEntry<String,Integer>();
+        FieldUtil.setValue(tq, "head", e1);
+        tq.pushHeaderTime(100);
+        tq.pushHeaderTime(1000);
+        tq.pushHeaderTime(10000);
+        tq.removeEntry(null);
+    }
 
     @Test
     public void testRemoveEntryFromMap() throws Exception {
-        throw new RuntimeException("not yet implemented");
+        TableEntry<String, Integer> en = new TableEntry<String, Integer>();
+        ItemEntry<String, Integer> e2 = new ItemEntry<String, Integer>();
+        FieldUtil.setValue(e2, "mapNext", e2);
+        cache.removeEntryFromMap(en, e2);
     }
 
     @Test
@@ -152,7 +269,56 @@ public class ConcurrentLRUCacheTest {
 
     @Test
     public void testAddVisit() throws Exception {
-        throw new RuntimeException("not yet implemented");
+        TableEntry<String, Integer> en = new TableEntry<String, Integer>();
+        ItemEntry<String, Integer> e2 = new ItemEntry<String, Integer>();
+        ItemEntry<String, Integer> e3 = new ItemEntry<String, Integer>();
+        ItemEntry<String, Integer> e4 = new ItemEntry<String, Integer>();
+        ItemEntry<String, Integer> e5 = new ItemEntry<String, Integer>();
+        FieldUtil.setValue(en, "head", e2);
+        FieldUtil.setValue(e2, "mapNext", e3);
+        FieldUtil.setValue(e3, "mapNext", e4);
+        FieldUtil.setValue(e4, "mapNext", e5);
+        FieldUtil.setValue(e5, "mapNext", e2);
+        FieldUtil.setValue(e2, "hash", 66);
+        FieldUtil.setValue(e3, "hash", 77);
+        FieldUtil.setValue(e4, "hash", 77);
+        FieldUtil.setValue(e5, "hash", 77);
+        FieldUtil.setValue(e2, "key", "Good");
+        FieldUtil.setValue(e3, "key", "good");
+        FieldUtil.setValue(e4, "key", "Good");
+        FieldUtil.setValue(e5, "key", new String("Goode"));
+        ItemEntry<String, Integer> f1 = cache.findItemFromMapEntry(en, 77, "Good");
+        ItemEntry<String, Integer> f2 = cache.findItemFromMapEntry(en, 77, "Goode");
+        
+        assertEquals(e4, f1);
+        assertEquals(e5, f2);
     }
 
+    @Test
+    public void testGetHit() throws Exception {
+        cache.put("lex", 66);
+        for (int i = 100; i < 199; ++ i) {
+            cache.put("duie-" + i, i);
+        }
+        ThreadUtil.sleepAtLeast(1);
+        assertEquals(66, cache.get("lex").intValue());
+        ThreadUtil.sleepAtLeast(1);
+        for (int i = 200; i < 299; ++ i) {
+            cache.put("duie-" + i, i);
+        }
+        assertEquals(66, cache.get("lex").intValue());
+        assertEquals(100, cache.size());
+        
+        TableEntry<String, Integer>[] table = FieldUtil.getValue(cache, "table");
+        int entrySize = FieldUtil.getValue(cache, "entrySize");
+        
+        int cnt = 0;
+        for (int i = 0; i < entrySize; ++i) {
+            TableEntry<String, Integer> en = table[i];
+            for (ItemEntry<String, Integer> e2 = FieldUtil.getValue(en, "head"); e2 != null; e2 = FieldUtil.getValue(e2, "mapNext")) {
+                ++cnt;
+            }
+        }
+        assertEquals(100, cnt);
+    }
 }

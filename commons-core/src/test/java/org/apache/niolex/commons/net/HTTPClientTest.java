@@ -13,38 +13,43 @@ import org.apache.niolex.commons.reflect.FieldUtil;
 import org.junit.Test;
 
 public class HTTPClientTest {
+    
+    private static final String BASIC_URL = "http://httpbin.org/";
+    
+    public static final String tidyStr(String s) {
+        return s.replaceAll("\r*\n", "").replaceAll(" *", "");
+    }
 
     @Test
     public void testHTTPClientStringString() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com", "utf8");
-        HTTPResult r = hc.get("basic-auth", null);
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
+        HTTPResult r = hc.get("basic-auth/user/passwd", null);
         System.out.println(r);
         assertEquals(401, r.getRespCode());
-        assertEquals("Unauthorized", r.getRespBodyStr());
         System.out.println("Headers " + r.getRespHeaders());
     }
 
     @Test
     public void testHTTPClientStringStringIntInt() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com", "utf8", 6000, 6000);
-        hc.authorization("postman", "password");
-        HTTPResult r = hc.get("basic-auth", null);
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8", 6000, 6000);
+        hc.authorization("user", "passwd");
+        HTTPResult r = hc.get("basic-auth/user/passwd", null);
         System.out.println(r);
         assertEquals(200, r.getRespCode());
-        assertEquals("{\"authenticated\":true}", r.getRespBodyStr());
+        assertEquals("{\"authenticated\":true,\"user\":\"user\"}", tidyStr(r.getRespBodyStr()));
         System.out.println("Headers " + r.getRespHeaders());
     }
 
     @Test
     public void testAuthorization() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com", "utf8");
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
         Map<String, String> params = new HashMap<String, String>();
         params.put("usa", "good");
         params.put("oo", "lex");
-        HTTPResult r = hc.get("response-headers", params);
+        HTTPResult r = hc.get("get", params);
         System.out.println(r);
         assertEquals(200, r.getRespCode());
-        assertEquals("{\"oo\":\"lex\",\"usa\":\"good\"}", r.getRespBodyStr());
+        assertTrue(tidyStr(r.getRespBodyStr()).contains("{\"oo\":\"lex\",\"usa\":\"good\"}"));
         System.out.println("Headers " + r.getRespHeaders());
     }
 
@@ -69,7 +74,7 @@ public class HTTPClientTest {
 
     @Test
     public void testProcessCookieNull() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com", "utf8");
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
         Map<String, String> reqHeaders = FieldUtil.getValue(hc, "reqHeaders");
         Map<String, List<String>> respHeaders = new HashMap<String, List<String>>();
         respHeaders.put("Set-Cookie", null);
@@ -79,7 +84,7 @@ public class HTTPClientTest {
 
     @Test
     public void testProcessCookieBig() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com", "utf8");
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
         Map<String, String> reqHeaders = FieldUtil.getValue(hc, "reqHeaders");
         Map<String, List<String>> respHeaders = new HashMap<String, List<String>>();
         List<String> cc = new ArrayList<String>();
@@ -91,7 +96,7 @@ public class HTTPClientTest {
 
     @Test
     public void testProcessCookieLittle() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com", "utf8");
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
         Map<String, String> reqHeaders = FieldUtil.getValue(hc, "reqHeaders");
         Map<String, List<String>> respHeaders = new HashMap<String, List<String>>();
         List<String> cc = new ArrayList<String>();
@@ -104,7 +109,7 @@ public class HTTPClientTest {
 
     @Test
     public void testProcessCookieEpty() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com", "utf8");
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
         Map<String, String> reqHeaders = FieldUtil.getValue(hc, "reqHeaders");
         Map<String, List<String>> respHeaders = new HashMap<String, List<String>>();
         List<String> s = Collections.emptyList();
@@ -115,39 +120,39 @@ public class HTTPClientTest {
 
     @Test
     public void testGenerateURL() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com/head", "utf8");
+        HTTPClient hc = new HTTPClient("https://httpbin.org/head", "utf8");
         String s1 = hc.generateURL("");
         String s2 = hc.generateURL("abc");
         String s3 = hc.generateURL("../abc");
         String s4 = hc.generateURL("../abc/./../def");
         String s5 = hc.generateURL("../abc/./../../../../def");
 
-        assertEquals("https://echo.getpostman.com/head", s1);
-        assertEquals("https://echo.getpostman.com/head/abc", s2);
-        assertEquals("https://echo.getpostman.com/abc", s3);
-        assertEquals("https://echo.getpostman.com/def", s4);
-        assertEquals("https://echo.getpostman.com/def", s5);
+        assertEquals("https://httpbin.org/head", s1);
+        assertEquals("https://httpbin.org/head/abc", s2);
+        assertEquals("https://httpbin.org/abc", s3);
+        assertEquals("https://httpbin.org/def", s4);
+        assertEquals("https://httpbin.org/def", s5);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testProcessEndPointInvalid1() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com/head", "utf8");
+        HTTPClient hc = new HTTPClient("https://httpbin.org/head", "utf8");
         String s1 = hc.processEndPoint("");
 
-        assertEquals("https://echo.getpostman.com/head", s1);
+        assertEquals("https://httpbin.org/head", s1);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testProcessEndPointInvalid2() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com/head", "utf8");
-        String s1 = hc.processEndPoint("ftp://echo.getpostman.com/head.zip");
+        HTTPClient hc = new HTTPClient("https://httpbin.org/head", "utf8");
+        String s1 = hc.processEndPoint("ftp://httpbin.org/head.zip");
 
-        assertEquals("https://echo.getpostman.com/head", s1);
+        assertEquals("https://httpbin.org/head", s1);
     }
 
     @Test
     public void testProcessEndPoint() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com/head", "utf8");
+        HTTPClient hc = new HTTPClient("https://httpbin.org/head", "utf8");
         String s1 = hc.processEndPoint("http://www.pftx.org/index.html");
 
         assertEquals("http://www.pftx.org/index.html", s1);
@@ -155,7 +160,7 @@ public class HTTPClientTest {
 
     @Test
     public void testProcessEndPoint2() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com/head", "utf8");
+        HTTPClient hc = new HTTPClient("https://httpbin.org/head", "utf8");
         String s1 = hc.processEndPoint("http://www.pftx.org/");
 
         assertEquals("http://www.pftx.org", s1);
@@ -163,7 +168,7 @@ public class HTTPClientTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testProcessEndPointInvalidQ() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com/head", "utf8");
+        HTTPClient hc = new HTTPClient("https://httpbin.org/head", "utf8");
         String s1 = hc.processEndPoint("http://www.pftx.org/index.html?name=lex");
 
         assertEquals("http://www.pftx.org/index.html", s1);
@@ -171,7 +176,7 @@ public class HTTPClientTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testProcessEndPointInvalidR() throws Exception {
-        HTTPClient hc = new HTTPClient("https://echo.getpostman.com/head", "utf8");
+        HTTPClient hc = new HTTPClient("https://httpbin.org/head", "utf8");
         String s1 = hc.processEndPoint("http://www.pftx.org/index.html#ref2");
 
         assertEquals("http://www.pftx.org/index.html", s1);

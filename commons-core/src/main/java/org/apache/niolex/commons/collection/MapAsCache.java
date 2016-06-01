@@ -31,6 +31,8 @@ public class MapAsCache<K, V> implements Cache<K, V> {
     /**
      * Create a new instance of {@link MapAsCache} powered by the specified map.
      * 
+     * @param <K> the key type
+     * @param <V> the value type
      * @param map the map used to backup this cache
      * @return the created cache
      */
