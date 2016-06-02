@@ -19,6 +19,7 @@ package org.apache.niolex.commons.codec;
 
 import static org.junit.Assert.*;
 
+import org.apache.niolex.commons.test.MockUtil;
 import org.junit.Test;
 
 /**
@@ -26,7 +27,51 @@ import org.junit.Test;
  * @version 1.0.0, $Date: 2012-11-11$
  */
 public class IntegerUtilTest extends IntegerUtil {
-
+    
+    @Test
+    public void testEightBytes() throws Exception {
+        long l = 0xf2dc136645dfe89al;
+        byte[] lb = toEightBytes(l);
+        String s1 = Long.toHexString(l);
+        String s2 = Base16Util.byteToBase16(lb);
+        System.out.println("Original " + s1 + ", Encoded " + s2);
+        assertEquals(s1, s2);
+        long b = eightBytes(lb, 0);
+        System.out.println("Original " + l + ", Encoded " + b);
+        assertEquals(l, b);
+    }
+    
+    @Test
+    public void testEightBytes2() throws Exception {
+        long l = 0x32dc136645dfe89al;
+        byte[] lb = toEightBytes(l);
+        String s1 = Long.toHexString(l);
+        String s2 = Base16Util.byteToBase16(lb);
+        System.out.println("Original " + s1 + ", Encoded " + s2);
+        assertEquals(s1, s2);
+        long b = eightBytes(lb, 0);
+        System.out.println("Original " + l + ", Encoded " + b);
+        assertEquals(l, b);
+    }
+    
+    @Test
+    public void testToEightBytes() throws Exception {
+        final String s = "000000000000000000000000";
+        for (int i = 0; i < 100000; ++i) {
+            byte[] lb = MockUtil.randByteArray(8);
+            String s1 = Base16Util.byteToBase16(lb);
+            long l = eightBytes(lb, 0);
+            String s2 = Long.toHexString(l);
+            if (s2.length() != 16) {
+                s2 = s.substring(0, 16 - s2.length()) + s2;
+            }
+            assertEquals(s1, s2);
+            
+            byte[] la = toEightBytes(l);
+            assertArrayEquals(la, lb);
+        }
+    }
+    
     @Test
     public void testFourBytes() throws Exception {
         int i = IntegerUtil.fourBytes((byte)1, (byte)3, (byte)4, (byte)5);
@@ -37,6 +82,36 @@ public class IntegerUtilTest extends IntegerUtil {
     public void testFourBytes2() throws Exception {
         int i = IntegerUtil.fourBytes((byte)0x20, (byte)0xb7, (byte)0x6a, (byte)0x73);
         assertEquals(i, 548891251);
+    }
+    
+    @Test
+    public void testFourBytes3() throws Exception {
+        int kk = 0xf2d37d9a;
+        byte[] bb = toFourBytes(kk);
+        String s = Base16Util.byteToBase16(bb);
+        assertEquals("f2d37d9a", s);
+        int i = fourBytes(bb, 0);
+        assertEquals(i, kk);
+    }
+    
+    @Test
+    public void testFourBytes4() throws Exception {
+        int kk = 0x72d37d9a;
+        byte[] bb = toFourBytes(kk);
+        String s = Base16Util.byteToBase16(bb);
+        assertEquals("72d37d9a", s);
+        int i = fourBytes(bb, 0);
+        assertEquals(i, kk);
+    }
+    
+    @Test
+    public void testFourBytes5() throws Exception {
+        int kk = 0x9f13709a;
+        byte[] bb = toFourBytes(kk);
+        String s = Base16Util.byteToBase16(bb);
+        assertEquals("9f13709a", s);
+        int i = fourBytes(bb, 0);
+        assertEquals(i, kk);
     }
 
     @Test
@@ -94,7 +169,25 @@ public class IntegerUtilTest extends IntegerUtil {
             assertEquals(arr[3], (byte)(i % 256));
         }
     }
-
+    
+    @Test
+    public void testToFourBytes2() throws Exception {
+        final String s = "000000000000000000000000";
+        for (int i = 0; i < 100000; ++i) {
+            byte[] lb = MockUtil.randByteArray(4);
+            String s1 = Base16Util.byteToBase16(lb);
+            int kk = fourBytes(lb, 0);
+            String s2 = Integer.toHexString(kk);
+            if (s2.length() != 8) {
+                s2 = s.substring(0, 8 - s2.length()) + s2;
+            }
+            assertEquals(s1, s2);
+            
+            byte[] la = toFourBytes(kk);
+            assertArrayEquals(la, lb);
+        }
+    }
+    
 	/**
 	 * Test method for {@link org.apache.niolex.commons.codec.IntegerUtil#threeBytes(byte, byte, byte)}.
 	 */

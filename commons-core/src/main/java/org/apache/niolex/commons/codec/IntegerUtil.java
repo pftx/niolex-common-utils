@@ -30,9 +30,54 @@ import org.apache.niolex.commons.util.Const;
  * @version 1.0.0, $Date: 2012-11-11$
  */
 public abstract class IntegerUtil {
+    
+    /**
+     * Create a long integer using 8 bytes from the specified byte array, start from the specified index.
+     * (Most significant byte first.)
+     *
+     * @param arr the byte array
+     * @param idx the data start index
+     * @return the result long integer
+     */
+    public static final long eightBytes(byte[] arr, int idx) {
+        long l = 0;
+        
+        for (int i = 0; i < 8; i++) {
+            l <<= 8;
+            l |= arr[idx + i] & 0xff;
+        }
+        
+        return l;
+    }
+    
+    /**
+     * Encode the specified long integer into eight bytes. (Most significant byte first.)
+     * 
+     * @param l the long integer to be encoded
+     * @return the eight bytes array
+     */
+    public static final byte[] toEightBytes(long l) {
+        byte[] retVal = new byte[8];
+        encEightBytes(l, retVal, 0);
+        return retVal;
+    }
+    
+    /**
+     * Encode the specified long integer into eight bytes, store the result into the specified array. (Most significant byte first.)
+     *
+     * @param l the long integer to be encoded
+     * @param arr the array used to to store the results
+     * @param idx the start index to store result
+     */
+    public static final void encEightBytes(long l, byte[] arr, int idx) {
+        for (int i = 0; i < 8; i++) {
+            arr[i] = (byte) (l >> 8 * (7 - i));
+        }
+    }
 
     /**
      * Create an integer from the specified byte array, start from the specified index.
+     * (Most significant byte first.)
      *
      * @param arr the byte array
      * @param idx the data start index
@@ -56,7 +101,7 @@ public abstract class IntegerUtil {
     }
 
     /**
-     * Encode the integer into four bytes.
+     * Encode the integer into four bytes. (Most significant byte first.)
      *
      * @param i the integer to be encoded
      * @return the encoded four bytes
@@ -68,7 +113,7 @@ public abstract class IntegerUtil {
     }
 
     /**
-     * Encode the integer into four bytes, store the result into the specified array.
+     * Encode the integer into four bytes, store the result into the specified array. (Most significant byte first.)
      *
      * @param i the integer need to be encoded
      * @param arr the array used to to store the results
@@ -159,7 +204,7 @@ public abstract class IntegerUtil {
 	 *
 	 * @param str the string to be parsed.
 	 * @return the double value represented by the string argument.
-	 * @throws NumberFormatException if the string does not contain a parsable double.
+	 * @throws NumberFormatException if the string can not be parsed by our format.
 	 */
 	public static final double fromSize(String str) {
 	    final int len = str.length();

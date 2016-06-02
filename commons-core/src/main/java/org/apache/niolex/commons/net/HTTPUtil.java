@@ -454,7 +454,7 @@ public abstract class HTTPUtil {
 
         while (idx < end) {
             char ch = rawCharSet.charAt(idx);
-            if (ch == '\'' || ch == '"' || ch == ' '|| ch == ';') break;
+            if (ch == '\'' || ch == '"' || ch == ' '|| ch == ';' || ch == '>') break;
             else ++idx;
         }
         return Charset.forName(rawCharSet.substring(start, idx));

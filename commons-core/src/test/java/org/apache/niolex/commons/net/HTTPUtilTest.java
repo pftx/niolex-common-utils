@@ -253,6 +253,19 @@ public class HTTPUtilTest extends HTTPUtil {
         Charset cs = inferCharset(headers, body);
         assertEquals(cs, Charset.forName("gb2312"));
     }
+    
+    @Test
+    public void testInferCharsetSogou() throws Exception {
+        byte[] body = StringUtil.strToUtf8Byte("<!DOCTYPE HTML><script>var _speedMark=new Date</script><meta charset=utf-8><title>搜狗搜索引擎 - 上网从搜狗开始</title><link href=" +
+                    "\"/images/logo/new/favicon.ico?v=2\" rel=\"shortcut icon\" type=image/x-icon><meta content=\"IE=Edge\" http-equiv=X-UA-Compatible><meta content=搜狗搜索,网页" + 
+                "搜索,微信搜索,视频搜索,图片搜索,音乐搜索,新闻搜索,软件搜索,问答搜索,百科搜索,购物搜索 name=keywords><meta content=中国最领先的中文搜索引擎，支持微信公众号、" +
+                    "文章搜索，通过独有的SogouRank技术及人工智能算法为您提供最快、最准、最全的搜索服务。 name=description><style>");
+        Map<String, List<String>> headers = Maps.newHashMap();
+        headers.put("Server", Lists.newArrayList("A-Nginx"));
+        headers.put("Content-Type", null);
+        Charset cs = inferCharset(headers, body);
+        assertEquals(cs, Charset.forName("utf8"));
+    }
 
     @Test
     public void testPrepareWwwFormUrlEncoded() throws Exception {
@@ -317,9 +330,15 @@ public class HTTPUtilTest extends HTTPUtil {
         byte[] ret = checkAndDownloadData("not yet implemented", 0, input);
         assertNull(ret);
     }
+    
+    @Test
+    public void testRetrieveCharsetFromString() throws Exception {
+        Charset charset = retrieveCharsetFromString("=utf-8>");
+        assertEquals(StringUtil.UTF_8, charset);
+    }
 
     @Test(expected=IllegalCharsetNameException.class)
-    public void testRetrieveCharsetFromString() throws Exception {
+    public void testRetrieveCharsetFromStringInvalid() throws Exception {
         retrieveCharsetFromString("'='");
     }
 
