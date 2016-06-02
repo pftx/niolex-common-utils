@@ -109,7 +109,7 @@ public abstract class KeyUtil {
             secureRandom = new SecureRandom(Base64Util.base64toByte(seed));
         } else {
             secureRandom = new SecureRandom();
-            secureRandom.setSeed(secureRandom.generateSeed(32));
+            secureRandom.setSeed(System.nanoTime());
         }
 
         KeyGenerator kg = getKeyGenerator(algorithm);
