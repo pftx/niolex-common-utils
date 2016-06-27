@@ -101,7 +101,7 @@ public class SQLGenerator {
         sb.append("INSERT INTO ").append(tableName).append(" (");
         
         for (Map.Entry<String, String> en : map.entrySet()) {
-            sbV.append('#').append(en.getKey()).append(", ");
+            sbV.append("#{").append(en.getKey()).append("}, ");
             sbK.append(en.getValue()).append(", ");
         }
         sbK.setLength(sbK.length() - 2);
@@ -130,9 +130,9 @@ public class SQLGenerator {
         
         for (Map.Entry<String, String> en : map.entrySet()) {
             if (StringUtil.isIn(en.getKey(), whereConditions)) {
-                where.append(en.getValue()).append(" = #").append(en.getKey()).append(" AND ");
+                where.append(en.getValue()).append(" = #{").append(en.getKey()).append("} AND ");
             } else {
-                sb.append(en.getValue()).append(" = #").append(en.getKey()).append(", ");
+                sb.append(en.getValue()).append(" = #{").append(en.getKey()).append("}, ");
             }
         }
         sb.setLength(sb.length() - 2);
@@ -160,7 +160,7 @@ public class SQLGenerator {
         
         for (Map.Entry<String, String> en : map.entrySet()) {
             if (StringUtil.isIn(en.getKey(), whereConditions)) {
-                where.append(en.getValue()).append(" = #").append(en.getKey()).append(" AND ");
+                where.append(en.getValue()).append(" = #{").append(en.getKey()).append("} AND ");
             } else {
                 sb.append(en.getValue()).append(", ");
             }
