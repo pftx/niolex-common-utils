@@ -3,8 +3,10 @@ package org.apache.niolex.commons.test;
 import static org.junit.Assert.assertEquals;
 
 import java.text.DateFormat;
-import java.util.Random;
 
+import org.apache.niolex.commons.coder.AESCoder;
+import org.apache.niolex.commons.collection.CircularList;
+import org.apache.niolex.commons.control.FrequencyCheck;
 import org.apache.niolex.commons.net.HTTPClient;
 import org.apache.niolex.commons.net.HTTPMethod;
 import org.apache.niolex.commons.net.HTTPResult;
@@ -21,26 +23,26 @@ public class SQLGeneratorTest extends SQLGenerator {
     }
 
     @Test
-    public void testGenerateColumnMap() throws Exception {
-        System.out.println(generateColumnMap(StopWatch.class));
+    public void testGenerateColumnMappingList() throws Exception {
+        assertEquals("[{a=distributionInterval, b=DISTRIBUTION_INTERVAL}, {a=linkList, b=LINK_LIST}, {a=rpsList, b=RPS_LIST}, {a=counter, b=COUNTER}, {a=rumme, b=RUMME}, {a=startTime, b=START_TIME}, {a=distributions, b=DISTRIBUTIONS}, {a=avg, b=AVG}, {a=max, b=MAX}, {a=min, b=MIN}, {a=rps, b=RPS}]", generateColumnMappingList(StopWatch.class).toString());
     }
 
     @Test
     public void testGenerateInsert() throws Exception {
-        assertEquals("INSERT INTO HTTP (COOKIE, READ_TIMEOUT, CONNECT_TIMEOUT, END_POINT, CHARSET, AUTHORIZATION, REFERER, END_POINT_DIR_DEPTH, REQ_HEADERS) VALUES (#{cookie}, #{readTimeout}, #{connectTimeout}, #{endPoint}, #{charset}, #{authorization}, #{referer}, #{endPointDirDepth}, #{reqHeaders});", generateInsert(HTTPClient.class, "HTTP"));
-        assertEquals("INSERT INTO HTTP_METH (NAME, ORDINAL, PASS_PARAMETERS_IN_URL) VALUES (#{name}, #{ordinal}, #{passParametersInURL});", generateInsert(HTTPMethod.class, "HTTP_METH"));
-        assertEquals("INSERT INTO HTTP_RESULT (RESP_BODY_STR, RESP_CODE, CLIENT, RESP_BODY, RESP_HEADERS) VALUES (#{respBodyStr}, #{respCode}, #{client}, #{respBody}, #{respHeaders});", generateInsert(HTTPResult.class, "HTTP_RESULT"));
+        assertEquals("INSERT INTO HTTP (REQ_HEADERS, END_POINT, CHARSET, END_POINT_DIR_DEPTH, CONNECT_TIMEOUT, READ_TIMEOUT, COOKIE, REFERER, AUTHORIZATION) VALUES (#{reqHeaders}, #{endPoint}, #{charset}, #{endPointDirDepth}, #{connectTimeout}, #{readTimeout}, #{cookie}, #{referer}, #{authorization});", generateInsert(HTTPClient.class, "HTTP"));
+        assertEquals("INSERT INTO HTTP_METH (PASS_PARAMETERS_IN_URL, NAME, ORDINAL) VALUES (#{passParametersInURL}, #{name}, #{ordinal});", generateInsert(HTTPMethod.class, "HTTP_METH"));
+        assertEquals("INSERT INTO HTTP_RESULT (RESP_CODE, RESP_HEADERS, RESP_BODY, RESP_BODY_STR, CLIENT) VALUES (#{respCode}, #{respHeaders}, #{respBody}, #{respBodyStr}, #{client});", generateInsert(HTTPResult.class, "HTTP_RESULT"));
     }
 
     @Test
     public void testGenerateUpdate() throws Exception {
-        assertEquals("UPDATE TMP_S SET COUNT = #{count}, HASH = #{hash}, VALUE = #{value} WHERE OFFSET = #{offset};", generateUpdate(String.class, "TMP_S", "offset"));
-        System.out.println(generateUpdate(Random.class, "TMP_S", "seed"));
+        assertEquals("UPDATE TMP_S SET CYCLIC = #{cyclic}, TOTAL_NUM = #{totalNum} WHERE CURRENT_NUM = #{currentNum};", generateUpdate(FrequencyCheck.class, "TMP_S", "currentNum"));
+        System.out.println(generateUpdate(AESCoder.class, "TMP_S", "secretKey"));
     }
 
     @Test
     public void testGenerateSelect() throws Exception {
-        assertEquals("SELECT HAVE_NEXT_NEXT_GAUSSIAN, NEXT_NEXT_GAUSSIAN FROM TMP_S WHERE SEED = #{seed};", generateSelect(Random.class, "TMP_S", "seed"));
+        assertEquals("SELECT CAPACITY, ELEMENT_DATA, SIZE, MOD_COUNT FROM TMP_S WHERE HEAD = #{head};", generateSelect(CircularList.class, "TMP_S", "head"));
         System.out.println(generateSelect(DateFormat.class, "TMP_DATE", "numberFormat"));
     }
 

@@ -18,10 +18,10 @@
 package org.apache.niolex.commons.test;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.niolex.commons.bean.Pair;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.reflect.FieldFilter;
 
@@ -67,22 +67,22 @@ public class SQLGenerator {
     }
     
     /**
-     * Generate the map which contains mapping for all the instance fields to DB column name.
+     * Generate the mapping list which contains all the mappings from the instance fields to DB column names.
      * 
      * @param clazz the Java entity class
-     * @return the generated map as {field name =&gt; DB Column name}.
+     * @return the generated mapping list (pair.a is field name; pair.b is DB Column name).
      */
-    public static final Map<String, String> generateColumnMap(Class<?> clazz) {
-        Map<String, String> map = new HashMap<String, String>();
+    public static final List<Pair<String, String>> generateColumnMappingList(Class<?> clazz) {
+        List<Pair<String, String>> mappingList = new ArrayList<Pair<String, String>>();
         
         List<Field> list = FieldFilter.c().noStatic().noSynthetic().clazz(clazz).find().results();
         
         for (Field f : list) {
             String fieldName = f.getName();
-            map.put(fieldName, generateColumnName(fieldName));
+            mappingList.add(Pair.create(fieldName, generateColumnName(fieldName)));
         }
         
-        return map;
+        return mappingList;
     }
 
     /**
@@ -96,13 +96,13 @@ public class SQLGenerator {
         StringBuilder sb = new StringBuilder();
         StringBuilder sbK = new StringBuilder();
         StringBuilder sbV = new StringBuilder();
-        Map<String, String> map = generateColumnMap(clazz);
+        List<Pair<String, String>> list = generateColumnMappingList(clazz);
         
         sb.append("INSERT INTO ").append(tableName).append(" (");
         
-        for (Map.Entry<String, String> en : map.entrySet()) {
-            sbV.append("#{").append(en.getKey()).append("}, ");
-            sbK.append(en.getValue()).append(", ");
+        for (Pair<String, String> p : list) {
+            sbV.append("#{").append(p.a).append("}, ");
+            sbK.append(p.b).append(", ");
         }
         sbK.setLength(sbK.length() - 2);
         sbV.setLength(sbV.length() - 2);
@@ -124,15 +124,15 @@ public class SQLGenerator {
     public static final String generateUpdate(Class<?> clazz, String tableName, String ...whereConditions) {
         StringBuilder sb = new StringBuilder();
         StringBuilder where = new StringBuilder();
-        Map<String, String> map = generateColumnMap(clazz);
+        List<Pair<String, String>> list = generateColumnMappingList(clazz);
         
         sb.append("UPDATE ").append(tableName).append(" SET ");
         
-        for (Map.Entry<String, String> en : map.entrySet()) {
-            if (StringUtil.isIn(en.getKey(), whereConditions)) {
-                where.append(en.getValue()).append(" = #{").append(en.getKey()).append("} AND ");
+        for (Pair<String, String> p : list) {
+            if (StringUtil.isIn(p.a, whereConditions)) {
+                where.append(p.b).append(" = #{").append(p.a).append("} AND ");
             } else {
-                sb.append(en.getValue()).append(" = #{").append(en.getKey()).append("}, ");
+                sb.append(p.b).append(" = #{").append(p.a).append("}, ");
             }
         }
         sb.setLength(sb.length() - 2);
@@ -154,15 +154,15 @@ public class SQLGenerator {
     public static final String generateSelect(Class<?> clazz, String tableName, String ...whereConditions) {
         StringBuilder sb = new StringBuilder();
         StringBuilder where = new StringBuilder();
-        Map<String, String> map = generateColumnMap(clazz);
+        List<Pair<String, String>> list = generateColumnMappingList(clazz);
         
         sb.append("SELECT ");
         
-        for (Map.Entry<String, String> en : map.entrySet()) {
-            if (StringUtil.isIn(en.getKey(), whereConditions)) {
-                where.append(en.getValue()).append(" = #{").append(en.getKey()).append("} AND ");
+        for (Pair<String, String> p : list) {
+            if (StringUtil.isIn(p.a, whereConditions)) {
+                where.append(p.b).append(" = #{").append(p.a).append("} AND ");
             } else {
-                sb.append(en.getValue()).append(", ");
+                sb.append(p.b).append(", ");
             }
         }
         sb.setLength(sb.length() - 2);
