@@ -19,8 +19,6 @@ package org.apache.niolex.commons.seri;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 import org.apache.niolex.commons.util.Const;
 
@@ -55,27 +53,18 @@ public class ProtoStuffUtil {
 	}
 
 	/**
-	 * Parse one object of type <code>type</code> from the byte array.
+	 * Parse one object of type <code>clazz</code> from the byte array.
 	 *
 	 * @param <T> the object type
 	 * @param data the object represented in wire format
-	 * @param type the object type
+	 * @param clazz the object type
 	 * @return the object
 	 */
-	@SuppressWarnings("unchecked")
-    public static final <T> T parseOne(byte[] data, Type type) {
-		// Step 1. Generic Type, We get the Raw Type.
-		if (type instanceof ParameterizedType) {
-			type = ((ParameterizedType)(type)).getRawType();
-		}
-		// Step 2. Let's deal with it.
-		if (type instanceof Class<?>) {
-		    Schema<T> schema = RuntimeSchema.getSchema((Class<T>) type);
-		    T ret = schema.newMessage();
-		    ProtostuffIOUtil.mergeFrom(data, ret, schema);
-			return ret;
-		}
-		throw new SeriException("Return type is not protostuff type.");
+    public static final <T> T parseOne(byte[] data, Class<T> clazz) {
+		Schema<T> schema = RuntimeSchema.getSchema(clazz);
+		T ret = schema.newMessage();
+		ProtostuffIOUtil.mergeFrom(data, ret, schema);
+		return ret;
 	}
 
 	/**
@@ -108,19 +97,12 @@ public class ProtoStuffUtil {
 	 * @param types the objects types array
 	 * @return the objects array
 	 */
-	@SuppressWarnings("unchecked")
-    public static final Object[] parseMulti(byte[] data, Type[] types) {
+    public static final Object[] parseMulti(byte[] data, Class<Object>[] types) {
 		Object[] r = new Object[types.length];
 		ByteArrayInputStream in = new ByteArrayInputStream(data);
 		try {
 			for (int i = 0; i < types.length; ++i) {
-				Type type = types[i];
-				// Step 1. Generic Type, We get the Raw Type.
-				if (type instanceof ParameterizedType) {
-					type = ((ParameterizedType)(type)).getRawType();
-				}
-				// Step 2. Let's deal with it.
-			    Schema<Object> schema = RuntimeSchema.getSchema((Class<Object>) type);
+			    Schema<Object> schema = RuntimeSchema.getSchema(types[i]);
 			    Object ret = schema.newMessage();
 			    ProtostuffIOUtil.mergeDelimitedFrom(in, ret, schema);
 			    r[i] = ret;

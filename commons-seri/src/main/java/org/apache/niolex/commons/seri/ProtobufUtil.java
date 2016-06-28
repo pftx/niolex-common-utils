@@ -43,7 +43,7 @@ import com.google.protobuf.MessageLite;
  * @version 1.0.0
  * @since 2012-8-7
  */
-public class ProtoUtil {
+public class ProtobufUtil {
 
 	/**
 	 * Store all the classes been parsed with fast method utility, for faster speed.

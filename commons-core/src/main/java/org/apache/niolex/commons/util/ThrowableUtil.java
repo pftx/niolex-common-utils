@@ -47,7 +47,7 @@ public class ThrowableUtil {
     }
 
     /**
-     * The field separator used for string a throwable object.
+     * The field separator used for to-string a throwable object.
      */
     public static final String FIELD_SEPARATOR = "/^*(V)*^/";
 

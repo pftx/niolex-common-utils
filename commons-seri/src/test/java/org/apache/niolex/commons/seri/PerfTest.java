@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Date;
 
 import org.apache.niolex.commons.compress.JacksonUtil;
@@ -180,7 +179,8 @@ public class PerfTest {
 	    protected void run() {
 	        byte[] bs = ProtoStuffUtil.seriMulti(new Object[] {bench, q});
 	        if (size == 0) size = bs.length;
-	        Type[] types = new Type[] {Benchmark.class, Bean.class};
+	        @SuppressWarnings("unchecked")
+            Class<Object>[] types = new Class[] {Benchmark.class, Bean.class};
 	        Object[] back = ProtoStuffUtil.parseMulti(bs, types);
 	        Benchmark cp = (Benchmark) back[0];
 	        Bean t = (Bean) back[1];

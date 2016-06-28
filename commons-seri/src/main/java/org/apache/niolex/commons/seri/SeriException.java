@@ -18,7 +18,7 @@
 package org.apache.niolex.commons.seri;
 
 /**
- * The exception thrown when problems occurred in serialization or deserialization.
+ * The exception thrown when problems occurred in serialization or de-serialization.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0

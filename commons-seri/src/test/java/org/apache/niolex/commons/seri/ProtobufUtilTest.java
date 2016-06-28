@@ -37,7 +37,7 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2012-8-7
  */
-public class ProtoUtilTest extends ProtoUtil {
+public class ProtobufUtilTest extends ProtobufUtil {
 
     int i = MathUtil.randInt(9999);
     Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
@@ -76,7 +76,7 @@ public class ProtoUtilTest extends ProtoUtil {
     }
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#parseOne(byte[], java.lang.reflect.Type)}.
+	 * Test method for {@link org.apache.niolex.commons.seri.ProtobufUtil#parseOne(byte[], java.lang.reflect.Type)}.
 	 */
 	@Test
 	public void testParseOne() {
@@ -93,7 +93,7 @@ public class ProtoUtilTest extends ProtoUtil {
 	}
 
 	/**
-     * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#parseOne(byte[], java.lang.reflect.Type)}.
+     * Test method for {@link org.apache.niolex.commons.seri.ProtobufUtil#parseOne(byte[], java.lang.reflect.Type)}.
      */
     @Test(expected=SeriException.class)
     public void testParseOneError() {
@@ -109,7 +109,7 @@ public class ProtoUtilTest extends ProtoUtil {
     }
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#parseMulti(byte[], java.lang.reflect.Type[])}.
+	 * Test method for {@link org.apache.niolex.commons.seri.ProtobufUtil#parseMulti(byte[], java.lang.reflect.Type[])}.
 	 */
 	@Test
 	public void testParseMulti() {
@@ -146,7 +146,7 @@ public class ProtoUtilTest extends ProtoUtil {
 	}
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#seriOne(java.lang.Object)}.
+	 * Test method for {@link org.apache.niolex.commons.seri.ProtobufUtil#seriOne(java.lang.Object)}.
 	 */
 	@Test(expected=SeriException.class)
 	public void testSeriOneBad() {
@@ -167,7 +167,7 @@ public class ProtoUtilTest extends ProtoUtil {
     }
 
 	/**
-	 * Test method for {@link org.apache.niolex.commons.seri.ProtoUtil#seriMulti(java.lang.Object[])}.
+	 * Test method for {@link org.apache.niolex.commons.seri.ProtobufUtil#seriMulti(java.lang.Object[])}.
 	 */
 	@Test(expected=SeriException.class)
 	public void testSeriMulti() {

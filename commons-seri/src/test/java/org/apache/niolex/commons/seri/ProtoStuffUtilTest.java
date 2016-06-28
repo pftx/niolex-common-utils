@@ -20,8 +20,6 @@ package org.apache.niolex.commons.seri;
 import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +67,8 @@ public class ProtoStuffUtilTest extends ProtoStuffUtil {
 		Benchmark ben = Benchmark.makeBenchmark();
 		byte[] tar = seriMulti(new Object[] {t, ben, q});
 		System.out.println("Tar.size " + tar.length);
-		Object[] r = parseMulti(tar, new Type[] {Bean.class, Benchmark.class, Bean.class});
+		@SuppressWarnings("unchecked")
+        Object[] r = parseMulti(tar, new Class[] {Bean.class, Benchmark.class, Bean.class});
 		assertEquals(r[0], t);
 		assertEquals(r[1], ben);
 		assertEquals(r[2], q);
@@ -89,8 +88,10 @@ public class ProtoStuffUtilTest extends ProtoStuffUtil {
 		Pair<String, Set<String>> p1 = new Pair<String, Set<String>>("abc", set);
 		byte[] tar = seriOne(p1);
 		Method m = MethodUtil.getFirstMethod(this, "method1");
-		Pair<String, Set<String>> p2 = parseOne(tar, m.getGenericParameterTypes()[0]);
+		@SuppressWarnings("unchecked")
+        Pair<String, Set<String>> p2 = (Pair<String, Set<String>>) parseOne(tar, m.getParameterTypes()[0]);
 		assertEquals(p1.a, p2.a);
+		assertEquals(p1.b, p2.b);
 		System.out.println(p2.b);
 	}
 
@@ -107,8 +108,10 @@ public class ProtoStuffUtilTest extends ProtoStuffUtil {
 		Pair<String, List<String>> p1 = new Pair<String, List<String>>("abc", set);
 		byte[] tar = seriOne(p1);
 		Method m = MethodUtil.getFirstMethod(this, "method2");
-		Pair<String, List<String>> p2 = parseOne(tar, m.getGenericParameterTypes()[0]);
+		@SuppressWarnings("unchecked")
+		Pair<String, List<String>> p2 = (Pair<String, List<String>>) parseOne(tar, m.getParameterTypes()[0]);
 		assertEquals(p1.a, p2.a);
+		assertEquals(p1.b, p2.b);
 		System.out.println(p2.b);
 	}
 
@@ -125,8 +128,10 @@ public class ProtoStuffUtilTest extends ProtoStuffUtil {
 		Pair<String, Map<String, Integer>> p1 = new Pair<String, Map<String, Integer>>("abc", set);
 		byte[] tar = seriOne(p1);
 		Method m = MethodUtil.getFirstMethod(this, "method3");
-		Pair<String, Map<String, Integer>> p2 = parseOne(tar, m.getGenericParameterTypes()[0]);
+		@SuppressWarnings("unchecked")
+		Pair<String, Map<String, Integer>> p2 = (Pair<String, Map<String, Integer>>) parseOne(tar, m.getParameterTypes()[0]);
 		assertEquals(p1.a, p2.a);
+		assertEquals(p1.b, p2.b);
 		System.out.println(p2.b);
 	}
 
@@ -139,31 +144,6 @@ public class ProtoStuffUtilTest extends ProtoStuffUtil {
 		byte[] tar = seriOne(p1);
 		Integer p2 = parseOne(tar, Integer.class);
 		assertEquals(p1, p2);
-	}
-
-	public void method4(Pair<?, Map<String, Integer>> set) {}
-
-	/**
-	 * Test method for {@link org.apache.niolex.commons.seri.ProtoStuffUtil#seriOne(java.lang.Object)}.
-	 */
-	@Test(expected=SeriException.class)
-	public void testSeriOneErr() {
-		String s = "Not yet implemented";
-		byte[] tar = seriOne(s);
-		Method m = MethodUtil.getFirstMethod(this, "method4");
-		parseOne(tar, ((ParameterizedType)(m.getGenericParameterTypes()[0])).getActualTypeArguments()[0]);
-	}
-
-	@Test(expected=SeriException.class)
-	public void thisIsGood() {
-		int i = 2345;
-		Person p = Person.newBuilder().setEmail("kjdfjkdf" + i + "@xxx.com").setId(45 + i)
-				.setName("Niolex [" + i + "]")
-				.addPhone(PhoneNumber.newBuilder().setNumber("123122311" + i).setType(PhoneType.MOBILE).build())
-				.build();
-		byte[] ret = p.toByteArray();
-		Set<String> set = new HashSet<String>();
-		parseMulti(ret, new Type[] {set.getClass().getGenericSuperclass(), Person.class});
 	}
 
 	/**
