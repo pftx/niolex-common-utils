@@ -161,4 +161,21 @@ public class ProtoStuffUtilTest extends ProtoStuffUtil {
 		seriMulti(new Object[] {ret, set.getClass(), null});
 	}
 
+	/**
+     * Test method for {@link org.apache.niolex.commons.seri.ProtoStuffUtil#parseMulti(byte[], java.lang.reflect.Class[])}.
+     */
+    @Test(expected=SeriException.class)
+    public void testParseMultiEdx() {
+        Bean t = new Bean(3, "Qute", 12212, new Date(1338008328709L));
+        Bean q = new Bean(5, "Another", 523212, new Date(1338008328334L));
+        Benchmark ben = Benchmark.makeBenchmark();
+        byte[] tar = seriMulti(new Object[] {t, ben, q});
+        System.out.println("Tar.size " + tar.length);
+        @SuppressWarnings("unchecked")
+        Object[] r = parseMulti(tar, new Class[] {Bean.class, Bean.class, Benchmark.class});
+        assertEquals(r[0], t);
+        assertEquals(r[1], ben);
+        assertEquals(r[2], q);
+        assertEquals(((Benchmark)r[1]).getName(), "This is the compress test benchmark.");
+    }
 }
