@@ -46,6 +46,31 @@ public abstract class TidyUtil {
 		}
 		return sb.toString();
 	}
+	
+	/**
+	 * Find the index of the matching right parenthesis.
+	 * 
+	 * @param s the string used to match parentheses
+	 * @param start the start index
+	 * @return the index of the matching right parenthesis
+	 */
+	public static final int matchParenthesis(String s, int start) {
+	    int end = s.length();
+	    int numL = 0;
+	    
+	    for (int i = start; i < end; ++i) {
+	        if (s.charAt(i) == '(') {
+	            ++numL;
+	        } else if (s.charAt(i) == ')') {
+	            --numL;
+	            if (numL == 0) {
+	                return i;
+	            }
+	        }
+	    }
+	    
+	    throw new IllegalArgumentException("Parentheses can not be matched: " + s.substring(start));
+	}
 
 	/**
 	 * Generate a number of characters and append them to the string builder.

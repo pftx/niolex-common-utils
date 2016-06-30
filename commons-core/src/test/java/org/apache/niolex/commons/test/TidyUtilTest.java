@@ -175,4 +175,17 @@ public class TidyUtilTest extends TidyUtil {
         assertFalse(flag);
     }
 
+    @Test
+    public void testMatchParenthesis() throws Exception {
+        assertEquals(11, matchParenthesis("a(b(c)d(e)f)g(hij)kl(mn", 0));
+        assertEquals(11, matchParenthesis("a(b(c)d(e)f)g(hij)kl(mn", 1));
+        assertEquals(5, matchParenthesis("a(b(c)d(e)f)g(hij)kl(mn", 2));
+        assertEquals(17, matchParenthesis("a(b(c)d(e)f)g(hij)kl(mn", 12));
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testMatchParenthesisEx() throws Exception {
+        assertEquals(17, matchParenthesis("a(b(c)d(e)f)g(hij)kl(mn", 18));
+    }
+
 }
