@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.reflect;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -161,5 +162,59 @@ public class FastFieldUtilTest {
 		FastFieldUtil.setFieldValue(b, "veridk", (short)5434);
 		assertTrue(b.veridk == 5434);
 	}
+	
+	@Test
+	public void testSpeedGet() throws Exception {
+	    long in, out, t1, t2;
+	    FastFieldUtil.getFieldAccess(FastBean.class);
+	    FastBean host = new FastBean();
+	    host.age = 67;
+	    
+	    in = System.nanoTime();
+	    for (int i = 0; i < 1000; ++i) {
+	        Integer age = FastFieldUtil.getFieldValue(host, "age");
+	        assertEquals(67, age.intValue());
+	    }
+	    out = System.nanoTime();
+	    t1 = out - in;
+	    
+	    in = System.nanoTime();
+	    for (int i = 0; i < 1000; ++i) {
+	        Integer age = FieldUtil.getValue(host, "age");
+	        assertEquals(67, age.intValue());
+	    }
+	    out = System.nanoTime();
+	    t2 = out - in;
+	    
+	    System.out.println("GetFieldValue t1 = " + t1 + ", t2 = " + t2 + ", 加速比(t1/t2) = " + ((t1 * 1.0 / t2) * 100) + "%");
+	}
 
+    @Test
+    public void testSpeedSet() throws Exception {
+        long in, out, t1, t2;
+        FastFieldUtil.getFieldAccess(FastBean.class);
+        FastBean host = new FastBean();
+        host.age = 67;
+        
+        in = System.nanoTime();
+        for (int i = 0; i < 1000; ++i) {
+            Integer age = FastFieldUtil.getFieldValue(host, "age");
+            assertEquals(67 + i, age.intValue());
+            FastFieldUtil.setFieldValue(host, "age", new Integer(67 + i + 1));
+        }
+        out = System.nanoTime();
+        t1 = out - in;
+        host.age = 67;
+        
+        in = System.nanoTime();
+        for (int i = 0; i < 1000; ++i) {
+            Integer age = FieldUtil.getValue(host, "age");
+            assertEquals(67 + i, age.intValue());
+            FieldUtil.setValue(host, "age", new Integer(67 + i + 1));
+        }
+        out = System.nanoTime();
+        t2 = out - in;
+        
+        System.out.println("Get&SetFieldValue t1 = " + t1 + ", t2 = " + t2 + ", 加速比(t1/t2) = " + ((t1 * 1.0 / t2) * 100) + "%");
+    }
 }

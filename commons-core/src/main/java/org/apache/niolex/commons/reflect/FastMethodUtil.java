@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.reflect;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.esotericsoftware.reflectasm.MethodAccess;
 
 /**
@@ -42,6 +44,8 @@ import com.esotericsoftware.reflectasm.MethodAccess;
  * @see org.apache.niolex.commons.reflect.MethodUtil
  */
 public class FastMethodUtil {
+    
+    private static final ConcurrentHashMap<Class<?>, MethodAccess> METHOD_ACCESS_MAP = new ConcurrentHashMap<Class<?>, MethodAccess>();
 
     /**
      * En: Retrieve all the non-private methods defined in this class.<br>
@@ -63,7 +67,12 @@ public class FastMethodUtil {
      * @return 所对应的方法操作类
      */
     public static final MethodAccess getMethodAccess(Class<?> clazz) {
-        return MethodAccess.get(clazz);
+        MethodAccess ma = METHOD_ACCESS_MAP.get(clazz);
+        if (ma == null) {
+            ma = MethodAccess.get(clazz);
+            METHOD_ACCESS_MAP.putIfAbsent(clazz, ma);
+        }
+        return ma;
     }
 
     /**

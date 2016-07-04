@@ -79,5 +79,29 @@ public class FastMethodUtilTest extends FastMethodUtil {
         Object ret = FastMethodUtil.invokeMethod(host, "echoName", (Object[]) null);
         Assert.assertEquals(ret, "Lex");
     }
-
+    
+    @Test
+    public void testSpeed() throws Exception {
+        long in, out, t1, t2;
+        FastMethodUtil.getMethodAccess(MethodTestBean.class);
+        MethodTestBean host = new MethodTestBean("Lex");
+        
+        in = System.nanoTime();
+        for (int i = 0; i < 1000; ++i) {
+            String name = (String)FastMethodUtil.invokeMethod(host, "echoName", "Walley");
+            assertEquals("Walley", name);
+        }
+        out = System.nanoTime();
+        t1 = out - in;
+        
+        in = System.nanoTime();
+        for (int i = 0; i < 1000; ++i) {
+            String name = (String)MethodUtil.invokeMethod(host, "echoName", "Kiddy");
+            assertEquals("Kiddy", name);
+        }
+        out = System.nanoTime();
+        t2 = out - in;
+        
+        System.out.println("GetFieldValue t1 = " + t1 + ", t2 = " + t2 + ", 加速比(t1/t2) = " + ((t1 * 1.0 / t2) * 100) + "%");
+    }
 }

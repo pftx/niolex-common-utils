@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.commons.reflect;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.esotericsoftware.reflectasm.FieldAccess;
 
 /**
@@ -34,6 +36,8 @@ import com.esotericsoftware.reflectasm.FieldAccess;
  * @see org.apache.niolex.commons.reflect.FieldUtil
  */
 public abstract class FastFieldUtil {
+    
+    private static final ConcurrentHashMap<Class<?>, FieldAccess> FIELD_ACCESS_MAP = new ConcurrentHashMap<Class<?>, FieldAccess>();
 
     /**
      * En: Retrieve all the non-private fields defined in this class.<br>
@@ -56,7 +60,12 @@ public abstract class FastFieldUtil {
      * @throws RuntimeException 如果对这个类使用反射失败
      */
     public static final FieldAccess getFieldAccess(Class<?> clazz) {
-    	return FieldAccess.get(clazz);
+        FieldAccess fa = FIELD_ACCESS_MAP.get(clazz);
+        if (fa == null) {
+            fa = FieldAccess.get(clazz);
+            FIELD_ACCESS_MAP.putIfAbsent(clazz, fa);
+        }
+    	return fa;
     }
 
     /**
@@ -97,7 +106,7 @@ public abstract class FastFieldUtil {
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
     public static final void setFieldValue(Object host, String fieldName, boolean value) {
-    	FieldAccess access = FieldAccess.get(host.getClass());
+    	FieldAccess access = getFieldAccess(host.getClass());
     	access.setBoolean(host, access.getIndex(fieldName), value);
     }
 
@@ -111,7 +120,7 @@ public abstract class FastFieldUtil {
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
     public static final void setFieldValue(Object host, String fieldName, byte value) {
-    	FieldAccess access = FieldAccess.get(host.getClass());
+    	FieldAccess access = getFieldAccess(host.getClass());
     	access.setByte(host, access.getIndex(fieldName), value);
     }
 
@@ -125,7 +134,7 @@ public abstract class FastFieldUtil {
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
     public static final void setFieldValue(Object host, String fieldName, char value) {
-    	FieldAccess access = FieldAccess.get(host.getClass());
+    	FieldAccess access = getFieldAccess(host.getClass());
     	access.setChar(host, access.getIndex(fieldName), value);
     }
 
@@ -139,7 +148,7 @@ public abstract class FastFieldUtil {
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
     public static final void setFieldValue(Object host, String fieldName, double value) {
-    	FieldAccess access = FieldAccess.get(host.getClass());
+    	FieldAccess access = getFieldAccess(host.getClass());
     	access.setDouble(host, access.getIndex(fieldName), value);
     }
 
@@ -153,7 +162,7 @@ public abstract class FastFieldUtil {
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
     public static final void setFieldValue(Object host, String fieldName, float value) {
-    	FieldAccess access = FieldAccess.get(host.getClass());
+    	FieldAccess access = getFieldAccess(host.getClass());
     	access.setFloat(host, access.getIndex(fieldName), value);
     }
 
@@ -167,7 +176,7 @@ public abstract class FastFieldUtil {
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
     public static final void setFieldValue(Object host, String fieldName, int value) {
-    	FieldAccess access = FieldAccess.get(host.getClass());
+    	FieldAccess access = getFieldAccess(host.getClass());
     	access.setInt(host, access.getIndex(fieldName), value);
     }
 
@@ -181,7 +190,7 @@ public abstract class FastFieldUtil {
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
     public static final void setFieldValue(Object host, String fieldName, long value) {
-    	FieldAccess access = FieldAccess.get(host.getClass());
+    	FieldAccess access = getFieldAccess(host.getClass());
     	access.setLong(host, access.getIndex(fieldName), value);
     }
 
@@ -195,7 +204,7 @@ public abstract class FastFieldUtil {
      * @throws RuntimeException 如果对这个类使用反射失败或者指定的对象里面没有该属性
      */
     public static final void setFieldValue(Object host, String fieldName, short value) {
-    	FieldAccess access = FieldAccess.get(host.getClass());
+    	FieldAccess access = getFieldAccess(host.getClass());
     	access.setShort(host, access.getIndex(fieldName), value);
     }
 
