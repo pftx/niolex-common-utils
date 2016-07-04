@@ -35,6 +35,7 @@ public class FastNewInstance {
     /**
      * Get the constructor access of this class.
      * 
+     * @param <T> the class type
      * @param clazz the class
      * @return the constructor access
      */
@@ -51,6 +52,7 @@ public class FastNewInstance {
     /**
      * Create a new instance of this class.
      * 
+     * @param <T> the class type
      * @param clazz the class
      * @return the created new instance
      */
