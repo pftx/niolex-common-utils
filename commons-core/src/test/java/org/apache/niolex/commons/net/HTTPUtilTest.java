@@ -342,4 +342,59 @@ public class HTTPUtilTest extends HTTPUtil {
         retrieveCharsetFromString("'='");
     }
 
+    @Test
+    public final void testCheckServerStatusLenMinus1() {
+        int b = checkServerStatus("http://www.baidu.com", 4000, 4000);
+        assertEquals(200, b);
+    }
+    
+    @Test
+    public final void testCheckServerStatusLenMinus2() {
+        int b = checkServerStatus("http://httpbin.org/stream/20", 4000, 4000);
+        assertEquals(200, b);
+    }
+
+    @Test
+    public final void testCheckServerStatusLessThan2() {
+        String url = HTTPUtilTest.class.getResource("onebyte.txt").toExternalForm();
+        int d = checkServerStatus(url, 4000, 4000);
+        assertEquals(-2, d);
+    }
+
+    @Test
+    public final void testCheckServerStatusEx404() {
+        int e = checkServerStatus("http://www.cs.zju.edu.cn/org/codes/404.html", 4000, 4000);
+        assertEquals(404, e);
+    }
+
+    @Test
+    public final void testCheckServerStatusEx403() {
+        int c = checkServerStatus("http://www.apache.org/tomcat.php", 4000, 4000);
+        assertEquals(403, c);
+    }
+    
+    @Test
+    public final void testCheckServerStatusEx404Third() {
+        int c = checkServerStatus("http://httpbin.org/status/403", 4000, 4000);
+        assertEquals(403, c);
+    }
+
+    @Test
+    public final void testCheckServerStatusIOEx() {
+        int f = checkServerStatus("http://www.facebook.com", 1000, 1000);
+        assertEquals(-1, f);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public final void testCheckServerStatusNull() {
+        int f = checkServerStatus("http://www.facebook.com", -1000, -1000);
+        assertEquals(404, f);
+    }
+
+    @Test
+    public void testCheckServerStatus() throws Exception {
+        int f = checkServerStatus("http://httpbin.org/ip", 2000, 1000);
+        assertEquals(200, f);
+    }
+
 }

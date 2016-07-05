@@ -487,4 +487,35 @@ public abstract class HTTPUtil {
         return sb.toString();
     }
 
+    /**
+     * Check the connectivity of this url according to the given timeout.
+     *
+     * @param completeUrl the complete url to server
+     * @param connectTimeout the socket connect timeout
+     * @param readTimeout the socket read timeout
+     * @return the response HTTP status code if connected to server, -1 if exception occurred, -2 if not HTTP URL
+     */
+    public static int checkServerStatus(String completeUrl, int connectTimeout, int readTimeout) {
+        try {
+            URL u = new URL(completeUrl);
+            URLConnection c = u.openConnection();
+            if (!(c instanceof HttpURLConnection)) {
+                // return -2 if not HTTP URL
+                return -2;
+            }
+            HttpURLConnection conn = (HttpURLConnection) c;
+            conn.setRequestMethod(HTTPMethod.HEAD.name());
+            conn.setConnectTimeout(connectTimeout);
+            conn.setReadTimeout(readTimeout);
+            conn.setDoInput(true);
+            conn.setDoOutput(false);
+            conn.connect();
+            
+            LOG.info("Check URL [" + completeUrl + "] status: " + conn.getHeaderField(0));
+            return conn.getResponseCode();
+        } catch (IOException e) {
+            LOG.warn("Failed to connect to " + completeUrl + " : " + e.getMessage());
+            return -1;
+        }
+    }
 }
