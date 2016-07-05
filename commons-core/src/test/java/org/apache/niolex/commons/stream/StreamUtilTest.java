@@ -211,4 +211,43 @@ public class StreamUtilTest extends StreamUtil {
         writeAndCloseIgnoreException(null, null);
     }
 
+    @Test
+    public void testEmptyStream() throws Exception {
+        byte[] arr = MockUtil.randByteArray(4097);
+        ByteArrayInputStream in = new ByteArrayInputStream(arr);
+        ByteArrayInputStream spyin = spy(in);
+        int t = emptyStream(spyin);
+        verify(spyin, times(3)).read(any(byte[].class));
+        assertEquals(-1, spyin.read());
+        assertEquals(4097, t);
+    }
+    
+    @Test
+    public void testEmptyStreamReal() throws Exception {
+        byte[] arr = MockUtil.randByteArray(343);
+        ByteArrayInputStream in = new ByteArrayInputStream(arr);
+        int t = emptyStream(in);
+        assertEquals(-1, in.read());
+        assertEquals(343, t);
+    }
+    
+    @Test
+    public void testEmptyStream0() throws Exception {
+        byte[] arr = MockUtil.randByteArray(0);
+        ByteArrayInputStream in = new ByteArrayInputStream(arr);
+        int t = emptyStream(in);
+        assertEquals(-1, in.read());
+        assertEquals(0, t);
+    }
+    
+    @Test
+    public void testEmptyStreamErr() throws Exception {
+        ByteArrayInputStream in = mock(ByteArrayInputStream.class);
+        doThrow(new IOException("This")).when(in).read(any(byte[].class));
+        int t = emptyStream(in);
+        verify(in, times(1)).read(any(byte[].class));
+        assertEquals(0, in.read());
+        assertEquals(0, t);
+    }
+
 }

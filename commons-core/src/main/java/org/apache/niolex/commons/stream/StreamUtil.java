@@ -45,6 +45,26 @@ public class StreamUtil {
 	public static final Exception closeStream(Closeable s) {
 		return SystemUtil.close(s);
 	}
+	
+	/**
+	 * Empty the input stream.
+	 * 
+	 * @param in the input stream
+	 * @return the number of bytes read from the input stream
+	 */
+	public static final int emptyStream(InputStream in) {
+	    byte[] buffer = new byte[4096];
+	    int cnt = 0, total = 0;
+	    try {
+	        do {
+	            total += cnt;
+                cnt = in.read(buffer);
+	        } while (cnt > 0);
+	    } catch (IOException e) {
+	        // Ignore the exception.
+	    }
+	    return total;
+	}
 
 	/**
 	 * Read data from the input stream and put them into the byte array.
