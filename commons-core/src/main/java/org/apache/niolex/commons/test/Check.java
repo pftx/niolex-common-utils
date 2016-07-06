@@ -140,4 +140,16 @@ public class Check extends Validate {
         }
     }
 
+    /**
+     * Check that the specified parameter is NULL, otherwise we throw IllegalArgumentException
+     * 
+     * @param o the parameter
+     * @param msg the message used to create exception
+     */
+    public static void isNull(Object o, String msg) {
+        if (o != null) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
+    
 }

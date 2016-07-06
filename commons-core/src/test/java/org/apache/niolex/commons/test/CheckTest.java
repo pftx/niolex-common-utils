@@ -149,4 +149,16 @@ public class CheckTest {
         between(0.1000000001, 0.10000000000001, 0.100001, "not yet implemented");
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void testIsNullEx() throws Exception {
+        String c = "";
+        isNull(c, "not yet implemented");
+    }
+    
+    @Test
+    public void testIsNull() throws Exception {
+        String c = null;
+        isNull(c, "not yet implemented");
+    }
+
 }

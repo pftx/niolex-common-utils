@@ -452,5 +452,15 @@ public abstract class StringUtil extends StringUtils {
         if (s < e) return str.substring(s, e);
         return "";
     }
+    
+    /**
+     * Convert the list of arguments to string array.
+     * 
+     * @param arr the list of strings
+     * @return the string array
+     */
+    public static final String[] toArray(String ...arr) {
+        return arr;
+    }
 
 }

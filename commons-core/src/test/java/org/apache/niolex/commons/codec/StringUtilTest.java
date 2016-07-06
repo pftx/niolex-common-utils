@@ -617,4 +617,14 @@ public class StringUtilTest extends StringUtil {
         trim(null, '0', TrimMode.LEFT);
     }
 
+    @Test
+    public void testToArray() throws Exception {
+        assertEquals(0, toArray().length);
+        String s = null;
+        assertEquals(1, toArray(s).length);
+        assertEquals(1, toArray("").length);
+        assertEquals(2, toArray(null, null).length);
+        assertEquals(3, toArray(null, "a", "b").length);
+    }
+
 }
