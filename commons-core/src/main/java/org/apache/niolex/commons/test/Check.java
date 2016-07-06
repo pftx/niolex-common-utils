@@ -51,6 +51,30 @@ public class Check extends Validate {
             throw new IllegalArgumentException(msg);
         }
     }
+    
+    /**
+     * Check that a equals b, otherwise we throw IllegalArgumentException
+     *
+     * @param a the value a
+     * @param b the value b
+     * @param msg the message used to create exception
+     */
+    public static void eq(Object a, Object b, String msg) {
+        equal(a, b, msg);
+    }
+    
+    /**
+     * Check that a equals b, otherwise we throw IllegalArgumentException
+     *
+     * @param a the value a
+     * @param b the value b
+     * @param msg the message used to create exception
+     */
+    public static void equal(Object a, Object b, String msg) {
+        if (!a.equals(b)) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
 
     /**
      * Check that a less than b, otherwise we throw IllegalArgumentException

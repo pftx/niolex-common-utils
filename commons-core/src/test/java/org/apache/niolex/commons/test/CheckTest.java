@@ -44,6 +44,21 @@ public class CheckTest {
     public void testEqual() throws Exception {
         equal(3, 4, "not yet implemented");
     }
+    
+    @Test
+    public void testEqObj() throws Exception {
+        eq("a", "a", "abc");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testEqualObjEx() throws Exception {
+        equal(new Integer(55), new Integer(56), "not yet implemented");
+    }
+    
+    @Test
+    public void testEqualObj() throws Exception {
+        equal(new Integer(55), new Integer(55), "not yet implemented");
+    }
 
     static class A {
         public int i = 4;
