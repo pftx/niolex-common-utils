@@ -240,13 +240,32 @@ public class ZKConnectorTest {
         Object r = ZKC.getChildren("/");
         System.out.println("/[] = " + r);
     }
-
+    
+    @Test
+    @Order(38)
+    public void testCreateTempNodeAutoRecoverPrepare() throws Exception {
+        ZKC.createNode("/notify/zkc/tmp/NR0011", "Hello, Got it!".getBytes(), true, false);
+        ZKC.createTempNodeAutoRecover("/notify/zkc/tmp/AR0011", "Hello, Got it!".getBytes(), false);
+    }
+    
     @Test
     @Order(40)
     public void testReconnect() throws Exception {
         ZKC.close();
         ZKC.close();
         ZKC.reconnect();
+    }
+    
+    @Test(expected=ZKException.class)
+    @Order(41)
+    public void testCreateTempNodeRecoverFailed() throws Exception {
+        ZKC.getDataAsStr("/notify/zkc/tmp/NR0011");
+    }
+    
+    @Test
+    @Order(42)
+    public void testCreateTempNodeAutoRecovered() throws Exception {
+        assertEquals("Hello, Got it!", ZKC.getDataAsStr("/notify/zkc/tmp/AR0011"));
     }
 
     @Test

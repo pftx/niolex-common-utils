@@ -27,6 +27,7 @@ import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.zookeeper.watcher.CommonRecoverableWatcher;
 import org.apache.niolex.zookeeper.watcher.RecoverableWatcher;
+import org.apache.niolex.zookeeper.watcher.TempNodeRecoverableWatcher;
 import org.apache.niolex.zookeeper.watcher.WatcherHolder;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -183,6 +184,8 @@ public class ZKConnector implements Watcher {
                 if (auth != null) {
                     this.zk.addAuthInfo("digest", auth);
                 }
+                // Notify sub-classes.
+                reconnected();
                 // Notify watchers.
                 watcherHolder.reconnected();
                 break;
@@ -194,6 +197,15 @@ public class ZKConnector implements Watcher {
             }
         }
     }
+    
+    /**
+     * If the connection to ZK server expired due to network problem and we reconnected to ZK server again, we will
+     * call this method.
+     * <p>
+     * Sub-classes can override this method to get notified when this event occurred.
+     * Sub-classes should not throw any exception other than Zookeeper connection problems.
+     */
+    protected void reconnected() {}
 
     /**
      * Close the connection to ZK server.
@@ -439,6 +451,23 @@ public class ZKConnector implements Watcher {
                 }
             }
         }
+    }
+    
+
+    /**
+     * Create temporary ZK node. When network error occurred, it will be deleted from ZK server
+     * automatically. But if we re-connected to ZK again, we will create it again automatically.
+     *
+     * @param path the node path
+     * @param data the node data
+     * @param isSequential whether the node is a sequential node or not
+     * @return the actual path of the created node
+     * @throws ZKException if failed to create node
+     */
+    public String createTempNodeAutoRecover(String path, byte[] data, boolean isSequential) {
+        TempNodeRecoverableWatcher watcher = new TempNodeRecoverableWatcher(this, path, data, isSequential);
+        watcherHolder.add(watcher);
+        return createNode(path, data, true, isSequential);
     }
 
     /**
