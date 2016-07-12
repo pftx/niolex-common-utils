@@ -29,6 +29,7 @@ import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.reflect.FieldUtil;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.notify.AppTest;
+import org.apache.niolex.zookeeper.core.ZKConnectorExceTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -100,6 +101,18 @@ public class ElectorTest {
         assertFalse(EL.register("any-str"));
     }
 
+    @Test
+    public void testReconnected() throws Exception {
+        String s = EL.getCurrentPath();
+        EL.close();
+        ZKConnectorExceTest.reconn(EL);
+        String n = EL.getCurrentPath();
+        System.out.println("Before: " + s + ", recovered: " + n);
+        assertNotNull(s);
+        assertNotNull(n);
+        assertNotEquals(s, n);
+    }
+    
     @Test
     public void testGiveUp() throws Exception {
         assertTrue(EL.giveUp());

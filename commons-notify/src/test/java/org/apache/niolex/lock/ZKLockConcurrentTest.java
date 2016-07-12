@@ -41,11 +41,13 @@ public class ZKLockConcurrentTest {
     @Test
     public void testConcLock() throws Exception {
         THREAD_CNT = 4;
-        TOTAL_CNT = 20;
+        TOTAL_CNT = 50;
         main(null);
     }
 
     public static void main(String[] args) throws Exception {
+        AppTest.cleanZK(BS);
+        
         Thread[] tarr = new Thread[THREAD_CNT];
         final AtomicInteger count1 = new AtomicInteger();
         final AtomicInteger count2 = new AtomicInteger();
@@ -106,14 +108,14 @@ class ZKLockConcurrent1 implements Runnable {
         for (int i = 0; i < totalCount; ++i) {
             lock.lock();
             try {
-            int c = flag.incrementAndGet();
-            count.incrementAndGet();
-            if (c != 1) {
-                LOG.error("Failed to keep lock semantics: c = " + c);
-            }
-            flag.decrementAndGet();
+                int c = flag.incrementAndGet();
+                count.incrementAndGet();
+                if (c != 1) {
+                    LOG.error("Failed to keep lock semantics: c = " + c);
+                }
+                flag.decrementAndGet();
             } finally {
-            lock.unlock();
+                lock.unlock();
             }
         }
         LOG.error("ZKLockConcurrent1 finished.");
@@ -153,17 +155,16 @@ class ZKLockConcurrent2 implements Runnable {
         for (int i = 0; i < totalCount; ++i) {
             try {
                 if (lock.tryLock(100, TimeUnit.MILLISECONDS))
-                    try
-                {
-                int c = flag.incrementAndGet();
-                count.incrementAndGet();
-                if (c != 1) {
-                    LOG.error("Failed to keep lock semantics: c = " + c);
-                }
-                flag.decrementAndGet();
-                } finally {
-                lock.unlock();
-                }
+                    try {
+                        int c = flag.incrementAndGet();
+                        count.incrementAndGet();
+                        if (c != 1) {
+                            LOG.error("Failed to keep lock semantics: c = " + c);
+                        }
+                        flag.decrementAndGet();
+                    } finally {
+                        lock.unlock();
+                    }
             } catch (InterruptedException e) {
             }
 

@@ -19,6 +19,13 @@ public class AppTest {
         APP = App.instance();
         APP.makeSurePathExists("/notify/test/tmp");
     }
+    
+    public static void cleanZK(String base) {
+        if (APP.exists(base)) {
+            APP.deleteTree(base);
+        }
+        APP.makeSurePathExists(base);
+    }
 
     public static void setUp() {
         try {

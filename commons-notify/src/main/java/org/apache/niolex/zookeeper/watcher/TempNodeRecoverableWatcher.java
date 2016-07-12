@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.zookeeper.watcher;
 
+import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.zookeeper.core.ZKConnector;
 import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
@@ -49,9 +50,14 @@ public class TempNodeRecoverableWatcher implements RecoverableWatcher {
     private final byte[] data;
     
     /**
-     * Whether the temporary node is a sequential node or not
+     * Whether the temporary node is a sequential node or not.
      */
     private final boolean isSequential;
+    
+    /**
+     * Use this holder to store the real node path.
+     */
+    private final One<String> pathHolder;
 
     /**
      * Construct a temporary node recoverable watcher with the specified parameters.
@@ -60,13 +66,15 @@ public class TempNodeRecoverableWatcher implements RecoverableWatcher {
      * @param path the node path
      * @param data the node data
      * @param isSequential whether the node is a sequential node or not
+     * @param pathHolder store the real node path
      */
-    public TempNodeRecoverableWatcher(ZKConnector zkc, String path, byte[] data, boolean isSequential) {
+    public TempNodeRecoverableWatcher(ZKConnector zkc, String path, byte[] data, boolean isSequential, One<String> pathHolder) {
         super();
         this.zkc = zkc;
         this.path = path;
         this.data = data;
         this.isSequential = isSequential;
+        this.pathHolder = pathHolder;
     }
 
     /**
@@ -84,7 +92,10 @@ public class TempNodeRecoverableWatcher implements RecoverableWatcher {
     @Override
     public void reconnected() {
         try {
-            zkc.createTempNodeAutoRecover(path, data, isSequential);
+            String p = zkc.createNode(path, data, true, isSequential);
+            if (pathHolder != null) {
+                pathHolder.a = p;
+            }
         } catch (Exception e) {
             LOG.error("Failed to recover temporary node.", e);
         }

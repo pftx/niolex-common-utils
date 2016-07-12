@@ -20,6 +20,8 @@ package org.apache.niolex.zookeeper.core;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.apache.niolex.commons.test.AnnotationOrderedRunner;
 import org.apache.niolex.commons.test.AnnotationOrderedRunner.Order;
 import org.apache.niolex.notify.AppTest;
@@ -39,6 +41,7 @@ import org.junit.runner.RunWith;
 public class ZKConnectorTest {
 
     private static ZKConnector ZKC;
+    private static String BS = "/notify/zkc/tmp";
 
     /**
      * @throws java.lang.Exception
@@ -46,6 +49,9 @@ public class ZKConnectorTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         ZKC = new ZKConnector(AppTest.URL, 10000);
+        if (ZKC.exists(BS)) {
+            ZKC.deleteTree(BS);
+        }
     }
 
     /**
@@ -59,7 +65,7 @@ public class ZKConnectorTest {
     @Test
     @Order(-110)
     public void testMakeSurePathExists() throws Exception {
-        ZKC.makeSurePathExists("/notify/zkc/tmp");
+        ZKC.makeSurePathExists(BS);
     }
 
     String path = null;
@@ -107,53 +113,54 @@ public class ZKConnectorTest {
     @Test(expected=ZKException.class)
     @Order(-1)
     public void testSubmitWatcherChildren() throws Exception {
-            ZKC.submitWatcher("/a/b/cv", watChildren);
+        ZKC.submitWatcher("/a/b/cv", watChildren);
     }
 
     @Test
     @Order(1)
     public void testSubmitC() throws Exception {
-        ZKC.submitWatcher("/notify/zkc/tmp", watChildren);
+        ZKC.submitWatcher(BS, watChildren);
     }
 
     @Test
     @Order(1)
     public void testSubmitD() throws Exception {
-        ZKC.submitWatcher("/notify/zkc/tmp", watData);
+        ZKC.submitWatcher(BS, watData);
     }
 
     @Test
     @Order(2)
     public void testCreateNodeStringByteArrayBooleanBoolean() throws Exception {
-        ZKC.createNode("/notify/zkc/tmp/T1322", null, true, false);
-        ZKC.createNode("/notify/zkc/tmp/T1323", null, true, true);
+        ZKC.createNode(BS + "/T1322", null, true, false);
+        ZKC.createNode(BS + "/T1323", null, true, true);
     }
 
     @Test
     @Order(3)
     public void testDoCreateNode() throws Exception {
-        ZKC.createNode("/notify/zkc/tmp/P12", null, false, false);
-        path = ZKC.createNode("/notify/zkc/tmp/P13", null, false, true);
+        ZKC.createNode(BS + "/P12", null, false, false);
+        path = ZKC.createNode(BS + "/P13", null, false, true);
     }
 
     @Test
     @Order(4)
     public void testGetData() throws Exception {
-        ZKC.getData("/notify/zkc/tmp");
+        ZKC.getData(BS);
     }
 
     @Test
     @Order(4)
     public void testGetDataAsStr() throws Exception {
-        ZKC.createNode("/notify/zkc/tmp/A12", "See Lex Here!需要中文");
-        String s = ZKC.getDataAsStr("/notify/zkc/tmp/A12");
-        assertEquals("See Lex Here!需要中文", s);
+        ZKC.createNode(BS + "/A12", "See Lex Here! 需要中文");
+        String s = ZKC.getDataAsStr(BS + "/A12");
+        assertEquals("See Lex Here! 需要中文", s);
     }
 
     @Order(5)
     @Test
     public void testGetChildren() throws Exception {
-        ZKC.getChildren("/notify/zkc");
+        List<String> children = ZKC.getChildren("/notify/zkc");
+        assertTrue(children.size() > 0);
     }
 
     @Test
@@ -171,14 +178,14 @@ public class ZKConnectorTest {
     @Test
     @Order(7)
     public void testCreateNodeString() throws Exception {
-        ZKC.createNode("/notify/zkc/tmp/CRN001");
-        assertNull(ZKC.getDataAsStr("/notify/zkc/tmp/CRN001"));
+        ZKC.createNode(BS + "/CRN001");
+        assertNull(ZKC.getDataAsStr(BS + "/CRN001"));
     }
 
     @Test
     @Order(7)
     public void testCreateNodeStringByteArray() throws Exception {
-        ZKC.createNode("/notify/zkc/tmp/CRN002", new byte[] {1, 2, 3});
+        ZKC.createNode(BS + "/CRN002", new byte[] {1, 2, 3});
     }
 
     @Test(expected=ZKException.class)
@@ -190,19 +197,19 @@ public class ZKConnectorTest {
     @Test
     @Order(8)
     public void testCreateNodeIfAbsentString() throws Exception {
-        ZKC.createNodeIfAbsent("/notify");
+        assertFalse(ZKC.createNodeIfAbsent("/notify"));
     }
 
     @Test
     @Order(8)
     public void testCreateNodeIfAbsent() throws Exception {
-        assertTrue(ZKC.createNodeIfAbsent("/notify/zkc/tmp/P13", null));
+        assertTrue(ZKC.createNodeIfAbsent(BS + "/P13", new byte[] {12,15}));
     }
 
     @Test
     @Order(9)
     public void testCreateNodeIfAbsentT() throws Exception {
-        assertFalse(ZKC.createNodeIfAbsent("/notify/zkc/tmp", "Yes, Good.".getBytes()));
+        assertFalse(ZKC.createNodeIfAbsent(BS, "Yes, Good.".getBytes()));
     }
 
     @Test(expected=ZKException.class)
@@ -214,14 +221,14 @@ public class ZKConnectorTest {
     @Test
     @Order(17)
     public void testUpdateNodeData() throws Exception {
-        ZKC.updateNodeData("/notify/zkc/tmp", "not".getBytes());
+        ZKC.updateNodeData(BS, "not".getBytes());
     }
 
     @Test
     @Order(18)
     public void testUpdateNodeDataStr() throws Exception {
-        ZKC.updateNodeData("/notify/zkc/tmp", "安装和调试");
-        assertEquals("安装和调试", ZKC.getDataAsStr("/notify/zkc/tmp"));
+        ZKC.updateNodeData(BS, "安装和调试");
+        assertEquals("安装和调试", ZKC.getDataAsStr(BS));
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -231,11 +238,13 @@ public class ZKConnectorTest {
     }
 
     @Test(expected=IllegalArgumentException.class)
+    @Order(22)
     public void testZKConnector() throws Exception {
         new ZKConnector(AppTest.URL, 1);
     }
 
     @Test
+    @Order(23)
     public void testDoWatch() throws Exception {
         Object r = ZKC.getChildren("/");
         System.out.println("/[] = " + r);
@@ -244,8 +253,8 @@ public class ZKConnectorTest {
     @Test
     @Order(38)
     public void testCreateTempNodeAutoRecoverPrepare() throws Exception {
-        ZKC.createNode("/notify/zkc/tmp/NR0011", "Hello, Got it!".getBytes(), true, false);
-        ZKC.createTempNodeAutoRecover("/notify/zkc/tmp/AR0011", "Hello, Got it!".getBytes(), false);
+        ZKC.createNode(BS + "/NR0011", "Hello, Got it!".getBytes(), true, false);
+        ZKC.createTempNodeAutoRecover(BS + "/AR0011", "Hello, Got it!".getBytes(), false);
     }
     
     @Test
@@ -259,13 +268,13 @@ public class ZKConnectorTest {
     @Test(expected=ZKException.class)
     @Order(41)
     public void testCreateTempNodeRecoverFailed() throws Exception {
-        ZKC.getDataAsStr("/notify/zkc/tmp/NR0011");
+        ZKC.getDataAsStr(BS + "/NR0011");
     }
     
     @Test
     @Order(42)
     public void testCreateTempNodeAutoRecovered() throws Exception {
-        assertEquals("Hello, Got it!", ZKC.getDataAsStr("/notify/zkc/tmp/AR0011"));
+        assertEquals("Hello, Got it!", ZKC.getDataAsStr(BS + "/AR0011"));
     }
 
     @Test
@@ -278,9 +287,9 @@ public class ZKConnectorTest {
     @Order(7009)
     public void testDeleteNodeFinal() throws Exception {
         try {ZKC.deleteNode(path);} catch(Exception e){}
-        try {ZKC.deleteNode("/notify/zkc/tmp/P13");} catch(Exception e){}
-        try {ZKC.deleteNode("/notify/zkc/tmp/P12");} catch(Exception e){}
-        try {ZKC.deleteTree("/notify/zkc/tmp");} catch(Exception e){}
+        try {ZKC.deleteNode(BS + "/P13");} catch(Exception e){}
+        try {ZKC.deleteNode(BS + "/P12");} catch(Exception e){}
+        try {ZKC.deleteTree(BS);} catch(Exception e){}
         try {ZKC.deleteTree("/notify/zkc");} catch(Exception e){}
     }
 

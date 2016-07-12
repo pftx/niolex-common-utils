@@ -1,5 +1,5 @@
 /**
- * ZKLockThreeThreadsTest.java
+ * ZKLockThreeThreadsOKTest.java
  *
  * Copyright 2016 the original author or authors.
  *
@@ -33,8 +33,12 @@ import org.junit.Test;
  * @version 1.0.0
  * @since 2016-4-21
  */
-public class ZKLockThreeThreadsTest {
-    private static final String BS = "/lock/zkc/tmp-" + MockUtil.randInt(100, 999);
+public class ZKLockThreeThreadsOKTest {
+    private static final String BS = "/lock/zkc/zkc-conc/tmp-" + MockUtil.randInt(100, 999);
+    
+    static {
+        AppTest.cleanZK(BS);
+    }
 
     Exception exception1;
     Exception exception2;
@@ -47,6 +51,8 @@ public class ZKLockThreeThreadsTest {
             lock.lock();
         } catch (Exception e) {
             exception1 = e;
+        } finally {
+            lock.close();
         }
     }
 
@@ -56,6 +62,8 @@ public class ZKLockThreeThreadsTest {
             lock.lockInterruptibly();
         } catch (Exception e) {
             exception2 = e;
+        } finally {
+            lock.close();
         }
     }
 
@@ -65,23 +73,29 @@ public class ZKLockThreeThreadsTest {
             lock.tryLock(5000, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             exception3 = e;
+        } finally {
+            lock.close();
         }
     }
 
     @Test
     public void testThreeLock() throws Exception {
         ZKLock lock = new ZKLock(AppTest.URL, 6000, BS);
+        
+        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock2 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock3 = new ZKLock(AppTest.URL, 6000, BS);
 
         lock.lock();
 
         One<Thread> threadVal_1 = One.create(null);
-        Runner.run(threadVal_1, this, "lock1", lock);
+        Runner.run(threadVal_1, this, "lock1", lock1);
 
         One<Thread> threadVal_2 = One.create(null);
-        Runner.run(threadVal_2, this, "lock2", lock);
+        Runner.run(threadVal_2, this, "lock2", lock2);
 
         One<Thread> threadVal_3 = One.create(null);
-        Runner.run(threadVal_3, this, "lock3", lock);
+        Runner.run(threadVal_3, this, "lock3", lock3);
 
         latch.await();
         lock.unlock();
@@ -112,8 +126,9 @@ public class ZKLockThreeThreadsTest {
         }
 
         lock.unlock();
+        lock.close();
 
-        assertEquals(1, ok);
-        assertEquals(2, ex);
+        assertEquals(3, ok);
+        assertEquals(0, ex);
     }
 }

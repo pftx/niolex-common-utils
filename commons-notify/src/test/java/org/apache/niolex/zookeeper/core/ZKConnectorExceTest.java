@@ -56,6 +56,16 @@ import org.junit.runner.RunWith;
 public class ZKConnectorExceTest {
 
     private static ZKConnector ZKC;
+    private static String BS = "/notify/zkc/core/tmp";
+    
+    /**
+     * For other test-cases to use.
+     * 
+     * @param zkc the ZK connector
+     */
+    public static void reconn(ZKConnector zkc) {
+        zkc.reconnect();
+    }
 
     /**
      * @throws java.lang.Exception
@@ -63,6 +73,7 @@ public class ZKConnectorExceTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         ZKC = new ZKConnector(AppTest.URL, 10000);
+        AppTest.cleanZK(BS);
     }
 
     /**
@@ -198,15 +209,15 @@ public class ZKConnectorExceTest {
     @Test
     @Order(8)
     public void testMakeSurePathExistsEx() throws Exception {
-        ZKC.makeSurePathExists("/lex/zkc/a");
-        ZKC.makeSurePathExists("/lex/zkc/b");
+        ZKC.makeSurePathExists(BS + "/lex/zkc/a");
+        ZKC.makeSurePathExists(BS + "/lex/zkc/b");
         ZKC.zk = mock(ZooKeeper.class);
         KeeperException ke = KeeperException.create(KeeperException.Code.NODEEXISTS);
-        doThrow(ke).when(ZKC.zk).create("/lex/zkc", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        doThrow(ke).when(ZKC.zk).create(BS + "/lex/zkc", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         KeeperException ke2 = KeeperException.create(KeeperException.Code.AUTHFAILED);
-        doThrow(ke2).when(ZKC.zk).create("/lex/zkc/c", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        doThrow(ke2).when(ZKC.zk).create(BS + "/lex/zkc/c", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         try {
-            ZKC.makeSurePathExists("/lex/zkc/c");
+            ZKC.makeSurePathExists(BS + "/lex/zkc/c");
             assertFalse(true);
         } catch (ZKException e) {
             assertEquals(e.getCode(), ZKException.Code.NO_AUTH);
@@ -217,7 +228,7 @@ public class ZKConnectorExceTest {
     @Order(9)
     public void testUpdateNodeData() throws Exception {
         byte[] data = "not".getBytes();
-        String path = "/lex/zkc/bbc";
+        String path = BS + "/lex/zkc/bbc";
         try {
             ZKC.updateNodeData(path, data);
             assertFalse(true);
@@ -232,7 +243,7 @@ public class ZKConnectorExceTest {
         ZKC.zk = mock(ZooKeeper.class);
         KeeperException ke = KeeperException.create(KeeperException.Code.NONODE);
         byte[] data = "not".getBytes();
-        String path = "/lex/zkc/bbc";
+        String path = BS + "/lex/zkc/bbc";
         doThrow(ke).when(ZKC.zk).setData(path, data, -1);
         try {
             ZKC.updateNodeData(path, data);
@@ -245,7 +256,7 @@ public class ZKConnectorExceTest {
     @Test
     @Order(11)
     public void testDeleteNodeEx() throws Exception {
-        String path = "/lex/zkc/bbc";
+        String path = BS + "/lex/zkc/bbc";
         try {
             ZKC.deleteNode(path);
             assertFalse(true);
@@ -257,8 +268,8 @@ public class ZKConnectorExceTest {
     @Test
     @Order(29)
     public void testDeleteTreeEx() throws Exception {
-        ZKC.deleteTree("/lex");
-        assertFalse(ZKC.exists("/lex"));
+        ZKC.deleteTree(BS + "/lex");
+        assertFalse(ZKC.exists(BS + "/lex"));
     }
 
 }

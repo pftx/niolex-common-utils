@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.commons.concurrent.ThreadUtil;
@@ -38,7 +39,6 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * The main Zookeeper connector, manage zookeeper and retry connection.
@@ -453,7 +453,6 @@ public class ZKConnector implements Watcher {
         }
     }
     
-
     /**
      * Create temporary ZK node. When network error occurred, it will be deleted from ZK server
      * automatically. But if we re-connected to ZK again, we will create it again automatically.
@@ -465,9 +464,31 @@ public class ZKConnector implements Watcher {
      * @throws ZKException if failed to create node
      */
     public String createTempNodeAutoRecover(String path, byte[] data, boolean isSequential) {
-        TempNodeRecoverableWatcher watcher = new TempNodeRecoverableWatcher(this, path, data, isSequential);
+        return createTempNodeAutoRecover(path, data, isSequential, null);
+    }
+
+    /**
+     * Create temporary ZK node. When network error occurred, it will be deleted from ZK server
+     * automatically. But if we re-connected to ZK again, we will create it again automatically.
+     * <p>
+     * For sequential node, the newly created node path will be different from the old one, and
+     * we will store the new node path into the {@literal pathHolder} if it's not null.
+     * 
+     * @param path the node path
+     * @param data the node data
+     * @param isSequential whether the node is a sequential node or not
+     * @param pathHolder store the real node path
+     * @return the actual path of the created node
+     * @throws ZKException if failed to create node
+     */
+    public String createTempNodeAutoRecover(String path, byte[] data, boolean isSequential, One<String> pathHolder) {
+        TempNodeRecoverableWatcher watcher = new TempNodeRecoverableWatcher(this, path, data, isSequential, pathHolder);
         watcherHolder.add(watcher);
-        return createNode(path, data, true, isSequential);
+        String p = createNode(path, data, true, isSequential);
+        if (pathHolder != null) {
+            pathHolder.a = p;
+        }
+        return p;
     }
 
     /**

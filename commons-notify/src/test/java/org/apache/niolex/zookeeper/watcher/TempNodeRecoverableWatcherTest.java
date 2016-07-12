@@ -11,7 +11,7 @@ public class TempNodeRecoverableWatcherTest {
     
     @BeforeClass
     public static void createTempNodeRecoverableWatcher() throws Exception {
-        tnrw = new TempNodeRecoverableWatcher(null, "/notify/test/tmp/TNRW-0001", null, false);
+        tnrw = new TempNodeRecoverableWatcher(null, "/notify/test/tmp/TNRW-0001", null, false, null);
     }
 
     @Test

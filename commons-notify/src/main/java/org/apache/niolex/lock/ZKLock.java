@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.niolex.zookeeper.core.ZKConnector;
+import org.apache.niolex.zookeeper.core.TempNodeAutoCreator;
 import org.apache.niolex.zookeeper.core.ZKException;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -46,15 +46,15 @@ public class ZKLock extends DistributedLock implements Closeable {
 
     private static final String[] STUB = new String[0];
 
-    private final ZKConnector zkc;
+    private final TempNodeAutoCreator autoCreator;
     private final String basePath;
 
-    private volatile String selfPath = null;
     private volatile String watchPath = null;
     private volatile boolean locked = false;
 
     /**
-     * The Constructor to create a {@link ZKConnector} inside it.
+     * The Constructor to create a new ZKLock instance.
+     * We will create a {@link TempNodeAutoCreator} inside this method.
      *
      * @param clusterAddress the zookeeper cluster servers address list
      * @param sessionTimeout the zookeeper session timeout in microseconds
@@ -63,24 +63,13 @@ public class ZKLock extends DistributedLock implements Closeable {
      * @throws IllegalArgumentException if sessionTimeout is too small
      */
     public ZKLock(String clusterAddress, int sessionTimeout, String basePath) throws IOException {
-        this(new ZKConnector(clusterAddress, sessionTimeout), basePath);
-    }
-
-    /**
-     * The ZKLock Constructor.
-     *
-     * @param zkc the zookeeper connector
-     * @param basePath the lock base path
-     */
-    public ZKLock(ZKConnector zkc, String basePath) {
-        super();
-        this.zkc = zkc;
+        this.autoCreator = new TempNodeAutoCreator(clusterAddress, sessionTimeout);
         if (basePath.endsWith("/")) {
             basePath = basePath.substring(0, basePath.length() - 1);
         }
 
         this.basePath = basePath;
-        zkc.makeSurePathExists(basePath);
+        this.autoCreator.makeSurePathExists(basePath);
     }
 
     /**
@@ -92,7 +81,7 @@ public class ZKLock extends DistributedLock implements Closeable {
      * @see org.apache.niolex.zookeeper.core.ZKConnector#addAuthInfo(java.lang.String, java.lang.String)
      */
     public void addAuthInfo(String username, String password) {
-        zkc.addAuthInfo(username, password);
+        autoCreator.addAuthInfo(username, password);
     }
 
     /**
@@ -104,7 +93,7 @@ public class ZKLock extends DistributedLock implements Closeable {
         if (locked) {
             throw new IllegalStateException("Lock not released, Please unlock it first.");
         }
-        selfPath = zkc.createNode(basePath + "/lock-", null, true, true);
+        autoCreator.autoCreateTempNode(basePath + "/lock-", null, true);
     }
 
     /**
@@ -135,6 +124,7 @@ public class ZKLock extends DistributedLock implements Closeable {
     @Override
     protected boolean isLockReady() {
         // Invalid usage.
+        String selfPath = autoCreator.getSelfPath();
         if (selfPath == null) {
             throw new IllegalStateException("Lock not initialized or already released.");
         }
@@ -144,7 +134,7 @@ public class ZKLock extends DistributedLock implements Closeable {
             return true;
         }
 
-        List<String> children = zkc.getChildren(basePath);
+        List<String> children = autoCreator.getChildren(basePath);
         String self = makeChildPath(selfPath);
 
         // If only one, it's meat to be me.
@@ -189,7 +179,7 @@ public class ZKLock extends DistributedLock implements Closeable {
 
         try {
             CountDownLatch latch = new CountDownLatch(1);
-            Stat s = zkc.zooKeeper().exists(watchPath, new ExistsWather(latch));
+            Stat s = autoCreator.zooKeeper().exists(watchPath, new ExistsWather(latch));
             if (s == null) {
                 return;
             } else {
@@ -212,7 +202,7 @@ public class ZKLock extends DistributedLock implements Closeable {
 
         try {
             CountDownLatch latch = new CountDownLatch(1);
-            Stat s = zkc.zooKeeper().exists(watchPath, new ExistsWather(latch));
+            Stat s = autoCreator.zooKeeper().exists(watchPath, new ExistsWather(latch));
             if (s == null) {
                 return true;
             } else {
@@ -229,11 +219,10 @@ public class ZKLock extends DistributedLock implements Closeable {
      */
     @Override
     protected void releaseLock() {
-        if (selfPath != null) {
-            zkc.deleteNode(selfPath);
+        String selfPath = autoCreator.getSelfPath();
+        if (autoCreator.releaseTempNode()) {
             if (locked)
                 LOG.debug("Lock released with path [{}].", selfPath);
-            selfPath = null;
         }
         locked = false;
         watchPath = null;
@@ -272,8 +261,8 @@ public class ZKLock extends DistributedLock implements Closeable {
             try {
                 if (event.getType() == Watcher.Event.EventType.None) {
                     // If event type is none, then something wrong with the zookeeper.
-                    while (!zkc.connected())
-                        zkc.waitForConnectedTillDeath();
+                    while (!autoCreator.connected())
+                        autoCreator.waitForConnectedTillDeath();
                 }
             } finally {
                 latch.countDown();
@@ -294,7 +283,7 @@ public class ZKLock extends DistributedLock implements Closeable {
      */
     @Override
     public void close() {
-        zkc.close();
+        autoCreator.close();
     }
 
 }

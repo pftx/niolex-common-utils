@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;
-import org.apache.niolex.zookeeper.core.ZKConnector;
+import org.apache.niolex.zookeeper.core.TempNodeAutoCreator;
 import org.apache.niolex.zookeeper.core.ZKListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @version 1.0.0
  * @since 2013-12-5
  */
-public class Elector extends ZKConnector implements ZKListener {
+public class Elector extends TempNodeAutoCreator implements ZKListener {
     protected static final Logger LOG = LoggerFactory.getLogger(Elector.class);
 
     /**
@@ -73,11 +73,6 @@ public class Elector extends ZKConnector implements ZKListener {
      * The current listener.
      */
     private final Listener listn;
-
-    /**
-     * The absolute path of the self node path.
-     */
-    private volatile String selfPath;
 
     /**
      * The current leader absolute path.
@@ -117,12 +112,12 @@ public class Elector extends ZKConnector implements ZKListener {
         if (selfPath != null) {
             return false;
         }
-        selfPath = this.createNode(basePath + "/Elector-", StringUtil.strToUtf8Byte(address), true, true);
+        boolean r = autoCreateTempNode(basePath + "/Elector-", StringUtil.strToUtf8Byte(address), true);
         LOG.info("A new Elector joined with path: {}.", selfPath);
         this.onChildrenChange(watchChildren(basePath, this));
-        return true;
+        return r;
     }
-
+    
     /**
      * Give up the current node. That means we don't want to elect the leader any more.
      *
