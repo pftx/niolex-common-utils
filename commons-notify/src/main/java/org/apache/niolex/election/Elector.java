@@ -102,6 +102,7 @@ public class Elector extends TempNodeAutoCreator implements ZKListener {
         }
         this.basePath = basePath;
         this.listn = listn;
+        this.makeSurePathExists(basePath);
         this.onChildrenChange(watchChildren(basePath, this));
     }
 

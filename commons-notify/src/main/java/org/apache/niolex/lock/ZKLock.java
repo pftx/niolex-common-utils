@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.niolex.zookeeper.core.TempNodeAutoCreator;
+import org.apache.niolex.zookeeper.core.ZKConnector;
 import org.apache.niolex.zookeeper.core.ZKException;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -36,6 +36,11 @@ import org.slf4j.LoggerFactory;
 /**
  * The DistributedLock powered by Zookeeper.<br><b>
  * This implementation is non-reentrant, and you should not share it between different threads.</b>
+ * Lock instance can be reused, call {@link #releaseLock()} and use it again. <br>If you call the constructor
+ * {@link #ZKLock(String, int, String)} to create a new instance, you need to call the {@link #close()}
+ * method on this instance to close the inner ZKConnector if you do not want to use this lock any more.
+ * <br>If you call constructor {@link #ZKLock(ZKConnector, String)}, the ZKConnector instance will be managed
+ * by you. Even if you call {@link #close()}, we will not close the ZKConnector instance.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -46,15 +51,27 @@ public class ZKLock extends DistributedLock implements Closeable {
 
     private static final String[] STUB = new String[0];
 
-    private final TempNodeAutoCreator autoCreator;
+    private final ZKConnector zkConn;
     private final String basePath;
 
-    private volatile String watchPath = null;
-    private volatile boolean locked = false;
+    private String selfPath = null;
+    private String watchPath = null;
+    private boolean closeZKC = false;
+    
+    /**
+     * The lock status:
+     *          0 - not locked / lock released
+     *          1 - lock initialized
+     *          2 - lock acquired
+     */
+    private static final int NO_LOCK = 0;
+    private static final int LOCK_INITIALIZED = 1;
+    private static final int LOCKED = 2;
+    private int lockStatus = NO_LOCK;
 
     /**
      * The Constructor to create a new ZKLock instance.
-     * We will create a {@link TempNodeAutoCreator} inside this method.
+     * We will create a {@link ZKConnector} inside this method.
      *
      * @param clusterAddress the zookeeper cluster servers address list
      * @param sessionTimeout the zookeeper session timeout in microseconds
@@ -62,16 +79,29 @@ public class ZKLock extends DistributedLock implements Closeable {
      * @throws IOException in cases of network failure
      * @throws IllegalArgumentException if sessionTimeout is too small
      */
-    public ZKLock(String clusterAddress, int sessionTimeout, String basePath) throws IOException {
-        this.autoCreator = new TempNodeAutoCreator(clusterAddress, sessionTimeout);
+    public ZKLock(String clusterAddress, int sessionTimeout, String basePath)
+            throws IOException, IllegalArgumentException {
+        this(new ZKConnector(clusterAddress, sessionTimeout), basePath);
+        closeZKC = true;
+    }
+    
+    /**
+     * The ZKLock Constructor.
+     *
+     * @param zkc the zookeeper connector
+     * @param basePath the lock base path
+     */
+    public ZKLock(ZKConnector zkc, String basePath) {
+        super();
+        this.zkConn = zkc;
         if (basePath.endsWith("/")) {
             basePath = basePath.substring(0, basePath.length() - 1);
         }
 
         this.basePath = basePath;
-        this.autoCreator.makeSurePathExists(basePath);
+        zkc.makeSurePathExists(basePath);
     }
-
+    
     /**
      * Add authenticate info for this client.
      * 添加client的权限认证信息
@@ -81,7 +111,7 @@ public class ZKLock extends DistributedLock implements Closeable {
      * @see org.apache.niolex.zookeeper.core.ZKConnector#addAuthInfo(java.lang.String, java.lang.String)
      */
     public void addAuthInfo(String username, String password) {
-        autoCreator.addAuthInfo(username, password);
+        zkConn.addAuthInfo(username, password);
     }
 
     /**
@@ -90,10 +120,11 @@ public class ZKLock extends DistributedLock implements Closeable {
      */
     @Override
     protected void initLock() {
-        if (locked) {
+        if (lockStatus > NO_LOCK) {
             throw new IllegalStateException("Lock not released, Please unlock it first.");
         }
-        autoCreator.autoCreateTempNode(basePath + "/lock-", null, true);
+        selfPath = zkConn.createNode(basePath + "/lock-", null, true, true);
+        lockStatus = LOCK_INITIALIZED;
     }
 
     /**
@@ -124,46 +155,39 @@ public class ZKLock extends DistributedLock implements Closeable {
     @Override
     protected boolean isLockReady() {
         // Invalid usage.
-        String selfPath = autoCreator.getSelfPath();
         if (selfPath == null) {
             throw new IllegalStateException("Lock not initialized or already released.");
         }
 
         // Already locked.
-        if (locked) {
+        if (lockStatus == LOCKED) {
             return true;
         }
 
-        List<String> children = autoCreator.getChildren(basePath);
+        List<String> children = zkConn.getChildren(basePath);
         String self = makeChildPath(selfPath);
-
-        // If only one, it's meat to be me.
-        if (children.size() <= 1) {
-            if (children.size() == 0 || !self.equals(children.get(0))) {
-                throw new IllegalStateException("Invalid zookeeper data.");
-            } else {
-                LOG.debug("Lock acquired directly with path [{}].", selfPath);
-                return locked = true;
-            }
-        }
 
         // Sort children.
         String[] arr = children.toArray(STUB);
         Arrays.sort(arr);
 
-        if (self.equals(arr[0])) {
-            // I am holding the lock.
+        // Find myself.
+        int selfIndex = Arrays.binarySearch(arr, self);
+        
+        if (selfIndex < 0) {
+            // Self not found. We need to re-init this lock. This maybe due to session expired...
+            lockStatus = NO_LOCK;
+            initLock();
+            return isLockReady();
+        } else if (selfIndex == 0) {
+            // Lock acquired. I am holding the lock.
             LOG.debug("Lock acquired as header with path [{}].", selfPath);
-            return locked = true;
+            lockStatus = LOCKED;
+            return true;
         } else {
-            for (int i = 1; i < arr.length; ++i) {
-                if (self.equals(arr[i])) {
-                    watchPath = makeWholePath(arr[i - 1]);
-                    LOG.debug("Lock is not ready, waiting for path [{}], self path [{}].", watchPath, selfPath);
-                    return locked = false;
-                }
-            }
-            throw new IllegalStateException("Invalid zookeeper data, current path not found.");
+            watchPath = makeWholePath(arr[selfIndex - 1]);
+            LOG.debug("Lock is not ready, waiting for path [{}], self path [{}].", watchPath, selfPath);
+            return false;
         }
     }
 
@@ -179,7 +203,7 @@ public class ZKLock extends DistributedLock implements Closeable {
 
         try {
             CountDownLatch latch = new CountDownLatch(1);
-            Stat s = autoCreator.zooKeeper().exists(watchPath, new ExistsWather(latch));
+            Stat s = zkConn.zooKeeper().exists(watchPath, new ExistsWather(latch));
             if (s == null) {
                 return;
             } else {
@@ -202,7 +226,7 @@ public class ZKLock extends DistributedLock implements Closeable {
 
         try {
             CountDownLatch latch = new CountDownLatch(1);
-            Stat s = autoCreator.zooKeeper().exists(watchPath, new ExistsWather(latch));
+            Stat s = zkConn.zooKeeper().exists(watchPath, new ExistsWather(latch));
             if (s == null) {
                 return true;
             } else {
@@ -219,12 +243,13 @@ public class ZKLock extends DistributedLock implements Closeable {
      */
     @Override
     protected void releaseLock() {
-        String selfPath = autoCreator.getSelfPath();
-        if (autoCreator.releaseTempNode()) {
-            if (locked)
+        if (selfPath != null) {
+            zkConn.deleteNode(selfPath);
+            if (lockStatus == LOCKED)
                 LOG.debug("Lock released with path [{}].", selfPath);
         }
-        locked = false;
+        lockStatus = NO_LOCK;
+        selfPath = null;
         watchPath = null;
     }
 
@@ -261,8 +286,8 @@ public class ZKLock extends DistributedLock implements Closeable {
             try {
                 if (event.getType() == Watcher.Event.EventType.None) {
                     // If event type is none, then something wrong with the zookeeper.
-                    while (!autoCreator.connected())
-                        autoCreator.waitForConnectedTillDeath();
+                    while (!zkConn.connected())
+                        zkConn.waitForConnectedTillDeath();
                 }
             } finally {
                 latch.countDown();
@@ -275,15 +300,18 @@ public class ZKLock extends DistributedLock implements Closeable {
      * @return the current lock status
      */
     public boolean locked() {
-        return locked;
+        return lockStatus == LOCKED;
     }
 
     /**
-     * Close the internal zookeeper connector.
+     * Close the internal zookeeper connector if it's created by this class, otherwise just release this lock.
      */
     @Override
     public void close() {
-        autoCreator.close();
+        if (closeZKC) {
+            zkConn.close();
+        } else {
+            releaseLock();
+        }
     }
-
 }

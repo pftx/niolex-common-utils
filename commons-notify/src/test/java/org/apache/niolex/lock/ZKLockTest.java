@@ -1,8 +1,6 @@
 package org.apache.niolex.lock;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -20,7 +18,7 @@ import org.apache.niolex.commons.reflect.FieldUtil;
 import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.util.Runner;
 import org.apache.niolex.notify.AppTest;
-import org.apache.niolex.zookeeper.core.TempNodeAutoCreator;
+import org.apache.niolex.zookeeper.core.ZKConnector;
 import org.apache.niolex.zookeeper.core.ZKException;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -33,14 +31,14 @@ import org.junit.Test;
 public class ZKLockTest {
 
     private static String BS = "/lock/zkc/tmp-" + MockUtil.randInt(100, 999);
-    private static TempNodeAutoCreator ZKC;
+    private static ZKConnector ZKC;
 
     /**
      * @throws java.lang.Exception
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        ZKC = new TempNodeAutoCreator(AppTest.URL, 10000);
+        ZKC = new ZKConnector(AppTest.URL, 10000);
         String bb = "/lock/zkc";
 
         if (ZKC.exists(bb))
@@ -59,7 +57,9 @@ public class ZKLockTest {
 
     @Test
     public void testWholeLock1() throws Exception {
-        ZKLock lock = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock = new ZKLock(ZKC, BS);
+        lock.lock();
+        lock.unlock();
         lock.lock();
         lock.unlock();
         lock.close();
@@ -68,8 +68,8 @@ public class ZKLockTest {
 
 	@Test
     public void testWholeLock2() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        ZKLock lock2 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        ZKLock lock2 = new ZKLock(ZKC, BS + "/");
 
         assertTrue(lock1.tryLock());
         assertFalse(lock2.tryLock());
@@ -88,9 +88,9 @@ public class ZKLockTest {
 
     @Test
     public void testWholeLock3() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        ZKLock lock2 = new ZKLock(AppTest.URL, 6000, BS + "/");
-        ZKLock lock3 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        ZKLock lock2 = new ZKLock(ZKC, BS + "/");
+        ZKLock lock3 = new ZKLock(ZKC, BS);
 
         lock1.lock();
         One<Thread> threadVal = One.create(null);
@@ -124,14 +124,14 @@ public class ZKLockTest {
     
     @Test
     public void testAddAuthInfo() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         lock1.addAuthInfo("abc", "lex");
         lock1.close();
     }
 
     @Test(expected=IllegalStateException.class)
     public void testInitLockEx() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         lock1.lock();
 
         try {
@@ -144,10 +144,10 @@ public class ZKLockTest {
     
     @Test
     public void testIsLockReadyWhole() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        ZKLock lock2 = new ZKLock(AppTest.URL, 6000, BS + "/");
-        ZKLock lock3 = new ZKLock(AppTest.URL, 6000, BS);
-        ZKLock lock4 = new ZKLock(AppTest.URL, 6000, BS + "/");
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        ZKLock lock2 = new ZKLock(ZKC, BS + "/");
+        ZKLock lock3 = new ZKLock(ZKC, BS);
+        ZKLock lock4 = new ZKLock(ZKC, BS + "/");
 
         lock1.lock();
 
@@ -167,24 +167,30 @@ public class ZKLockTest {
         assertFalse(lock3.locked());
         assertFalse(lock4.tryLock());
 
-        TempNodeAutoCreator autoCreator = FieldUtil.getValue(lock1, "autoCreator");
-        FieldUtil.setValue(autoCreator, "selfPath", "/a/b/c");
         try {
             lock1.isLockReady();
             assertTrue(false);
         } catch (IllegalStateException e) {
-            assertEquals("Invalid zookeeper data, current path not found.", e.getMessage());
+            assertEquals("Lock not initialized or already released.", e.getMessage());
         }
 
         lock2.unlock();
-
         fu2.get();
 
         assertFalse(lock1.locked());
         assertFalse(lock2.locked());
         assertTrue(lock3.locked());
+        assertTrue(lock3.isLockReady());
+        assertNull(FieldUtil.getValue(lock4, "selfPath"));
+        FieldUtil.setValue(lock4, "selfPath", "/a/b/c");
+        assertFalse(lock4.isLockReady());
+        String p = FieldUtil.getValue(lock4, "selfPath");
+        System.out.println(p);
+        assertNotNull(p);
+        assertNotEquals("/a/b/c", p);
 
         lock3.unlock();
+        assertTrue(lock4.isLockReady());
         
         lock1.close();
         lock2.close();
@@ -194,40 +200,9 @@ public class ZKLockTest {
     
     @Test(expected=IllegalStateException.class)
     public void testIsLockReadyDirectly() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         try {
             lock1.isLockReady();
-        } finally {
-            lock1.close();
-        }
-    }
-    
-    @Test(expected=IllegalStateException.class)
-    public void testIsLockReadyNoWatchPath() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        TempNodeAutoCreator autoCreator = FieldUtil.getValue(lock1, "autoCreator");
-        FieldUtil.setValue(autoCreator, "selfPath", "/a/b/c");
-        try {
-            lock1.isLockReady();
-        } catch (IllegalStateException e) {
-            assertEquals("Invalid zookeeper data.", e.getMessage());
-            throw e;
-        } finally {
-            lock1.close();
-        }
-    }
-
-    @Test(expected=IllegalStateException.class)
-    public void testIsLockReadyIll() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        lock1.initLock();
-        TempNodeAutoCreator autoCreator = FieldUtil.getValue(lock1, "autoCreator");
-        FieldUtil.setValue(autoCreator, "selfPath", "/a/b/c");
-        try {
-            lock1.isLockReady();
-        } catch (IllegalStateException e) {
-            assertEquals("Invalid zookeeper data.", e.getMessage());
-            throw e;
         } finally {
             lock1.close();
         }
@@ -235,39 +210,15 @@ public class ZKLockTest {
     
     @Test
     public void testIsLockReadyLocked() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        TempNodeAutoCreator autoCreator = FieldUtil.getValue(lock1, "autoCreator");
-        FieldUtil.setValue(autoCreator, "selfPath", "/a/b/c");
-        FieldUtil.setValue(lock1, "locked", true);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
+        FieldUtil.setValue(lock1, "lockStatus", 2);
         assertTrue(lock1.isLockReady());
-        lock1.close();
     }
 
     @Test(expected=IllegalStateException.class)
-    public void testIsLockReady2Lock1Fake() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        ZKLock lock2 = new ZKLock(AppTest.URL, 6000, BS);
-        ZKLock lock3 = new ZKLock(AppTest.URL, 6000, BS);
-        lock2.lock();
-        lock3.initLock();
-        try {
-            TempNodeAutoCreator autoCreator = FieldUtil.getValue(lock1, "autoCreator");
-            FieldUtil.setValue(autoCreator, "selfPath", "/a/b/c");
-            lock1.isLockReady();
-        } catch (IllegalStateException e) {
-            assertEquals("Invalid zookeeper data, current path not found.", e.getMessage());
-            throw e;
-        } finally {
-            lock2.unlock();
-            lock1.close();
-            lock2.close();
-            lock3.close();
-        }
-    }
-    
-    @Test(expected=IllegalStateException.class)
     public void testWatchLockDirectly() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         try {
             lock1.watchLock();
         } finally {
@@ -277,7 +228,7 @@ public class ZKLockTest {
     
     @Test(expected=IllegalStateException.class)
     public void testWatchLockDirectlyWithTime() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         try {
             lock1.watchLock(10, TimeUnit.MILLISECONDS);
         } finally {
@@ -287,17 +238,15 @@ public class ZKLockTest {
     
     @Test
     public void testWatchLockNotExist() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        TempNodeAutoCreator autoCreator = FieldUtil.getValue(lock1, "autoCreator");
-        FieldUtil.setValue(autoCreator, "selfPath", "/a/b/c");
+        ZKLock lock1 = new ZKLock(ZKC, BS);
+        FieldUtil.setValue(lock1, "selfPath", "/a/b/c");
         FieldUtil.setValue(lock1, "watchPath", "/a/b/b");
         lock1.watchLock();
-        lock1.close();
     }
     
     @Test
     public void testWatchLockReady() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         lock1.initLock();
         assertTrue(lock1.isLockReady());
         FieldUtil.setValue(lock1, "watchPath", "/a/b/b");
@@ -311,7 +260,7 @@ public class ZKLockTest {
 
     @Test
     public void testWatchLockWithTime() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         lock1.lock();
         FieldUtil.setValue(lock1, "watchPath", "/a/b/b");
         lock1.watchLock(10, TimeUnit.MILLISECONDS);
@@ -334,41 +283,39 @@ public class ZKLockTest {
     @Test(expected=ZKException.class)
     public void testWatchLockEx() throws Exception {
         ZooKeeper zk = mock(ZooKeeper.class);
-        TempNodeAutoCreator zkc = mock(TempNodeAutoCreator.class);
+        ZKConnector zkc = mock(ZKConnector.class);
         when(zkc.zooKeeper()).thenReturn(zk);
 
         KeeperException ke = KeeperException.create(KeeperException.Code.APIERROR);
         when(zk.exists(anyString(), any(Watcher.class))).thenThrow(ke);
 
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-
-        FieldUtil.setValue(lock1, "autoCreator", zkc);
+        ZKLock lock1 = new ZKLock(zkc, BS);
         FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
+        
         lock1.watchLock();
     }
     
     @Test(expected=ZKException.class)
     public void testWatchLockExWithTime() throws Exception {
         ZooKeeper zk = mock(ZooKeeper.class);
-        TempNodeAutoCreator zkc = mock(TempNodeAutoCreator.class);
+        ZKConnector zkc = mock(ZKConnector.class);
         when(zkc.zooKeeper()).thenReturn(zk);
         
         KeeperException ke = KeeperException.create(KeeperException.Code.APIERROR);
         when(zk.exists(anyString(), any(Watcher.class))).thenThrow(ke);
         
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        
-        FieldUtil.setValue(lock1, "autoCreator", zkc);
+        ZKLock lock1 = new ZKLock(zkc, BS);
         FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
+        
         lock1.watchLock(10, TimeUnit.MILLISECONDS);
     }
 
 
     @Test
     public void testWatchLockTimeout() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         lock1.lock();
-        ZKLock lock2 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock2 = new ZKLock(ZKC, BS);
         lock2.initLock();
         assertFalse(lock2.isLockReady());
         
@@ -383,7 +330,7 @@ public class ZKLockTest {
 
     @Test
     public void testWatchLockLongTimeUnit() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
         assertTrue(lock1.watchLock(100, TimeUnit.MILLISECONDS));
         lock1.close();
@@ -392,15 +339,14 @@ public class ZKLockTest {
     @Test(expected = ZKException.class)
     public void testWatchLockLongTimeUnitZKEX() throws Exception {
         ZooKeeper zk = mock(ZooKeeper.class);
-        TempNodeAutoCreator zkc = mock(TempNodeAutoCreator.class);
+        ZKConnector zkc = mock(ZKConnector.class);
         when(zkc.zooKeeper()).thenReturn(zk);
         when(zkc.connected()).thenReturn(false, false, true);
 
         KeeperException ke = KeeperException.create(KeeperException.Code.APIERROR);
         when(zk.exists(anyString(), any(Watcher.class))).thenThrow(ke);
 
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        FieldUtil.setValue(lock1, "autoCreator", zkc);
+        ZKLock lock1 = new ZKLock(zkc, BS);
         
         try {
             FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
@@ -412,9 +358,9 @@ public class ZKLockTest {
     
     @Test
     public void testReleaseLock() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         lock1.lock();
-        ZKLock lock2 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock2 = new ZKLock(ZKC, BS);
         lock2.initLock();
         assertFalse(lock2.isLockReady());
         
@@ -429,7 +375,7 @@ public class ZKLockTest {
     
     @Test
     public void testExistsWatherProcess() throws Exception {
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
+        ZKLock lock1 = new ZKLock(ZKC, BS);
         CountDownLatch latch = new CountDownLatch(1);
         Watcher w = lock1.new ExistsWather(latch);
         lock1.lock();
@@ -443,12 +389,10 @@ public class ZKLockTest {
 
     @Test
     public void testExistsWatherProcess2() throws Exception {
-        TempNodeAutoCreator zkc = mock(TempNodeAutoCreator.class);
+        ZKConnector zkc = mock(ZKConnector.class);
         when(zkc.connected()).thenReturn(false, false, true);
 
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        FieldUtil.setValue(lock1, "autoCreator", zkc);
-
+        ZKLock lock1 = new ZKLock(zkc, BS);
         FieldUtil.setValue(lock1, "watchPath", "/a/b/c");
         CountDownLatch latch = new CountDownLatch(1);
         Watcher w = lock1.new ExistsWather(latch);
@@ -458,13 +402,11 @@ public class ZKLockTest {
 
     @Test(expected=NullPointerException.class)
     public void testExistsWatherProcess3() throws Exception {
-        TempNodeAutoCreator zkc = mock(TempNodeAutoCreator.class);
+        ZKConnector zkc = mock(ZKConnector.class);
         when(zkc.connected()).thenReturn(false, false, true);
         doThrow(new NullPointerException()).when(zkc).waitForConnectedTillDeath();
 
-        ZKLock lock1 = new ZKLock(AppTest.URL, 6000, BS);
-        FieldUtil.setValue(lock1, "autoCreator", zkc);
-        
+        ZKLock lock1 = new ZKLock(zkc, BS);
         CountDownLatch latch = new CountDownLatch(1);
         Watcher w = lock1.new ExistsWather(latch);
 
