@@ -46,8 +46,8 @@ public class ZKException extends RuntimeException {
      * Make an instance of ZKException. If the exception is an instance of
      * RuntimeException, we throw it directly.
      *
-     * @param message The message you want to say.
-     * @param e The nested exception.
+     * @param message the message you want to say.
+     * @param e the nested exception.
      * @return an instance of ZKException
      */
     public static final ZKException makeInstance(String message, Throwable e) {

@@ -68,7 +68,8 @@ public class TempNodeRecoverableWatcher implements RecoverableWatcher {
      * @param isSequential whether the node is a sequential node or not
      * @param pathHolder store the real node path
      */
-    public TempNodeRecoverableWatcher(ZKConnector zkc, String path, byte[] data, boolean isSequential, One<String> pathHolder) {
+    public TempNodeRecoverableWatcher(ZKConnector zkc, String path, byte[] data, boolean isSequential,
+            One<String> pathHolder) {
         super();
         this.zkc = zkc;
         this.path = path;
