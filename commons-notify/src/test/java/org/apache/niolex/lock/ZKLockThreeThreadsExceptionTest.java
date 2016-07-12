@@ -44,9 +44,11 @@ public class ZKLockThreeThreadsExceptionTest {
     Exception exception2;
     Exception exception3;
     CountDownLatch latch = new CountDownLatch(3);
+    CountDownLatch start = new CountDownLatch(1);
 
-    public void lock1(ZKLock lock) {
+    public void lock1(ZKLock lock) throws InterruptedException {
         latch.countDown();
+        start.await();
         try {
             lock.lock();
         } catch (Exception e) {
@@ -54,8 +56,9 @@ public class ZKLockThreeThreadsExceptionTest {
         }
     }
 
-    public void lock2(ZKLock lock) {
+    public void lock2(ZKLock lock) throws InterruptedException {
         latch.countDown();
+        start.await();
         try {
             lock.lockInterruptibly();
         } catch (Exception e) {
@@ -63,8 +66,9 @@ public class ZKLockThreeThreadsExceptionTest {
         }
     }
 
-    public void lock3(ZKLock lock) {
+    public void lock3(ZKLock lock) throws InterruptedException {
         latch.countDown();
+        start.await();
         try {
             lock.tryLock(5000, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
@@ -89,6 +93,7 @@ public class ZKLockThreeThreadsExceptionTest {
 
         latch.await();
         lock.unlock();
+        start.countDown();
 
         threadVal_1.a.join();
         threadVal_2.a.join();

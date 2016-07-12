@@ -33,6 +33,9 @@ import org.slf4j.LoggerFactory;
  * We use zookeeper for sequential order. The first registered node will
  * be elected as leader. If this leader goes down, the second one will
  * take his place, and so on.
+ * <p>
+ * If network problem occurred and the current session expired, we will
+ * re-create the temporary node again.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -99,6 +102,7 @@ public class Elector extends TempNodeAutoCreator implements ZKListener {
         }
         this.basePath = basePath;
         this.listn = listn;
+        this.onChildrenChange(watchChildren(basePath, this));
     }
 
     /**
@@ -114,7 +118,6 @@ public class Elector extends TempNodeAutoCreator implements ZKListener {
         }
         boolean r = autoCreateTempNode(basePath + "/Elector-", StringUtil.strToUtf8Byte(address), true);
         LOG.info("A new Elector joined with path: {}.", selfPath);
-        this.onChildrenChange(watchChildren(basePath, this));
         return r;
     }
     
