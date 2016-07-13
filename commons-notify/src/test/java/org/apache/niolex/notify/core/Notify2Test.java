@@ -78,6 +78,8 @@ public class Notify2Test {
     @Test
     public void testUpdateProperty() {
         notify.replaceProperty("permkey", MockUtil.randUUID());
+        SystemUtil.sleep(20);
+        notify.replaceProperty("permkey", MockUtil.randUUID());
     }
 
 }

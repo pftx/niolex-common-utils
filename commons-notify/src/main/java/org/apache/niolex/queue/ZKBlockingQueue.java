@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.queue;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -36,13 +37,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The distributed blocking queue implementation powered by Zookeeper.
+ * The distributed blocking queue implementation powered by Zookeeper.<br>If you call the constructor
+ * {@link #ZKBlockingQueue(String, int, String)} to create a new instance, you need to call the {@link #close()}
+ * method on this instance to close the inner ZKConnector when you do not want to use this lock any more.
+ * <br>If you call constructor {@link #ZKBlockingQueue(ZKConnector, String)}, the ZKConnector instance will be managed
+ * by you. Even if you call {@link #close()}, we will not close the ZKConnector instance.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @since 2016-4-19
  */
-public class ZKBlockingQueue<E extends Serializable> extends DistributedBlockingQueue<E> {
+public class ZKBlockingQueue<E extends Serializable> extends DistributedBlockingQueue<E> implements Closeable {
     protected static final Logger LOG = LoggerFactory.getLogger(ZKBlockingQueue.class);
     protected static final String PREFIX = "/zkbq-";
 
@@ -52,6 +57,8 @@ public class ZKBlockingQueue<E extends Serializable> extends DistributedBlocking
     private final LinkedBlockingQueue<String> itemQueue = new LinkedBlockingQueue<String>();
     private final ZKConnector zkc;
     private final String basePath;
+    
+    private boolean closeZKC = false;
 
     /**
      * The Constructor to create a {@link ZKConnector} inside it.
@@ -64,6 +71,7 @@ public class ZKBlockingQueue<E extends Serializable> extends DistributedBlocking
      */
     public ZKBlockingQueue(String clusterAddress, int sessionTimeout, String basePath) throws IOException {
         this(new ZKConnector(clusterAddress, sessionTimeout), basePath);
+        closeZKC = true;
     }
 
     /**
@@ -210,7 +218,7 @@ public class ZKBlockingQueue<E extends Serializable> extends DistributedBlocking
         } else {
             try {
                 @SuppressWarnings("unchecked")
-                E o = (E) BeanUtil.toObject(arr);;
+                E o = (E) BeanUtil.toObject(arr);
                 return o;
             } catch (Exception e) {
                 throw new IllegalStateException("Failed to deserialize object for " + child, e);
@@ -311,6 +319,19 @@ public class ZKBlockingQueue<E extends Serializable> extends DistributedBlocking
     @Override
     public int size() {
         return getChildren().size();
+    }
+
+    /**
+     * Close the internal zookeeper connector if and only if it's created by this class.
+     * 
+     * This is the override of super method.
+     * @see java.io.Closeable#close()
+     */
+    @Override
+    public void close() {
+        if (closeZKC) {
+            zkc.close();
+        }
     }
 
 }

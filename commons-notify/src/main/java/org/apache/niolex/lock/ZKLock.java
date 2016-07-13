@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * This implementation is non-reentrant, and you should not share it between different threads.</b>
  * Lock instance can be reused, call {@link #releaseLock()} and use it again. <br>If you call the constructor
  * {@link #ZKLock(String, int, String)} to create a new instance, you need to call the {@link #close()}
- * method on this instance to close the inner ZKConnector if you do not want to use this lock any more.
+ * method on this instance to close the inner ZKConnector when you do not want to use this lock any more.
  * <br>If you call constructor {@link #ZKLock(ZKConnector, String)}, the ZKConnector instance will be managed
  * by you. Even if you call {@link #close()}, we will not close the ZKConnector instance.
  *

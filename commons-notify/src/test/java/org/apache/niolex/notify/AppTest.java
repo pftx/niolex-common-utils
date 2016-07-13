@@ -17,7 +17,15 @@ public class AppTest {
     static {
         setUp();
         APP = App.instance();
-        APP.makeSurePathExists("/notify/test/tmp");
+        cleanZK("/notify/test/tmp");
+    }
+    
+    public static void setUp() {
+        try {
+            App.init(URL, 10000);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to connect to ZK.", e);
+        }
     }
     
     public static void cleanZK(String base) {
@@ -25,14 +33,6 @@ public class AppTest {
             APP.deleteTree(base);
         }
         APP.makeSurePathExists(base);
-    }
-
-    public static void setUp() {
-        try {
-            App.init(URL, 10000);
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to connect to ZK.", e);
-        }
     }
 
     /**

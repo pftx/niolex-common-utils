@@ -79,7 +79,7 @@ public class Notify implements ZKListener {
     /**
      * This list must be visited in synchronized block.
      */
-    private final List<Listener> list = new ArrayList<Listener>();
+    private final List<Listener> listeners = new ArrayList<Listener>();
 
     /**
      * Use concurrent one to reduce lock usage.
@@ -134,7 +134,7 @@ public class Notify implements ZKListener {
      */
     public synchronized void onDataChange(byte[] data) {
         this.data = data;
-        for (Listener li : list) {
+        for (Listener li : listeners) {
             li.onDataChange(data);
         }
     }
@@ -209,7 +209,7 @@ public class Notify implements ZKListener {
      * @param listener listener to be added to this notify
      */
     public synchronized void addListener(Listener listener) {
-        list.add(listener);
+        listeners.add(listener);
     }
 
     /**
@@ -219,7 +219,7 @@ public class Notify implements ZKListener {
      * @return true if success, false if not found.
      */
     public synchronized boolean removeListener(Listener listener) {
-        return list.remove(listener);
+        return listeners.remove(listener);
     }
 
 
@@ -261,7 +261,7 @@ public class Notify implements ZKListener {
      * @param b the new property value
      */
     private synchronized void firePropertyChange(byte[] a, byte[] b) {
-        for (Listener li : list) {
+        for (Listener li : listeners) {
             li.onPropertyChange(a, b);
         }
     }
