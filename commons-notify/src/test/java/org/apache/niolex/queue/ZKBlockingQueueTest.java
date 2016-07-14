@@ -8,6 +8,7 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,9 +26,10 @@ import org.apache.niolex.zookeeper.core.ZKConnector;
 import org.apache.niolex.zookeeper.core.ZKException;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -280,4 +282,33 @@ public class ZKBlockingQueueTest {
         WatchedEvent event = new WatchedEvent(EventType.None, KeeperState.Expired, "/a/ab/cc");
         w.process(event);
     }
+
+    @Test
+    public void testChildrenChangeWatherProcess2() throws Exception {
+        ZKConnector zkc = mock(ZKConnector.class);
+        when(zkc.connected()).thenReturn(false, false, true);
+
+        ZKBlockingQueue<String> queue = new ZKBlockingQueue<String>(zkc, BS);
+        CountDownLatch latch = new CountDownLatch(1);
+        ZKBlockingQueue<String>.ChildrenChangeWather w = queue.new ChildrenChangeWather(latch);
+        w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
+        queue.close();
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testChildrenChangeWatherProcess3() throws Exception {
+        ZKConnector zkc = mock(ZKConnector.class);
+        when(zkc.connected()).thenReturn(false, false, true);
+        doThrow(new NullPointerException()).when(zkc).waitForConnectedTillDeath();
+
+        ZKBlockingQueue<String> queue = new ZKBlockingQueue<String>(zkc, BS);
+        CountDownLatch latch = new CountDownLatch(1);
+        ZKBlockingQueue<String>.ChildrenChangeWather w = queue.new ChildrenChangeWather(latch);
+        try {
+            w.process(new WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, ""));
+        } finally {
+            queue.close();
+        }
+    }
+
 }
