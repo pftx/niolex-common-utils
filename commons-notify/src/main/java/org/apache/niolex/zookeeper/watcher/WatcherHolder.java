@@ -30,7 +30,7 @@ import java.util.Set;
 public class WatcherHolder {
 
     // The watcher set.
-    Set<RecoverableWatcher> watcherSet = new HashSet<RecoverableWatcher>();
+    private final Set<RecoverableWatcher> watcherSet = new HashSet<RecoverableWatcher>();
 
     /**
      * Re add all the watcher to this zookeeper.

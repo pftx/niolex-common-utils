@@ -67,7 +67,7 @@ public class ZKLock extends DistributedLock implements Closeable {
     private static final int NO_LOCK = 0;
     private static final int LOCK_INITIALIZED = 1;
     private static final int LOCKED = 2;
-    private int lockStatus = NO_LOCK;
+    private volatile int lockStatus = NO_LOCK;
 
     /**
      * The Constructor to create a new ZKLock instance.

@@ -76,12 +76,12 @@ public class ZKConnector implements Watcher {
     /**
      * The latch to wait for connected.
      */
-    private CountDownLatch latch;
+    private volatile CountDownLatch latch;
 
     /**
      * The internal zookeeper instance.
      */
-    protected ZooKeeper zk;
+    protected volatile ZooKeeper zk;
 
     /**
      * Construct a new ZKConnector and connect to ZK server.

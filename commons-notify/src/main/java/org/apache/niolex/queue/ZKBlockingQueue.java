@@ -167,7 +167,7 @@ public class ZKBlockingQueue<E extends Serializable> extends DistributedBlocking
      * @param removeItem whether we need to remove the item from the queue or not
      * @return the head item or null if queue is empty
      */
-    public E getHead(boolean removeItem) {
+    public synchronized E getHead(boolean removeItem) {
         boolean queryZK = false;
         String child = null;
         byte[] arr = null;
@@ -232,7 +232,7 @@ public class ZKBlockingQueue<E extends Serializable> extends DistributedBlocking
      * @see org.apache.niolex.queue.DistributedBlockingQueue#watchQueue()
      */
     @Override
-    protected void watchQueue() throws InterruptedException {
+    protected synchronized void watchQueue() throws InterruptedException {
         try {
             CountDownLatch latch = new CountDownLatch(1);
             List<String> children = zkc.zooKeeper().getChildren(basePath, new ChildrenChangeWather(latch));
@@ -253,7 +253,7 @@ public class ZKBlockingQueue<E extends Serializable> extends DistributedBlocking
      * @see org.apache.niolex.queue.DistributedBlockingQueue#watchQueue(long, java.util.concurrent.TimeUnit)
      */
     @Override
-    protected boolean watchQueue(long timeout, TimeUnit unit) throws InterruptedException {
+    protected synchronized boolean watchQueue(long timeout, TimeUnit unit) throws InterruptedException {
         try {
             CountDownLatch latch = new CountDownLatch(1);
             List<String> children = zkc.zooKeeper().getChildren(basePath, new ChildrenChangeWather(latch));
