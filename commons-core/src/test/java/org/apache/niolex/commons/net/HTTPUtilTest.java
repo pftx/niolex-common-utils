@@ -253,11 +253,11 @@ public class HTTPUtilTest extends HTTPUtil {
         Charset cs = inferCharset(headers, body);
         assertEquals(cs, Charset.forName("gb2312"));
     }
-    
+
     @Test
     public void testInferCharsetSogou() throws Exception {
         byte[] body = StringUtil.strToUtf8Byte("<!DOCTYPE HTML><script>var _speedMark=new Date</script><meta charset=utf-8><title>搜狗搜索引擎 - 上网从搜狗开始</title><link href=" +
-                    "\"/images/logo/new/favicon.ico?v=2\" rel=\"shortcut icon\" type=image/x-icon><meta content=\"IE=Edge\" http-equiv=X-UA-Compatible><meta content=搜狗搜索,网页" + 
+                    "\"/images/logo/new/favicon.ico?v=2\" rel=\"shortcut icon\" type=image/x-icon><meta content=\"IE=Edge\" http-equiv=X-UA-Compatible><meta content=搜狗搜索,网页" +
                 "搜索,微信搜索,视频搜索,图片搜索,音乐搜索,新闻搜索,软件搜索,问答搜索,百科搜索,购物搜索 name=keywords><meta content=中国最领先的中文搜索引擎，支持微信公众号、" +
                     "文章搜索，通过独有的SogouRank技术及人工智能算法为您提供最快、最准、最全的搜索服务。 name=description><style>");
         Map<String, List<String>> headers = Maps.newHashMap();
@@ -330,7 +330,7 @@ public class HTTPUtilTest extends HTTPUtil {
         byte[] ret = checkAndDownloadData("not yet implemented", 0, input);
         assertNull(ret);
     }
-    
+
     @Test
     public void testRetrieveCharsetFromString() throws Exception {
         Charset charset = retrieveCharsetFromString("=utf-8>");
@@ -347,7 +347,7 @@ public class HTTPUtilTest extends HTTPUtil {
         int b = checkServerStatus("http://www.baidu.com", 4000, 4000);
         assertEquals(200, b);
     }
-    
+
     @Test
     public final void testCheckServerStatusLenMinus2() {
         int b = checkServerStatus("http://httpbin.org/stream/20", 4000, 4000);
@@ -362,21 +362,21 @@ public class HTTPUtilTest extends HTTPUtil {
     }
 
     @Test
+    public final void testCheckServerStatusEx403() {
+        int c = checkServerStatus("http://httpbin.org/status/403", 4000, 4000);
+        assertEquals(403, c);
+    }
+
+    @Test
     public final void testCheckServerStatusEx404() {
         int e = checkServerStatus("http://www.cs.zju.edu.cn/org/codes/404.html", 4000, 4000);
         assertEquals(404, e);
     }
 
     @Test
-    public final void testCheckServerStatusEx403() {
-        int c = checkServerStatus("http://www.apache.org/tomcat.php", 4000, 4000);
-        assertEquals(403, c);
-    }
-    
-    @Test
     public final void testCheckServerStatusEx404Third() {
-        int c = checkServerStatus("http://httpbin.org/status/403", 4000, 4000);
-        assertEquals(403, c);
+        int c = checkServerStatus("http://httpbin.org/status/404", 4000, 4000);
+        assertEquals(404, c);
     }
 
     @Test
@@ -393,7 +393,7 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public void testCheckServerStatus() throws Exception {
-        int f = checkServerStatus("http://httpbin.org/ip", 2000, 1000);
+        int f = checkServerStatus("http://httpbin.org/ip", 2000, 3000);
         assertEquals(200, f);
     }
 

@@ -47,7 +47,7 @@ public class SegmentTest {
         assertEquals(ie, FieldUtil.getValue(ie, "mapPrev"));
         assertEquals(ie, FieldUtil.getValue(ie, "mapNext"));
     }
-    
+
     @Test
     public void testContor() {
         Segment<String, String> seg = new Segment<String, String>(8);
@@ -61,7 +61,7 @@ public class SegmentTest {
         assertEquals(ie, FieldUtil.getValue(ie, "mapPrev"));
         assertEquals(ie, FieldUtil.getValue(ie, "mapNext"));
     }
-    
+
     @Test
     public void testFindItem() {
         Segment<String, String> seg = new Segment<String, String>(8);
@@ -79,7 +79,7 @@ public class SegmentTest {
         assertNull(ie4);
         assertEquals("c", FieldUtil.getValue(ie3, "value"));
         assertEquals("c", FieldUtil.getValue(ie1, "value"));
-        
+
         ItemEntry<String, String> ie = seg.entryFor(0);
         assertNull(FieldUtil.getValue(ie, "key"));
         assertNull(FieldUtil.getValue(ie, "value"));
@@ -87,13 +87,13 @@ public class SegmentTest {
         assertNull(FieldUtil.getValue(ie, "linkNext"));
         assertEquals(ie1, FieldUtil.getValue(ie, "mapPrev"));
         assertEquals(ie1, FieldUtil.getValue(ie, "mapNext"));
-        
+
         String s = seg.remove(0, "a");
         assertEquals("c", s);
         assertEquals(ie, FieldUtil.getValue(ie, "mapPrev"));
         assertEquals(ie, FieldUtil.getValue(ie, "mapNext"));
     }
-    
+
     @Test
     public void testFindItemProfessional() {
         Segment<String, String> seg = new Segment<String, String>(8);
@@ -111,7 +111,7 @@ public class SegmentTest {
         assertNull(ie4);
         assertEquals("c", FieldUtil.getValue(ie3, "value"));
         assertEquals("b", FieldUtil.getValue(ie1, "value"));
-        
+
         ItemEntry<String, String> ie = seg.entryFor(0);
         assertNull(FieldUtil.getValue(ie, "key"));
         assertNull(FieldUtil.getValue(ie, "value"));
@@ -120,23 +120,23 @@ public class SegmentTest {
         assertEquals(ie1, FieldUtil.getValue(ie, "mapPrev"));
         assertEquals(ie3, FieldUtil.getValue(ie, "mapNext"));
         assertEquals(2, seg.size());
-        
+
         String s = seg.remove(0, "a");
         assertEquals("b", s);
         assertEquals(ie3, FieldUtil.getValue(ie, "mapPrev"));
         assertEquals(ie3, FieldUtil.getValue(ie, "mapNext"));
-        
+
         ItemEntry<String, String> ie5 = seg.findItem(8, new String("a"));
         assertEquals(ie5, ie3);
         assertEquals(1, seg.size());
-        
+
         s = seg.remove(8, "a");
         assertEquals("c", s);
         assertEquals(ie, FieldUtil.getValue(ie, "mapPrev"));
         assertEquals(ie, FieldUtil.getValue(ie, "mapNext"));
         assertEquals(0, seg.size());
     }
-    
+
     @Test
     public void testPut() {
         Segment<String, String> seg = new Segment<String, String>(8);
@@ -146,7 +146,7 @@ public class SegmentTest {
         assertEquals("bc", s);
         s = seg.put(0, "li", "d");
         assertNull(s);
-        
+
         ItemEntry<String, String> ie1 = seg.findItem(0, "li");
         assertNotNull(ie1);
         int e = seg.eviction();
@@ -154,12 +154,12 @@ public class SegmentTest {
         ie1 = seg.findItem(0, "li");
         assertNull(ie1);
         assertEquals(1, seg.size());
-        
+
         ItemEntry<String, String> ie3 = seg.findItem(0, "ax");
         ItemEntry<String, String> ie = seg.entryFor(0);
         assertEquals(ie3, FieldUtil.getValue(ie, "mapPrev"));
         assertEquals(ie3, FieldUtil.getValue(ie, "mapNext"));
-        
+
         e = seg.eviction();
         assertEquals(1, e);
         ie1 = seg.findItem(0, "ax");
@@ -167,48 +167,48 @@ public class SegmentTest {
         assertEquals(ie, FieldUtil.getValue(ie, "mapPrev"));
         assertEquals(ie, FieldUtil.getValue(ie, "mapNext"));
         assertEquals(0, seg.size());
-        
+
         e = seg.eviction();
         assertEquals(0, e);
     }
-    
+
     @Test
     public void testEviction() {
         Segment<String, String> seg = new Segment<String, String>(8);
         int e;
         ItemEntry<String, String> ie1;
         ItemEntry<String, String> ie2;
-        
+
         e = seg.eviction();
         assertEquals(0, e);
-        
+
         String s = seg.put(0, "ax", "bc");
         assertNull(s);
         ie1 = seg.findItem(0, "ax");
         assertNotNull(ie1);
-        
+
         e = seg.eviction();
         assertEquals(1, e);
         ie2 = seg.findItem(0, "ax");
         assertNull(ie2);
-        
+
         s = seg.put(0, "ax", "bc");
         assertNull(s);
         s = seg.put(0, "ax", "de");
         assertEquals("bc", s);
-        
+
         e = seg.eviction();
         assertEquals(0, e);
         ie2 = seg.findItem(0, "ax");
         assertNotNull(ie2);
         assertNotEquals(ie1, ie2);
-        
+
         e = seg.eviction();
         assertEquals(1, e);
         ie2 = seg.findItem(0, "ax");
         assertNull(ie2);
     }
-    
+
     @Test
     @SuppressWarnings("unchecked")
     public void testEvictionExceedsBatchSize() {
@@ -222,18 +222,18 @@ public class SegmentTest {
         ItemEntry<String, String> LFUp1, LFUp2, LFUn1, LFUn2, ie2;
         ItemEntry<String, String>[] en = new ItemEntry[8];
         ItemEntry<String, String>[] ie = new ItemEntry[8];
-        
+
         for (int i = 0; i < 8; ++i) {
             en[i] = seg.entryFor(i);
             ie[i] = FieldUtil.getValue(en[i], "mapPrev");
             ie2 = FieldUtil.getValue(en[i], "mapNext");
             assertEquals(ie[i], ie2);
         }
-        
+
         ItemEntry<String, String> LFU = FieldUtil.getValue(seg, "LFUHead");
         LFUp1 = FieldUtil.getValue(LFU, "linkPrev");
         LFUn1 = FieldUtil.getValue(LFU, "linkNext");
-        
+
         int cnt = 0;
         ie2 = LFUp1;
         while (ie2 != LFU) {
@@ -248,14 +248,14 @@ public class SegmentTest {
             ie2 = FieldUtil.getValue(ie2, "linkNext");
         }
         assertEquals(8, cnt);
-        
+
         assertEquals(LFUp1, ie[0]);
         assertEquals(LFUn1, ie[7]);
         assertEquals(8, seg.size());
-        
+
         e = seg.eviction();
         assertEquals(0, e);
-        
+
         LFUp2 = FieldUtil.getValue(LFU, "linkPrev");
         LFUn2 = FieldUtil.getValue(LFU, "linkNext");
         assertNotEquals(LFUp1, LFUp2);
@@ -263,7 +263,7 @@ public class SegmentTest {
         assertEquals(LFUp2, ie[5]);
         assertEquals(LFUn2, ie[4]);
         assertEquals(8, seg.size());
-        
+
         cnt = 0;
         ie2 = LFUp2;
         while (ie2 != LFU) {
@@ -278,11 +278,11 @@ public class SegmentTest {
             ie2 = FieldUtil.getValue(ie2, "linkNext");
         }
         assertEquals(8, cnt);
-        
+
         // Really
         e = seg.eviction();
         assertEquals(1, e);
-        
+
         LFUp2 = FieldUtil.getValue(LFU, "linkPrev");
         LFUn2 = FieldUtil.getValue(LFU, "linkNext");
         assertNotEquals(LFUp1, LFUp2);
@@ -290,34 +290,34 @@ public class SegmentTest {
         assertEquals(LFUp2, ie[1]);
         assertEquals(LFUn2, ie[7]);
         assertEquals(7, seg.size());
-        
+
         cnt = 0;
         ie2 = LFUp2;
         while (ie2 != LFU) {
             ++cnt;
-            int v = FieldUtil.getValue(ie2, "visits");
+            Integer v = FieldUtil.getValue(ie2, "visits");
             ie2 = FieldUtil.getValue(ie2, "linkPrev");
-            assertEquals(1, v);
+            assertEquals(1, v.intValue());
         }
         assertEquals(7, cnt);
         cnt = 0;
         ie2 = LFUn2;
         while (ie2 != LFU) {
             ++cnt;
-            int v = FieldUtil.getValue(ie2, "visits");
+            Integer v = FieldUtil.getValue(ie2, "visits");
             ie2 = FieldUtil.getValue(ie2, "linkNext");
-            assertEquals(1, v);
+            assertEquals(1, v.intValue());
         }
         assertEquals(7, cnt);
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testPutInvalid() {
         Segment<String, String> seg = new Segment<String, String>(8);
         FieldUtil.setValue(seg, "LFUHead", null);
         seg.put(-2, "a", "b");
     }
-    
+
     @Test
     public void testRemoveValid() {
         Segment<String, String> seg = new Segment<String, String>(8);
@@ -329,7 +329,7 @@ public class SegmentTest {
         assertNull(s);
         FieldUtil.setValue(seg, "table", null);
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testRemoveInvalid() {
         Segment<String, String> seg = new Segment<String, String>(8);
@@ -340,7 +340,7 @@ public class SegmentTest {
         s = seg.remove(-2, "a");
         assertNull(s);
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testEvictionInvalid() {
         Segment<String, String> seg = new Segment<String, String>(8);

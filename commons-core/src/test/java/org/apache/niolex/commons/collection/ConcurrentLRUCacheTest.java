@@ -11,7 +11,7 @@ import org.apache.niolex.commons.concurrent.ThreadUtil;
 import org.apache.niolex.commons.reflect.FieldUtil;
 
 public class ConcurrentLRUCacheTest {
-    
+
     private ConcurrentLRUCache<String, Integer> cache = new ConcurrentLRUCache<String, Integer>(100);
 
     @Test
@@ -38,17 +38,17 @@ public class ConcurrentLRUCacheTest {
     public void testSize1() throws Exception {
         cache.get(null);
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testSize21() throws Exception {
         cache.put(null, null);
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testSize22() throws Exception {
         cache.put("abcd", null);
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testSize3() throws Exception {
         cache.remove(null);
@@ -61,10 +61,10 @@ public class ConcurrentLRUCacheTest {
         cache.put("nice", 7788);
         i = cache.get("nice");
         assertEquals(7788, i.intValue());
-        
+
         Integer j = cache.remove("nice");
         assertEquals(i, j);
-        
+
         i = cache.get("nice");
         assertNull(i);
         assertEquals(0, cache.size());
@@ -80,13 +80,13 @@ public class ConcurrentLRUCacheTest {
         assertNull(i);
         assertEquals(2, cache.size());
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testPutEx() throws Exception {
         FieldUtil.setValue(cache, "lruList", null);
         cache.put("duie", 44);
     }
-    
+
     @Test
     public void testPutNoVictim() throws Exception {
         for (int i = 100; i < 201; ++ i) {
@@ -98,7 +98,7 @@ public class ConcurrentLRUCacheTest {
         cache.put("duie", 44);
         assertEquals(101, cache.size());
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testPutBadVictim() throws Exception {
         ConcurrentLRUCache<String, Integer> cache2 = new ConcurrentLRUCache<String, Integer>(100);
@@ -107,7 +107,7 @@ public class ConcurrentLRUCacheTest {
         }
         assertEquals(100, cache2.size());
         ThreeQLRUList<String, Integer> tq = FieldUtil.getValue(cache2, "lruList");
-        
+
         for (int i = 100; i < 201; ++ i) {
             cache.put("duie-" + i, i);
         }
@@ -116,7 +116,7 @@ public class ConcurrentLRUCacheTest {
         cache.put("duie", 44);
         assertEquals(100, cache.size());
     }
-    
+
     @Test
     public void testPutBadVictim2() throws Exception {
         ConcurrentLRUCache<String, Integer> cache2 = new ConcurrentLRUCache<String, Integer>(100);
@@ -125,42 +125,42 @@ public class ConcurrentLRUCacheTest {
         }
         assertEquals(100, cache2.size());
         ThreeQLRUList<String, Integer> tq = FieldUtil.getValue(cache2, "lruList");
-        
+
         for (int i = 100; i < 201; ++ i) {
             cache.put("duie-" + i, i);
         }
         assertEquals(100, cache.size());
         FieldUtil.setValue(cache, "lruList", tq);
-        
+
         ItemEntry<String, Integer> e2 = FieldUtil.getValue(tq, "tail");
         ItemEntry<String, Integer> e3 = new ItemEntry<String, Integer>();
-        
+
         FieldUtil.setValue(e2, "mapPrev", e2);
         FieldUtil.setValue(e2, "mapNext", e3);
-        
+
         cache.put("duie", 44);
         assertEquals(101, cache.size());
     }
-    
+
     @Test
     public void testRemove() throws Exception {
         assertNull(cache.remove("duie"));
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testRemoveEx() throws Exception {
         cache.put("duie", 44);
         FieldUtil.setValue(cache, "lruList", null);
         assertNull(cache.remove("duie"));
     }
-    
+
     @Test
     public void testThreeQLRUList() throws Exception {
         ThreeQLRUList<String, Integer> tq = new ThreeQLRUList<String, Integer>();
         ItemEntry<String,Integer> entry = tq.findVictim(3);
         assertNull(entry);
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testThreeQLRUListNullHeader() throws Exception {
         ThreeQLRUList<String, Integer> tq = new ThreeQLRUList<String, Integer>();
@@ -172,7 +172,7 @@ public class ConcurrentLRUCacheTest {
         ItemEntry<String,Integer> entry = tq.findVictim(3);
         assertNull(entry);
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testThreeQLRUListNullEntryAdd() throws Exception {
         ThreeQLRUList<String, Integer> tq = new ThreeQLRUList<String, Integer>();
@@ -183,7 +183,7 @@ public class ConcurrentLRUCacheTest {
         tq.pushHeaderTime(10000);
         tq.addEntry(null);
     }
-    
+
     @Test(expected=NullPointerException.class)
     public void testThreeQLRUListNullEntryRm() throws Exception {
         ThreeQLRUList<String, Integer> tq = new ThreeQLRUList<String, Integer>();
@@ -209,57 +209,57 @@ public class ConcurrentLRUCacheTest {
         for (int i = 0; i < 100; ++i) {
             s += testFindItemFromMapEntry();
         }
-        
+
         System.out.println("My mis rate is: " + (s / 100) + ", it's " + ((s < 2600) ? "better" : "worse") + " than the default.");
     }
-    
+
     public int testFindItemFromMapEntry() throws Exception {
         Cache<Integer, Integer> c = new ConcurrentLRUCache<Integer, Integer>(66);
         for (int i = 0; i < 66; ++i) {
             c.put(i, i);
             c.put(66 - i, 66 - i);
         }
-        
+
         for (int i = 66; i < 99; ++i) {
             c.put(i, i);
             c.put(i - 34, i - 34);
         }
-        
+
         for (int i = 100; i < 130; ++i) {
             c.put(i - 100, i - 100);
             c.put(i - 34, i - 34);
         }
-        
+
         Cache<Integer, Integer> old_c = c;
         c = new LRUHashMap<Integer, Integer>(66);
         for (int i = 0; i < 66; ++i) {
             c.put(i, i);
             c.put(66 - i, 66 - i);
         }
-        
+
         for (int i = 66; i < 99; ++i) {
             c.put(i, i);
             c.put(i - 34, i - 34);
         }
-        
+
         for (int i = 100; i < 130; ++i) {
             c.put(i - 100, i - 100);
             c.put(i - 34, i - 34);
         }
-        
+
         int nul1 = 0, nul2 = 0;
         for (int i = 0; i < 66; ++i) {
             Integer i1 = old_c.get(i);
             Integer i2 = c.get(i);
-            
+
             //System.out.println(i1 + "\t" + i2);
-            
+
             if (i1 == null)
                 ++nul1;
             if (i2 == null)
                 ++nul2;
         }
-        
+
         System.out.println("MIS rate: " + nul1 + ", " + nul2);
         assertEquals(26, nul2);
         assertEquals(66, old_c.size());
@@ -289,7 +289,7 @@ public class ConcurrentLRUCacheTest {
         FieldUtil.setValue(e5, "key", new String("Goode"));
         ItemEntry<String, Integer> f1 = cache.findItemFromMapEntry(en, 77, "Good");
         ItemEntry<String, Integer> f2 = cache.findItemFromMapEntry(en, 77, "Goode");
-        
+
         assertEquals(e4, f1);
         assertEquals(e5, f2);
     }
@@ -308,12 +308,12 @@ public class ConcurrentLRUCacheTest {
         }
         assertEquals(66, cache.get("lex").intValue());
         assertEquals(100, cache.size());
-        
+
         TableEntry<String, Integer>[] table = FieldUtil.getValue(cache, "table");
-        int entrySize = FieldUtil.getValue(cache, "entrySize");
-        
+        Integer entrySize = FieldUtil.getValue(cache, "entrySize");
+
         int cnt = 0;
-        for (int i = 0; i < entrySize; ++i) {
+        for (int i = 0; i < entrySize.intValue(); ++i) {
             TableEntry<String, Integer> en = table[i];
             for (ItemEntry<String, Integer> e2 = FieldUtil.getValue(en, "head"); e2 != null; e2 = FieldUtil.getValue(e2, "mapNext")) {
                 ++cnt;
