@@ -17,6 +17,8 @@
  */
 package org.apache.niolex.common.guava;
 
+import org.apache.niolex.commons.codec.StringUtil;
+
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.HashCode;
@@ -78,7 +80,8 @@ public class GuavaHashing {
          */
         @Override
         public void funnel(Person from, PrimitiveSink into) {
-            into.putInt(from.id).putString(from.firstName).putChar('&').putString(from.lastName).putInt(from.birthYear);
+            into.putInt(from.id).putString(from.firstName, StringUtil.UTF_8).putChar('&')
+                .putString(from.lastName, StringUtil.UTF_8).putInt(from.birthYear);
         }
 
     }

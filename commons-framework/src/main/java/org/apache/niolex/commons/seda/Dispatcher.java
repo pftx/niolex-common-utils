@@ -60,7 +60,7 @@ public class Dispatcher {
 	 * Register a stage with it's stage name.
 	 * <br><b>
 	 * Call this method before dispatch messages.
-	 * <b>
+	 * </b>
 	 *
 	 * @param stage the stage to register.
 	 * @return the previous value associated with this stage name, or null if there was no mapping
@@ -73,6 +73,7 @@ public class Dispatcher {
 	/**
 	 * Get the stage with this stage name.
 	 *
+	 * @param <K> the stage type
 	 * @param stageName the stage name of the stage you want to get.
 	 * @return the stage instance, null if stage not found.
 	 * @throws ClassCastException If the type of the corresponding stage is not the same
@@ -88,7 +89,7 @@ public class Dispatcher {
 	 * the stage network.
 	 * <br><b>
      * Call this method before dispatch messages.
-     * <b>
+     * </b>
 	 */
 	public void construction() {
 		for (Stage<?> s : this.getAllStages()) {
@@ -136,6 +137,7 @@ public class Dispatcher {
 	/**
 	 * Dispatch the message to the stage with this stage name.
 	 *
+	 * @param <T> the message type
 	 * @param stageName the name of the stage you want to dispatch this message to
 	 * @param msg the message to be dispatched
 	 * @return true if dispatch success, false if stage not found
@@ -156,6 +158,7 @@ public class Dispatcher {
 	 * Dispatch the message to the stage with the class name of this message
 	 * as the stage name.
 	 *
+	 * @param <T> the message type
 	 * @param msg the message to be dispatched
 	 * @return true if dispatch success, false if stage not found
 	 * @throws ClassCastException If this message can not be processed by the corresponding stage

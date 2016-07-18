@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.apache.niolex</groupId>
 		<artifactId>niolex-parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 		<relativePath></relativePath>
 	</parent>
 
@@ -15,10 +15,6 @@
 
 	<name>common-demo</name>
 	<url>http://maven.apache.org</url>
-
-	<properties>
-		<slf4j.version>1.7.5</slf4j.version>
-	</properties>
 
 	<dependencies>
 		<dependency>
@@ -34,7 +30,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>14.0.1</version>
+			<version>${guava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.espertech</groupId>
@@ -106,14 +102,14 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>[1.0.7,2.0.0)</version>
+			<version>${logback.version}</version>
 		</dependency>
 
 		<!-- testing framework -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>[4.10,5.0)</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
