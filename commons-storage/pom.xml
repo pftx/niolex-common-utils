@@ -5,8 +5,8 @@
 	<parent>
 		<groupId>org.apache.niolex</groupId>
 		<artifactId>niolex-parent</artifactId>
-		<version>1.0.0</version>
-		<relativePath></relativePath>
+		<version>1.0.1</version>
+		<relativePath>../</relativePath>
 	</parent>
 
 	<artifactId>commons-storage</artifactId>
@@ -20,24 +20,18 @@
 		<dependency>
 			<groupId>org.apache.niolex</groupId>
 			<artifactId>commons-seri</artifactId>
-			<version>[2.0.0,3.0.0)</version>
-		</dependency>
-		<dependency>
-			<groupId>org.perf4j</groupId>
-			<artifactId>perf4j</artifactId>
-			<version>0.9.16</version>
-			<scope>test</scope>
+			<version>${commons.seri.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>[1.0.7,2.0.0)</version>
+			<version>${logback.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

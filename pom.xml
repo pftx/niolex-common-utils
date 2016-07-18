@@ -15,6 +15,7 @@
 		<commons.codec.version>1.10</commons.codec.version>
 		<commons.lang.version>2.6</commons.lang.version>
 		<commons.core.version>[2.1.2,3.0.0)</commons.core.version>
+		<commons.seri.version>[2.0.0,3.0.0)</commons.seri.version>
 		<guava.version>19.0</guava.version>
 		<jackson.version>[1.9.13,2.0.0)</jackson.version>
 		<reflectasm.version>[1.11.3,2.0.0)</reflectasm.version>
