@@ -26,6 +26,9 @@
 		<kryo.version>[3.0.3,4.0.0)</kryo.version>
 		<protobuf.version>2.6.1</protobuf.version>
 		<protostuff.version>1.0.9</protostuff.version>
+		<spring.version>3.0.7.RELEASE</spring.version>
+		<spring.security.version>3.1.4.RELEASE</spring.security.version>
+		<javax.mailapi.version>1.4.3</javax.mailapi.version>
 	</properties>
 
 	<build>

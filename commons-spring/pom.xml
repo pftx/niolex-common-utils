@@ -5,8 +5,8 @@
 	<parent>
 		<groupId>org.apache.niolex</groupId>
 		<artifactId>niolex-parent</artifactId>
-		<version>1.0.0</version>
-		<relativePath></relativePath>
+		<version>1.0.1</version>
+		<relativePath>../</relativePath>
 	</parent>
 
 	<artifactId>commons-spring</artifactId>
@@ -14,8 +14,6 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<spring.version>3.0.7.RELEASE</spring.version>
-		<spring.security.version>3.1.4.RELEASE</spring.security.version>
 		<version>${project.version}</version>
 	</properties>
 
@@ -26,7 +24,7 @@
 		<dependency>
 			<groupId>org.apache.niolex</groupId>
 			<artifactId>commons-core</artifactId>
-			<version>[2.0.0,3.0.0)</version>
+			<version>${commons.core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -51,12 +49,12 @@
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mailapi</artifactId>
-			<version>1.4.3</version>
+			<version>${javax.mailapi.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>[4.10,5.0)</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -68,13 +66,13 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>[1.0.7,2.0.0)</version>
+			<version>${logback.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

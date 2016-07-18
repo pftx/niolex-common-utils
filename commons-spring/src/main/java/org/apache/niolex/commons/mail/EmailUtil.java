@@ -41,10 +41,10 @@ import com.google.common.collect.Lists;
  * <pre>
  * 1. public static void sendMail(
  *              String from,
- *              List<String> tos,
+ *              List&lt;String&gt; tos,
  *              String title,
  *              String text,
- *              List<File> attachments,
+ *              List&lt;File&gt; attachments,
  *              String priority,
  *              boolean isHtml,
  *              String encoding
@@ -73,8 +73,8 @@ public class EmailUtil {
      * @param to the email receiver
      * @param title the email title
      * @param text the email body
-     * @throws MailException
-     * @throws MessagingException
+     * @throws MailException in case of failure when sending the message
+     * @throws MessagingException if failed to create multi-part email message
      */
     public static void sendHtmlMail(String from, String to, String title, String text)
             throws MailException, MessagingException {
@@ -93,8 +93,8 @@ public class EmailUtil {
      * @param priority priority from 1-5 the smaller is higher
      * @param isHtml is the text in HTML format or not
      * @param encoding the encoding of email, i.e. "GBK"、"UTF-8"
-     * @throws MailException
-     * @throws MessagingException
+     * @throws MailException in case of failure when sending the message
+     * @throws MessagingException if failed to create multi-part email message
      */
     public static void sendMail(String from, List<String> tos, String title, String text, List<File> attachments,
             String priority, boolean isHtml, String encoding) throws MailException, MessagingException {
@@ -127,8 +127,8 @@ public class EmailUtil {
      * @param priority priority from 1-5 the smaller is higher
      * @param isHtml is the text in HTML format or not
      * @param encoding the encoding of email, i.e. "GBK"、"UTF-8"
-     * @throws MailException
-     * @throws MessagingException
+     * @throws MailException in case of failure when sending the message
+     * @throws MessagingException if failed to create multi-part email message
      */
     public static void sendMail(String from, String[] tos, String[] ccs, String title, String text,
             List<Pair<String, InputStreamSource>> attachments, String priority, boolean isHtml,
