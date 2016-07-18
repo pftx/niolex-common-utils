@@ -16,10 +16,6 @@
 	<name>commons-seri</name>
 	<url>http://maven.apache.org</url>
 
-	<properties>
-		
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.niolex</groupId>
