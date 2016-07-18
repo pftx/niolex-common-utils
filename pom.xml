@@ -23,8 +23,9 @@
 		<mockito.version>1.10.19</mockito.version>
 		<logback.version>[1.1.7,2.0.0)</logback.version>
 		<zookeeper.version>3.4.8</zookeeper.version>
-		<logback.version></logback.version>
-		<logback.version></logback.version>
+		<kryo.version>[3.0.3,4.0.0)</kryo.version>
+		<protobuf.version>2.6.1</protobuf.version>
+		<protostuff.version>1.0.9</protostuff.version>
 	</properties>
 
 	<build>

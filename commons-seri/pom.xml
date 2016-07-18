@@ -5,8 +5,8 @@
 	<parent>
 		<groupId>org.apache.niolex</groupId>
 		<artifactId>niolex-parent</artifactId>
-		<version>1.0.0</version>
-		<relativePath></relativePath>
+		<version>1.0.1</version>
+		<relativePath>../</relativePath>
 	</parent>
 
 	<artifactId>commons-seri</artifactId>
@@ -17,24 +17,24 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<protostuff.version>1.0.9</protostuff.version>
+		
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.niolex</groupId>
 			<artifactId>commons-core</artifactId>
-			<version>[2.0.0,3.0.0)</version>
+			<version>${commons.core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-smile</artifactId>
-			<version>[1.9.0,2.0.0)</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.esotericsoftware</groupId>
 			<artifactId>kryo</artifactId>
-			<version>[3.0.3,4.0.0)</version>
+			<version>${kryo.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>reflectasm</artifactId>
@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>2.6.1</version>
+			<version>${protobuf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.dyuproject.protostuff</groupId>
@@ -60,19 +60,19 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>[1.0.3,2.0.0)</version>
+			<version>${logback.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
