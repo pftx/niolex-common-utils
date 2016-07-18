@@ -81,16 +81,16 @@ public class PropertiesWrapperTest {
         Assert.assertEquals("您好！", prop.getProperty("greeting"));
     }
 
-    @SuppressWarnings("resource")
     @Test
     public void testLoad() throws Exception {
         String f = trimProtocol(PropertiesWrapperTest.class.getResource("new.properties").toExternalForm());
-        FileInputStream in = new FileInputStream(f);
-        in = spy(in);
+        FileInputStream iner = new FileInputStream(f);
+        FileInputStream in = spy(iner);
         PropertiesWrapper p = new PropertiesWrapper();
         p.load(in);
         Assert.assertEquals(798197318998413l, p.getLong("lb"));
         verify(in, times(1)).close();
+        iner.close();
     }
 
     @Test

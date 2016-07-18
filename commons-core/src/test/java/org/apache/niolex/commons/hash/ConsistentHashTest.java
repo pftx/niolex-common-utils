@@ -86,7 +86,7 @@ public class ConsistentHashTest {
         cHash.add("32ja0f;qlkafkf");
         // ----------------------------------------
         String key = "This-First-Key";
-        System.out.print("testGetNode--JVM ");
+        System.out.print("testGetNode--JVM\n\t ");
         for (int j = 0; j < 10; ++j) {
             String i = cHash.getNode(j + key + j + key);
             System.out.print(i.charAt(0) + " ");
@@ -114,8 +114,8 @@ public class ConsistentHashTest {
         cHash.add("lads-m;sadna'd");
         cHash.add("32ja0f;qlkafkf");
         // ----------------------------------------
-        System.out.print("testGetNodeGuava ");
         String key = "This-First-Key";
+        System.out.print("testGetNode--Guava\n\t ");
         for (int j = 0; j < 10; ++j) {
             String i = cHash.getNode(j + key + j + key);
             System.out.print(i.charAt(0) + " ");
@@ -123,11 +123,11 @@ public class ConsistentHashTest {
         String i = cHash.getNode("This-First-Va");
         assertEquals("lads-m;sadna'd", i);
         i = cHash.getNode("This-First");
-        assertEquals("e323dsfg45zad-", i);
-        i = cHash.getNode("xie-ji-yun");
         assertEquals("098023lasdalks", i);
+        i = cHash.getNode("xie-ji-yun");
+        assertEquals("e323dsfg45zad-", i);
         i = cHash.getNode("let-s-go");
-        assertEquals("lads-m;sadna'd", i);
+        assertEquals("ididje3i840-92", i);
         SystemUtil.println("let's go => %s", i);
     }
 
@@ -173,28 +173,28 @@ public class ConsistentHashTest {
         assertEquals(nodeList.size(), 3);
         Iterator<String> iter = nodeList.iterator();
         assertEquals("pod", iter.next());
+        assertEquals("9j", iter.next());
         assertEquals("23", iter.next());
-        assertEquals("ef", iter.next());
 
         nodeList = cHash.getNodeList("32qrads", 6);
         assertEquals(nodeList.size(), 6);
         iter = nodeList.iterator();
         assertEquals("qa", iter.next());
-        assertEquals("de", iter.next());
+        assertEquals("23", iter.next());
         assertEquals("pod", iter.next());
         assertEquals("9j", iter.next());
-        assertEquals("23", iter.next());
         assertEquals("ef", iter.next());
+        assertEquals("de", iter.next());
 
         nodeList = cHash.getNodeList("lex-next", 6);
         assertEquals(nodeList.size(), 6);
         iter = nodeList.iterator();
-        assertEquals("pod", iter.next());
         assertEquals("de", iter.next());
+        assertEquals("qa", iter.next());
+        assertEquals("pod", iter.next());
         assertEquals("9j", iter.next());
         assertEquals("23", iter.next());
         assertEquals("ef", iter.next());
-        assertEquals("qa", iter.next());
 
         try {
             cHash.getNodeList("32qrads", 7);
@@ -215,7 +215,7 @@ public class ConsistentHashTest {
             public int hashCode(Object o, int seed) {
                 return Integer.MAX_VALUE - o.toString().length() * seed;
             }
-            }, 5, Arrays.asList("2", "ef", "pod"));
+        }, 5, Arrays.asList("2", "ef", "pod"));
 
         cHash.add("Nice");
         assertEquals("ef", cHash.getNode("3a3f"));

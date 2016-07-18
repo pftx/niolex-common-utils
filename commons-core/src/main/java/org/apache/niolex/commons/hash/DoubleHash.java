@@ -20,6 +20,7 @@ package org.apache.niolex.commons.hash;
 import java.util.Collection;
 
 import org.apache.niolex.commons.bean.Pair;
+import org.apache.niolex.commons.codec.StringUtil;
 
 import com.google.common.hash.Funnel;
 import com.google.common.hash.HashCode;
@@ -132,7 +133,7 @@ public class DoubleHash<T> {
      * @return the pair of server nodes
      */
     public Pair<T, T> getPairNodes(String key) {
-        return getPairNodes(primary.hashString(key), secondary.hashString(key));
+        return getPairNodes(primary.hashString(key, StringUtil.UTF_8), secondary.hashString(key, StringUtil.UTF_8));
     }
 
     /**

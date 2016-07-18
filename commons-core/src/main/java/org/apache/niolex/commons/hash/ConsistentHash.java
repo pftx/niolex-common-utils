@@ -23,6 +23,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+
+import org.apache.niolex.commons.codec.StringUtil;
+
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -108,7 +111,7 @@ public class ConsistentHash<T> {
     }
 
     /**
-     * A Hash function implementation Using guava murmur3_32 as hash method, and use toString to
+     * A Hash function implementation Using Guava murmur3_32 as hash method, and use toString to
      * digest the object.
      *
      * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -124,7 +127,7 @@ public class ConsistentHash<T> {
          */
         @Override
         public int hashCode(Object o) {
-            return Hashing.murmur3_32().hashString(o.toString()).asInt();
+            return Hashing.murmur3_32().hashString(o.toString(), StringUtil.UTF_8).asInt();
         }
 
         /**
@@ -133,7 +136,7 @@ public class ConsistentHash<T> {
          */
         @Override
         public int hashCode(Object o, int seed) {
-            return Hashing.murmur3_32(seed).hashString(o.toString()).asInt();
+            return Hashing.murmur3_32(seed).hashString(o.toString(), StringUtil.UTF_8).asInt();
         }
 
     }

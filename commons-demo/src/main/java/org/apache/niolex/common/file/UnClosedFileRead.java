@@ -48,12 +48,13 @@ public class UnClosedFileRead {
 
     }
 
-    @SuppressWarnings("resource")
     public static void main(String[] args) throws IOException, Throwable {
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("D:\\home\\tmp\\out.obj"));
         out.writeObject(new Benchmark());
         ObjectInputStream in = new ObjectInputStream(new FileInputStream("D:\\home\\tmp\\out.obj"));
         Benchmark ben = (Benchmark)in.readObject();
         System.out.print(ben.getName());
+        out.close();
+        in.close();
     }
 }

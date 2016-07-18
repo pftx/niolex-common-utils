@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.niolex.commons.bean.Pair;
+import org.apache.niolex.commons.codec.StringUtil;
 import org.junit.Test;
 
 import com.google.common.hash.Funnel;
@@ -120,13 +121,13 @@ public class DoubleHashTest {
         DoubleHash<String> dHash = new DoubleHash<String>(Hashing.murmur3_128(), Hashing.crc32(), nodeList);
         Pair<String,String> pair;
         pair = dHash.getPairNodes("adsfiekfjie");
-        assertEquals("{a=10.214.133.100:8088, b=10.214.133.100:8087}", pair.toString());
+        assertEquals("{a=10.214.133.100:8087, b=10.214.65.11:8088}", pair.toString());
         pair = dHash.getPairNodes("adsfiekfjif");
-        assertEquals("{a=10.214.65.11:8088, b=10.214.65.11:8087}", pair.toString());
+        assertEquals("{a=10.214.65.11:8088, b=10.214.133.100:8087}", pair.toString());
         pair = dHash.getPairNodes("adsfiekfjig");
         assertEquals("{a=10.214.65.11:8088, b=10.214.133.100:8087}", pair.toString());
         pair = dHash.getPairNodes("adsfiekfjih");
-        assertEquals("{a=10.214.133.100:8087, b=10.214.65.11:8088}", pair.toString());
+        assertEquals("{a=10.214.133.100:8087, b=10.214.65.11:8087}", pair.toString());
     }
 
     @Test
@@ -136,16 +137,16 @@ public class DoubleHashTest {
         Pair<String,String> pair;
         pair = dHash.getPairNodes(new Person(12315, "Lex", "Xie", 1988), PersonFunnel.INSTANCE);
         System.out.println(pair);
-        assertEquals("{a=10.214.65.11:8088, b=10.214.65.11:8087}", pair.toString());
+        assertEquals("{a=10.214.65.11:8088, b=10.214.133.100:8087}", pair.toString());
         pair = dHash.getPairNodes(new Person(12316, "Lex", "Xie", 1988), PersonFunnel.INSTANCE);
         System.out.println(pair);
-        assertEquals("{a=10.214.133.100:8088, b=10.214.65.11:8088}", pair.toString());
+        assertEquals("{a=10.214.133.100:8088, b=10.214.65.11:8087}", pair.toString());
         pair = dHash.getPairNodes(new Person(12317, "Lex", "Xie", 1988), PersonFunnel.INSTANCE);
         System.out.println(pair);
-        assertEquals("{a=10.214.65.11:8088, b=10.214.133.100:8088}", pair.toString());
+        assertEquals("{a=10.214.133.100:8087, b=10.214.65.11:8087}", pair.toString());
         pair = dHash.getPairNodes(new Person(12318, "Lex", "Xie", 1988), PersonFunnel.INSTANCE);
         System.out.println(pair);
-        assertEquals("{a=10.214.133.100:8087, b=10.214.65.11:8088}", pair.toString());
+        assertEquals("{a=10.214.133.100:8088, b=10.214.133.100:8087}", pair.toString());
     }
 
     public static class Person {
@@ -195,7 +196,8 @@ public class DoubleHashTest {
          */
         @Override
         public void funnel(Person from, PrimitiveSink into) {
-            into.putInt(from.id).putString(from.firstName).putChar('&').putString(from.lastName).putInt(from.birthYear);
+            into.putInt(from.id).putString(from.firstName, StringUtil.UTF_8).putChar('&')
+                .putString(from.lastName, StringUtil.UTF_8).putInt(from.birthYear);
         }
 
     }
