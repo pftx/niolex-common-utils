@@ -12,10 +12,13 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- commons version -->
 		<commons.codec.version>1.10</commons.codec.version>
 		<commons.lang.version>2.6</commons.lang.version>
 		<commons.core.version>[2.1.2,3.0.0)</commons.core.version>
 		<commons.seri.version>[2.0.0,3.0.0)</commons.seri.version>
+		<commons.notify.version>[1.0.0,2.0.0)</commons.notify.version>
+		<!-- dependencies version -->
 		<guava.version>19.0</guava.version>
 		<jackson.version>[1.9.13,2.0.0)</jackson.version>
 		<reflectasm.version>[1.11.3,2.0.0)</reflectasm.version>
@@ -32,7 +35,9 @@
 		<javax.mailapi.version>1.4.3</javax.mailapi.version>
 		<network.core.version>[0.3.0,2.0.0)</network.core.version>
 		<network.rpc.version>[0.3.0,2.0.0)</network.rpc.version>
-		<maven.assembly.version>2.3</maven.assembly.version>
+		<jline.version>2.14.2</jline.version>
+		<!-- plugins version -->
+		<maven.assembly.version>2.6</maven.assembly.version>
 	</properties>
 
 	<build>
