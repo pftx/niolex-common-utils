@@ -29,10 +29,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.ClassUtils;
+import org.apache.niolex.commons.concurrent.ConcurrentUtil;
 import org.apache.niolex.commons.test.ObjToStringUtil;
 
 import com.google.common.collect.Maps;
@@ -45,6 +46,17 @@ import com.google.common.collect.Maps;
  * @since 2013-6-20
  */
 public class BeanUtil {
+    
+    /**
+     * Store all the generated BeanInfo by Introspector for faster access.
+     */
+    private static final ConcurrentHashMap<Class<?>, BeanInfo> beanInfoMap = new ConcurrentHashMap<Class<?>, BeanInfo>();
+    
+    /**
+     * Store all the generated write methods maps for faster access.
+     */
+    private static final ConcurrentHashMap<Class<?>, Map<String, Method>> writeMethodsMap
+            = new ConcurrentHashMap<Class<?>, Map<String, Method>>();
 
     /**
      * translate general objects into string.
@@ -122,7 +134,7 @@ public class BeanUtil {
     public static final <To, From> To merge(To to, From from, boolean mergeDefault) {
         try {
             Map<String, Method> writeMap = prepareWriteMethodMap(to.getClass());
-            BeanInfo fromInfo = Introspector.getBeanInfo(from.getClass());
+            BeanInfo fromInfo = getBeanInfo(from.getClass());
             // Iterate over all the attributes of from, do copy here.
             for (PropertyDescriptor descriptor : fromInfo.getPropertyDescriptors()) {
                 Method readMethod = descriptor.getReadMethod();
@@ -159,8 +171,14 @@ public class BeanUtil {
      * @throws IntrospectionException if an exception occurs during introspection.
      */
     public static Map<String, Method> prepareWriteMethodMap(Class<?> toClass) throws IntrospectionException {
-        BeanInfo toInfo = Introspector.getBeanInfo(toClass);
-        HashMap<String, Method> writeMap = Maps.newHashMap();
+        Map<String, Method> writeMap = writeMethodsMap.get(toClass);
+        
+        if (writeMap != null) {
+            return writeMap;
+        }
+        
+        BeanInfo toInfo = getBeanInfo(toClass);
+        writeMap = Maps.newHashMap();
         // Iterate over all the attributes of to, prepare write methods.
         for (PropertyDescriptor descriptor : toInfo.getPropertyDescriptors()) {
             Method writeMethod = descriptor.getWriteMethod();
@@ -169,7 +187,26 @@ public class BeanUtil {
             }
             writeMap.put(descriptor.getName(), writeMethod);
         }
+        
+        writeMethodsMap.putIfAbsent(toClass, writeMap);
         return writeMap;
+    }
+
+    /**
+     * Get the BeanInfo of the specified bean class. The result from this method will be cached into internal
+     * map so there will be only one generation.
+     * 
+     * @param beanClass the class to be introspected
+     * @return the generated bean info
+     * @throws IntrospectionException if an exception occurs during introspection.
+     */
+    public static BeanInfo getBeanInfo(Class<?> beanClass) throws IntrospectionException {
+        BeanInfo info = beanInfoMap.get(beanClass);
+        if (info == null) {
+            info = ConcurrentUtil.initMap(beanInfoMap, beanClass, Introspector.getBeanInfo(beanClass));
+        }
+        
+        return info;
     }
 
     /**

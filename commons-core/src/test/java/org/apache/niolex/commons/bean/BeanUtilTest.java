@@ -20,7 +20,10 @@ package org.apache.niolex.commons.bean;
 
 import static org.junit.Assert.*;
 
+import java.beans.BeanInfo;
 import java.io.StreamCorruptedException;
+import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.niolex.commons.util.Const;
@@ -437,5 +440,21 @@ public class BeanUtilTest extends BeanUtil {
         arr[2] = 0;
         arr[3] = 5;
         toObject(arr);
+    }
+
+    @Test
+    public void testPrepareWriteMethodMap() throws Exception {
+        Map<String, Method> map1 = prepareWriteMethodMap(Date.class);
+        Map<String, Method> map2 = prepareWriteMethodMap(Date.class);
+        System.out.println(map1);
+        assertEquals(map1, map2);
+        assertTrue(map1 == map2);
+    }
+
+    @Test
+    public void testGetBeanInfo() throws Exception {
+        BeanInfo info1 = getBeanInfo(Date.class);
+        BeanInfo info2 = getBeanInfo(Date.class);
+        assertTrue(info1 == info2);
     }
 }
