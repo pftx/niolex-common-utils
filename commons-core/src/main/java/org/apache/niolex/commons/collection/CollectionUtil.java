@@ -41,7 +41,8 @@ public abstract class CollectionUtil {
 	 * @param args the arguments to be concatenated
 	 * @return the result
 	 */
-	public static final <E> List<E> concat(Collection<E> collection, E ...args) {
+    @SafeVarargs
+    public static final <E> List<E> concat(Collection<E> collection, E... args) {
 		List<E> dest = new ArrayList<E>(collection.size() + args.length);
 		dest.addAll(collection);
 		addAll(dest, args);
@@ -56,7 +57,8 @@ public abstract class CollectionUtil {
 	 * @param args the arguments to be concatenated
 	 * @return the result of all the arguments concatenated
 	 */
-	public static final <E> List<E> concat(E ...args) {
+    @SafeVarargs
+    public static final <E> List<E> concat(E... args) {
 		List<E> dest = new ArrayList<E>(args.length);
 		addAll(dest, args);
 		return dest;
@@ -118,7 +120,8 @@ public abstract class CollectionUtil {
 	 * @param collection the collection used to add elements
 	 * @param args the elements to be added
 	 */
-	public static final <E> void addAll(Collection<E> collection, E ...args) {
+    @SafeVarargs
+    public static final <E> void addAll(Collection<E> collection, E... args) {
 	    for (int i = 0; i < args.length; ++i) {
 	        collection.add(args[i]);
 	    }

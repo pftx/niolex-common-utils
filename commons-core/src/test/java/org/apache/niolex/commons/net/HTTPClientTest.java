@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,9 +13,10 @@ import java.util.Map;
 
 import org.apache.niolex.commons.compress.JacksonUtil;
 import org.apache.niolex.commons.reflect.FieldUtil;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class HTTPClientTest {
     
@@ -87,16 +87,7 @@ public class HTTPClientTest {
         assertEquals(405, r.getRespCode());
     }
 
-    static {
-        try {
-            Field field = FieldUtil.getField(JacksonUtil.class, "mapper");
-            field.setAccessible(true);
-            mapper = (ObjectMapper) field.get(null);
-        } catch (Exception ignore) {
-        }
-    }
-
-    public static ObjectMapper mapper;
+    public static ObjectMapper mapper = JacksonUtil.getmapper();
 
     @Test
     public void testPut() throws Exception {

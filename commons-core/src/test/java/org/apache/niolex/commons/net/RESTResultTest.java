@@ -2,8 +2,9 @@ package org.apache.niolex.commons.net;
 
 import static org.junit.Assert.assertEquals;
 
-import org.codehaus.jackson.JsonParseException;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonParseException;
 
 public class RESTResultTest {
 

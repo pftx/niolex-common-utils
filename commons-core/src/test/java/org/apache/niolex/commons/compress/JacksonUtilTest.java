@@ -1,21 +1,31 @@
 package org.apache.niolex.commons.compress;
 
-import static org.junit.Assert.*;
-import static org.apache.niolex.commons.compress.JacksonUtil.*;
+import static org.apache.niolex.commons.compress.JacksonUtil.bin2Obj;
+import static org.apache.niolex.commons.compress.JacksonUtil.getTypeFactory;
+import static org.apache.niolex.commons.compress.JacksonUtil.obj2Str;
+import static org.apache.niolex.commons.compress.JacksonUtil.obj2bin;
+import static org.apache.niolex.commons.compress.JacksonUtil.readObj;
+import static org.apache.niolex.commons.compress.JacksonUtil.str2Obj;
+import static org.apache.niolex.commons.compress.JacksonUtil.writeObj;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.niolex.commons.codec.StringUtil;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.type.TypeFactory;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 public class JacksonUtilTest {
+
+    private TypeFactory TypeFactory = JacksonUtil.getTypeFactory();
 
 	@Test
 	public final void testObj2Str() throws Exception {
@@ -38,7 +48,7 @@ public class JacksonUtilTest {
 	public final void testStr2ObjStringJavaType() throws Exception {
 		CTBean t = new CTBean(3, "Qute", 12212, new Date(1338008328709L));
 		String st = "{\"likely\":3,\"name\":\"Qute\",\"id\":12212,\"birth\":1338008328709}";
-		CTBean m = str2Obj(st, TypeFactory.fromCanonical("org.apache.niolex.commons.compress.CTBean"));
+        CTBean m = str2Obj(st, TypeFactory.constructFromCanonical("org.apache.niolex.commons.compress.CTBean"));
 		assertEquals(t, m);
 	}
 
@@ -76,7 +86,7 @@ public class JacksonUtilTest {
 		CTBean t = new CTBean(3, "Qute", 12212, new Date(1338008328709L));
 		String st = "{\"likely\":3,\"name\":\"Qute\",\"id\":12212,\"birth\":1338008328709}";
 		ByteArrayInputStream in = new ByteArrayInputStream(st.getBytes("UTF-8"));
-		CTBean m = readObj(in, TypeFactory.fromCanonical("org.apache.niolex.commons.compress.CTBean"));
+        CTBean m = readObj(in, TypeFactory.constructFromCanonical("org.apache.niolex.commons.compress.CTBean"));
 		assertEquals(t, m);
 	}
 
@@ -97,10 +107,11 @@ public class JacksonUtilTest {
 	}
 
 	/**
-	 * We can not read two objects from one input stream, due to prefetch.
-	 * @throws Exception
-	 */
-	@Test(expected=EOFException.class)
+     * We can not read two objects from one input stream, due to pre-fetch.
+     * 
+     * @throws Exception
+     */
+    @Test(expected = IOException.class)
 	public void testReadObjOfTwo() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		CTBean t = new CTBean(3, "Qute", 12212, new Date(1338008328709L));

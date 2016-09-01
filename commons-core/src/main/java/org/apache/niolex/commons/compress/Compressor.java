@@ -19,9 +19,7 @@ package org.apache.niolex.commons.compress;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.type.JavaType;
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * The Compressor common interface.
@@ -80,12 +78,9 @@ public interface Compressor {
      * @param data the compressed data
      * @param valueType the value class type
      * @return the original object
-     * @throws JsonParseException if necessary
-     * @throws JsonMappingException if necessary
      * @throws IOException if necessary
      */
-    public <T> T decompressObj(byte[] data, Class<T> valueType) throws JsonParseException, JsonMappingException,
-            IOException;
+    public <T> T decompressObj(byte[] data, Class<T> valueType) throws IOException;
 
     /**
      * Decompress the object.
@@ -94,10 +89,7 @@ public interface Compressor {
      * @param data the compressed data
      * @param valueType the value class type
      * @return the original object
-     * @throws JsonParseException if necessary
-     * @throws JsonMappingException if necessary
      * @throws IOException if necessary
      */
-    public <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException, JsonMappingException,
-            IOException;
+    public <T> T decompressObj(byte[] data, JavaType valueType) throws IOException;
 }

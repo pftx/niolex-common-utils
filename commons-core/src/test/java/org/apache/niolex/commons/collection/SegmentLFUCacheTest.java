@@ -1,5 +1,6 @@
 package org.apache.niolex.commons.collection;
 
+import static org.apache.niolex.commons.test.Assert.assertIntEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -12,8 +13,8 @@ public class SegmentLFUCacheTest {
     @Test
     public void testItemEntry() {
         ItemEntry<String, String> ie = new ItemEntry<String, String>();
-        assertEquals(-1, FieldUtil.getValue(ie, "hash"));
-        assertEquals(0, FieldUtil.getValue(ie, "visits"));
+        assertIntEquals(-1, FieldUtil.getValue(ie, "hash"));
+        assertIntEquals(0, FieldUtil.getValue(ie, "visits"));
         assertNull(FieldUtil.getValue(ie, "key"));
         assertNull(FieldUtil.getValue(ie, "value"));
         assertNull(FieldUtil.getValue(ie, "linkPrev"));
@@ -22,8 +23,8 @@ public class SegmentLFUCacheTest {
         assertEquals(ie, FieldUtil.getValue(ie, "mapNext"));
         
         ie = new ItemEntry<String, String>("a", "b", 3);
-        assertEquals(3, FieldUtil.getValue(ie, "hash"));
-        assertEquals(1, FieldUtil.getValue(ie, "visits"));
+        assertIntEquals(3, FieldUtil.getValue(ie, "hash"));
+        assertIntEquals(1, FieldUtil.getValue(ie, "visits"));
         assertEquals("a", FieldUtil.getValue(ie, "key"));
         assertEquals("b", FieldUtil.getValue(ie, "value"));
         assertNull(FieldUtil.getValue(ie, "linkPrev"));
@@ -40,15 +41,15 @@ public class SegmentLFUCacheTest {
     @Test
     public void testNewSegmentLFUCacheTooConc() throws Exception {
         SegmentLFUCache<String, String> seg = new SegmentLFUCache<String, String>(3000000, 1000000000);
-        assertEquals(16383, FieldUtil.getValue(seg, "segmentMask"));
-        assertEquals(3000000, FieldUtil.getValue(seg, "maxSize"));
+        assertIntEquals(16383, FieldUtil.getValue(seg, "segmentMask"));
+        assertIntEquals(3000000, FieldUtil.getValue(seg, "maxSize"));
     }
     
     @Test
     public void testNewSegmentLFUCacheSmallConc() throws Exception {
         SegmentLFUCache<String, String> seg = new SegmentLFUCache<String, String>(2048, 16);
-        assertEquals(15, FieldUtil.getValue(seg, "segmentMask"));
-        assertEquals(2048, FieldUtil.getValue(seg, "maxSize"));
+        assertIntEquals(15, FieldUtil.getValue(seg, "segmentMask"));
+        assertIntEquals(2048, FieldUtil.getValue(seg, "maxSize"));
         assertEquals(0, seg.size());
         
         String s = seg.put("nice", "you");

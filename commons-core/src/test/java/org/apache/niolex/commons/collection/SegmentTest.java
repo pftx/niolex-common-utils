@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.collection;
 
+import static org.apache.niolex.commons.test.Assert.assertIntEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,8 +39,8 @@ public class SegmentTest {
     public void testContorInv() {
         Segment<String, String> seg = new Segment<String, String>(66);
         ItemEntry<String, String> ie = seg.entryFor(0);
-        assertEquals(-1, FieldUtil.getValue(ie, "hash"));
-        assertEquals(0, FieldUtil.getValue(ie, "visits"));
+        assertIntEquals(-1, FieldUtil.getValue(ie, "hash"));
+        assertIntEquals(0, FieldUtil.getValue(ie, "visits"));
         assertNull(FieldUtil.getValue(ie, "key"));
         assertNull(FieldUtil.getValue(ie, "value"));
         assertNull(FieldUtil.getValue(ie, "linkPrev"));
@@ -52,8 +53,8 @@ public class SegmentTest {
     public void testContor() {
         Segment<String, String> seg = new Segment<String, String>(8);
         ItemEntry<String, String> ie = seg.entryFor(0);
-        assertEquals(-1, FieldUtil.getValue(ie, "hash"));
-        assertEquals(0, FieldUtil.getValue(ie, "visits"));
+        assertIntEquals(-1, FieldUtil.getValue(ie, "hash"));
+        assertIntEquals(0, FieldUtil.getValue(ie, "visits"));
         assertNull(FieldUtil.getValue(ie, "key"));
         assertNull(FieldUtil.getValue(ie, "value"));
         assertNull(FieldUtil.getValue(ie, "linkPrev"));
@@ -70,8 +71,8 @@ public class SegmentTest {
         ItemEntry<String, String> ie2 = seg.findItem(8, "a");
         assertNull(ie2);
         assertEquals("b", FieldUtil.getValue(ie1, "value"));
-        assertEquals(1, FieldUtil.getValue(ie1, "visits"));
-        assertEquals(0, FieldUtil.getValue(ie1, "hash"));
+        assertIntEquals(1, FieldUtil.getValue(ie1, "visits"));
+        assertIntEquals(0, FieldUtil.getValue(ie1, "hash"));
         seg.put(0, "a", "c");
         ItemEntry<String, String> ie3 = seg.findItem(0, "a");
         assertEquals(ie1, ie3);
@@ -102,8 +103,8 @@ public class SegmentTest {
         ItemEntry<String, String> ie2 = seg.findItem(8, "a");
         assertNull(ie2);
         assertEquals("b", FieldUtil.getValue(ie1, "value"));
-        assertEquals(1, FieldUtil.getValue(ie1, "visits"));
-        assertEquals(0, FieldUtil.getValue(ie1, "hash"));
+        assertIntEquals(1, FieldUtil.getValue(ie1, "visits"));
+        assertIntEquals(0, FieldUtil.getValue(ie1, "hash"));
         seg.put(8, "a", "c");
         ItemEntry<String, String> ie3 = seg.findItem(8, "a");
         assertNotEquals(ie1, ie3);

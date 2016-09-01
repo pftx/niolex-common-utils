@@ -17,7 +17,8 @@
  */
 package org.apache.niolex.commons.compress;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,10 +26,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.niolex.commons.file.FileUtil;
-import org.codehaus.jackson.type.JavaType;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>

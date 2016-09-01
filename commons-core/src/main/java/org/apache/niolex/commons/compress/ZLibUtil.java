@@ -19,9 +19,7 @@ package org.apache.niolex.commons.compress;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.type.JavaType;
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * ZLib压缩工具
@@ -104,12 +102,9 @@ public abstract class ZLibUtil {
      * @param data the binary data
      * @param valueType the value class type
      * @return the object
-     * @throws JsonParseException if something goes wrong in Jackson JSON
-     * @throws JsonMappingException if something goes wrong in Jackson JSON
      * @throws IOException if something goes wrong in Jackson JSON
      */
-    public static final <T> T decompressObj(byte[] data, Class<T> valueType) throws JsonParseException, JsonMappingException,
-            IOException {
+    public static final <T> T decompressObj(byte[] data, Class<T> valueType) throws IOException {
     	return ZLIB.decompressObj(data, valueType);
     }
 
@@ -120,12 +115,9 @@ public abstract class ZLibUtil {
      * @param data the binary data
      * @param valueType the value class type
      * @return the object
-     * @throws JsonParseException if something goes wrong in Jackson JSON
-     * @throws JsonMappingException if something goes wrong in Jackson JSON
      * @throws IOException if something goes wrong in Jackson JSON
      */
-    public static final <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException, JsonMappingException,
-            IOException {
+    public static final <T> T decompressObj(byte[] data, JavaType valueType) throws IOException {
         return ZLIB.decompressObj(data, valueType);
     }
 

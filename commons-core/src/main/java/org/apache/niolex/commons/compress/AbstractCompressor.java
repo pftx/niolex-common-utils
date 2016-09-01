@@ -20,9 +20,8 @@ package org.apache.niolex.commons.compress;
 import java.io.IOException;
 
 import org.apache.niolex.commons.codec.StringUtil;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.type.JavaType;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * With the two methods {@link #compress(byte[])} and {@link #decompress(byte[])}, we can implement all
@@ -67,8 +66,7 @@ public abstract class AbstractCompressor implements Compressor {
      * @see org.apache.niolex.commons.compress.Compressor#decompressObj(byte[], java.lang.Class)
      */
     @Override
-    public <T> T decompressObj(byte[] data, Class<T> valueType) throws JsonParseException, JsonMappingException,
-            IOException {
+    public <T> T decompressObj(byte[] data, Class<T> valueType) throws IOException {
         return JacksonUtil.bin2Obj(decompress(data), valueType);
     }
 
@@ -77,8 +75,7 @@ public abstract class AbstractCompressor implements Compressor {
      * @see org.apache.niolex.commons.compress.Compressor#decompressObj(byte[], org.codehaus.jackson.type.JavaType)
      */
     @Override
-    public <T> T decompressObj(byte[] data, JavaType valueType) throws JsonParseException, JsonMappingException,
-            IOException {
+    public <T> T decompressObj(byte[] data, JavaType valueType) throws IOException {
         return JacksonUtil.bin2Obj(decompress(data), valueType);
     }
 

@@ -17,7 +17,9 @@
  */
 package org.apache.niolex.commons.collection;
 
-import static org.junit.Assert.*;
+import static org.apache.niolex.commons.test.Assert.assertLongEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.apache.niolex.commons.collection.ConcurrentLRUCache.ItemEntry;
 import org.apache.niolex.commons.collection.ConcurrentLRUCache.ThreeQLRUList;
@@ -36,17 +38,17 @@ public class ThreeQLRUListTest {
     @Test
     public void testPushHeaderTime() throws Exception {
         list.pushHeaderTime(66);
-        assertEquals(0l, FieldUtil.getValue(list, "lastRoundHeaderTime"));
-        assertEquals(0l, FieldUtil.getValue(list, "middleRoundHeaderTime"));
-        assertEquals(66l, FieldUtil.getValue(list, "firstRoundHeaderTime"));
+        assertLongEquals(0l, FieldUtil.getValue(list, "lastRoundHeaderTime"));
+        assertLongEquals(0l, FieldUtil.getValue(list, "middleRoundHeaderTime"));
+        assertLongEquals(66l, FieldUtil.getValue(list, "firstRoundHeaderTime"));
         list.pushHeaderTime(88);
-        assertEquals(0l, FieldUtil.getValue(list, "lastRoundHeaderTime"));
-        assertEquals(66l, FieldUtil.getValue(list, "middleRoundHeaderTime"));
-        assertEquals(88l, FieldUtil.getValue(list, "firstRoundHeaderTime"));
+        assertLongEquals(0l, FieldUtil.getValue(list, "lastRoundHeaderTime"));
+        assertLongEquals(66l, FieldUtil.getValue(list, "middleRoundHeaderTime"));
+        assertLongEquals(88l, FieldUtil.getValue(list, "firstRoundHeaderTime"));
         list.pushHeaderTime(123);
-        assertEquals(66l, FieldUtil.getValue(list, "lastRoundHeaderTime"));
-        assertEquals(88l, FieldUtil.getValue(list, "middleRoundHeaderTime"));
-        assertEquals(123l, FieldUtil.getValue(list, "firstRoundHeaderTime"));
+        assertLongEquals(66l, FieldUtil.getValue(list, "lastRoundHeaderTime"));
+        assertLongEquals(88l, FieldUtil.getValue(list, "middleRoundHeaderTime"));
+        assertLongEquals(123l, FieldUtil.getValue(list, "firstRoundHeaderTime"));
     }
     
     @Test

@@ -23,11 +23,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-
-import org.apache.niolex.commons.codec.StringUtil;
-
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.apache.niolex.commons.codec.StringUtil;
 
 import com.google.common.hash.Hashing;
 
@@ -216,7 +215,7 @@ public class ConsistentHash<T> {
      *
      * @param nodes the nodes to be prepared into the hash ring
      */
-    public void prepare(T ...nodes) {
+    public void prepare(@SuppressWarnings("unchecked") T... nodes) {
         for (T node : nodes) {
             internalAdd(circle, node);
         }

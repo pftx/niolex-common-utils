@@ -21,16 +21,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.type.TypeFactory;
-import org.codehaus.jackson.type.JavaType;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /**
- * 利用JSON进行数据压缩的工具类。内部采用了Jackson的Json序列化实现。
+ * The utility class to help us using Jackson to serialize object to JSON and vice-versa.
+ * Since commons-core 2.2.0, we upgrade the Jackson library to 2.0 version.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2011-3-18$
@@ -45,8 +46,15 @@ public abstract class JacksonUtil {
     	 * Init the Object Mapper as follows.
     	 */
         mapper = new ObjectMapper();
-        mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    /**
+     * @return the internal Jackson object mapper
+     */
+    public static final ObjectMapper getmapper() {
+        return mapper;
     }
 
     /**
@@ -55,7 +63,7 @@ public abstract class JacksonUtil {
      * @return the internal json factory
      */
     public static final JsonFactory getJsonFactory() {
-    	return mapper.getJsonFactory();
+        return mapper.getFactory();
     }
 
     /**
