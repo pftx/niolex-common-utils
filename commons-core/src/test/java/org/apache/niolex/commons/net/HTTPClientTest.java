@@ -1,15 +1,21 @@
 package org.apache.niolex.commons.net;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.niolex.commons.compress.JacksonUtil;
 import org.apache.niolex.commons.reflect.FieldUtil;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
 public class HTTPClientTest {
@@ -62,6 +68,61 @@ public class HTTPClientTest {
     }
 
     @Test
+    public void testPost() throws Exception {
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
+        HTTPResult r = hc.post("post", "this is just a snim.");
+        System.out.println(r);
+        assertEquals(200, r.getRespCode());
+
+        JsonNode tree = mapper.readTree(r.getRespBody());
+        assertEquals("this is just a snim.", tree.get("data").asText());
+        System.out.println("Headers " + r.getRespHeaders());
+    }
+
+    @Test
+    public void testPostNotAllowed() throws Exception {
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
+        HTTPResult r = hc.post("put", "this is just a snim.");
+        System.out.println(r);
+        assertEquals(405, r.getRespCode());
+    }
+
+    static {
+        try {
+            Field field = FieldUtil.getField(JacksonUtil.class, "mapper");
+            field.setAccessible(true);
+            mapper = (ObjectMapper) field.get(null);
+        } catch (Exception ignore) {
+        }
+    }
+
+    public static ObjectMapper mapper;
+
+    @Test
+    public void testPut() throws Exception {
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
+        HTTPResult r = hc.put("put", "this is just a snim. We put it.");
+        System.out.println(r);
+        assertEquals(200, r.getRespCode());
+        JsonNode tree = mapper.readTree(r.getRespBody());
+        assertEquals("this is just a snim. We put it.", tree.get("data").asText());
+        System.out.println("Headers " + r.getRespHeaders());
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+        HTTPClient hc = new HTTPClient(BASIC_URL, "utf8");
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("usa", "good");
+        params.put("oo", "lex");
+        HTTPResult r = hc.delete("delete", params);
+        System.out.println(r);
+        assertEquals(200, r.getRespCode());
+        assertTrue(tidyStr(r.getRespBodyStr()).contains("{\"oo\":\"lex\",\"usa\":\"good\"}"));
+        System.out.println("Headers " + r.getRespHeaders());
+    }
+
+    @Test
     public void testPostStringString() throws Exception {
         HTTPClient hc = new HTTPClient("http://www.w3school.com.cn/tiy", "utf8");
         Map<String, String> params = new HashMap<String, String>();
@@ -104,7 +165,7 @@ public class HTTPClientTest {
         cc.add("user_salt=9dj*jfla0fk[a; path=/; expires=Mon, 29 Feb 2016 05:37:43 -0000; secure; HttpOnly");
         respHeaders.put("set-cookie", cc);
         hc.processCookie(respHeaders);
-        assertEquals(reqHeaders.get("Cookie"), "user_session=Y6Uqq5e1Nrb92vnlTczbaN4xRasFZxK; user_salt=9dj*jfla0fk[a");
+        assertEquals(reqHeaders.get("Cookie"), "user_salt=9dj*jfla0fk[a; user_session=Y6Uqq5e1Nrb92vnlTczbaN4xRasFZxK");
     }
 
     @Test

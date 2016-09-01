@@ -18,8 +18,12 @@
 package org.apache.niolex.commons.net;
 
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -369,12 +373,6 @@ public class HTTPUtilTest extends HTTPUtil {
 
     @Test
     public final void testCheckServerStatusEx404() {
-        int e = checkServerStatus("http://www.cs.zju.edu.cn/org/codes/404.html", 4000, 4000);
-        assertEquals(404, e);
-    }
-
-    @Test
-    public final void testCheckServerStatusEx404Third() {
         int c = checkServerStatus("http://httpbin.org/status/404", 4000, 4000);
         assertEquals(404, c);
     }

@@ -29,7 +29,11 @@ public class SQLGeneratorTest extends SQLGenerator {
 
     @Test
     public void testGenerateInsert() throws Exception {
-        assertEquals("INSERT INTO HTTP (REQ_HEADERS, END_POINT, CHARSET, END_POINT_DIR_DEPTH, CONNECT_TIMEOUT, READ_TIMEOUT, COOKIE, REFERER, AUTHORIZATION) VALUES (#{reqHeaders}, #{endPoint}, #{charset}, #{endPointDirDepth}, #{connectTimeout}, #{readTimeout}, #{cookie}, #{referer}, #{authorization});", generateInsert(HTTPClient.class, "HTTP"));
+        assertEquals("INSERT INTO HTTP (REQ_HEADERS, COOKIES_MAP, END_POINT, CHARSET, END_POINT_DIR_DEPTH,"
+                + " CONNECT_TIMEOUT, READ_TIMEOUT, REFERER, AUTHORIZATION) VALUES (#{reqHeaders},"
+                + " #{cookiesMap}, #{endPoint}, #{charset}, #{endPointDirDepth}, #{connectTimeout},"
+                + " #{readTimeout}, #{referer}, #{authorization});",
+                generateInsert(HTTPClient.class, "HTTP"));
         assertEquals("INSERT INTO HTTP_METH (PASS_PARAMETERS_IN_URL, NAME, ORDINAL) VALUES (#{passParametersInURL}, #{name}, #{ordinal});", generateInsert(HTTPMethod.class, "HTTP_METH"));
         assertEquals("INSERT INTO HTTP_RESULT (RESP_CODE, RESP_HEADERS, RESP_BODY, RESP_BODY_STR, CLIENT) VALUES (#{respCode}, #{respHeaders}, #{respBody}, #{respBodyStr}, #{client});", generateInsert(HTTPResult.class, "HTTP_RESULT"));
     }

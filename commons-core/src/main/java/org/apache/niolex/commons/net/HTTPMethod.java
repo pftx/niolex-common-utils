@@ -25,7 +25,7 @@ package org.apache.niolex.commons.net;
  * @since 2016-1-26
  */
 public enum HTTPMethod {
-    GET(true), POST(false), HEAD(true), OPTIONS(true), PUT(true), DELETE(true), TRACE(true);
+    GET(true), POST(false), HEAD(true), OPTIONS(true), PUT(false), DELETE(true), TRACE(true);
 
     private final boolean passParametersInURL;
 

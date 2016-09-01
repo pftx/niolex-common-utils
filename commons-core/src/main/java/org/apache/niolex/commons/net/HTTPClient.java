@@ -17,8 +17,12 @@
  */
 package org.apache.niolex.commons.net;
 
-import static org.apache.niolex.commons.net.HTTPMethod.*;
-import static org.apache.niolex.commons.net.HTTPUtil.*;
+import static org.apache.niolex.commons.net.HTTPMethod.DELETE;
+import static org.apache.niolex.commons.net.HTTPMethod.GET;
+import static org.apache.niolex.commons.net.HTTPMethod.POST;
+import static org.apache.niolex.commons.net.HTTPMethod.PUT;
+import static org.apache.niolex.commons.net.HTTPUtil.REQ_HEADER;
+import static org.apache.niolex.commons.net.HTTPUtil.doHTTP;
 import static org.apache.niolex.commons.util.DateTimeUtil.SECOND;
 
 import java.net.MalformedURLException;
@@ -26,6 +30,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.niolex.commons.bean.Triple;
 import org.apache.niolex.commons.codec.Base64Util;
@@ -50,6 +56,11 @@ public class HTTPClient {
     private final Map<String, String> reqHeaders = new HashMap<String, String>(REQ_HEADER);
 
     /**
+     * The HTTP cookies.
+     */
+    private final Map<String, String> cookiesMap = new TreeMap<String, String>();
+
+    /**
      *  The end point to be used as the base when generate URL.
      */
     private final String endPoint;
@@ -62,7 +73,6 @@ public class HTTPClient {
     private int endPointDirDepth;
     private int connectTimeout = 6 * SECOND;
     private int readTimeout = 6 * SECOND;
-    private String cookie;
     private String referer;
     private String authorization;
 
@@ -122,6 +132,22 @@ public class HTTPClient {
     }
 
     /**
+     * Do a HTTP delete request.
+     *
+     * @param path the request path relative to the end point
+     * @param params the request parameters
+     * @return the HTTP result
+     * @throws NetException if necessary
+     */
+    public HTTPResult delete(String path, Map<String, String> params) throws NetException {
+        Triple<Integer, Map<String, List<String>>, byte[]> res = doHTTP(generateURL(path), params, null, charset,
+                reqHeaders, connectTimeout, readTimeout, DELETE);
+        processCookie(res.y);
+
+        return new HTTPResult(res.x, res.y, res.z, this);
+    }
+
+    /**
      * Do a HTTP post request.
      *
      * @param path the request path relative to the end point
@@ -154,6 +180,22 @@ public class HTTPClient {
     }
 
     /**
+     * Do a HTTP put request.
+     *
+     * @param path the request path relative to the end point
+     * @param json the request parameters in JSON format
+     * @return the HTTP result
+     * @throws NetException if necessary
+     */
+    public HTTPResult put(String path, String json) throws NetException {
+        Triple<Integer, Map<String, List<String>>, byte[]> res = doHTTP(generateURL(path), null, json, charset,
+                reqHeaders, connectTimeout, readTimeout, PUT);
+        processCookie(res.y);
+
+        return new HTTPResult(res.x, res.y, res.z, this);
+    }
+
+    /**
      * Process the server Set-Cookie header and set the Cookie header for next request.
      *
      * @param respHeaders the HTTP server response headers
@@ -173,12 +215,21 @@ public class HTTPClient {
             // Set-Cookie:xxx=xxx; expires=Fri, 05-Feb-16 03:25:48 GMT; domain=www.baidu.com; path=/
             c = c.substring(0, c.indexOf(';'));
 
-            if (cookie == null) cookie = c;
-            else cookie = cookie + "; " + c;
+            String[] kv = c.split(" *= *", 2);
+            cookiesMap.put(kv[0], kv[1]);
+        }
+
+        StringBuilder cookie = new StringBuilder();
+        int i = 0;
+        for (Entry<String, String> en : cookiesMap.entrySet()) {
+            if (i++ > 0) {
+                cookie.append("; ");
+            }
+            cookie.append(en.getKey()).append('=').append(en.getValue());
         }
 
         LOG.debug("The new cookie: {}", cookie);
-        reqHeaders.put("Cookie", cookie);
+        reqHeaders.put("Cookie", cookie.toString());
     }
 
     /**
