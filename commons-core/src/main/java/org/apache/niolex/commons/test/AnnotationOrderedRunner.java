@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.niolex.commons.bean.Pair;
+import org.apache.niolex.commons.test.OrderedRunner.AlphabeticalOrder;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -35,7 +36,7 @@ import org.junit.runners.model.InitializationError;
 /**
  * Run all the test cases marked by this runner in the order specified by the annotation value.
  * <br>
- * All the methods not annotated will be put to the end of the list.
+ * All the methods not annotated will be put to the end of the list and sorted by alphabetical order.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -74,44 +75,46 @@ public class AnnotationOrderedRunner extends BlockJUnit4ClassRunner {
 	 */
 	@Override
 	protected List<FrameworkMethod> computeTestMethods() {
-		List<FrameworkMethod> lst = super.computeTestMethods();
-		List<Pair<Integer, FrameworkMethod>> cpy = new ArrayList<Pair<Integer, FrameworkMethod>>();
-		List<FrameworkMethod> other = new ArrayList<FrameworkMethod>();
+		List<FrameworkMethod> original = super.computeTestMethods();
+		List<Pair<Integer, FrameworkMethod>> annotated = new ArrayList<Pair<Integer, FrameworkMethod>>();
+		List<FrameworkMethod> others = new ArrayList<FrameworkMethod>();
 
 		// Find out all the methods who has annotation.
-		for (FrameworkMethod fm : lst) {
+		for (FrameworkMethod fm : original) {
 		    Method m = fm.getMethod();
 		    if (m.isAnnotationPresent(Order.class)) {
 		        int or = m.getAnnotation(Order.class).value();
-		        cpy.add(Pair.create(or, fm));
+		        annotated.add(Pair.create(or, fm));
 		    } else {
-		        other.add(fm);
+		        others.add(fm);
 		    }
 		}
 
-		Collections.sort(cpy, NumericOrder.INSTANCE);
+		Collections.sort(annotated, NumericOrder.INSTANCE);
+        Collections.sort(others, AlphabeticalOrder.INSTANCE);
+
 		// Save the result.
-		List<FrameworkMethod> ret = new ArrayList<FrameworkMethod>(lst.size());
+		List<FrameworkMethod> result = new ArrayList<FrameworkMethod>(original.size());
 
-		// Add all the sorted methods in the front.
-		for (Pair<Integer, FrameworkMethod> p : cpy) {
-		    ret.add(p.b);
+        // Add all the annotated methods in the front.
+		for (Pair<Integer, FrameworkMethod> p : annotated) {
+		    result.add(p.b);
 		}
-		// Add all the non-sort methods in the end.
-		ret.addAll(other);
+        // Add all the others methods in the end.
+		result.addAll(others);
 
-		return ret;
+		return result;
 	}
 
 	/**
-	 * For sort FrameworkMethod in Numeric Order.
-	 * This class is used by {@link AnnotationOrderedRunner#computeTestMethods()}
-	 *
-	 * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
-	 * @version 1.0.0
-	 * @since 2013-8-14
-	 */
-	public static class NumericOrder implements Comparator<Pair<Integer, ?>> {
+     * For sort FrameworkMethod in Numeric Order. If the integer equals, sort by method names.
+     * This class is used by {@link AnnotationOrderedRunner#computeTestMethods()}
+     *
+     * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
+     * @version 1.0.0
+     * @since 2013-8-14
+     */
+    public static class NumericOrder implements Comparator<Pair<Integer, FrameworkMethod>> {
 
 	    static final NumericOrder INSTANCE = new NumericOrder();
 
@@ -120,8 +123,12 @@ public class AnnotationOrderedRunner extends BlockJUnit4ClassRunner {
 	     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	     */
 	    @Override
-	    public int compare(Pair<Integer, ?> o1, Pair<Integer, ?> o2) {
-	        return o1.a.compareTo(o2.a);
+        public int compare(Pair<Integer, FrameworkMethod> o1, Pair<Integer, FrameworkMethod> o2) {
+            int r = o1.a.compareTo(o2.a);
+            if (r == 0) {
+                return o1.b.getName().compareTo(o2.b.getName());
+            }
+            return r;
 	    }
 
 	}

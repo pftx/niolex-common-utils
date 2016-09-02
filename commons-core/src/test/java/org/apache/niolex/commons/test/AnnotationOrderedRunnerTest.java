@@ -18,7 +18,7 @@
 package org.apache.niolex.commons.test;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.niolex.commons.test.AnnotationOrderedRunner.Order;
 import org.junit.Test;
@@ -36,14 +36,14 @@ public class AnnotationOrderedRunnerTest {
 
     @Test
     public void testAnnotationOrderedRunner() throws Exception {
+        assertEquals(cnt, 10);
         ++cnt;
-        assertTrue(cnt > 10);
     }
 
     @Test
     public void testComputeTestMethods() throws Exception {
         ++cnt;
-        assertTrue(cnt > 10);
+        assertEquals(cnt, 12);
     }
 
     @Test
@@ -56,6 +56,12 @@ public class AnnotationOrderedRunnerTest {
     @Order(0)
     public void testPrepare2() {
         ++cnt;
+    }
+
+    @Test
+    @Order(1)
+    public void checkCnt() {
+        assertEquals(2, cnt);
     }
 
     @Test
