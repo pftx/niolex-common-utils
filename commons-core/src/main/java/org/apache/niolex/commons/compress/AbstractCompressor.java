@@ -72,7 +72,7 @@ public abstract class AbstractCompressor implements Compressor {
 
     /**
      * This is the override of super method.
-     * @see org.apache.niolex.commons.compress.Compressor#decompressObj(byte[], org.codehaus.jackson.type.JavaType)
+     * @see org.apache.niolex.commons.compress.Compressor#decompressObj(byte[], com.fasterxml.jackson.databind.JavaType)
      */
     @Override
     public <T> T decompressObj(byte[] data, JavaType valueType) throws IOException {

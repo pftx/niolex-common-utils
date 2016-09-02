@@ -17,7 +17,9 @@
  */
 package org.apache.niolex.commons.net;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.HttpURLConnection;
 import java.util.Map;
@@ -29,7 +31,7 @@ import org.junit.Test;
 import com.google.common.collect.Maps;
 
 /**
- *
+ * The new version of HTTPUtil tester.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -37,16 +39,16 @@ import com.google.common.collect.Maps;
  */
 public class NewHTTPUtilTest extends HTTPUtil {
 
-    private static final String PREFIX = "http://localhost:8985/";
+    private static final String PREFIX = "http://localhost:9090/";
 
     @BeforeClass
     public static void setUp() throws Exception {
-        SimpleHttpServer.main(null);
+        NanoHTTPServer.main(null);
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        SimpleHttpServer.stop();
+        NanoHTTPServer.stopIt();
     }
 
     @Test
@@ -81,7 +83,7 @@ public class NewHTTPUtilTest extends HTTPUtil {
         Map<String, String> params = Maps.newHashMap();
         params.put("inputT", "18400");
         byte[] b = doHTTP(PREFIX + "get", params, null, "iso8859-1", null, 500, 500, HTTPMethod.POST).z;
-        assertArrayEquals(b, "inputT=18400".getBytes());
+        assertArrayEquals(NanoHTTPServer.DATA, b);
     }
 
     @Test

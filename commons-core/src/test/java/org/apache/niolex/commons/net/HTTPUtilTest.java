@@ -69,9 +69,9 @@ public class HTTPUtilTest extends HTTPUtil {
     @Test
     public void testGetWithoutEnc() throws Exception {
         if (SystemUtil.defined("download", "download.http")) return;
-        String s = get("http://www.zju.edu.cn/");
+        String s = get("http://www.pku.edu.cn/");
         assertTrue(s.length() > 1024);
-        assertTrue(s.contains("浙江大学"));
+        assertTrue(s.contains("北京大学"));
     }
 
     @Test

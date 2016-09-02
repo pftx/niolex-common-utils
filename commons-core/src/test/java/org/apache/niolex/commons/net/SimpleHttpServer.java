@@ -43,7 +43,7 @@ import com.sun.net.httpserver.HttpServer;
 @SuppressWarnings("restriction")
 public class SimpleHttpServer {
 
-    public static final byte[] DATA = FileUtil.getBinaryFileContentFromClassPath("nav.jpg.txt", NetExceptionTest.class);;
+    public static final byte[] DATA = FileUtil.getBinaryFileContentFromClassPath("nav.jpg.txt", NetExceptionTest.class);
     public static HttpServer server;
 
     public static void main(String[] args) throws Exception {

@@ -24,10 +24,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Assert;
-
-import org.apache.niolex.commons.reflect.MethodUtil;
 import org.apache.niolex.commons.test.Benchmark;
+import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -119,12 +117,12 @@ public class MethodUtilTest extends MethodUtil {
     }
 
     @Test
-    public void testGetFirstMethodConc() throws Throwable {
-        Method m = getFirstMethod(Conc.class, "find");
+    public void testGetFirstMethodOnly() throws Throwable {
+        Method m = getFirstMethod(Only.class, "find");
         Assert.assertEquals(m.getName(), "find");
-        Assert.assertEquals(m.getParameterTypes().length, 1);
+        Assert.assertEquals(m.getParameterTypes().length, 3);
         Assert.assertEquals(m.getParameterTypes()[0], int.class);
-        Assert.assertEquals(m.getReturnType(), void.class);
+        Assert.assertEquals(m.getReturnType(), double.class);
     }
 
     @Test
@@ -354,5 +352,11 @@ class Conc extends Base implements Inter {
 
     public int find(int k, int m) {
         return k * m;
+    }
+}
+
+class Only extends Conc {
+    public double find(int a, char b, long c) {
+        return a * b * c;
     }
 }
