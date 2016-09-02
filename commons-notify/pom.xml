@@ -22,24 +22,20 @@
 			<version>${zookeeper.version}</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>log4j</artifactId>
 					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
 				</exclusion>
 				<exclusion>
-					<artifactId>jline</artifactId>
 					<groupId>jline</groupId>
+					<artifactId>jline</artifactId>
 				</exclusion>
 				<exclusion>
+					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>netty</artifactId>
 					<groupId>io.netty</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
+					<artifactId>netty</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -54,12 +50,12 @@
 			<version>${commons.core.version}</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>reflectasm</artifactId>
-					<groupId>com.esotericsoftware.reflectasm</groupId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
 				</exclusion>
 				<exclusion>
-					<artifactId>jackson-mapper-asl</artifactId>
-					<groupId>org.codehaus.jackson</groupId>
+					<groupId>com.esotericsoftware</groupId>
+					<artifactId>reflectasm</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
