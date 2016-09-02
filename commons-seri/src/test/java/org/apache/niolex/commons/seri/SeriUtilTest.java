@@ -15,8 +15,9 @@ import java.util.Set;
 import org.apache.niolex.commons.bean.Pair;
 import org.apache.niolex.commons.reflect.MethodUtil;
 import org.apache.niolex.commons.seri.Proto.Person;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class SeriUtilTest extends SeriUtil {
 

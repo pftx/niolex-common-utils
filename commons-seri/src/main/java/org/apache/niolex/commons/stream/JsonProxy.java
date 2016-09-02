@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.niolex.commons.compress.JacksonUtil;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.type.TypeReference;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * This is the proxy for read multiple objects from one input stream.
@@ -47,7 +48,7 @@ public class JsonProxy {
 	 */
 	public JsonProxy(InputStream in) throws IOException {
 		super();
-		jp = FACTORY.createJsonParser(in);
+        jp = FACTORY.createParser(in);
 	}
 
 	/**

@@ -17,8 +17,8 @@
  */
 package org.apache.niolex.commons.stream;
 
-import static org.junit.Assert.*;
-import static org.apache.niolex.commons.compress.JacksonUtil.*;
+import static org.apache.niolex.commons.compress.JacksonUtil.writeObj;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,10 +26,11 @@ import java.util.Date;
 
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.test.Benchmark.Bean;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
@@ -66,8 +67,10 @@ public class JsonProxyTest {
     public void testJsonProxy() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         writeObj(out, "Lex");
+        out.write(' ');
         writeObj(out, 2);
         writeObj(out, 4);
+        out.write(' ');
         writeObj(out, " Hello");
         System.out.println("s => " + StringUtil.utf8ByteToStr(out.toByteArray()));
         ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());

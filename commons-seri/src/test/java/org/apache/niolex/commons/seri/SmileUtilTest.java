@@ -8,9 +8,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.niolex.commons.codec.Base16Util;
 import org.apache.niolex.commons.test.Benchmark.Bean;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SmileUtilTest extends SmileUtil {
 
@@ -82,5 +85,63 @@ public class SmileUtilTest extends SmileUtil {
 		assertEquals(2, m2.size());
 		assertEquals(t, m2.get(0));
 	}
+
+    @Test
+    public void testSmile() throws Exception {
+	    ObjectMapper objectMapper = SmileUtil.getmapper();
+        Smile s = new Smile("Smile", 3);
+        byte[] bytes = objectMapper.writeValueAsBytes(s);
+
+        System.out.println(" [X] Smile -> " + Base16Util.byteToBase16(bytes));
+        System.out.println(" [X] Smile -> " + new String(bytes));
+
+        Smile s2 = objectMapper.readValue(bytes, Smile.class);
+        assertEquals("Smile", s2.getFace());
+        assertEquals(3, s2.getAge());
+	}
+
+    @Test
+    public void testInt() throws Exception {
+        ObjectMapper objectMapper = SmileUtil.getmapper();
+        int s = 6;
+        byte[] bytes = objectMapper.writeValueAsBytes(s);
+
+        System.out.println(" [X] Int -> " + Base16Util.byteToBase16(bytes));
+
+        int s2 = objectMapper.readValue(bytes, int.class);
+        assertEquals(6, s2);
+    }
+
+}
+
+class Smile {
+    private String face;
+    private int age;
+
+    public Smile() {
+        super();
+    }
+
+    public Smile(String face, int age) {
+        super();
+        this.face = face;
+        this.age = age;
+    }
+
+    public String getFace() {
+        return face;
+    }
+
+    public void setFace(String face) {
+        this.face = face;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
 
 }

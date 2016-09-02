@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.apache.niolex</groupId>
 		<artifactId>niolex-parent</artifactId>
-		<version>1.0.1</version>
+		<version>2.0.0</version>
 		<relativePath>../</relativePath>
 	</parent>
 
 	<artifactId>commons-seri</artifactId>
-	<version>2.0.2-SNAPSHOT</version>
+	<version>2.2.0</version>
 	<packaging>jar</packaging>
 
 	<name>commons-seri</name>
@@ -23,9 +23,9 @@
 			<version>${commons.core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-smile</artifactId>
-			<version>${jackson.version}</version>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-smile</artifactId>
+			<version>${jackson2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.esotericsoftware</groupId>

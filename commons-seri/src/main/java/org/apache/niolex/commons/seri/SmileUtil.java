@@ -21,16 +21,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.type.TypeFactory;
-import org.codehaus.jackson.smile.SmileFactory;
-import org.codehaus.jackson.smile.SmileGenerator;
-import org.codehaus.jackson.smile.SmileParser;
-import org.codehaus.jackson.type.JavaType;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.dataformat.smile.SmileFactory;
+import com.fasterxml.jackson.dataformat.smile.SmileGenerator;
+import com.fasterxml.jackson.dataformat.smile.SmileParser;
 
 /**
  * This Utility use Jackson Smile as the binary format to serialize objects.
@@ -51,10 +51,16 @@ public abstract class SmileUtil {
     	factory.configure(SmileGenerator.Feature.WRITE_HEADER, false);
     	factory.configure(SmileParser.Feature.REQUIRE_HEADER, false);
         mapper = new ObjectMapper(factory);
-        mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    /**
+     * @return the internal Jackson object mapper which is able to deal with the Smile format
+     */
+    public static final ObjectMapper getmapper() {
+        return mapper;
+    }
 
     /**
      * Get the Json Factory the ObjectMapper inside this class is using.
@@ -62,7 +68,7 @@ public abstract class SmileUtil {
      * @return the internal json factory
      */
     public static final JsonFactory getJsonFactory() {
-    	return mapper.getJsonFactory();
+        return mapper.getFactory();
     }
 
     /**
