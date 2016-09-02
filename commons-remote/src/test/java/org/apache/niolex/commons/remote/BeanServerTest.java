@@ -104,6 +104,7 @@ public class BeanServerTest {
     public void testRun() throws Exception {
         Socket[] socArr = new Socket[10];
         for (int i = 0; i < 10; ++i) {
+            @SuppressWarnings("resource")
             Socket so = new Socket();
             so.connect(new InetSocketAddress("localhost", 8373), 1000);
             socArr[i] = so;

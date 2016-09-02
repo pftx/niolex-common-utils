@@ -26,9 +26,10 @@ import java.lang.reflect.Field;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.reflect.FieldUtil;
 import org.apache.niolex.commons.reflect.ItemNotFoundException;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Execute commands from client.
@@ -47,9 +48,9 @@ public abstract class Executer {
     	 * Init the Object Mapper as follows.
     	 */
         mapper = new ObjectMapper();
-        mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
-        mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /**
