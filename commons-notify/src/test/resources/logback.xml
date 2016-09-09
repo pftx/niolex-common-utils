@@ -61,6 +61,10 @@
 		<appender-ref ref="CONSOLE" />
 	</logger>
 
+    <logger name="org.apache.niolex.zookeeper" level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
     <root level="WARN">
         <appender-ref ref="CONSOLE-WARN" />
         <appender-ref ref="FILE" />

@@ -70,7 +70,7 @@ public class Volume {
     private boolean initialized;
 
     /**
-     * Construct a new volume with this file.
+     * Construct a new volume by the specified file name.
      *
      * @param fileName the file name
      */
@@ -84,7 +84,7 @@ public class Volume {
      * with the specified page size.
      *
      * @param pageSize the page size
-     * @throws IOException
+     * @throws IOException if I/O error occurs
      */
     public synchronized void initialize(Page.Size pageSize) throws IOException {
         if (initialized) return;
@@ -121,6 +121,8 @@ public class Volume {
 
     /**
      * Read volume file header from the volume.
+     * 
+     * @throws IOException if I/O error occurs
      */
     private void readHeader() throws IOException {
         int header = file.readInt();
@@ -136,6 +138,7 @@ public class Volume {
      * Write volume file header to the volume.
      *
      * @param s the page size
+     * @throws IOException if I/O error occurs
      */
     private void writeHeader(Page.Size s) throws IOException {
         int header = Page.Size.encode(s) << VOL_PAGE_SIZE_SHIFT | VOL_HEADER_MARK;
@@ -148,12 +151,14 @@ public class Volume {
     /**
      * Close the internal file of this volume.
      *
-     * @throws IOException
+     * @throws IOException if I/O error occurs
      */
     public synchronized void close() throws IOException {
         if (file != null) {
-            file.close();
             channel.close();
+            file.close();
+            channel = null;
+            file = null;
         }
 
         initialized = false;
@@ -161,12 +166,13 @@ public class Volume {
 
     /**
      * Get the page which contains this address.
-     * <br><b>This method is not synchronized, users must use some method to avoid concurrent read
+     * <br>
+     * <b>This method is not synchronized, users must use some technique to avoid concurrent read
      * and write on the same page.</b>
      *
      * @param address the page address
      * @return the page with data read from the volume
-     * @throws IOException
+     * @throws IOException if I/O error occurs
      */
     public Page readPage(int address) throws IOException {
         return readPage(new Page(pageSize, address));
@@ -174,12 +180,13 @@ public class Volume {
 
     /**
      * Get the page which contains this address.
-     * <br><b>This method is not synchronized, users must use some method to avoid concurrent read
+     * <br>
+     * <b>This method is not synchronized, users must use some technique to avoid concurrent read
      * and write on the same page.</b>
      *
      * @param p the page to be fulfilled with data from volume
      * @return the page with data read from the volume
-     * @throws IOException
+     * @throws IOException if I/O error occurs
      */
     public Page readPage(Page p) throws IOException {
         Check.isTrue(initialized);
@@ -200,11 +207,12 @@ public class Volume {
 
     /**
      * Write the page data into disk.
-     * <br><b>This method is not synchronized, users must use some method to avoid concurrent read
+     * <br>
+     * <b>This method is not synchronized, users must use some technique to avoid concurrent read
      * and write on the same page.</b>
      *
      * @param p the page to be written
-     * @throws IOException
+     * @throws IOException if I/O error occurs
      */
     public void writePage(Page p) throws IOException {
         Check.isTrue(initialized);
