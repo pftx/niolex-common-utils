@@ -17,6 +17,7 @@
  */
 package org.apache.niolex.commons.storage;
 
+import org.apache.niolex.commons.test.Check;
 import org.apache.niolex.commons.util.Const;
 
 /**
@@ -88,6 +89,7 @@ public class Page {
         }
 
         private final int size;
+        private final long sizeMask;
 
         /**
          * Create a new Size.
@@ -96,6 +98,8 @@ public class Page {
          */
         private Size(int size) {
             this.size = size;
+            long t = size - 1;
+            this.sizeMask = ~t;
         }
 
         /**
@@ -105,10 +109,20 @@ public class Page {
             return size;
         }
 
+        /**
+         * Mask the data address to the buffer head address.
+         * 
+         * @param addr the data address
+         * @return the buffer head address
+         */
+        public long maskAddress(long addr) {
+            return addr & sizeMask;
+        }
+
     }
 
     private String fileName;
-    private int address;
+    private long address;
     private final Size size;
     private final byte[] buf;
 
@@ -127,10 +141,22 @@ public class Page {
      * @param size the page size
      * @param address the page address inside a volume
      */
-    public Page(Size size, int address) {
+    public Page(Size size, long address) {
+        this(size, new byte[size.size()], address);
+    }
+
+    /**
+     * Construct a new page with the specified size and buffer and address.
+     *
+     * @param size the page size
+     * @param buffer the byte buffer used to store page data
+     * @param address the page address inside a volume
+     */
+    public Page(Size size, byte[] buffer, long address) {
         super();
+        Check.eq(size.size, buffer.length, "The buffer size not equals the page size.");
         this.size = size;
-        this.buf = new byte[size.size()];
+        this.buf = buffer;
         setAddress(address);
     }
 
@@ -151,7 +177,7 @@ public class Page {
     /**
      * @return the address
      */
-    public int getAddress() {
+    public long getAddress() {
         return address;
     }
 
@@ -160,8 +186,8 @@ public class Page {
      *
      * @param address the address to set
      */
-    public void setAddress(int address) {
-        this.address = (address / size.size()) * size.size();
+    public void setAddress(long address) {
+        this.address = size.maskAddress(address);
     }
 
     /**

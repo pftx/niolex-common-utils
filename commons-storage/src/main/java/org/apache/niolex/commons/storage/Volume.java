@@ -23,6 +23,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import org.apache.niolex.commons.file.FileChannelUtil;
 import org.apache.niolex.commons.test.Check;
 
 /**
@@ -174,7 +175,7 @@ public class Volume {
      * @return the page with data read from the volume
      * @throws IOException if I/O error occurs
      */
-    public Page readPage(int address) throws IOException {
+    public Page readPage(long address) throws IOException {
         return readPage(new Page(pageSize, address));
     }
 
@@ -190,15 +191,14 @@ public class Volume {
      */
     public Page readPage(Page p) throws IOException {
         Check.isTrue(initialized);
-        final int addr = p.getAddress() + VOL_HEADER_SIZE;
+        final long addr = p.getAddress() + VOL_HEADER_SIZE;
 
         byte[] data = p.getBuf();
         Check.eq(data.length, pageSize.size(), "Invalid page size.");
 
-        int dataPos = channel.read(ByteBuffer.wrap(data), addr);
-
+        int dataPos = FileChannelUtil.readFromPosition(channel, ByteBuffer.wrap(data), addr);
         if (dataPos != data.length) {
-            throw new EOFException("File maybe corrupted, pos - " + file.getFilePointer());
+            throw new EOFException("File maybe corrupted, pos - " + addr);
         }
 
         p.setFileName(fileName);
@@ -220,8 +220,11 @@ public class Volume {
         byte[] data = p.getBuf();
         Check.eq(data.length, pageSize.size(), "Invalid page size.");
 
-        final int addr = p.getAddress() + VOL_HEADER_SIZE;
-        channel.write(ByteBuffer.wrap(data), addr);
+        final long addr = p.getAddress() + VOL_HEADER_SIZE;
+        int dataPos = FileChannelUtil.writeToPosition(channel, ByteBuffer.wrap(data), addr);
+        if (dataPos != data.length) {
+            throw new IOException("File maybe corrupted, pos - " + addr);
+        }
     }
 
     /**
