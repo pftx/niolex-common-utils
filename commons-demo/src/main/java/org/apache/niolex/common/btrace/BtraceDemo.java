@@ -66,6 +66,9 @@ public class BtraceDemo {
 			String line = scan.nextLine();
 			int k = bd.inputHashCode(line);
 			System.out.println("Your hash code :" + k + ", tst: " + bd.getTotalSleepTime());
+            if (k == 0) {
+                break;
+            }
 		}
         scan.close();
 	}
