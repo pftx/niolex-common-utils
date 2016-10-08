@@ -133,9 +133,9 @@
 
 	<distributionManagement>
 		<repository>
-			<id>local-release</id>
-			<name>Local nexus releases</name>
-			<url>http://local-repo:8081/nexus/content/repositories/releases</url>
+			<id>bintray-repo-niolex</id>
+			<name>niolex-common-utils</name>
+			<url>https://api.bintray.com/maven/niolex/niolex-common-utils/niolex-parent/;publish=1</url>
 		</repository>
 		<snapshotRepository>
 			<id>local-snapshot</id>
