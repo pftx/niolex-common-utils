@@ -47,7 +47,7 @@ public class MultiPartMail {
         // email.setSSL(true);
         // Set email from
         email.setFrom("commons.email@live.com", "Commons Email");
-        email.setBounceAddress("lei.gao@renren-inc.com");
+        email.setBounceAddress("let.it@live.com");
         // Set email content
         email.addTo("jiyun.xie@live.com", "Jiyun Xie");
         email.setSubject("Foll Alert The Git test");
