@@ -16,47 +16,48 @@
  * under the License.
  */
 package org.apache.niolex.common.mail;
+
 import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
+
 /**
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2012-11-25$
  */
 public class MultiPartMail {
 
-	public static void main(String[] args) throws IOException, EmailException {
-		 // Create the attachment
-		  EmailAttachment attachment = new EmailAttachment();
-		  attachment.setURL(new URL("http://www.apache.org/images/asf_logo_wide.gif"));
-		  attachment.setDisposition(EmailAttachment.ATTACHMENT);
-		  attachment.setDescription("Apache logo");
-		  attachment.setName("Apache_logo.gif");
+    public static void main(String[] args) throws IOException, EmailException {
+        // Create the attachment
+        EmailAttachment attachment = new EmailAttachment();
+        attachment.setURL(new URL("http://www.apache.org/images/asf_logo_wide.gif"));
+        attachment.setDisposition(EmailAttachment.ATTACHMENT);
+        attachment.setDescription("Apache logo");
+        attachment.setName("Apache_logo.gif");
 
-		  // Create the email message
-		  MultiPartEmail email = new MultiPartEmail();
-		  email.setDebug(true);
-		  // Set email host
-		  email.setHostName("10.7.2.18");
-//		  email.setAuthentication("nice_to_meet", "asf_logo_me");
-//		  email.setSSL(true);
-		  // Set email from
-		  email.setFrom("lei.gao@renren-inc.com", "Commons Email");
-		  email.setBounceAddress("lei.gao@renren-inc.com");
-		  // Set email content
-		  email.addTo("jiyun.xie@renren-inc.com", "Jiyun Xie");
-		  email.addTo("lei.gao@renren-inc.com", "Lei Gao");
-		  email.setSubject("Foll Alert The Git test");
-		  email.setMsg("Here is Apache's logo, please enjoy it!");
+        // Create the email message
+        MultiPartEmail email = new MultiPartEmail();
+        email.setDebug(true);
+        // Set email host
+        email.setHostName("10.7.2.18");
+        // email.setAuthentication("nice_to_meet", "asf_logo_me");
+        // email.setSSL(true);
+        // Set email from
+        email.setFrom("commons.email@live.com", "Commons Email");
+        email.setBounceAddress("lei.gao@renren-inc.com");
+        // Set email content
+        email.addTo("jiyun.xie@live.com", "Jiyun Xie");
+        email.setSubject("Foll Alert The Git test");
+        email.setMsg("Here is Apache's logo, please enjoy it!");
 
-		  // add the attachment
-		  email.attach(attachment);
+        // add the attachment
+        email.attach(attachment);
 
-		  // send the email
-		  email.send();
-	}
+        // send the email
+        email.send();
+    }
 
 }
