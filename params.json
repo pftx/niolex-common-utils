@@ -1,0 +1,6 @@
+{
+  "name": "Niolex-common-utils",
+  "tagline": "Common Utils for Faster Java development.",
+  "body": "niolex-common-utils\r\n===================\r\n\r\n`Common Utils` is a pure Java utility framework for faster Java development.\r\n\r\n* commons-core Common utilities, including codec collection compress concurrent config file event net stream etc...\r\n* commons-demo Useless, please skip.\r\n* commons-framework Currenty only contain the SEDA framework.\r\n* commons-notify The notify framework based on Zookeeper.\r\n* commons-remote A remote server for developers to look inside the JVM and change the status etc...\r\n* commons-seri Utilities for faster usage of Json Smile Kryo protocol_buffer protocol_stuff\r\n* commons-spring Currently useless, only a email sender helper.\r\n* commons-storage Under development.\r\n\r\nVery Common, Very Base\r\n======================\r\nFor now, commons-core and commons-seri are ready for use!!!\r\nOther projects a stabilizing...\r\n\r\nLicense\r\n==================================\r\nThis framework is under the Apache License, version 2.0\r\nhttp://www.apache.org/licenses/LICENSE-2.0\r\n\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
