@@ -3,18 +3,41 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.niolex</groupId>
+		<groupId>io.github.pftx</groupId>
 		<artifactId>niolex-parent</artifactId>
 		<version>2.0.0</version>
-		<relativePath>../</relativePath>
+		<relativePath>../sona.pom.xml</relativePath>
 	</parent>
 
 	<artifactId>commons-core</artifactId>
-	<version>2.2.2-SNAPSHOT</version>
+	<version>2.2.1</version>
 	<packaging>jar</packaging>
 
 	<name>commons-core</name>
-	<url>http://maven.apache.org</url>
+	<description>Common utilities, including codec collection compress concurrent config file event net stream etc...</description>
+	<url>https://github.com/pftx/niolex-common-utils</url>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Lex</name>
+			<email>pftx@live.com</email>
+			<organization>PFTX</organization>
+			<organizationUrl>https://github.com/pftx</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:pftx/niolex-common-utils.git</connection>
+		<developerConnection>scm:git:ssh://github.com:pftx/niolex-common-utils.git</developerConnection>
+		<url>https://github.com/pftx/niolex-common-utils/tree/master</url>
+	</scm>
 
 	<dependencies>
 		<dependency>
@@ -66,11 +89,4 @@
 		</dependency>
 	</dependencies>
 
-	<distributionManagement>
-		<repository>
-			<id>bintray-repo-niolex</id>
-			<name>niolex-common-utils</name>
-			<url>https://api.bintray.com/maven/niolex/niolex-common-utils/commons-core/;publish=1</url>
-		</repository>
-	</distributionManagement>
 </project>

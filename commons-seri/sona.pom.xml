@@ -3,22 +3,45 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.niolex</groupId>
+		<groupId>io.github.pftx</groupId>
 		<artifactId>niolex-parent</artifactId>
 		<version>2.0.0</version>
-		<relativePath>../</relativePath>
+		<relativePath>../sona.pom.xml</relativePath>
 	</parent>
 
 	<artifactId>commons-seri</artifactId>
-	<version>2.2.2-SNAPSHOT</version>
+	<version>2.2.1</version>
 	<packaging>jar</packaging>
 
 	<name>commons-seri</name>
-	<url>http://maven.apache.org</url>
+	<description>Utilities for faster usage of Json Smile Kryo protocol_buffer protocol_stuff</description>
+	<url>https://github.com/pftx/niolex-common-utils</url>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Lex</name>
+			<email>pftx@live.com</email>
+			<organization>PFTX</organization>
+			<organizationUrl>https://github.com/pftx</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:pftx/niolex-common-utils.git</connection>
+		<developerConnection>scm:git:ssh://github.com:pftx/niolex-common-utils.git</developerConnection>
+		<url>https://github.com/pftx/niolex-common-utils/tree/master</url>
+	</scm>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.niolex</groupId>
+			<groupId>io.github.pftx</groupId>
 			<artifactId>commons-core</artifactId>
 			<version>${commons.core.version}</version>
 		</dependency>
