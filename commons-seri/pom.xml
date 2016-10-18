@@ -73,4 +73,11 @@
 		</dependency>
 	</dependencies>
 
+	<distributionManagement>
+		<repository>
+			<id>bintray-repo-niolex</id>
+			<name>niolex-common-utils</name>
+			<url>https://api.bintray.com/maven/niolex/niolex-common-utils/commons-seri/;publish=1</url>
+		</repository>
+	</distributionManagement>
 </project>
