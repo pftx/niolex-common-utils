@@ -27,29 +27,13 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.niolex.commons.codec.Base64Util;
 
-
 /**
- * TripleDESCoder is a TripleDES Encode utility class
+ * TripleDESCoder is a TripleDES Encoding utility class.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2011-4-21$
  */
 public class TripleDESCoder extends BaseCoder {
-
-    /**
-     * ALGORITHM 算法 <br>
-     * 可替换为以下任意一种算法，同时key值的size相应改变。
-     *
-     * <pre>
-     * DES                  key size must be equal to 56
-     * DESede(TripleDES)    key size must be equal to 112 or 168
-     * AES                  key size must be equal to 128, 192 or 256, but 192 and 256 bits may not be available
-     * Blowfish             key size must be multiple of 8, and can only range from 32 to 448 (inclusive)
-     * RC2                  key size must be between 40 and 1024 bits
-     * RC4(ARCFOUR)         key size must be between 40 and 1024 bits
-     * </pre>
-     *
-     */
 
     public static final String ALGORITHM = "DESede";
     public static final String TRANSFORMATION = ALGORITHM + "/CBC/ISO10126Padding";
@@ -58,13 +42,13 @@ public class TripleDESCoder extends BaseCoder {
     private IvParameterSpec ivParam;
 
     /**
-     * 初始化密钥和IV参数
+     * Init the secret key and IV parameter by the specified Base64 encoded key.
      *
-     * @param key the base 64 encoded key
+     * @param key the Base64 encoded key
      */
     @Override
     public void initKey(String key) {
-        byte[] keyData = Base64Util.base64toByte(key);
+        byte[] keyData = Base64Util.base64ToByte(key);
         ivParam = new IvParameterSpec(keyData, 0, 8);
         try {
             // DESedeKey always length 24 bytes
@@ -77,30 +61,29 @@ public class TripleDESCoder extends BaseCoder {
     }
 
     /**
-     * 加密
+     * Encryption.
      *
      * @param data the data to be encrypted
-     * @return the object
+     * @return the encrypted data
      * @throws Exception if necessary
      */
     @Override
-    public byte[] encrypt(byte[] data) throws Exception {
+    public byte[] internalEncrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParam);
 
         return cipher.doFinal(data);
     }
 
-
     /**
-     * 解密
+     * Decryption.
      *
      * @param data the data to be decrypted
-     * @return the object
+     * @return the decrypted data
      * @throws Exception if necessary
      */
     @Override
-    public byte[] decrypt(byte[] data) throws Exception {
+    public byte[] internalDecrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParam);
 

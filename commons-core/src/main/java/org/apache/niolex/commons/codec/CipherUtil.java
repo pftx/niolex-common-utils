@@ -21,16 +21,17 @@ import static org.apache.niolex.commons.codec.StringUtil.strToUtf8Byte;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.ShortBufferException;
 
-import org.apache.commons.lang.ArrayUtils;
-
 /**
- * 有些Cipher无法处理大数据，只能处理固定的块大小。使用本工具可以解决这个问题。
+ * Some kind of Cipher process data in blocks and can not handle data larger than one block.
+ * (i.e. RSA) So we need to split data into blocks and then encrypt/decrypt it. This class
+ * helps users in this situation.
  *
  * @see RSAUtil
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
@@ -108,7 +109,7 @@ public abstract class CipherUtil {
             }
         }
         if (outputIndex != OUTPUT_SIZE)
-            return ArrayUtils.subarray(output, 0, outputIndex);
+            return Arrays.copyOfRange(output, 0, outputIndex);
         return output;
     }
 

@@ -17,23 +17,57 @@
  */
 package org.apache.niolex.commons.coder;
 
+import java.nio.charset.Charset;
+
 import org.apache.niolex.commons.codec.Base64Util;
+import org.apache.niolex.commons.codec.StringUtil;
 
 /**
- * 实现加密解密的核心基类，通过操作二进制的加密和解密方法包装出操作字符串的加密和解密方法。
+ * The base coder, implementing encoding and decoding string by the corresponding binary methods.
+ * The encrypted data is then encoded using Base64. So the input and output are both string.
+ * <b>
+ * We will catch all the checked exceptions and wrap it into {@link CoderException}.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2011-7-14$
  */
 public abstract class BaseCoder implements Coder {
 
+    public static final Charset ENC = StringUtil.UTF_8;
+
+    protected abstract byte[] internalEncrypt(byte[] data) throws Exception;
+
+    protected abstract byte[] internalDecrypt(byte[] data) throws Exception;
+
     @Override
-    public String decode(String str) throws Exception {
-        return new String(decrypt(Base64Util.base64toByte(str)), ENC);
+    public byte[] encrypt(byte[] data) throws CoderException {
+        try {
+            return internalEncrypt(data);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CoderException("Failed to encrypt data.", e);
+        }
     }
 
     @Override
-    public String encode(String str) throws Exception {
+    public byte[] decrypt(byte[] data) throws CoderException {
+        try {
+            return internalDecrypt(data);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CoderException("Failed to decrypt data.", e);
+        }
+    }
+
+    @Override
+    public String decode(String str) throws CoderException {
+        return new String(decrypt(Base64Util.base64ToByte(str)), ENC);
+    }
+
+    @Override
+    public String encode(String str) throws CoderException {
         return Base64Util.byteToBase64(encrypt(str.getBytes(ENC)));
     }
 

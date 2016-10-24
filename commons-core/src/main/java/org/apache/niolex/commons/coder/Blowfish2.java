@@ -1,12 +1,11 @@
 /**
  * Blowfish2.java
- *
- * 该算法来自互联网，具体实现者不详，应该为多人合作而成。
  */
 package org.apache.niolex.commons.coder;
 
 /**
- * Blowfish2的实现。
+ * The Blowfish2 algorithm implementation. This implementation came from the Internet, their are multiple
+ * authors and the names are not known and No copy right reserved.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0

@@ -17,7 +17,8 @@
  */
 package org.apache.niolex.commons.coder;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
@@ -37,7 +38,7 @@ public class TripleDESCoderTest {
     private static TripleDESCoder coder = null;
 
     static {
-        String key = KeyUtil.genKey("I am a gmail good man", "TripleDES", 64, 168);
+        String key = KeyUtil.genKey("Iama gmai good man+", "TripleDES", 64, 168);
         System.out.println("key => " + key);
         coder = new TripleDESCoder();
         coder.initKey(key);

@@ -25,8 +25,6 @@ import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.niolex.commons.codec.Base64Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * DES encoding utility class.
@@ -35,21 +33,19 @@ import org.slf4j.LoggerFactory;
  * @version 1.0.0, $Date: 2010-8-31$
  */
 public class DESCoder extends BaseCoder {
-    private static final Logger LOG = LoggerFactory.getLogger(DESCoder.class);
-
     private static final String ALGORITHM = "DES";
     public static final String TRANSFORMATION = "DES/CBC/PKCS5Padding";
     private IvParameterSpec ivParam;
     private Key key;
 
     /**
-     * 初始化密钥和IV参数
+     * Init the secret key and IV parameter by the specified Base64 encoded key.
      *
      * @param key the base 64 encoded key
      */
     @Override
     public void initKey(String key) {
-        byte[] keyData = Base64Util.base64toByte(key);
+        byte[] keyData = Base64Util.base64ToByte(key);
         ivParam = new IvParameterSpec(keyData, 0, 8);
         initKey(keyData);
     }
@@ -65,14 +61,14 @@ public class DESCoder extends BaseCoder {
     }
 
     /**
-     * 加密
+     * Encryption.
      *
      * @param data the data to be encrypted
-     * @return the object
+     * @return the encrypted data
      * @throws Exception if necessary
      */
     @Override
-    public byte[] encrypt(byte[] data) throws Exception {
+    public byte[] internalEncrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.ENCRYPT_MODE, key, ivParam);
 
@@ -80,14 +76,14 @@ public class DESCoder extends BaseCoder {
     }
 
     /**
-     * 解密
+     * Decryption.
      *
      * @param data the data to be decrypted
-     * @return the object
+     * @return the decrypted data
      * @throws Exception if necessary
      */
     @Override
-    public byte[] decrypt(byte[] data) throws Exception {
+    public byte[] internalDecrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, key, ivParam);
 
@@ -95,14 +91,15 @@ public class DESCoder extends BaseCoder {
     }
 
     /**
-     * Encode multiple string together into a Base64 string
+     * Encode multiple string together into a Base64 string.
      *
      * @param args the arguments to be encoded
-     * @return the object
+     * @return the encoded string
      */
     public String encodes(String... args) {
         if (args == null || args.length == 0)
             return "";
+
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < args.length; ++i) {
@@ -111,17 +108,13 @@ public class DESCoder extends BaseCoder {
                 sb.append(']').append(i).append('[');
         }
         sb.append("]");
-        try {
-            String encoded = Base64Util.byteToBase64(encrypt(sb.toString().getBytes(ENC)));
 
-            int i = encoded.indexOf('=');
-            int l = encoded.length();
-            i = i < 0 ? l : i;
-            return encoded.substring(0, i) + '-' + (l - i);
-        } catch (Exception e) {
-            LOG.warn("Error occured when encode the string array: {}.", e.toString());
-        }
-        return "";
+        String encoded = encode(sb.toString());
+
+        int i = encoded.indexOf('=');
+        int l = encoded.length();
+        i = i < 0 ? l : i;
+        return encoded.substring(0, i) + '-' + (l - i);
     }
 
     /**
@@ -133,17 +126,14 @@ public class DESCoder extends BaseCoder {
     public String decodes(String arg) {
         if (arg == null || arg.length() < 3)
             return "";
-        try {
-            StringBuilder sb = new StringBuilder();
-            sb.append(arg.substring(0, arg.length() - 2));
-            int i = arg.charAt(arg.length() - 1) - '0';
-            while (i-- > 0)
-                sb.append('=');
-            return new String(decrypt(Base64Util.base64toByte(sb.toString())), ENC);
-        } catch (Exception e) {
-            LOG.warn("Error occured when decode the string: {}.", e.toString());
-        }
-        return "";
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(arg.substring(0, arg.length() - 2));
+        int i = arg.charAt(arg.length() - 1) - '0';
+        
+        while (i-- > 0)
+            sb.append('=');
+        return decode(sb.toString());
     }
 
 }

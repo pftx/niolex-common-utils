@@ -20,14 +20,14 @@ package org.apache.niolex.commons.codec;
 import java.security.MessageDigest;
 
 /**
- * MD5Util是一个用来产生MD5签名和校验MD5签名的工具类
+ * MD5Util is a utility for generating MD5 signatures and verifying MD5 signatures.
  *
- * 目前提供的功能如下：
- * 1. public static final String md5(String... plainTexts)
- * 对输入的字符串列表产生MD5签名
- *
- * 2. public static final boolean md5Check(String md5, String... plainTexts)
- * 根据输入的MD5签名和字符串列表进行校验
+ * The summary of current functionality:
+ * 1. Generates an MD5 signature on the input string list.
+ * public static final String md5(String... plainTexts)
+ * 
+ * 2. Validate the input string list against the provided MD5 signature.
+ * public static final boolean md5Check(String md5, String... plainTexts)
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -35,10 +35,10 @@ import java.security.MessageDigest;
 public abstract class MD5Util extends CipherUtil {
 
     /**
-     * 对输入的字符串列表产生MD5签名
+     * Generates an MD5 signature on the input string list.
      *
-     * @param plainTexts 用来产生MD5签名的字符串列表
-     * @return 输入字符串列表的MD5签名
+     * @param plainTexts the list of strings used to generate MD5 signature
+     * @return the generated MD5 signature
      */
     public static final String md5(String... plainTexts) {
         MessageDigest md = getInstance("MD5");
@@ -49,16 +49,15 @@ public abstract class MD5Util extends CipherUtil {
     }
 
     /**
-     * 根据输入的MD5签名和字符串列表进行校验
+     * Validate the input string list against the provided MD5 signature.
      *
-     * @param md5 用来进行校验的MD5签名
-     * @param plainTexts 用来进行校验的字符串列表
-     * @return 如果通过返回true，失败返回false
-     * @throws IllegalStateException 当用户的JDK不支持MD5哈希算法时
+     * @param md5 the MD5 signature used to validate the strings
+     * @param plainTexts the list of strings to be validated
+     * @return true if the plain texts are valid, false otherwise
+     * @throws IllegalStateException if the user's JDK does not support the MD5 hash algorithm
      */
     public static final boolean md5Check(String md5, String... plainTexts) {
         String digest = md5(plainTexts);
-
         return digest.equalsIgnoreCase(md5);
     }
 

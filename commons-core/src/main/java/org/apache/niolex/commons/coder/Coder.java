@@ -17,61 +17,69 @@
  */
 package org.apache.niolex.commons.coder;
 
-import java.nio.charset.Charset;
-
-import org.apache.niolex.commons.codec.StringUtil;
-
 /**
- * 加密解密框架的基础接口。定义了操作二进制和操作字符串的方法。
  * The basic interface for the Coder framework.
+ * <br>
+ * <br>
+ * ALGORITHM <br>
+ * The common algorithms supported by JDK:
  *
+ * <pre>
+ * DES                  key size must be equal to 56
+ * DESede(TripleDES)    key size must be equal to 112 or 168
+ * AES                  key size must be equal to 128, 192 or 256, but 192 and 256 bits may not be available
+ * Blowfish             key size must be multiple of 8, and can only range from 32 to 448 (inclusive)
+ * RC2                  key size must be between 40 and 1024 bits
+ * RC4(ARCFOUR)         key size must be between 40 and 1024 bits
+ * </pre>
+ * 
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2011-7-13$
  */
 public interface Coder {
 
-    Charset ENC = StringUtil.UTF_8;
-
     /**
-     * 初始化密钥和IV参数
+     * Init the secret KEY and possibly IV parameter for this coder.
      *
-     * @param key the base 64 encoded key
+     * @param key the Base64 encoded key
+     * @throws CoderException if necessary
      */
-    public void initKey(String key);
+    public void initKey(String key) throws CoderException;
 
     /**
-     * 加密
+     * Encrypt the data.
      *
      * @param data the data to be encrypted
      * @return the encrypted data
-     * @throws Exception if necessary
+     * @throws CoderException if necessary
      */
-    public byte[] encrypt(byte[] data) throws Exception;
+    public byte[] encrypt(byte[] data) throws CoderException;
 
     /**
-     * 解密
+     * Decrypt the data.
      *
      * @param data the data to be decrypted
      * @return the decrypted data
-     * @throws Exception if necessary
+     * @throws CoderException if necessary
      */
-    public byte[] decrypt(byte[] data) throws Exception;
+    public byte[] decrypt(byte[] data) throws CoderException;
 
     /**
-     * 加密字符串
+     * Encode the string.
      *
      * @param str the input string
      * @return the encoded string
-     * @throws Exception if necessary
+     * @throws CoderException if necessary
      */
-    public String encode(String str) throws Exception;
+    public String encode(String str) throws CoderException;
 
     /**
-     * 解密字符串
+     * Decode the string.
      *
      * @param str the input string
      * @return the decoded string
-     * @throws Exception if necessary
+     * @throws CoderException if necessary
      */
-    public String decode(String str) throws Exception;
+    public String decode(String str) throws CoderException;
+
 }

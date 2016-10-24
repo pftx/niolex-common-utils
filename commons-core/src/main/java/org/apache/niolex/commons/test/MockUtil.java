@@ -20,7 +20,7 @@ package org.apache.niolex.commons.test;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * Generate mock DATAs, for unit test like things.

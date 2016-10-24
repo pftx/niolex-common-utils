@@ -35,7 +35,6 @@ import java.security.spec.X509EncodedKeySpec;
 
 import org.apache.niolex.commons.internal.IgnoreException;
 
-
 /**
  * This class is for generate RSA Keys and transform keys to XML description file or base64 string.
  * The XML description file can be used to exchange RSA Keys, especially for .Net projects.
@@ -80,10 +79,9 @@ public abstract class RSAHelper {
      * @throws IllegalArgumentException If the parameter key is damaged
      */
     public static PrivateKey getPrivateKey(String key) {
-        // 对密钥解密
-        byte[] keyBytes = Base64Util.base64toByte(key);
-
-        // 取得私钥
+        // Decode from Base64.
+        byte[] keyBytes = Base64Util.base64ToByte(key);
+        // Create Key specification.
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
 
         try {
@@ -102,10 +100,9 @@ public abstract class RSAHelper {
      * @throws IllegalArgumentException If the parameter key is damaged
      */
     public static PublicKey getPublicKey(String key) {
-        // 对密钥解密
-        byte[] keyBytes = Base64Util.base64toByte(key);
-
-        // 取得私钥
+        // Decode from Base64.
+        byte[] keyBytes = Base64Util.base64ToByte(key);
+        // Create Key specification.
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
 
         try {
@@ -116,7 +113,7 @@ public abstract class RSAHelper {
     }
 
     /**
-     * Encode the (public/private) key into base64 string specification.
+     * Encode the (public/private) key into base64 string key specification.
      *
      * @param key the key to be encoded
      * @return the base64 encoded key specification
@@ -179,8 +176,8 @@ public abstract class RSAHelper {
      */
     public static PublicKey decodePublicKeyFromXml(String xml) {
         xml = xml.replaceAll("[\r\n ]", "");
-        BigInteger modulus = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Modulus>", "</Modulus>")));
-        BigInteger publicExponent = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Exponent>",
+        BigInteger modulus = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<Modulus>", "</Modulus>")));
+        BigInteger publicExponent = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<Exponent>",
                 "</Exponent>")));
 
         RSAPublicKeySpec rsaPubKey = new RSAPublicKeySpec(modulus, publicExponent);
@@ -199,15 +196,15 @@ public abstract class RSAHelper {
      */
     public static PrivateKey decodePrivateKeyFromXml(String xml) {
         xml = xml.replaceAll("\r", "").replaceAll("\n", "");
-        BigInteger modulus = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Modulus>", "</Modulus>")));
-        BigInteger publicExponent = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Exponent>",
+        BigInteger modulus = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<Modulus>", "</Modulus>")));
+        BigInteger publicExponent = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<Exponent>",
                 "</Exponent>")));
-        BigInteger privateExponent = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<D>", "</D>")));
-        BigInteger primeP = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<P>", "</P>")));
-        BigInteger primeQ = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<Q>", "</Q>")));
-        BigInteger primeExponentP = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<DP>", "</DP>")));
-        BigInteger primeExponentQ = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<DQ>", "</DQ>")));
-        BigInteger crtCoefficient = new BigInteger(1, Base64Util.base64toByte(getMiddleString(xml, "<InverseQ>",
+        BigInteger privateExponent = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<D>", "</D>")));
+        BigInteger primeP = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<P>", "</P>")));
+        BigInteger primeQ = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<Q>", "</Q>")));
+        BigInteger primeExponentP = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<DP>", "</DP>")));
+        BigInteger primeExponentQ = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<DQ>", "</DQ>")));
+        BigInteger crtCoefficient = new BigInteger(1, Base64Util.base64ToByte(getMiddleString(xml, "<InverseQ>",
                 "</InverseQ>")));
 
         RSAPrivateCrtKeySpec rsaPriKey = new RSAPrivateCrtKeySpec(modulus, publicExponent, privateExponent, primeP,

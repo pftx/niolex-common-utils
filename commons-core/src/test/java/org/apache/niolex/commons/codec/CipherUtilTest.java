@@ -17,15 +17,19 @@
  */
 package org.apache.niolex.commons.codec;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.security.MessageDigest;
+import java.security.PrivateKey;
+import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NullCipher;
 import javax.crypto.ShortBufferException;
 
+import org.apache.niolex.commons.test.MockUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -69,4 +73,18 @@ public class CipherUtilTest {
         assertEquals("2be34a726839515b64c04cf9397381d82c2cc010", Base16Util.byteToBase16(md.digest()));
     }
 
+    @Test
+    public void testProcessCBC() throws Exception {
+        String privateKey = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBALWqzlFYBqhtrZ8bhTxpcGrZeLLf7IU5kqxCgyJw2vwu8haBSxYRjE8LX6pY8C3hDPd12czdmh55L2h3o/zAyO16vsL8gzJqPZ4CpLJuE9S6SL3wS11b3MzgMNhX9pn1QEMBVDj8A76I0cfBwYx8z526dTjvIN8uwx0l3tmXvj5NAgMBAAECgYBua0VAF/rkANYY8UdIcuYLa+d7AbPnPhkybrL6ChJwWbB3kVqsLTpVCRq6lZhWqoWRG6aoaME2aH4yRxX7mMoG1F7X1VxMzjVJkWUmPfU/dbn2Pb0b9/TevRnwT3vvf3u5yJR4aNPgaZJwfPhVlagqabZdasRoLh7/sgGUVkhggQJBAP6bvcCrlaeDcA+WyW+yvi6Mqn3gKfs7JvSEy0W1NKKuwecyINMzb0Tv/0AS0f6iBf241vOnu678z6CABF4/9t0CQQC2qQCa8XjiOu7PNvC5aVf51xF05AluHz8bXdEJfOaD5EJCmAfADqCkqYLLOVxuo9fP20z1t03fiYvXIpzgXRYxAkEA5aXD+UzKp1U+dlEjT8SBFat6/B58v0YTVOmSD0XqO/I0ozvrr5PtANkX+cr/7hRmIvvdpdfcyXDuNW5CgmBfYQJAEkwpsFvCFT98DqvdP2WLF47ww7nYK/zbUH18ZCvr14h1DsC1/go5E2WboYn0dWzaQIsiUXb0SRE5PerMtjj88QI/DfYJSATb49TVcpOD2fO+XXBnE817d+wHHMh+oR4Bvi/t+CBaWLQwJg350Ou9g+LQzduoW+e5ooBeS0dkETPP";
+
+        byte[] data = MockUtil.randByteArray(200);
+        PrivateKey privateKey2 = RSAUtil.getPrivateKey(privateKey);
+        byte[] out1 = RSAUtil.encrypt(data, privateKey2);
+        byte[] data2 = Arrays.copyOfRange(data, 117, 200);
+        byte[] out2 = RSAUtil.encrypt(data2, privateKey2);
+        byte[] out3 = Arrays.copyOfRange(out1, 128, 256);
+
+        assertEquals(256, out1.length);
+        assertArrayEquals(out3, out2);
+    }
 }

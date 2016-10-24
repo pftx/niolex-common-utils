@@ -17,52 +17,103 @@
  */
 package org.apache.niolex.commons.codec;
 
-import org.apache.commons.codec.binary.Base64;
-
+import com.fasterxml.jackson.core.Base64Variant;
+import com.fasterxml.jackson.core.Base64Variants;
 
 /**
- * Base64Util是一个用来实现在byte数组和64进制字符串之间相互转换的工具类
- * Base64Util自己并不实现Base64的功能，而是封装了apache的commons库里的相关功能。
- * 本类依赖于commons-codec-1.3.jar+
- *
- * 目前提供的功能如下：
- * 1. public static final String byteToBase64(byte[] bytes)
- * 将byte数组转换成64进制字符串
- *
- * 2. public static final byte[] base64toByte(String str)
- * 将64进制字符串转换成byte数组
+ * This utility encodes bytes into base64 string and vice versa. We use the MINE encoding without
+ * line feeds as the default method. And we support standard MIME and URL file name safe encoding
+ * too. Please choose the correct methods as your requirements.
  *
  * @version 1.0.0
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @see org.apache.commons.codec.binary.Base64
  */
 public abstract class Base64Util {
 
+    public static final Base64Variant DEFAULT = Base64Variants.MIME_NO_LINEFEEDS;
+    public static final Base64Variant URL_SAFE = Base64Variants.MODIFIED_FOR_URL;
+
     /**
-     * 将byte数组转换成64进制字符串
-     * Encode Byte Array into Base64 String
+     * Encode Byte Array into Base64 String using MINE encoding without line feeds.
      *
-     * @param data 待转换的byte数组
-     * @return 转换后的64进制字符串
-     * @throws IllegalStateException 假如用户的环境不支持ASCII编码
+     * @param data the bytes to be encoded
+     * @return the encoded base64 string
+     * @throws IllegalArgumentException if the parameter is null
      */
     public static String byteToBase64(byte[] data) {
         if (data == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return StringUtil.asciiByteToStr(Base64.encodeBase64(data));
+        return DEFAULT.encode(data);
     }
 
     /**
-     * 将64进制字符串转换成byte数组
-     * Decode Base64 String into Byte Array
+     * Encode Byte Array into Base64 String using MINE encoding with line feeds every 76 chars.
      *
-     * @param str 待转换的64进制字符串
-     * @return 转换后的byte数组
-     * @throws IllegalStateException 假如用户的环境不支持ASCII编码
+     * @param data the bytes to be encoded
+     * @return the encoded base64 string
+     * @throws IllegalArgumentException if the parameter is null
      */
-    public static byte[] base64toByte(String str) {
+    public static String byteToBase64LF(byte[] data) {
+        if (data == null)
+            throw new IllegalArgumentException("The parameter should not be null!");
+        String s = DEFAULT.encode(data);
+        if (s.length() <= 76) {
+            return s;
+        }
+
+        // We need add CR LF every 76 chars.
+        StringBuilder sb = new StringBuilder();
+        sb.append(s.substring(0, 76));
+        for (int i = 76; i < s.length(); i += 76) {
+            int e = i + 76;
+            if (e > s.length()) {
+                e = s.length();
+            }
+
+            sb.append('\r');
+            sb.append('\n');
+            sb.append(s.substring(i, e));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Encode Byte Array into Base64 String using URL and file name safe encoding without line feeds.
+     *
+     * @param data the bytes to be encoded
+     * @return the encoded base64 string
+     * @throws IllegalArgumentException if the parameter is null
+     */
+    public static String byteToBase64URL(byte[] data) {
+        if (data == null)
+            throw new IllegalArgumentException("The parameter should not be null!");
+        return URL_SAFE.encode(data);
+    }
+
+    /**
+     * Decode Base64 using MINE encoding with or without line feeds String into Byte Array.
+     *
+     * @param str the encoded base64 string
+     * @return the original bytes
+     * @throws IllegalArgumentException if the parameter is null or if input is not valid base64 encoded data
+     */
+    public static byte[] base64ToByte(String str) {
         if (str == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return Base64.decodeBase64(StringUtil.strToAsciiByte(str));
+        return DEFAULT.decode(str);
     }
+
+    /**
+     * Decode Base64 using URL and file name safe encoding with or without line feeds String into Byte Array.
+     *
+     * @param str the encoded base64 string
+     * @return the original bytes
+     * @throws IllegalArgumentException if the parameter is null or if input is not valid base64 encoded data
+     */
+    public static byte[] base64ToByteURL(String str) {
+        if (str == null)
+            throw new IllegalArgumentException("The parameter should not be null!");
+        return URL_SAFE.decode(str);
+    }
+
 }

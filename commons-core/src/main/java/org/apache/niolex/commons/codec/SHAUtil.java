@@ -20,14 +20,14 @@ package org.apache.niolex.commons.codec;
 import java.security.MessageDigest;
 
 /**
- * SHAUtil是一个用来产生SHA签名和校验SHA签名的工具类
+ * SHAUtil is a utility for generating SHA signatures and verifying SHA signatures.
  *
- * 目前提供的功能如下：
- * 1. public static final String sha1(String... plainTexts)
- * 对输入的字符串列表产生SHA签名
- *
- * 2. public static final boolean sha1Check(String md5, String... plainTexts)
- * 根据输入的SHA签名和字符串列表进行校验
+ * The summary of current functionality:
+ * 1. Generates a SHA signature on the input string list.
+ * public static final String sha1(String... plainTexts)
+ * 
+ * 2. Validate the input string list against the provided SHA signature.
+ * public static final boolean sha1Check(String sha1, String... plainTexts)
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -35,11 +35,11 @@ import java.security.MessageDigest;
 public abstract class SHAUtil extends CipherUtil {
 
     /**
-     * 对输入的字符串列表产生SHA签名
+     * Generates a SHA signature on the input string list.
      *
-     * @param plainTexts 用来产生SHA签名的字符串列表
-     * @return 输入字符串列表的SHA签名
-     * @throws IllegalStateException 当用户的JDK不支持SHA哈希算法时
+     * @param plainTexts the list of strings used to generate SHA signature
+     * @return the generated SHA signature
+     * @throws IllegalStateException if the user's JDK does not support the SHA hash algorithm
      */
     public static final String sha1(String... plainTexts) {
         MessageDigest md = getInstance("SHA");
@@ -50,12 +50,12 @@ public abstract class SHAUtil extends CipherUtil {
     }
 
     /**
-     * 根据输入的SHA签名和字符串列表进行校验
+     * Validate the input string list against the provided SHA signature.
      *
-     * @param sha1 用来进行校验的SHA签名
-     * @param plainTexts 用来进行校验的字符串列表
-     * @return 如果通过返回true，失败返回false
-     * @throws IllegalStateException 当用户的JDK不支持SHA哈希算法时
+     * @param sha1 the SHA signature used to validate the strings
+     * @param plainTexts the list of strings to be validated
+     * @return true if the plain texts are valid, false otherwise
+     * @throws IllegalStateException if the user's JDK does not support the SHA hash algorithm
      */
     public static final boolean sha1Check(String sha1, String... plainTexts) {
         return sha1.equalsIgnoreCase(sha1(plainTexts));

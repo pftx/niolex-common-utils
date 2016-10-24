@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.coder;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,12 +38,12 @@ public class BaseCoderTest {
 		}
 
 		@Override
-		public byte[] encrypt(byte[] data) throws Exception {
+        public byte[] internalEncrypt(byte[] data) throws Exception {
 			return data;
 		}
 
 		@Override
-		public byte[] decrypt(byte[] data) throws Exception {
+        public byte[] internalDecrypt(byte[] data) throws Exception {
 			return data;
 		}
 

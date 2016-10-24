@@ -17,8 +17,12 @@
  */
 package org.apache.niolex.commons.net;
 
-import static java.net.HttpURLConnection.*;
-import static org.apache.niolex.commons.util.Const.*;
+import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
+import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
+import static java.net.HttpURLConnection.HTTP_NOT_AUTHORITATIVE;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static org.apache.niolex.commons.util.Const.K;
+import static org.apache.niolex.commons.util.Const.M;
 import static org.apache.niolex.commons.util.DateTimeUtil.SECOND;
 
 import java.io.ByteArrayOutputStream;
@@ -28,8 +32,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.niolex.commons.codec.IntegerUtil;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.stream.StreamUtil;

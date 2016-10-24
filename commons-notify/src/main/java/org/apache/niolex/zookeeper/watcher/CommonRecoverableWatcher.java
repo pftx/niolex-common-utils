@@ -81,7 +81,7 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
     @Override
     public void process(WatchedEvent event) {
         if (type == Type.CHILDREN && event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
-            childrenCHanged();
+            childrenChanged();
         } else if (type == Type.DATA && event.getType() == Watcher.Event.EventType.NodeDataChanged) {
             dataChanged();
         }
@@ -94,7 +94,7 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
     @Override
     public void reconnected() {
         if (type == Type.CHILDREN) {
-            childrenCHanged();
+            childrenChanged();
         } else {
             dataChanged();
         }
@@ -115,7 +115,7 @@ public class CommonRecoverableWatcher implements RecoverableWatcher {
     /**
      * Children changed.
      */
-    private void childrenCHanged() {
+    private void childrenChanged() {
         try {
             List<String> list = zkc.zooKeeper().getChildren(path, this);
             listn.onChildrenChange(list);

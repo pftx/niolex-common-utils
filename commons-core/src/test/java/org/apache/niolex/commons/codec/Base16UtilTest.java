@@ -18,14 +18,13 @@
 package org.apache.niolex.commons.codec;
 
 import static org.junit.Assert.assertArrayEquals;
-import org.junit.Assert;
 
-import org.apache.niolex.commons.codec.Base16Util;
 import org.apache.niolex.commons.file.FileUtil;
 import org.apache.niolex.commons.file.FileUtilTest;
+import org.apache.niolex.commons.test.MockUtil;
 import org.apache.niolex.commons.util.SystemUtil;
+import org.junit.Assert;
 import org.junit.Test;
-
 
 public class Base16UtilTest extends Base16Util {
 
@@ -58,7 +57,7 @@ public class Base16UtilTest extends Base16Util {
 
     @Test
     public void testBase16() {
-        byte[] a = Base16Util.base16toByte("acdefb");
+        byte[] a = Base16Util.base16ToByte("acdefb");
         String s = Base16Util.byteToBase16(a);
         System.out.println("as => " + s);
         Assert.assertEquals("acdefb", s);
@@ -66,7 +65,7 @@ public class Base16UtilTest extends Base16Util {
 
     @Test
     public void testBase16Max() {
-        byte[] a = Base16Util.base16toByte("ffffffff");
+        byte[] a = Base16Util.base16ToByte("ffffffff");
         String s = Base16Util.byteToBase16(a);
         System.out.println("fs => " + s);
         Assert.assertEquals("ffffffff", s);
@@ -119,7 +118,7 @@ public class Base16UtilTest extends Base16Util {
 
     public void second(String s) {
         for (int i = 0; i < 10; ++i) {
-            Base16Util.base16toByte(s);
+            Base16Util.base16ToByte(s);
         }
     }
 
@@ -143,7 +142,7 @@ public class Base16UtilTest extends Base16Util {
         b[3] = (byte) (k & 0xFF);
         String s = Base16Util.byteToBase16(b);
         Assert.assertEquals(Integer.toHexString(k), trim0(s));
-        byte[] o = Base16Util.base16toByte(s);
+        byte[] o = Base16Util.base16ToByte(s);
         Assert.assertArrayEquals(b, o);
     }
 
@@ -156,7 +155,7 @@ public class Base16UtilTest extends Base16Util {
 
     @Test
     public void testBase16_empty() {
-        byte[] a = Base16Util.base16toByte("");
+        byte[] a = Base16Util.base16ToByte("");
         String s = Base16Util.byteToBase16(a);
         System.out.println("ps => " + s);
         System.out.println("pa.length => " + a.length);
@@ -173,7 +172,7 @@ public class Base16UtilTest extends Base16Util {
     @Test
     public void testBase16_invalid() {
         try {
-            Base16Util.base16toByte(null);
+            Base16Util.base16ToByte(null);
         } catch (IllegalArgumentException e) {
             return;
         }
@@ -187,26 +186,37 @@ public class Base16UtilTest extends Base16Util {
 
     @Test(expected=IllegalArgumentException.class)
     public void testBase16_invalid_20() {
-        Base16Util.base16toByte("1中2文");
+        Base16Util.base16ToByte("1中2文");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testBase16_invalid_21() {
-        Base16Util.base16toByte("中1文2");
+        Base16Util.base16ToByte("中1文2");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testBase16_invalid_22() {
-        Base16Util.base16toByte("12中文");
+        Base16Util.base16ToByte("12中文");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testBase16_invalid_23() {
-        Base16Util.base16toByte("中文");
+        Base16Util.base16ToByte("中文");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testBase16_invalid_3() {
-    	assertArrayEquals(new byte[0], Base16Util.base16toByte("abc"));
+        assertArrayEquals(new byte[0], Base16Util.base16ToByte("abc"));
+    }
+
+    @Test
+    public void testBase16Correct() {
+        for (int i = 0; i < 1000; ++i) {
+            int len = MockUtil.randInt(10, 57);
+            byte[] in = MockUtil.randByteArray(len);
+            String s = Base16Util.byteToBase16(in);
+            byte[] out = base16ToByte(s);
+            assertArrayEquals(in, out);
+        }
     }
 }

@@ -17,10 +17,8 @@
  */
 package org.apache.niolex.commons.coder;
 
-import org.junit.Assert;
-
 import org.apache.niolex.commons.codec.Base64Util;
-import org.apache.niolex.commons.coder.Blowfish2Coder;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -58,7 +56,7 @@ public class Blowfish2CoderTest {
         String s = "http://www.w3.org/2000/09/xmldsig#";
         String r2 = "ASIAtgWTSPDQBH8CUeTTYOJNwX/OVpHHnhjO/JbLH74a8yzhpgU4Eq3AZg==";
         System.out.println("r => " + r2);
-        byte[] data = Base64Util.base64toByte(r2);
+        byte[] data = Base64Util.base64ToByte(r2);
         data = coder.decrypt(data);
         String r = new String(data);
         System.out.println("r => " + r);

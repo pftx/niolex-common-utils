@@ -25,7 +25,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.niolex.commons.codec.Base64Util;
 
-
 /**
  * AES encoding utility class.
  *
@@ -41,26 +40,26 @@ public class AESCoder extends BaseCoder {
     private IvParameterSpec ivParam;
 
     /**
-     * 初始化密钥和IV参数
+     * Init the secret key and IV parameter by the specified Base64 encoded key.
      *
      * @param key the base 64 encoded key
      */
     @Override
     public void initKey(String key) {
-        byte[] keyData = Base64Util.base64toByte(key);
+        byte[] keyData = Base64Util.base64ToByte(key);
         ivParam = new IvParameterSpec(keyData, 0, 16);
         secretKey = new SecretKeySpec(keyData, 16, keyData.length - 16, ALGORITHM);
     }
 
     /**
-     * 加密
+     * Encryption.
      *
      * @param data the data to be encrypted
      * @return the encrypted data
      * @throws Exception if necessary
      */
     @Override
-    public byte[] encrypt(byte[] data) throws Exception {
+    public byte[] internalEncrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParam);
 
@@ -68,14 +67,14 @@ public class AESCoder extends BaseCoder {
     }
 
     /**
-     * 解密
+     * Decryption.
      *
      * @param data the data to be decrypted
      * @return the decrypted data
      * @throws Exception if necessary
      */
     @Override
-    public byte[] decrypt(byte[] data) throws Exception {
+    public byte[] internalDecrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParam);
 

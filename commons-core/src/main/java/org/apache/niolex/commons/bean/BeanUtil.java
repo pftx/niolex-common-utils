@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.niolex.commons.concurrent.ConcurrentUtil;
 import org.apache.niolex.commons.test.ObjToStringUtil;
 

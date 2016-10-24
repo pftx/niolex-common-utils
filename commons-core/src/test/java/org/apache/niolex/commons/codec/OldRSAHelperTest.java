@@ -75,7 +75,7 @@ public class OldRSAHelperTest {
     public void testWork() throws Exception {
         String key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCVhipL6FX03wgyuKA2RlWiBLqQN+SGqlClYtC6DPN2omqG34+jBqFvkU8Khd" +
         		"BFBenx0xLZliTLTRT/xzhISDTwgdB3IE2Ae5nu6IE2D18qJaoBEoNFTRVOipyQ5Q8GuMzdmQKtXVVGlwTAStCXXCjKp1sCJSTNVYFTSMZfKH7TNwIDAQAB";
-        byte[] keyBytes = Base64Util.base64toByte(key);
+        byte[] keyBytes = Base64Util.base64ToByte(key);
         byte[] as = RSAUtil.encryptByPublicKey(keyBytes, key);
         // 构造X509EncodedKeySpec对象
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);

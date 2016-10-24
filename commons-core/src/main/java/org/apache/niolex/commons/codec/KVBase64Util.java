@@ -17,22 +17,12 @@
  */
 package org.apache.niolex.commons.codec;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.niolex.commons.bean.Pair;
 
 /**
- * KVBase64Util是一个用来实现在byte数组和64进制字符串之间相互转换的工具类
- * KVBase64Util自己并不实现Base64的功能，而是封装了apache的commons库里的相关功能。
- * 本类依赖于commons-codec-1.3.jar+
+ * KVBase64Util translate two bytes array(the key and value) into one base64 string.
+ * This is very useful if user want to pass their KV data into some kind of storage.
  *
- * 目前提供的功能如下：<pre>
- * 1. public static String kvToBase64(byte[] key, byte[] value)
- * 将KV的byte数组转换成64进制字符串
- *
- * 2. public static Pair&lt;byte[], byte[]&gt; base64toKV(String str)
- * 将64进制字符串转换成KV byte数组
- * </pre>
- * @see org.apache.commons.codec.binary.Base64
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.5
  * @since 2012-12-27
@@ -40,13 +30,12 @@ import org.apache.niolex.commons.bean.Pair;
 public class KVBase64Util {
 
     /**
-     * 将KV的byte数组转换成64进制字符串
-     * Encode KV Byte Array into Base64 String
+     * Encode two Bytes Array(the KV) into Base64 String using URL and file name safe encoding.
      *
-     * @param key 待转换的key数组，系统限制长度最大63字节
-     * @param value 待转换的value数组，系统限制key+value总长度最大512字节
-     * @return 转换后的64进制字符串
-     * @throws IllegalStateException 假如用户的环境不支持ASCII编码
+     * @param key the key array, 63 bytes maximum
+     * @param value the value array, the maximum total size of key+value is 512 bytes
+     * @return the encoded Base64 string using URL and file name safe encoding
+     * @throws IllegalArgumentException any precondition not fulfilled
      */
     public static String kvToBase64(byte[] key, byte[] value) {
         if (key == null || value == null)
@@ -55,27 +44,27 @@ public class KVBase64Util {
         if (key.length > 63 || size > 512) {
             throw new IllegalArgumentException("The KV is too large!");
         }
+
         byte data[] = new byte[(size + 3) / 3 * 3];
         int start = data.length - size;
         int first = (key.length << 2) + start;
         data[0] = (byte) first;
         System.arraycopy(key, 0, data, start, key.length);
         System.arraycopy(value, 0, data, start + key.length, value.length);
-        return StringUtil.asciiByteToStr(Base64.encodeBase64URLSafe(data));
+        return Base64Util.byteToBase64URL(data);
     }
 
     /**
-     * 将64进制字符串转换成KV byte数组
-     * Decode Base64 String into KV Byte Array
+     * Decode Base64 String using URL and file name safe encoding into KV Bytes Array.
      *
-     * @param str 待转换的64进制字符串
-     * @return 转换后的KV byte数组,其中a是Key，b是Value
-     * @throws IllegalStateException 假如用户的环境不支持ASCII编码
+     * @param str the Base64 string using URL and file name safe encoding
+     * @return the decoded two Bytes Array(the KV) a is key, b is value
+     * @throws IllegalArgumentException any precondition not fulfilled or invalid encoding
      */
     public static Pair<byte[], byte[]> base64toKV(String str) {
         if (str == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        byte data[] = Base64.decodeBase64(StringUtil.strToAsciiByte(str));
+        byte data[] = Base64Util.base64ToByteURL(str);
         int first = data[0] & 0xff;
         int start = first & 0x3;
         first = first >> 2;

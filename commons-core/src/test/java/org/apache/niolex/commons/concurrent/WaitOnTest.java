@@ -20,10 +20,10 @@ package org.apache.niolex.commons.concurrent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.security.DigestException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.niolex.commons.bean.One;
 import org.apache.niolex.commons.util.Runner;
 import org.junit.Before;
@@ -59,9 +59,9 @@ public class WaitOnTest {
      * Test method for {@link org.apache.niolex.commons.concurrent.WaitOn#waitForResult(long)}.
      * @throws Exception
      */
-    @Test(expected=DecoderException.class)
+    @Test(expected = DigestException.class)
     public void testWaitForResultEx() throws Throwable {
-        waitOn.release(new BlockerException(new DecoderException("I am here to meet you!")));
+        waitOn.release(new BlockerException(new DigestException("I am here to meet you!")));
 
         try {
             assertEquals("Direct-Result", waitOn.waitForResult(5));

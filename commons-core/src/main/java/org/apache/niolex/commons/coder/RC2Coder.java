@@ -26,9 +26,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.niolex.commons.codec.Base64Util;
 
-
 /**
- * RC2算法的加密解密实现工具类。
+ * RC2 encoding utility class.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2011-7-12$
@@ -42,25 +41,24 @@ public class RC2Coder extends BaseCoder {
     private AlgorithmParameterSpec ivParam;
 
     /**
-     * 初始化密钥和IV参数
+     * Init the secret key and IV parameter by the specified Base64 encoded key.
      *
      * @param key the base 64 encoded key
      */
     @Override
     public void initKey(String key) {
-        byte[] keyData = Base64Util.base64toByte(key);
+        byte[] keyData = Base64Util.base64ToByte(key);
         ivParam = new RC2ParameterSpec(128, keyData, 0);
         secretKey = new SecretKeySpec(keyData, keyData.length - 16, 16, ALGORITHM);
     }
 
     /**
-     * 更安全的初始化密钥和IV参数
+     * Using more secured method to init the secret key and IV parameter by the specified Base64 encoded key.
      *
      * @param key the base 64 encoded key
-     * @throws Exception if necessary
      */
-    public void secureInitKey(String key) throws Exception {
-        byte[] keyData = Base64Util.base64toByte(key);
+    public void secureInitKey(String key) {
+        byte[] keyData = Base64Util.base64ToByte(key);
         byte[] ivData = new byte[8];
         ivData[0] = keyData[3];
         ivData[1] = keyData[5];
@@ -78,16 +76,15 @@ public class RC2Coder extends BaseCoder {
         secretKey = new SecretKeySpec(realKey, ALGORITHM);
     }
 
-
     /**
-     * 加密
+     * Encryption.
      *
      * @param data the data to be encrypted
      * @return the object
      * @throws Exception if necessary
      */
     @Override
-    public byte[] encrypt(byte[] data) throws Exception {
+    public byte[] internalEncrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParam);
 
@@ -95,14 +92,14 @@ public class RC2Coder extends BaseCoder {
     }
 
     /**
-     * 解密
+     * Decryption.
      *
      * @param data the data to be decrypted
      * @return the object
      * @throws Exception if necessary
      */
     @Override
-    public byte[] decrypt(byte[] data) throws Exception {
+    public byte[] internalDecrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParam);
 

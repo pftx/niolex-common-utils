@@ -4,20 +4,43 @@
 
 	<groupId>org.apache.niolex</groupId>
 	<artifactId>niolex-parent</artifactId>
-	<version>2.0.0</version>
+	<version>2.1.0</version>
 	<packaging>pom</packaging>
 
 	<name>niolex-parent</name>
-	<url>http://maven.apache.org</url>
+	<description>The base pom, define workflow and dependencies version.</description>
+	<url>https://github.com/pftx/niolex-common-utils</url>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Lex</name>
+			<email>xiejiyun@foxmail.com</email>
+			<organization>PFTX</organization>
+			<organizationUrl>https://github.com/pftx</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:pftx/niolex-common-utils.git</connection>
+		<developerConnection>scm:git:ssh://github.com:pftx/niolex-common-utils.git</developerConnection>
+		<url>https://github.com/pftx/niolex-common-utils/tree/master</url>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- commons version -->
 		<commons.codec.version>1.10</commons.codec.version>
-		<commons.lang.version>2.6</commons.lang.version>
-		<commons.core.version>[2.1.2,3.0.0)</commons.core.version>
-		<commons.seri.version>[2.0.0,3.0.0)</commons.seri.version>
-		<commons.remote.version>[2.0.0,3.0.0)</commons.remote.version>
+		<commons.lang.version>3.5</commons.lang.version>
+		<commons.core.version>[3.0.0,4.0.0)</commons.core.version>
+		<commons.seri.version>[3.0.0,4.0.0)</commons.seri.version>
+		<commons.remote.version>[3.0.0,4.0.0)</commons.remote.version>
 		<commons.notify.version>[1.0.0,2.0.0)</commons.notify.version>
 		<commons.framework.version>[1.0.0,2.0.0)</commons.framework.version>
 		<!-- dependencies version -->

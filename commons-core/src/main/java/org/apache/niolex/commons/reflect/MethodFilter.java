@@ -20,7 +20,7 @@ package org.apache.niolex.commons.reflect;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.niolex.commons.reflect.MethodUtil.Filter;
 
 /**

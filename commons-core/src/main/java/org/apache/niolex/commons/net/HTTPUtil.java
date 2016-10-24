@@ -17,8 +17,10 @@
  */
 package org.apache.niolex.commons.net;
 
-import static java.net.HttpURLConnection.*;
-import static org.apache.niolex.commons.net.DownloadUtil.*;
+import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
+import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
+import static org.apache.niolex.commons.net.DownloadUtil.commonDownload;
+import static org.apache.niolex.commons.net.DownloadUtil.unusualDownload;
 import static org.apache.niolex.commons.util.Const.M;
 import static org.apache.niolex.commons.util.DateTimeUtil.SECOND;
 
@@ -34,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.CharEncoding;
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.niolex.commons.bean.Triple;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.collection.CollectionUtil;

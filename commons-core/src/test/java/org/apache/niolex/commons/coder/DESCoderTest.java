@@ -141,7 +141,7 @@ public class DESCoderTest {
         assertEquals("", s);
     }
 
-    @Test
+    @Test(expected = CoderException.class)
     public void testEncodesError() {
         DESCoder c = new DESCoder();
         final String b = "[郑控电器]0[20100831 12:13:14]1[宽容-00]2[123##$$%]";
@@ -166,7 +166,7 @@ public class DESCoderTest {
         assertEquals("", s);
     }
 
-    @Test
+    @Test(expected = CoderException.class)
     public void testDecodesError() {
         DESCoder c = new DESCoder();
         final String b = "[郑控电器]0[20100831 12:13:14]1[宽容-00]2[123##$$%]";

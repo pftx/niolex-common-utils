@@ -17,7 +17,11 @@
  */
 package org.apache.niolex.commons.codec;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -472,7 +476,7 @@ public class StringUtilTest extends StringUtil {
 
     @Test
     public void testContainsAnyEmpty() throws Exception {
-        assertFalse(StringUtil.containsAny("txt/html"));
+        assertFalse(StringUtil.containsAny("txt/html", ""));
     }
 
     @Test
@@ -612,7 +616,7 @@ public class StringUtilTest extends StringUtil {
         assertEquals("a", trim("000a", '0', TrimMode.LEFT));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testTrimStringCharTrimModeEx() throws Exception {
         trim(null, '0', TrimMode.LEFT);
     }

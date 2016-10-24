@@ -27,7 +27,6 @@ import org.apache.niolex.commons.codec.Base64Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Generate Key for Coders, encoded in Base64.
  *
@@ -40,9 +39,11 @@ public abstract class KeyUtil {
     public static final int DEFAULT_IV = 128;
 
     /**
-     * ALGORITHM 算法 <br>
-     * 可替换为以下任意一种算法，同时key值的size相应改变。
+     * Get the KeyGenerator of this algorithm.
      *
+     * <br>
+     * The algorithms supported by the default JDK:
+     * 
      * <pre>
      * DES                  key size must be equal to 64
      * DESede(TripleDES)    key size must be equal to 112 or 168
@@ -51,12 +52,6 @@ public abstract class KeyUtil {
      * RC2                  key size must be between 40 and 1024 bits
      * RC4(ARCFOUR)         key size must be between 40 and 1024 bits
      * </pre>
-     *
-     * </code>
-     */
-
-    /**
-     * Get the KeyGenerator of this algorithm
      *
      * @param algorithm the algorithm you want
      * @return the KeyGenerator or null if algorithm not found
@@ -70,43 +65,43 @@ public abstract class KeyUtil {
     }
 
     /**
-     * 生成密钥，IV长度固定为128bits，密钥长度为默认
+     * Generate Base64 encoded KEY for the specified algorithm, IV defaults to 128bits.
      *
-     * @param algorithm 需要生成密钥的算法名称
-     * @return 采用Base64加密的密钥
+     * @param algorithm the algorithm to be used
+     * @return the generated KEY
      */
     public static String genKey(String algorithm) {
         return genKey(null, algorithm, DEFAULT_IV, 0);
     }
 
     /**
-     * 生成密钥
+     * Generate Base64 encoded KEY for the specified algorithm.
      *
-     * @param algorithm 需要生成密钥的算法名称
-     * @param ivSize IV长度，单位为bits；注意必须是8的整数倍
-     * @param keySize 密钥长度，单位为bits；如果不想指定可以设置为0
-     * @return 采用Base64加密的密钥
+     * @param algorithm the algorithm to be used
+     * @param ivSize The IV size, the unit is bits, must be multiple of 8
+     * @param keySize the KEY size, the unit is bits set to 0 to use the default size
+     * @return the generated KEY
      */
     public static String genKey(String algorithm, int ivSize, int keySize) {
         return genKey(null, algorithm, ivSize, keySize);
     }
 
     /**
-     * 生成密钥
+     * Generate Base64 encoded KEY for the specified algorithm.
      *
-     * @param seed 密钥的初始化种子
-     * @param algorithm 需要生成密钥的算法名称
-     * @param ivSize IV长度，单位为bits；注意必须是8的整数倍
-     * @param keySize 密钥长度，单位为bits；如果不想指定可以设置为0
-     * @return 采用Base64加密的密钥
+     * @param seed the seed to init the secure random generator
+     * @param algorithm the algorithm to be used
+     * @param ivSize The IV size, the unit is bits, must be multiple of 8
+     * @param keySize the KEY size, the unit is bits set to 0 to use the default size
+     * @return the generated KEY
      */
     public static String genKey(String seed, String algorithm, final int ivSize, final int keySize) {
-        LOG.info("Start to generate key for {}; the current seed is set to: {}。", algorithm, seed);
+        LOG.info("Start to generate key for {}; the current seed is set to: {}.", algorithm, seed);
         SecureRandom secureRandom = null;
         final int ivLength = ivSize / 8;
 
         if (seed != null) {
-            secureRandom = new SecureRandom(Base64Util.base64toByte(seed));
+            secureRandom = new SecureRandom(Base64Util.base64ToByte(seed));
         } else {
             secureRandom = new SecureRandom();
             secureRandom.setSeed(System.nanoTime());
@@ -122,14 +117,15 @@ public abstract class KeyUtil {
         SecretKey key = kg.generateKey();
         byte[] secretKey = key.getEncoded();
         final int keyLength = secretKey.length;
-        LOG.info("Secret key for {} generated; key class: {}, size: {}。", algorithm, key.getClass().getName(), keyLength * 8);
+        LOG.info("Secret key for {} generated; key class: {}, key length: {}bits.", algorithm, key.getClass().getName(),
+                keyLength * 8);
 
         byte[] keyBytes = new byte[ivLength + keyLength];
         secureRandom.nextBytes(keyBytes);
         System.arraycopy(secretKey, 0, keyBytes, ivLength, keyLength);
 
         String curKey = Base64Util.byteToBase64(keyBytes);
-        LOG.debug("The generate key is: {}", curKey);
+        LOG.debug("The generate key is: {}.", curKey);
         return curKey;
     }
 

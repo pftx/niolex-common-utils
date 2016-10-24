@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.niolex.commons.collection.CollectionUtil;
 
 /**

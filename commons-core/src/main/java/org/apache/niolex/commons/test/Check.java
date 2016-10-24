@@ -17,7 +17,7 @@
  */
 package org.apache.niolex.commons.test;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * A collect of utility methods check status, insure methods working as expected.

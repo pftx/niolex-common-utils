@@ -20,7 +20,7 @@ package org.apache.niolex.commons.codec;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.niolex.commons.util.Const;
 
 /**

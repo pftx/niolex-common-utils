@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.niolex.commons.reflect.FieldUtil.Filter;
 import org.apache.niolex.commons.test.Check;
 

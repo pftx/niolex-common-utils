@@ -23,8 +23,8 @@ import java.util.List;
 /**
  * A Mutable One is to store a mutable data, when data changed, Application can notify
  * users about it.
- *
- * If user want to be notified when data change, please add a listener to it.
+ * <br>
+ * If user want to be notified when data changed, please add a listener to it.
  *
  * @param <T> the data type
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>

@@ -23,17 +23,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.codec.CharEncoding;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.niolex.commons.internal.IgnoreException;
 import org.apache.niolex.commons.test.Check;
 
 import com.google.common.collect.Lists;
 
-
 /**
- * Translate between string and bytes.
+ * Translate between string and bytes, and some other utilities.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -149,7 +148,7 @@ public abstract class StringUtil extends StringUtils {
 	}
 
 	/**
-     * Join the string array into one single string by the separator.
+     * Join the string array into one single string by the specified separator.
      *
      * @param sep the separator
      * @param strs the string array
@@ -160,7 +159,7 @@ public abstract class StringUtil extends StringUtils {
 	}
 
     /**
-     * Concatenates all the parameters into one string by the specified separator.
+     * Concatenates the parameters into one string by the specified separator.
      *
      * @param sep the separator
      * @param arr the string array
@@ -319,25 +318,6 @@ public abstract class StringUtil extends StringUtils {
                     return true;
                 }
 	        }
-	    }
-	    return false;
-	}
-
-	/**
-	 * Test whether the target contains any of the string in the argument array.
-	 *
-	 * @param target the target need be checked
-	 * @param args the argument array
-	 * @return true if found, false otherwise
-	 */
-	public static final boolean containsAny(String target, String ...args) {
-	    if (ArrayUtils.isEmpty(args)) {
-            return false;
-        }
-	    for (String s : args) {
-	        if (target.contains(s)) {
-                return true;
-            }
 	    }
 	    return false;
 	}

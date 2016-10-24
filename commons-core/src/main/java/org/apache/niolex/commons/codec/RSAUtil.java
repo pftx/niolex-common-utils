@@ -42,7 +42,7 @@ public abstract class RSAUtil extends RSAHelper {
      * @throws IllegalArgumentException If the parameter key is damaged
      */
     public static String sign(byte[] data, String privateKey) {
-        // 取私钥匙对象
+        // Retrieve the private key.
         PrivateKey priKey = getPrivateKey(privateKey);
         return sign(data, priKey);
     }
@@ -57,7 +57,7 @@ public abstract class RSAUtil extends RSAHelper {
      */
     public static String sign(byte[] data, PrivateKey privateKey) {
         try {
-            // 用私钥对信息生成数字签名
+            // The Signature class is used to provide applications the functionality of a digital signature algorithm.
             Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
             signature.initSign(privateKey);
             signature.update(data);
@@ -79,7 +79,7 @@ public abstract class RSAUtil extends RSAHelper {
      * @throws IllegalArgumentException If the parameter key is damaged
      */
     public static boolean verify(byte[] data, String publicKey, String sign) {
-        // 取公钥匙对象
+        // Retrieve the public key.
         PublicKey pubKey = getPublicKey(publicKey);
         return verify(data, pubKey, sign);
     }
@@ -99,8 +99,8 @@ public abstract class RSAUtil extends RSAHelper {
             signature.initVerify(publicKey);
             signature.update(data);
 
-            // 验证签名是否正常
-            return signature.verify(Base64Util.base64toByte(sign));
+            // Verify the signature.
+            return signature.verify(Base64Util.base64ToByte(sign));
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to verify the data.", e);
         }
