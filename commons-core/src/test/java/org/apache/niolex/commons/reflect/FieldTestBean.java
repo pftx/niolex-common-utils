@@ -10,7 +10,7 @@ public class FieldTestBean {
     protected int intLevel = 7;
     private Integer age;
     private long empno = 15;
-    private Long logno;
+    private Long logno = 77l;
     private short veridk;
     private Short dfijd;
     private byte resvered;
@@ -48,6 +48,22 @@ class FastBean {
     char chdier;
     double earned;
     float tax;
+
+    public static FastBean c() {
+        FastBean c = new FastBean();
+        strName = "Cxt-3";
+        c.intId = 101;
+        c.intLevel = 102;
+        c.age = 1003;
+        c.empno = 20110;
+        c.gender = true;
+        c.resvered = 3;
+        c.veridk = 401;
+        c.chdier = '^';
+        c.earned = 501.01;
+        c.tax = 601.01f;
+        return c;
+    }
 }
 
 class Super {

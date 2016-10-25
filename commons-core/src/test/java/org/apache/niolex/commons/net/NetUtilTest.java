@@ -18,7 +18,8 @@
 package org.apache.niolex.commons.net;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -157,7 +158,7 @@ public class NetUtilTest extends NetUtil {
         ipToInt("16.17.3.a2b");
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testIpToIntNull() throws Exception {
         ipToInt(null);
     }

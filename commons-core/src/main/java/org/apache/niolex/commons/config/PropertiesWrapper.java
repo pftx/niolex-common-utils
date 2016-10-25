@@ -301,8 +301,10 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * 从配置文件中读取双精度类型的配置
-     *
+     * CN://从配置文件中读取双精度类型的配置
+     * <br>
+     * EN://Read double configuration value from properties by this key.
+     * 
      * @param key 待读取的配置的键
      * @return 待读取的配置的值
      * @throws NullPointerException 如果配置不存在
@@ -313,8 +315,10 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * 从配置文件中读取双精度类型的配置
-     *
+     * CN://从配置文件中读取双精度类型的配置
+     * <br>
+     * EN://Read double configuration value from properties by this key.
+     * 
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值
      * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
@@ -324,8 +328,10 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * 从配置文件中读取双精度类型的配置
-     *
+     * CN://从配置文件中读取双精度类型的配置
+     * <br>
+     * EN://Read double configuration value from properties by this key.
+     * 
      * @param key 待读取的配置的键
      * @param defaultValue 待读取的配置的默认值
      * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>

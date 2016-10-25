@@ -18,9 +18,12 @@
 package org.apache.niolex.commons.reflect;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -41,14 +44,44 @@ public class FieldFilterTest {
     @Test
     public void testIsValid() throws Exception {
         FieldResult<Integer> find = FieldFilter.exactType(int.class).clazz(FastBean.class).find();
-        assertEquals(2, find.results().size());
+        assertEquals(3, find.results().size());
+    }
+
+    @Test
+    public void testExact() throws Exception {
+        FieldResult<? extends Integer> find = FieldFilter.t(int.class).clazz(FastBean.class).find();
+        System.out.println(find.results());
+        assertEquals(3, find.results().size());
     }
 
     @Test
     public void testAdd() throws Exception {
-        FieldResult<? extends Integer> find = FieldFilter.forType(int.class).clazz(FastBean.class).find();
-        System.out.println(find.results());
-        assertEquals(5, find.results().size());
+        FieldResult<? extends Integer> find = FieldFilter.to(int.class).clazz(FastBean.class).find();
+        List<Field> list = find.results();
+        FastBean f = FastBean.c();
+        System.out.println("Get");
+        for (Field fi : list) {
+            System.out.print("\t");
+            System.out.print(fi);
+            System.out.println("\t= " + TypeUtil.safeCast(fi.get(f), int.class));
+        }
+        assertEquals(6, find.results().size());
+    }
+
+    @Test
+    public void testSet() throws Exception {
+        FieldResult<? extends Integer> find = FieldFilter.setWith(int.class).clazz(FastBean.class).find();
+        List<Field> list = find.results();
+        FastBean f = FastBean.c();
+        System.out.println("Set");
+        int i = 6677;
+        for (Field fi : list) {
+            System.out.print("\t");
+            System.out.println(fi);
+            fi.set(f, i);
+            System.out.println("\t= " + fi.get(f));
+        }
+        assertEquals(6, find.results().size());
     }
 
     @Test

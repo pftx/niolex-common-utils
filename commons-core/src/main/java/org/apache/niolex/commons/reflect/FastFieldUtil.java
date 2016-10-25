@@ -18,6 +18,7 @@
 package org.apache.niolex.commons.reflect;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import com.esotericsoftware.reflectasm.FieldAccess;
 
@@ -37,7 +38,7 @@ import com.esotericsoftware.reflectasm.FieldAccess;
  */
 public abstract class FastFieldUtil {
     
-    private static final ConcurrentHashMap<Class<?>, FieldAccess> FIELD_ACCESS_MAP = new ConcurrentHashMap<Class<?>, FieldAccess>();
+    private static final ConcurrentMap<Class<?>, FieldAccess> FIELD_ACCESS_MAP = new ConcurrentHashMap<Class<?>, FieldAccess>();
 
     /**
      * En: Retrieve all the non-private fields defined in this class.<br>

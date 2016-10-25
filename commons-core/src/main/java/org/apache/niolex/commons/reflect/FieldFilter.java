@@ -22,7 +22,6 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.niolex.commons.reflect.FieldUtil.Filter;
 import org.apache.niolex.commons.test.Check;
 
@@ -67,52 +66,85 @@ public class FieldFilter<FT> implements Filter {
     }
 
     /**
-     * A short cut for method {@link #forType(Class)}.
+     * A short cut for method {@link #exactType(Class)}.
      *
-     * @param <QT> the filtered field type
-     * @param type the field type
+     * @param <ET> the exact field type
+     * @param type the exact field type
      * @return a newly created field filter
      */
-    public static final <QT> FieldFilter<QT> t(final Class<QT> type) {
-        return forType(type);
+    public static final <ET> FieldFilter<ET> t(final Class<ET> type) {
+        return exactType(type);
     }
 
     /**
-     * Create a new filter with this type as the filtered field type. Unlike {@link #exactType(Class)},
-     * we do widening of primitive classes and match sub classes too.
+     * Filter the fields exactly with this type, only consider auto boxing.
      *
-     * @param <QT> the filtered field type
-     * @param type the field type
+     * @param <ET> the exact field type
+     * @param type the exact field type
      * @return a newly created field filter
      */
-    public static final <QT> FieldFilter<QT> forType(final Class<QT> type) {
+    public static final <ET> FieldFilter<ET> exactType(final Class<ET> type) {
         // Step 1. Create a new field filter.
-        FieldFilter<QT> e = new FieldFilter<QT>();
+        FieldFilter<ET> e = new FieldFilter<ET>();
         // Step 2. Add filter.
-        e.add(new Filter(){
+        e.filterList.add(new Filter() {
             @Override
             public boolean isValid(Field f) {
-                return ClassUtils.isAssignable(f.getType(), type);
+                return TypeUtil.typeMatches(f.getType(), type);
             }});
         return e;
     }
 
     /**
-     * Filter the fields exactly with this type.
+     * A short cut for method {@link #retrieveAs(Class)}.
      *
-     * @param <E> the exact field type
+     * @param <ET> the filtered field type, the type try to assign into
      * @param type the field type
      * @return a newly created field filter
      */
-    public static final <E> FieldFilter<E> exactType(final Class<E> type) {
+    public static final <QT> FieldFilter<QT> to(final Class<QT> type) {
+        return retrieveAs(type);
+    }
+
+    /**
+     * Create a new filter using the specified type as the filtered field type. Unlike {@link #exactType(Class)},
+     * we do widening of primitive classes and match sub classes too.<br>
+     * In short, retrieve the field value and assign it to a variable of the specified type should work without
+     * any class cast exception.
+     *
+     * @param <QT> the filtered field type, the type try to assign into
+     * @param type the field type
+     * @return a newly created field filter
+     */
+    public static final <QT> FieldFilter<QT> retrieveAs(final Class<QT> type) {
         // Step 1. Create a new field filter.
-        FieldFilter<E> e = new FieldFilter<E>();
+        FieldFilter<QT> e = new FieldFilter<QT>();
         // Step 2. Add filter.
-        e.filterList.add(new Filter(){
+        e.add(new Filter() {
             @Override
             public boolean isValid(Field f) {
-                return type.equals(f.getType());
+                return TypeUtil.isAssignable(f.getType(), type);
             }});
+        return e;
+    }
+
+    /**
+     * Create a new filter and want to assign value of the specified type into the field.
+     * 
+     * @param <ST> the value type, try to assign a value of this type into the field
+     * @param type the value type
+     * @return a newly created field filter
+     */
+    public static final <ST> FieldFilter<ST> setWith(final Class<ST> type) {
+        // Step 1. Create a new field filter.
+        FieldFilter<ST> e = new FieldFilter<ST>();
+        // Step 2. Add filter.
+        e.add(new Filter() {
+            @Override
+            public boolean isValid(Field f) {
+                return TypeUtil.isAssignable(type, f.getType());
+            }
+        });
         return e;
     }
 
