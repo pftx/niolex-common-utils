@@ -25,7 +25,7 @@ import org.apache.niolex.commons.codec.StringUtil;
 /**
  * The base coder, implementing encoding and decoding string by the corresponding binary methods.
  * The encrypted data is then encoded using Base64. So the input and output are both string.
- * <b>
+ * <br>
  * We will catch all the checked exceptions and wrap it into {@link CoderException}.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>

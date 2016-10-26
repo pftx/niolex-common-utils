@@ -98,7 +98,7 @@ public class FieldFilter<FT> implements Filter {
     /**
      * A short cut for method {@link #retrieveAs(Class)}.
      *
-     * @param <ET> the filtered field type, the type try to assign into
+     * @param <QT> the filtered field type, the type try to assign into
      * @param type the field type
      * @return a newly created field filter
      */
