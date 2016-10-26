@@ -219,4 +219,9 @@ public class Base16UtilTest extends Base16Util {
             assertArrayEquals(in, out);
         }
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBase16ToByte() throws Exception {
+        base16ToByte("ilikeit0");
+    }
 }

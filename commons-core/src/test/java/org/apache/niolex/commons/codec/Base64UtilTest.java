@@ -155,4 +155,36 @@ public class Base64UtilTest extends Base64Util {
         String out = StringUtil.asciiByteToStr(base64ToByte(lf));
         assertEquals(input, out);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testByteToBase64LFN() throws Exception {
+        byteToBase64LF(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testByteToBase64URLN() throws Exception {
+        byteToBase64URL(null);
+    }
+
+    @Test
+    public void testByteToBase64LF() throws Exception {
+        byteToBase64LF(MockUtil.randByteArray(100));
+    }
+
+    @Test
+    public void testByteToBase64URL() throws Exception {
+        byteToBase64URL(MockUtil.randByteArray(100));
+    }
+
+    @Test
+    public void testByteToBase64LFE() throws Exception {
+        String s = byteToBase64LF(MockUtil.randByteArray(4));
+        assertEquals(8, s.length());
+    }
+
+    @Test
+    public void testByteToBase64URLE() throws Exception {
+        String s = byteToBase64URL(MockUtil.randByteArray(4));
+        assertEquals(6, s.length());
+    }
 }

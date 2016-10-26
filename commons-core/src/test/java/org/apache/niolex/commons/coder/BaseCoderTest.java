@@ -19,6 +19,8 @@ package org.apache.niolex.commons.coder;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.BufferOverflowException;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -49,6 +51,24 @@ public class BaseCoderTest {
 
 	}
 
+    public static class Mock2 extends BaseCoder {
+
+        @Override
+        public void initKey(String key) {
+        }
+
+        @Override
+        public byte[] internalEncrypt(byte[] data) throws Exception {
+            throw new BufferOverflowException();
+        }
+
+        @Override
+        public byte[] internalDecrypt(byte[] data) throws Exception {
+            throw new BufferOverflowException();
+        }
+
+    }
+
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -76,5 +96,17 @@ public class BaseCoderTest {
 		assertEquals("6Iux5Zu9QVRN6ZSZ5ZCQ5Y+M5YCN546w6YeRIOmTtuihjOensOmUmeWcqOiHquW3seS4jeW/heW9kui/mA==",
 				enc);
 	}
+
+    @Test(expected = BufferOverflowException.class)
+    public void testEncrypt() throws Exception {
+        BaseCoder coder = new Mock2();
+        coder.encode("not yet implemented");
+    }
+
+    @Test(expected = BufferOverflowException.class)
+    public void testDecrypt() throws Exception {
+        BaseCoder coder = new Mock2();
+        coder.decode("notyetimplemented");
+    }
 
 }

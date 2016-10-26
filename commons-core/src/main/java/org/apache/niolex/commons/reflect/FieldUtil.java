@@ -41,7 +41,7 @@ public abstract class FieldUtil {
      * @param fieldName the field name
      * @return the field value
      * @throws ItemNotFoundException if field not found
-     * @throws SecurityException if access this field is refused
+     * @throws SecurityException if using reflection method to access this field is refused
      */
     @SuppressWarnings("unchecked")
     public static final <T> T getValue(Object host, String fieldName) {
@@ -59,7 +59,7 @@ public abstract class FieldUtil {
      * @param fieldName the field name
      * @param value the new field value to set
      * @throws ItemNotFoundException if field not found
-     * @throws SecurityException if access this field is refused
+     * @throws SecurityException if using reflection method to access this field is refused
      */
     public static final void setValue(Object host, String fieldName, Object value) {
         try {
@@ -77,7 +77,7 @@ public abstract class FieldUtil {
      * @param fieldName the field name
      * @param value the new field value to set
      * @throws ItemNotFoundException if field not found
-     * @throws SecurityException if access this field is refused
+     * @throws SecurityException if the accessing of this field is refused by the security manager
      * @throws UnsupportedOperationException if we can not support this field type
      */
     public static final void setValueAutoConvert(Object host, String fieldName, String value) {
@@ -89,12 +89,11 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 获取一个Java类和父类所定义的所有属性
      * Get all the fields of this class and it's super classes.
      *
-     * @param clazz 需要获取属性的Java类
-     * @return 所有属性的列表
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param clazz the class to be used to retrieve fields
+     * @return a list of all the fields
+     * @throws SecurityException if failed to access fields on the specified class or it's super classes
      */
     public static final List<Field> getAllFields(Class<?> clazz) {
         List<Field> outList = new ArrayList<Field>();
@@ -124,13 +123,12 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 获取一个Java类和父类所定义的所有指定类型的属性
-     * Access all the fields of the specified type from this class and it's super classes.
+     * Retrieve proper fields by the specified filter from all the fields of this class and it's super classes.
      *
-     * @param clazz 需要获取属性的Java类
-     * @param filter 需要获取的属性的过滤器
-     * @return 指定类型的属性的列表
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param clazz the class to be used to retrieve fields
+     * @param filter the filter used to filter fields
+     * @return the filtered fields list
+     * @throws SecurityException if failed to access fields on the specified class or it's super classes.
      */
     public static final List<Field> getFields(Class<?> clazz, Filter filter) {
         List<Field> outList = new ArrayList<Field>();
@@ -146,18 +144,16 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 获取一个Java类中指定名字的属性，如果找不到，尝试到父类中去找
-     * Access the field with this name. If not found in this class, we will try
-     * to locate it from the super class, too.
+     * Get the field with the specified name. If not found in this class, we will try
+     * to locate it from the super classes, too.
      *
-     * @param clazz 需要获取属性的Java类
-     * @param name 需要获取的属性的名字
-     * @return 指定名字的属性
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     * @throws NoSuchFieldException 如果指定名字的属性不存在
+     * @param clazz the class to be used to retrieve fields
+     * @param name the name of the field to be retrieved
+     * @return the field with the specified name
+     * @throws SecurityException if the security manager refused the reflection access to the specified class.
+     * @throws NoSuchFieldException if the field with the specified name not found.
      */
-    public static final Field getField(Class<?> clazz, String name)
-            throws SecurityException, NoSuchFieldException {
+    public static final Field getField(Class<?> clazz, String name) throws SecurityException, NoSuchFieldException {
         try {
             return clazz.getDeclaredField(name);
         } catch (NoSuchFieldException e) {
@@ -171,31 +167,31 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 获取一个Java对象中指定属性的值，不抛出任何检查的异常
-     * Get the value of this field from the host object and cast the result to T.
+     * Get the value of this field from the host object and cast the result to type T.
      *
-     * @param <T> 该属性的返回类型，方法中将按照该类型进行强制类型转换
-     * @param host 用来获取指定属性的值的对象
-     * @param f 需要获取的值的属性定义
-     * @return 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param <T> the return type
+     * @param host the host object used to retrieve field value
+     * @param f the field to be used
+     * @return the field value
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof).
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true
      */
     @SuppressWarnings("unchecked")
     public static final <T> T getFieldValue(Object host, Field f) {
         return (T) safeGetFieldValue(host, f);
     }
 
-
     /**
-     * 获取一个Java对象中指定属性的值，不抛出任何检查的异常
-     * Get the value of this field from the host object. We set accessible to true.
+     * Get the value of this field from the host object. We set accessible to true to make sure we can access the field
+     * value.
      *
-     * @param host 用来获取指定属性的值的对象
-     * @param f 需要获取的值的属性定义
-     * @return 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the host object used to retrieve field value
+     * @param f the field to be used
+     * @return the field value
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof).
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true
      */
     public static final Object safeGetFieldValue(Object host, Field f) {
         f.setAccessible(true);
@@ -203,15 +199,16 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 获取一个Java对象中指定属性的值，不抛出任何检查的异常
-     * Get the value of this field from the host object.
+     * Get the value of this field from the host object. If we can not access the field, we will throw
+     * IllegalStateException instead of IllegalAccessException.
      *
-     * @param host 用来获取指定属性的值的对象
-     * @param f 需要获取的值的属性定义
-     * @return 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalStateException 如果指定的属性不可访问
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the host object used to retrieve field value
+     * @param f the field to be used
+     * @return the field value
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof).
+     * @throws IllegalStateException if this Field object is enforcing Java language access control and the underlying
+     *             field is inaccessible.
      */
     public static final Object unsafeGetFieldValue(Object host, Field f) {
         try {
@@ -222,15 +219,15 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object. We set accessible to true.
+     * Set the specified field value into the host object. We set accessible of the specified field to true to make sure
+     * we can modified the field value.
      *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalStateException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the object whose field should be modified
+     * @param f the field to be used
+     * @param value the new value to be set to the specified field
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true
      */
     public static final void setFieldValue(Object host, Field f, Object value) {
         f.setAccessible(true);
@@ -238,15 +235,15 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object.
+     * Set the specified field value into the host object.
      *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalStateException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the object whose field should be modified
+     * @param f the field to be used
+     * @param value the new value to be set to the specified field
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws IllegalStateException if this Field object is enforcing Java language access control and the underlying
+     *             field is either inaccessible or final.
      */
     public static final void unsafeSetFieldValue(Object host, Field f, Object value) {
         try {
@@ -257,15 +254,16 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object.
+     * Sets the value of a field on the specified object. We set accessible of the specified field to true to make sure
+     * we can modified the field value.
      *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the object whose field should be modified
+     * @param f the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
      */
     public static final void setFieldValue(Object host, Field f, boolean value)
             throws IllegalArgumentException, IllegalAccessException {
@@ -274,15 +272,16 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object.
+     * Sets the value of a field on the specified object. We set accessible of the specified field to true to make sure
+     * we can modified the field value.
      *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the object whose field should be modified
+     * @param f the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
      */
     public static final void setFieldValue(Object host, Field f, byte value)
             throws IllegalArgumentException, IllegalAccessException {
@@ -291,15 +290,16 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object.
+     * Sets the value of a field on the specified object. We set accessible of the specified field to true to make sure
+     * we can modified the field value.
      *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the object whose field should be modified
+     * @param f the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
      */
     public static final void setFieldValue(Object host, Field f, char value)
             throws IllegalArgumentException, IllegalAccessException {
@@ -308,83 +308,16 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object.
+     * Sets the value of a field on the specified object. We set accessible of the specified field to true to make sure
+     * we can modified the field value.
      *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     */
-    public static final void setFieldValue(Object host, Field f, double value)
-            throws IllegalArgumentException, IllegalAccessException {
-        f.setAccessible(true);
-        f.setDouble(host, value);
-    }
-
-    /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object.
-     *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     */
-    public static final void setFieldValue(Object host, Field f, float value)
-            throws IllegalArgumentException, IllegalAccessException {
-        f.setAccessible(true);
-        f.setFloat(host, value);
-    }
-
-    /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object.
-     *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     */
-    public static final void setFieldValue(Object host, Field f, int value)
-            throws IllegalArgumentException, IllegalAccessException {
-        f.setAccessible(true);
-        f.setInt(host, value);
-    }
-
-    /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object.
-     *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
-     */
-    public static final void setFieldValue(Object host, Field f, long value)
-            throws IllegalArgumentException, IllegalAccessException {
-        f.setAccessible(true);
-        f.setLong(host, value);
-    }
-
-    /**
-     * 设置一个Java对象中指定属性的值
-     * Set the field value into the host object.
-     *
-     * @param host 用来设置指定属性的值的对象
-     * @param f 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalAccessException 如果指定的属性无法进行反射操作
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the object whose field should be modified
+     * @param f the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
      */
     public static final void setFieldValue(Object host, Field f, short value)
             throws IllegalArgumentException, IllegalAccessException {
@@ -393,17 +326,88 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 自动从string类型解析需要的类型并设置一个Java对象中指定属性的值
-     * Set the field with correct value converting from the string value.
-     * We set accessible to true.
+     * Sets the value of a field on the specified object. We set accessible of the specified field to true to make sure
+     * we can modified the field value.
      *
-     * @param host 用来设置指定属性的值的对象
-     * @param field 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalStateException 如果指定的属性无法进行反射操作
-     * @throws UnsupportedOperationException 如果我们无法支持这个属性的类型
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the object whose field should be modified
+     * @param f the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
+     */
+    public static final void setFieldValue(Object host, Field f, int value)
+            throws IllegalArgumentException, IllegalAccessException {
+        f.setAccessible(true);
+        f.setInt(host, value);
+    }
+
+    /**
+     * Sets the value of a field on the specified object. We set accessible of the specified field to true to make sure
+     * we can modified the field value.
+     *
+     * @param host the object whose field should be modified
+     * @param f the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
+     */
+    public static final void setFieldValue(Object host, Field f, long value)
+            throws IllegalArgumentException, IllegalAccessException {
+        f.setAccessible(true);
+        f.setLong(host, value);
+    }
+
+    /**
+     * Sets the value of a field on the specified object. We set accessible of the specified field to true to make sure
+     * we can modified the field value.
+     *
+     * @param host the object whose field should be modified
+     * @param f the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
+     */
+    public static final void setFieldValue(Object host, Field f, float value)
+            throws IllegalArgumentException, IllegalAccessException {
+        f.setAccessible(true);
+        f.setFloat(host, value);
+    }
+
+    /**
+     * Sets the value of a field on the specified object. We set accessible of the specified field to true to make sure
+     * we can modified the field value.
+     *
+     * @param host the object whose field should be modified
+     * @param f the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
+     */
+    public static final void setFieldValue(Object host, Field f, double value)
+            throws IllegalArgumentException, IllegalAccessException {
+        f.setAccessible(true);
+        f.setDouble(host, value);
+    }
+
+    /**
+     * Set the field with correct value type automatically converted from the specified string value. We set accessible
+     * of the specified field to true to make sure we can modified the field value.
+     *
+     * @param host the object whose field should be modified
+     * @param field the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws UnsupportedOperationException if we can not support this field type.
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
      */
     public static final void setFieldValueAutoConvert(Object host, Field field, String value) {
         field.setAccessible(true);
@@ -411,16 +415,17 @@ public abstract class FieldUtil {
     }
 
     /**
-     * 自动从string类型解析需要的类型并设置一个Java对象中指定属性的值
-     * Set the field with correct value converting from the string value.
+     * Set the field with correct value type automatically converted from the specified string value.
      *
-     * @param host 用来设置指定属性的值的对象
-     * @param field 需要设置的值的属性定义
-     * @param value 指定属性的值
-     * @throws IllegalArgumentException 如果指定的对象里面没有该属性
-     * @throws IllegalStateException 如果指定的属性无法进行反射操作
-     * @throws UnsupportedOperationException 如果我们无法支持这个属性的类型
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param host the object whose field should be modified
+     * @param field the field to be used to modify host field value
+     * @param value the new value for the field of host being modified
+     * @throws IllegalStateException if this Field object is enforcing Java language access control and the underlying
+     *             field is either inaccessible or final.
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
+     * @throws UnsupportedOperationException if we can not support this field type.
+     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
      */
     public static final void unsafeSetFieldValueAutoConvert(Object host, Field field, String value) {
         Class<?> type = field.getType();

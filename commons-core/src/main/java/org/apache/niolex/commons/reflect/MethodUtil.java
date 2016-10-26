@@ -36,7 +36,7 @@ import org.apache.niolex.commons.collection.CollectionUtil;
 public class MethodUtil {
 
     /**
-     * Retrieve all the types, including class, super classes and interfaces of this object.
+     * Retrieve all the types, including the class, super classes and interfaces of this object.
      *
      * @param obj the object to be used
      * @return the list contains all the types
@@ -46,9 +46,8 @@ public class MethodUtil {
         return getAllTypes(obj.getClass());
     }
 
-
     /**
-     * Retrieve all the types, including class, super classes and interfaces of this class.
+     * Retrieve all the types, including this class, super classes and interfaces of this class.
      *
      * @param clazz the class to be used
      * @return the list contains all the types
@@ -198,7 +197,7 @@ public class MethodUtil {
      *
      * @param clazz the class to be used to find methods
      * @param methodName the method name
-     * @return the list contains all the methods with this name
+     * @return the list contains all the methods with the specified name
      * @throws SecurityException if a security manager is present and the reflection is rejected
      */
     public static final List<Method> getMethods(Class<?> clazz, String methodName) {
@@ -238,7 +237,7 @@ public class MethodUtil {
 
     /**
      * Retrieve the method with the specified name and parameter types from this class including static method.
-     * If this method is not found, we will try to look at it from the super class too.
+     * If this method is not found, we will try to look at it from the super classes too.
      *
      * @param clazz the class to be used for reflection
      * @param methodName the method name
@@ -263,11 +262,14 @@ public class MethodUtil {
     /**
      * Retrieve the methods including static methods with the specified name and parameter types can be
      * assigned from the specified parameter types.
+     * 
      * <pre>
-     * We have mainly two kinds of relax considered here:
+     * We have mainly three kinds of relax considered here:
      *  1. long &lt;= int &lt;= short (Small type can be relaxed to a larger type for primitives)
      *  2. int &lt;= Integer or Integer &lt;= int (Auto boxing and un-boxing)
+     *  3. A extends B then a &lt;= b (class hierarchy)
      * </pre>
+     * 
      * <b>Caution! We can not do relax on wrapper types!</b>
      *
      * @param clazz the class to be used for reflection
@@ -284,14 +286,16 @@ public class MethodUtil {
     /**
      * Invoke this method on the specified host object.
      * If it's a static method, the host object could be null.
+     * We will set accessible to true to make sure we can access the specified method.
      *
      * @param host the host object
      * @param m the method to be invoked
      * @param args the parameters used to invoke method
-     * @return the result of invoking the method
+     * @return the result from invoking the method
      * @throws IllegalArgumentException if the arguments are not correct for the method
-     * @throws IllegalAccessException if the method can not be accessed
+     * @throws IllegalAccessException this exception will not be thrown
      * @throws InvocationTargetException if exception was thrown from the method
+     * @throws SecurityException if failed to set accessible to true
      */
     public static final Object invokeMethod(Object host, Method m, Object... args)
             throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
@@ -300,20 +304,17 @@ public class MethodUtil {
     }
 
     /**
-     * 在指定Java对象上调用指定的方法
      * Invoke the method with this specified method name and arguments on the host. We support
      * auto boxing and primitive relax.
      *
-     * @param host 用来调用指定方法的对象
-     * @param methodName 需要调用的方法
-     * @param args 用来调用指定方法的参数，如果指定方法不使用参数，则不输入
-     * @return 调用指定的方法的返回值如果接口方法的声明返回类型是基本类型，则此值一定
-     * 是相应基本包装对象类的实例；否则，它一定是可分配到声明返回类型的类型。如果此值为 null则
-     * 接口方法的返回类型是void或者接口方法返回了null
-     * @throws ItemNotFoundException 假如输入的参数和方法的参数签名不匹配
-     * @throws IllegalArgumentException 假如出现其他参数问题
-     * @throws IllegalAccessException 假如该方法不能被访问
-     * @throws InvocationTargetException 假如该方法在执行过程中抛出了异常
+     * @param host the object to be used to invoke method
+     * @param methodName the name of the method to be invoked
+     * @param args the arguments to be used to invoke the specified method
+     * @return the result from invoking the method
+     * @throws ItemNotFoundException if there is no method with the specified name and arguments
+     * @throws IllegalArgumentException if the arguments are not correct for the method
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws InvocationTargetException if exception was thrown from the method
      */
     public static final Object invokeMethod(Object host, String methodName, Object... args)
             throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
@@ -329,21 +330,19 @@ public class MethodUtil {
     }
 
     /**
-     * 在指定Java对象上调用指定的方法
      * Invoke the method with this specified method name and arguments on the host. We support
      * auto boxing and primitive relax.
+     * We will set accessible to true to make sure we can access the specified method.
      *
-     * @param host 用来调用指定方法的对象
-     * @param methodName 需要调用的方法
-     * @param parameterTypes 指定方法的签名
-     * @param args 用来调用指定方法的参数，如果指定方法不使用参数，则不输入
-     * @return 调用指定的方法的返回值如果接口方法的声明返回类型是基本类型，则此值一定
-     * 是相应基本包装对象类的实例；否则，它一定是可分配到声明返回类型的类型。如果此值为 null则
-     * 接口方法的返回类型是void或者接口方法返回了null
-     * @throws ItemNotFoundException 假如输入的参数和方法的参数签名不匹配
-     * @throws IllegalArgumentException 假如出现其他参数问题
-     * @throws IllegalAccessException 假如该方法不能被访问
-     * @throws InvocationTargetException 假如该方法在执行过程中抛出了异常
+     * @param host the object to be used to invoke method
+     * @param methodName the name of the method to be invoked
+     * @param parameterTypes the parameter types the method to be invoked
+     * @param args the arguments to be used to invoke the method
+     * @return the result from invoking the method or null if there is no return from the method
+     * @throws ItemNotFoundException if there is no method with the specified name and parameter types
+     * @throws IllegalArgumentException if the arguments are not correct for the method
+     * @throws IllegalAccessException this exception will not be thrown
+     * @throws InvocationTargetException if exception was thrown during the method execution
      */
     public static final Object invokeMethod(Object host, String methodName, Class<?>[] parameterTypes,
             Object... args) throws IllegalArgumentException, IllegalAccessException,

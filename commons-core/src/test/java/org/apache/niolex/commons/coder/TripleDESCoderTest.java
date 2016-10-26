@@ -72,6 +72,6 @@ public class TripleDESCoderTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testInitKey() throws Exception {
-        new TripleDESCoder().initKey("not yet implemented");
+        new TripleDESCoder().initKey("notyetimplemented");
     }
 }

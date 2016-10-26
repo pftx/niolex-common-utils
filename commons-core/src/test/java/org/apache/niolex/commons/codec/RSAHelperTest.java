@@ -18,7 +18,9 @@
 package org.apache.niolex.commons.codec;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.security.KeyPair;
@@ -122,6 +124,16 @@ public class RSAHelperTest extends RSAHelper {
         String priKey = "<RSAKeyValue><Modulus>AA==</Modulus><Exponent>AQAB</Exponent><P>ANc2rj5vCbcmisRJJyy/2XPgGLmPHIQW1wPry25BM0fTPchWzsr77SyRNa6gwBfBIm0NKmtiiHCOUExP9+vYeQM=</P><Q>AM7Vw6B5EXJa03qUW2j7L/hY+n3VzP50rGxT64PV6Lt/+PsFdGcQS0Yz2Jmb61t8oVpLNvwfrTr8zIzWQtVS6gk=</Q><DP>a+drp7wOl/jIHLA85w/t3E5gtzDM8GFvPvULk2U3a+y7DmaP2nBDs1O/IaZRidd5BkpSmXLWy/BezFRQDr0Dtw==</DP><DQ>Wp/o3igNz+gh3wSf5KiihRMfdgE2l4sxfSlr+NDB712MDxh9vyaxhKn0zqE1h1ldLT3lcqTCdyUKzu6WS/fPWQ==</DQ><InverseQ>AKgLMYdhQ24CCR3TSi6F90JZwFW3LjdCUE0enBCHzNp8ro2UIisL52oNVFF01wCwGAYrJnXbdhMSjsMEO1cZ7WM=</InverseQ><D>AJNcRoIyeFwVX+zrSULn17Udzk7KC/R2CEWqfNhY7tH3D+A9UXynxiKxY56Qmtlgj7YaZjwa7wMXKEUIKfCnJ7nto+6Bu6Ak9u4xPphkPXmYvyhyuWFGGMK+iYrbJ1BxG0Mbzdcv9HcXqGYJari8A2VFOfav9YGA19sUG9Dl0NtR</D></RSAKeyValue>";
         PrivateKey key = decodePrivateKeyFromXml(priKey);
         assertNull(key);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetPrivateKey() throws Exception {
+        getPrivateKey("notyetimplementedwhogonnalikeitornot");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetPublicKey() throws Exception {
+        getPublicKey("notyetimplementedwhogonnalikeitornot");
     }
 
 }
