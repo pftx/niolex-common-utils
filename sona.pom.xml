@@ -4,7 +4,7 @@
 
 	<groupId>io.github.pftx</groupId>
 	<artifactId>niolex-parent</artifactId>
-	<version>2.1.0</version>
+	<version>2.1.1</version>
 	<packaging>pom</packaging>
 
 	<name>niolex-parent</name>
@@ -55,7 +55,8 @@
 		<zookeeper.version>3.4.8</zookeeper.version>
 		<kryo.version>[3.0.3,4.0.0)</kryo.version>
 		<protobuf.version>2.6.1</protobuf.version>
-		<protostuff.version>1.0.9</protostuff.version>
+		<protobuf3.version>[3.1.0,4.0.0)</protobuf3.version>
+		<protostuff.version>1.0.11</protostuff.version>
 		<spring.version>3.0.7.RELEASE</spring.version>
 		<spring.security.version>3.1.4.RELEASE</spring.security.version>
 		<javax.mailapi.version>1.4.3</javax.mailapi.version>
