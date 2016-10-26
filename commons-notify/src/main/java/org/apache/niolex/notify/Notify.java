@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.niolex.commons.bean.Pair;
 import org.apache.niolex.commons.codec.KVBase64Util;
 import org.apache.niolex.commons.codec.StringUtil;
@@ -231,25 +230,23 @@ public class Notify implements ZKListener {
     public void onChildrenChange(List<String> list) {
         Pair<List<String>,List<String>> pair = CollectionUtil.intersection(this.children, list);
         for (String s : pair.a) {
-            // All the deleted item.
-            if (Base64.isBase64(s)) {
-                // We try to decode it.
-                try {
-                    Pair<byte[],byte[]> kv = KVBase64Util.base64toKV(s);
-                    properties.remove(new ByteArray(kv.a));
-                } catch (Exception e) {}
+            // All the deleted item. We try to decode it.
+            try {
+                Pair<byte[], byte[]> kv = KVBase64Util.base64toKV(s);
+                properties.remove(new ByteArray(kv.a));
+            } catch (Exception ignore) {
+                // It's not valid base64KV format, ignored.
             }
         }
         this.children = list;
         for (String s : pair.b) {
-            // All the added item.
-            if (Base64.isBase64(s)) {
-                // We try to decode it.
-                try {
-                    Pair<byte[],byte[]> kv = KVBase64Util.base64toKV(s);
-                    properties.put(new ByteArray(kv.a), kv.b);
-                    firePropertyChange(kv.a, kv.b);
-                } catch (Exception e) {}
+            // All the added item. We try to decode it.
+            try {
+                Pair<byte[], byte[]> kv = KVBase64Util.base64toKV(s);
+                properties.put(new ByteArray(kv.a), kv.b);
+                firePropertyChange(kv.a, kv.b);
+            } catch (Exception ignore) {
+                // It's not valid base64KV format, ignored.
             }
         }
     }

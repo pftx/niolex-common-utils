@@ -24,7 +24,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.niolex.commons.bean.Pair;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
