@@ -21,7 +21,7 @@ package org.apache.niolex.commons.seda;
  * This is the marker interface for all the messages flow through the seda system.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.5, $Date: 2012-11-15$
+ * @version 1.0.0, $Date: 2012-11-15$
  */
 public interface Message {
 

@@ -28,7 +28,7 @@ import java.util.Map;
  * stage into the dispatcher.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.5, $Date: 2012-11-16$
+ * @version 1.0.0, $Date: 2012-11-16$
  */
 public class Dispatcher {
 
@@ -135,14 +135,14 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Dispatch the message to the stage with this stage name.
-	 *
-	 * @param <T> the message type
-	 * @param stageName the name of the stage you want to dispatch this message to
-	 * @param msg the message to be dispatched
-	 * @return true if dispatch success, false if stage not found
-	 * @throws ClassCastException if this message can not be processed by the corresponding stage
-	 */
+     * Dispatch the specified message to the stage with this specified stage name.
+     *
+     * @param <T> the message type
+     * @param stageName the name of the stage you want to dispatch this message to
+     * @param msg the message to be dispatched
+     * @return true if dispatch success, false if stage not found
+     * @throws ClassCastException if this message can not be processed by the corresponding stage
+     */
 	public <T extends Message> boolean dispatch(String stageName, T msg) {
 		@SuppressWarnings("unchecked")
 		Stage<T> stage = (Stage<T>) stageMap.get(stageName);
@@ -155,14 +155,14 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Dispatch the message to the stage with the class name of this message
-	 * as the stage name.
-	 *
-	 * @param <T> the message type
-	 * @param msg the message to be dispatched
-	 * @return true if dispatch success, false if stage not found
-	 * @throws ClassCastException If this message can not be processed by the corresponding stage
-	 */
+     * Dispatch the specified message to the stage with the class name of this message
+     * as the stage name.
+     *
+     * @param <T> the message type
+     * @param msg the message to be dispatched
+     * @return true if dispatch success, false if stage not found
+     * @throws ClassCastException If this message can not be processed by the corresponding stage
+     */
 	public <T extends Message> boolean dispatch(T msg) {
 		return dispatch(msg.getClass().getName(), msg);
 	}

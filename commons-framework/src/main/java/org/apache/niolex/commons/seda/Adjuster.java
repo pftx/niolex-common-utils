@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * in the daemon state, it will stop automatically if all the main threads were stopped.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.5, $Date: 2012-11-16$
+ * @version 1.0.0, $Date: 2012-11-16$
  */
 public class Adjuster implements Runnable {
     protected static final Logger LOG = LoggerFactory.getLogger(Adjuster.class);

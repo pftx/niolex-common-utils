@@ -34,9 +34,26 @@ import org.slf4j.LoggerFactory;
  * add their own business logic.<br>
  * Every stage is a thread pool. So please be cautious about the number of stages
  * in your system. Too many stages will overwhelm your JVM.
+ * <p>
+ * If there are too many messages backlogging in the input queue, we will drop some
+ * messages to reduce the waiting time of all the messages. The dropping process is
+ * controlled by the maxTolerableDelay. If we found we can not process the input queue
+ * in (maxTolerableDelay * DROP_MSG_COEFFICIENT), we will drop more than half of messages
+ * and keep only those messages can be processed in (maxTolerableDelay / 2) in order to
+ * leave some room for newly coming messages.
+ * </p>
+ * 
+ * Subclasses need to override these methods:
+ * 
+ * <pre>
+ * 1. {@link #construct()} After all the stages are initialized, the dispatcher will call
+ *  this methods to give every stage a chance to check there internal status and do some
+ *  final work to make it ready for processing inputs.
+ * 2. {@link #process(Message, Dispatcher)} Process the message.
+ * </pre>
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0.5, $Date: 2012-11-16$
+ * @version 1.0.0, $Date: 2012-11-16$
  */
 public abstract class Stage<Input extends Message> {
 	protected static final Logger LOG = LoggerFactory.getLogger(Stage.class);

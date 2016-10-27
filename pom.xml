@@ -62,8 +62,8 @@
 		<javax.mailapi.version>1.4.3</javax.mailapi.version>
 		<jline.version>2.14.2</jline.version>
 		<!-- networks version -->
-		<network.core.version>[0.3.0,2.0.0)</network.core.version>
-		<network.rpc.version>[0.3.0,2.0.0)</network.rpc.version>
+		<network.core.version>[0.7.1,2.0.0)</network.core.version>
+		<network.rpc.version>[0.7.1,2.0.0)</network.rpc.version>
 		<!-- plugins version -->
 		<maven.assembly.version>2.6</maven.assembly.version>
 		<maven.dependency.version>2.10</maven.dependency.version>

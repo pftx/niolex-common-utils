@@ -60,12 +60,12 @@ public class RejectMessage implements Message {
 	private final Message rejected;
 
 	/**
-	 * The Constructor.
-	 *
-	 * @param type The reject type
-	 * @param info The information send along with rejection
-	 * @param rejected The message been rejected
-	 */
+     * The Constructor.
+     *
+     * @param type the reject type
+     * @param info the information send along with rejection
+     * @param rejected the message been rejected
+     */
 	public RejectMessage(RejectType type, Object info, Message rejected) {
 		super();
 		this.type = type;
