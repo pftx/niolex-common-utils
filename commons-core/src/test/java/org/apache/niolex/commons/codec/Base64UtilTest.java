@@ -19,6 +19,8 @@ package org.apache.niolex.commons.codec;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.niolex.commons.test.MockUtil;
 import org.junit.Assert;
@@ -77,7 +79,7 @@ public class Base64UtilTest extends Base64Util {
         else
             Assert.assertEquals(base646, base643);
         byte[] out = base64ToByte(base64);
-        byte[] out2 = base64ToByteURL(base643);
+        byte[] out2 = base64ToByte(base643);
         Assert.assertArrayEquals(bytes, out);
         Assert.assertArrayEquals(bytes, out2);
 
@@ -108,11 +110,6 @@ public class Base64UtilTest extends Base64Util {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testError2() throws Exception {
-        Base64Util.base64ToByteURL(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testError3() throws Exception {
         byte[] out = Base64Util.base64ToByte("A?");
         System.out.println("? => " + Base16Util.byteToBase16(out));
@@ -120,7 +117,7 @@ public class Base64UtilTest extends Base64Util {
 
     @Test(expected = IllegalArgumentException.class)
     public void testError4() throws Exception {
-        Base64Util.base64ToByteURL("z+");
+        Base64Util.base64ToByte("z+!");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -130,13 +127,13 @@ public class Base64UtilTest extends Base64Util {
 
     @Test(expected = IllegalArgumentException.class)
     public void testError6() throws Exception {
-        Base64Util.base64ToByteURL("Qt+++");
+        Base64Util.base64ToByte("Qt+++");
     }
 
     @Test
     public void testNoERR() {
-        byte[] bs = base64ToByte("n+i/c");
-        byte[] b2 = base64ToByteURL("n-i_c");
+        byte[] bs = base64ToByte("n+i/cK");
+        byte[] b2 = base64ToByte("n-i_cK");
         assertArrayEquals(bs, b2);
     }
 
@@ -186,5 +183,20 @@ public class Base64UtilTest extends Base64Util {
     public void testByteToBase64URLE() throws Exception {
         String s = byteToBase64URL(MockUtil.randByteArray(4));
         assertEquals(6, s.length());
+    }
+
+    @Test
+    public void testIsBase64() throws Exception {
+        assertTrue(isBase64("not yet implemented o="));
+        assertTrue(isBase64("not yet implemented o=="));
+        assertTrue(isBase64("not yet implemented oi="));
+        assertFalse(isBase64("not yet implemented o!"));
+        assertFalse(isBase64("not yet implemented o$"));
+        assertFalse(isBase64("not yet implemented"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsBase64N() throws Exception {
+        assertFalse(isBase64(null));
     }
 }

@@ -100,13 +100,13 @@ public class BaseCoderTest {
     @Test(expected = BufferOverflowException.class)
     public void testEncrypt() throws Exception {
         BaseCoder coder = new Mock2();
-        coder.encode("not yet implemented");
+        coder.encode("not yet implementedo");
     }
 
     @Test(expected = BufferOverflowException.class)
     public void testDecrypt() throws Exception {
         BaseCoder coder = new Mock2();
-        coder.decode("notyetimplemented");
+        coder.decode("notyetimplementedo");
     }
 
 }

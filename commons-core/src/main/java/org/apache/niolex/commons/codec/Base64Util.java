@@ -17,9 +17,6 @@
  */
 package org.apache.niolex.commons.codec;
 
-import com.fasterxml.jackson.core.Base64Variant;
-import com.fasterxml.jackson.core.Base64Variants;
-
 /**
  * This utility encodes bytes into base64 string and vice versa. We use the MINE encoding without
  * line feeds as the default method. And we support standard MIME and URL file name safe encoding
@@ -29,9 +26,6 @@ import com.fasterxml.jackson.core.Base64Variants;
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  */
 public abstract class Base64Util {
-
-    public static final Base64Variant DEFAULT = Base64Variants.MIME_NO_LINEFEEDS;
-    public static final Base64Variant URL_SAFE = Base64Variants.MODIFIED_FOR_URL;
 
     /**
      * Encode Byte Array into Base64 String using MINE encoding without line feeds.
@@ -43,7 +37,8 @@ public abstract class Base64Util {
     public static String byteToBase64(byte[] data) {
         if (data == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return DEFAULT.encode(data);
+
+        return CommonBase64.encode(data);
     }
 
     /**
@@ -56,25 +51,8 @@ public abstract class Base64Util {
     public static String byteToBase64LF(byte[] data) {
         if (data == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        String s = DEFAULT.encode(data);
-        if (s.length() <= 76) {
-            return s;
-        }
 
-        // We need add CR LF every 76 chars.
-        StringBuilder sb = new StringBuilder();
-        sb.append(s.substring(0, 76));
-        for (int i = 76; i < s.length(); i += 76) {
-            int e = i + 76;
-            if (e > s.length()) {
-                e = s.length();
-            }
-
-            sb.append('\r');
-            sb.append('\n');
-            sb.append(s.substring(i, e));
-        }
-        return sb.toString();
+        return CommonBase64.encode(data, true, 76, false);
     }
 
     /**
@@ -87,33 +65,37 @@ public abstract class Base64Util {
     public static String byteToBase64URL(byte[] data) {
         if (data == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return URL_SAFE.encode(data);
+
+        return CommonBase64.encodeURL(data);
     }
 
     /**
-     * Decode Base64 using MINE encoding with or without line feeds String into Byte Array.
+     * Decode Base64 encoded string into Byte Array. We support MINE encoding with or without line feeds, Standard
+     * Base64 encoding, Base64 using URL and file name safe encoding table with or without line feeds.
+     * <p>
+     * We try our best to recognize as many variants as possible.
+     * </p>
      *
      * @param str the encoded base64 string
      * @return the original bytes
-     * @throws IllegalArgumentException if the parameter is null or if input is not valid base64 encoded data
+     * @throws IllegalArgumentException if the parameter is null or is not in valid base64 format
      */
     public static byte[] base64ToByte(String str) {
         if (str == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return DEFAULT.decode(str);
+
+        return CommonBase64.decode(str);
     }
 
     /**
-     * Decode Base64 using URL and file name safe encoding with or without line feeds String into Byte Array.
-     *
-     * @param str the encoded base64 string
-     * @return the original bytes
-     * @throws IllegalArgumentException if the parameter is null or if input is not valid base64 encoded data
+     * Check whether the input string is Base64 format compatible.
+     * 
+     * @param str the input string
+     * @return true if the input string is Base64 compatible, false otherwise
      */
-    public static byte[] base64ToByteURL(String str) {
+    public static boolean isBase64(String str) {
         if (str == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        return URL_SAFE.decode(str);
+        return CommonBase64.isBase64(str);
     }
-
 }

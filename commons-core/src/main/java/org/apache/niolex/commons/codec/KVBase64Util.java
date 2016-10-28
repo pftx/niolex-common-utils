@@ -64,7 +64,7 @@ public class KVBase64Util {
     public static Pair<byte[], byte[]> base64toKV(String str) {
         if (str == null)
             throw new IllegalArgumentException("The parameter should not be null!");
-        byte data[] = Base64Util.base64ToByteURL(str);
+        byte data[] = Base64Util.base64ToByte(str);
         int first = data[0] & 0xff;
         int start = first & 0x3;
         first = first >> 2;

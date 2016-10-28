@@ -17,7 +17,8 @@
  */
 package org.apache.niolex.commons.codec;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.niolex.commons.bean.Pair;
 import org.junit.Test;
@@ -149,6 +150,11 @@ public class KVBase64UtilTest {
     public void testBase64toKVErrSize_3() {
         new KVBase64Util();
         KVBase64Util.base64toKV("zwAASSBhbSB0aGUga2V5LlRoZSBtb2JpbGUgbGFuZHNjYXBlI");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBase64toKV() throws Exception {
+        KVBase64Util.base64toKV("zwAASSBhbSB0aGUga2V5LlRoZSBtb2JpbGUgbGFuZHNjYXBlIo");
     }
 
 }
