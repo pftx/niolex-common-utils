@@ -1,0 +1,8 @@
+{
+  "timestamp": 1479970641782,
+  "status": 500,
+  "error": "Internal Server Error",
+  "exception": "java.lang.IllegalArgumentException",
+  "message": "Invalid name: proj@2",
+  "path": "/api/find/proj@2"
+}

@@ -32,6 +32,11 @@ import org.apache.niolex.commons.compress.JacksonUtil;
 public class RESTClient extends HTTPClient {
 
     /**
+     * The error decoder used to decode error informations returned from RESTful server.
+     */
+    private ErrorDecoder errorDecoder = ErrorDecoder.RESTDecoder.INSTANCE;
+
+    /**
      * Construct a RESTClient.
      *
      * @param endPoint the end point to be used as the base when generate URL
@@ -54,6 +59,15 @@ public class RESTClient extends HTTPClient {
     }
 
     /**
+     * Set the error decoder used by this REST client.
+     * 
+     * @param errorDecoder the error decoder to be used
+     */
+    public void setErrorDecoder(ErrorDecoder errorDecoder) {
+        this.errorDecoder = errorDecoder;
+    }
+
+    /**
      * Using GET to invoke the RESTful API.
      * 
      * @param <T> the response class type
@@ -66,7 +80,7 @@ public class RESTClient extends HTTPClient {
      */
     public <T> RESTResult<T> get(String path, Class<T> clazz, Map<String, String> params) throws NetException, IOException {
         HTTPResult res = get(path, params);
-        return new RESTResult<T>(res, clazz);
+        return new RESTResult<T>(res, clazz, errorDecoder);
     }
 
     /**
@@ -82,7 +96,7 @@ public class RESTClient extends HTTPClient {
      */
     public <T> RESTResult<T> delete(String path, Class<T> clazz, Map<String, String> params) throws NetException, IOException {
         HTTPResult res = delete(path, params);
-        return new RESTResult<T>(res, clazz);
+        return new RESTResult<T>(res, clazz, errorDecoder);
     }
 
     /**
@@ -98,7 +112,7 @@ public class RESTClient extends HTTPClient {
      */
     public <T> RESTResult<T> post(String path, Class<T> clazz, Object requestBody) throws NetException, IOException {
         HTTPResult res = post(path, obj2json(requestBody));
-        return new RESTResult<T>(res, clazz);
+        return new RESTResult<T>(res, clazz, errorDecoder);
     }
 
     /**
@@ -114,7 +128,7 @@ public class RESTClient extends HTTPClient {
      */
     public <T> RESTResult<T> put(String path, Class<T> clazz, Object requestBody) throws NetException, IOException {
         HTTPResult res = put(path, obj2json(requestBody));
-        return new RESTResult<T>(res, clazz);
+        return new RESTResult<T>(res, clazz, errorDecoder);
     }
 
     /**

@@ -34,19 +34,31 @@ public class RESTResult<T> {
     private final HTTPResult result;
     private final int respCode;
     private final T response;
+    private final Exception error;
 
     /**
      * Construct a new RESTResult.
      * 
      * @param result the HTTP result
      * @param clazz the REST response class
+     * @param errorDecoder the error decoder to be used
      * @throws IOException if tailed to parse the response JSON into the specified class type
      */
-    public RESTResult(HTTPResult result, Class<T> clazz) throws IOException {
+    public RESTResult(HTTPResult result, Class<T> clazz, ErrorDecoder errorDecoder) throws IOException {
         super();
         this.result = result;
         this.respCode = result.getRespCode();
-        this.response = JacksonUtil.bin2Obj(result.getRespBody(), clazz);
+        if (respCode >= 200 && respCode < 300) {
+            this.response = JacksonUtil.bin2Obj(result.getRespBody(), clazz);
+        } else {
+            this.response = null;
+        }
+
+        if (respCode >= 400 && errorDecoder != null) {
+            error = errorDecoder.decode(respCode, result.getRespBody());
+        } else {
+            error = null;
+        }
     }
 
     /**
@@ -64,10 +76,17 @@ public class RESTResult<T> {
     }
 
     /**
-     * @return the REST response
+     * @return the REST response or null if error occurred.
      */
     public T getResponse() {
         return response;
+    }
+
+    /**
+     * @return the exception returned from RESTful server if there is any.
+     */
+    public Exception getError() {
+        return error;
     }
 
 }
