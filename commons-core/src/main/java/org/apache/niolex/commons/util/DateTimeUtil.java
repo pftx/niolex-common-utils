@@ -19,6 +19,7 @@ package org.apache.niolex.commons.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -95,7 +96,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2LongStr(Date date) {
-        SimpleDateFormat s = getDateFormat(LONG_FORMAT);
+        DateFormat s = getDateFormat(LONG_FORMAT);
         return s.format(date);
     }
 
@@ -106,7 +107,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2LongStr(long date) {
-        SimpleDateFormat s = getDateFormat(LONG_FORMAT);
+        DateFormat s = getDateFormat(LONG_FORMAT);
         return s.format(new Date(date));
     }
 
@@ -126,7 +127,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2DateTimeStr(Date date) {
-        SimpleDateFormat s = getDateFormat(DATE_TIME_FORMAT);
+        DateFormat s = getDateFormat(DATE_TIME_FORMAT);
         return s.format(date);
     }
 
@@ -137,7 +138,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2DateTimeStr(long date) {
-        SimpleDateFormat s = getDateFormat(DATE_TIME_FORMAT);
+        DateFormat s = getDateFormat(DATE_TIME_FORMAT);
         return s.format(new Date(date));
     }
 
@@ -157,7 +158,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2DateStr(Date date) {
-        SimpleDateFormat s = getDateFormat(DATE_FORMAT);
+        DateFormat s = getDateFormat(DATE_FORMAT);
         return s.format(date);
     }
 
@@ -168,7 +169,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2DateStr(long date) {
-        SimpleDateFormat s = getDateFormat(DATE_FORMAT);
+        DateFormat s = getDateFormat(DATE_FORMAT);
         return s.format(new Date(date));
     }
 
@@ -188,7 +189,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2TimeStr(Date date) {
-        SimpleDateFormat s = getDateFormat(TIME_FORMAT);
+        DateFormat s = getDateFormat(TIME_FORMAT);
         return s.format(date);
     }
 
@@ -199,7 +200,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2TimeStr(long date) {
-        SimpleDateFormat s = getDateFormat(TIME_FORMAT);
+        DateFormat s = getDateFormat(TIME_FORMAT);
         return s.format(new Date(date));
     }
 
@@ -219,7 +220,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2ShortStr(Date date) {
-        SimpleDateFormat s = getDateFormat(SHORT_FORMAT);
+        DateFormat s = getDateFormat(SHORT_FORMAT);
         return s.format(date);
     }
 
@@ -230,7 +231,7 @@ public abstract class DateTimeUtil {
      * @return the result
      */
     public static final String formatDate2ShortStr(long date) {
-    	SimpleDateFormat s = getDateFormat(SHORT_FORMAT);
+        DateFormat s = getDateFormat(SHORT_FORMAT);
     	return s.format(new Date(date));
     }
 
@@ -243,10 +244,10 @@ public abstract class DateTimeUtil {
      *
      * @param date the formatted date string
      * @return the parsed date
-     * @throws ParseException if the beginning of the specified string cannot be parsed
+     * @throws ParseException if the specified string cannot be parsed
      */
     public static final Date parseDateFromLongStr(String date) throws ParseException {
-        SimpleDateFormat s = getDateFormat(LONG_FORMAT);
+        DateFormat s = getDateFormat(LONG_FORMAT);
         return s.parse(date);
     }
 
@@ -255,10 +256,10 @@ public abstract class DateTimeUtil {
      *
      * @param date the formatted date string
      * @return the parsed date
-     * @throws ParseException if the beginning of the specified string cannot be parsed
+     * @throws ParseException if the specified string cannot be parsed
      */
     public static final Date parseDateFromDateTimeStr(String date) throws ParseException {
-        SimpleDateFormat s = getDateFormat(DATE_TIME_FORMAT);
+        DateFormat s = getDateFormat(DATE_TIME_FORMAT);
         return s.parse(date);
     }
 
@@ -267,10 +268,10 @@ public abstract class DateTimeUtil {
      *
      * @param date the formatted date string
      * @return the parsed date
-     * @throws ParseException if the beginning of the specified string cannot be parsed
+     * @throws ParseException if the specified string cannot be parsed
      */
     public static final Date parseDateFromDateStr(String date) throws ParseException {
-        SimpleDateFormat s = getDateFormat(DATE_FORMAT);
+        DateFormat s = getDateFormat(DATE_FORMAT);
         return s.parse(date);
     }
 
@@ -279,10 +280,10 @@ public abstract class DateTimeUtil {
      *
      * @param date the formatted date string
      * @return the parsed date
-     * @throws ParseException if the beginning of the specified string cannot be parsed
+     * @throws ParseException if the specified string cannot be parsed
      */
     public static final Date parseDateFromShortStr(String date) throws ParseException {
-        SimpleDateFormat s = getDateFormat(SHORT_FORMAT);
+        DateFormat s = getDateFormat(SHORT_FORMAT);
         return s.parse(date);
     }
 
@@ -429,10 +430,23 @@ public abstract class DateTimeUtil {
     // BASIC DATE TIME OPERATION
     // /////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Get a newly created calendar stands for today with the time part cleaned.
+     * 
+     * @return the newly created calendar
+     */
     public static final GregorianCalendar getCalender() {
         return getCalender(new Date(), true);
     }
 
+    /**
+     * Get a newly created calendar by the specified date instance. If the <code>cleanTime</code> is true, we will clean
+     * the time part from the calendar to be returned.
+     * 
+     * @param date the date instance to be used to create calendar
+     * @param cleanTime if true, we clean the time part, if false, we keep the specified date not changed
+     * @return the newly created calendar
+     */
     public static final GregorianCalendar getCalender(Date date, boolean cleanTime) {
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(date);
@@ -448,23 +462,52 @@ public abstract class DateTimeUtil {
         return cal;
     }
 
-    public static final SimpleDateFormat getDateFormat(String format) {
-        SimpleDateFormat s = new SimpleDateFormat(format);
-        if (TIME_ZONE != null) {
-            s.setTimeZone(TIME_ZONE);
+    /**
+     * The thread local cache to cache all the created SimpleDateFormat for re-use.
+     */
+    private static final ThreadLocal<SimpleDateFormat> dateFormatterCache = new ThreadLocal<SimpleDateFormat>() {
+
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat();
         }
-        return s;
+
+    };
+
+    /**
+     * Get an instance of DateFormat with the specified format pattern.
+     * 
+     * @param format the date format pattern
+     * @return an instance of DateFormat
+     */
+    public static final DateFormat getDateFormat(String format) {
+        SimpleDateFormat simpleF = dateFormatterCache.get();
+        simpleF.applyPattern(format);
+        if (TIME_ZONE != null) {
+            simpleF.setTimeZone(TIME_ZONE);
+        }
+        return simpleF;
     }
 
+    /**
+     * The time zone to be used in this utility.
+     */
+    private static TimeZone TIME_ZONE;
+
+    /**
+     * Set the time zone to be used to format dates.
+     * 
+     * @param timeZone the new time zone
+     */
     public static final void setTimeZone(TimeZone timeZone) {
         TIME_ZONE = timeZone;
     }
 
+    /**
+     * @return the current time zone used to format dates.
+     */
     public static final TimeZone getTimeZone() {
         return TIME_ZONE;
     }
-
-    // The time zone to be used in this utility.
-    private static TimeZone TIME_ZONE;
 
 }

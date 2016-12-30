@@ -46,7 +46,7 @@ public abstract class TidyUtil {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Find the index of the matching right parenthesis.
 	 * 

@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * This is the class used for test serialization and compression.
  *
@@ -393,7 +392,7 @@ public class Benchmark {
             this.birth = birth;
         }
 
-
 	}
+
 }
 

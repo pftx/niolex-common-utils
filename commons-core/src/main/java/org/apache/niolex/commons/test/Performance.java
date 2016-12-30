@@ -90,4 +90,5 @@ public abstract class Performance {
         SystemUtil.printTable(new int[] {10, 10, 10, 10},
                 new String[] {"ITERATIONS", "AVG", "MAX", "MIN"}, outerIteration, cu, max, min);
 	}
+
 }

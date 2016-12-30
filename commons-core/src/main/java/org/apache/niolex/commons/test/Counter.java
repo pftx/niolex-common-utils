@@ -17,9 +17,8 @@
  */
 package org.apache.niolex.commons.test;
 
-
 /**
- * This is used for count.
+ * This is used as a simple counter.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0

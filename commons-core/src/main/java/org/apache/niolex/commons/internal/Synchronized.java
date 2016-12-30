@@ -17,7 +17,6 @@
  */
 package org.apache.niolex.commons.internal;
 
-
 /**
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0

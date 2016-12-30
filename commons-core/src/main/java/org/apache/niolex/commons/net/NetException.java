@@ -22,7 +22,6 @@ package org.apache.niolex.commons.net;
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- *
  */
 public class NetException extends Exception {
 	private static final long serialVersionUID = -6315233292954959316L;
