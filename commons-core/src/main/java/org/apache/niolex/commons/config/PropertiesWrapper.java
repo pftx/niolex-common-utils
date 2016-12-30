@@ -26,10 +26,7 @@ import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.util.SystemUtil;
 
 /**
- * CN://PropertiesWrapper是在PropUtil的基础上发展而来。对于普通项目只管理一个配置文件来说，使用PropUtil的静态方法来取得配置无疑很
- * 方便。但是如果要同时管理多个配置文件，那么静态方法就显得不足。所以需要本类来满足这类型的需求。
- * <br>
- * EN://PropertiesWrapper wrap the standard java.util.Properties, provides convenient methods for
+ * This class wraps the standard java.util.Properties, provides convenient methods for
  * accessing int, boolean, long and double values.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
@@ -39,7 +36,7 @@ import org.apache.niolex.commons.util.SystemUtil;
 public class PropertiesWrapper extends Properties {
 
     /**
-     * Generated ID
+     * The Generated ID.
      */
     private static final long serialVersionUID = -352075645997166876L;
 
@@ -49,13 +46,13 @@ public class PropertiesWrapper extends Properties {
      *
      * @param s the input string
      * @return the boolean value
+     * @throws NullPointerException if the parameter is null
      */
     public static boolean parseBoolean(String s) {
         return StringUtil.isIn(s, false, "true", "1", "on", "yes");
     }
 
     /**
-     * 默认构造函数
      * The default Constructor, doing nothing.
      */
     public PropertiesWrapper() {
@@ -63,7 +60,6 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * 从父类继承的构造函数
      * Creates an empty property list with the specified defaults.
      *
      * @param defaults the defaults
@@ -73,60 +69,56 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * CN://从class path中加载指定名字的配置文件
-     * <br>
-     * EN://Read properties from classpath file using the class loader of the specified class.
+     * Create a new PropertiesWrapper and read properties from the specified classpath resource file using the same
+     * class loader which loaded the specified class.
      *
-     * @param resource 待加载的文件的资源名
-     * @param cls 携带待使用的类加载器
-     * @throws IOException 假如读文件出错
-     * @throws IllegalArgumentException 假如文件中含有非法字符
-     * @throws NullPointerException 假如文件名是null
+     * @param resource the classpath resource file
+     * @param cls the class object to be used to retrieve class loader
+     * @throws IOException if failed to read the resource file
+     * @throws IllegalArgumentException if the file contains illegal character
+     * @throws NullPointerException if any of the parameters is null
      */
     public PropertiesWrapper(String resource, Class<?> cls) throws IOException {
         load(resource, cls);
     }
 
     /**
-     * CN://从文件系统中加载指定名字的配置文件
-     * <br>
-     * EN://Read properties from file system.
+     * Create a new PropertiesWrapper and read properties from the specified file. The <code>fileName</code> must be an
+     * absolute file path and name in the file system.
      *
-     * @param fileName 待加载的文件名
-     * @throws IOException 假如读文件出错
-     * @throws IllegalArgumentException 假如文件中含有非法字符
-     * @throws NullPointerException 假如文件名是null
-     * @throws SecurityException 假如系统中配置了security manager并且该security manager拒绝了读文件的请求
+     * @param fileName the absolute file path and name
+     * @throws IOException if failed to read the resource file
+     * @throws IllegalArgumentException if the file contains illegal character
+     * @throws NullPointerException if any of the parameters is null
+     * @throws SecurityException the configured security manager rejected the requirement to read the specified file
      */
     public PropertiesWrapper(String fileName) throws IOException {
         load(fileName);
     }
 
     /**
-     * CN://从class path中加载指定名字的配置文件
-     * <br>
-     * EN://Read properties from classpath file using the class loader of the specified class.
+     * Read properties from the specified classpath resource file using the same
+     * class loader which loaded the specified class.
      *
-     * @param resource 待加载的文件的资源名
-     * @param cls 携带待使用的类加载器
-     * @throws IOException 假如读文件出错
-     * @throws IllegalArgumentException 假如文件中含有非法字符
-     * @throws NullPointerException 假如文件名是null
+     * @param resource the classpath resource file
+     * @param cls the class object to be used to retrieve class loader
+     * @throws IOException if failed to read the resource file
+     * @throws IllegalArgumentException if the file contains illegal character
+     * @throws NullPointerException if any of the parameters is null
      */
     public void load(String resource, Class<?> cls) throws IOException {
         load(cls.getResourceAsStream(resource));
     }
 
     /**
-     * CN://从文件系统中加载指定名字的配置文件
-     * <br>
-     * EN://Read properties from file system.
+     * Read properties from the specified file. The <code>fileName</code> must be an
+     * absolute file path and name in the file system.
      *
-     * @param fileName 待加载的文件名
-     * @throws IOException 假如读文件出错
-     * @throws IllegalArgumentException 假如文件中含有非法字符
-     * @throws NullPointerException 假如文件名是null
-     * @throws SecurityException 假如系统中配置了security manager并且该security manager拒绝了读文件的请求
+     * @param fileName the absolute file path and name
+     * @throws IOException if failed to read the resource file
+     * @throws IllegalArgumentException if the file contains illegal character
+     * @throws NullPointerException if any of the parameters is null
+     * @throws SecurityException the configured security manager rejected the requirement to read the specified file
      */
     public void load(String fileName) throws IOException {
         load(new FileInputStream(fileName));
@@ -149,15 +141,12 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * CN://从配置文件中读取字符串类型的配置
-     * 与getProperty不同的是，我们会trim掉前后的空格，这样有利于进行格式转换
-     * <br>
-     * EN://Read a string value from properties by this key. We will trim
-     * the empty characters before return.
+     * Read a string value from properties by the specified key. We will trim
+     * the empty characters before return. We will return null if the property not found.
      *
      * @see #getProperty(String)
-     * @param key 待读取的配置的键
-     * @return 待读取的配置的值，如果配置不存在则返回null
+     * @param key the property key to be used to retrieve property
+     * @return the property value, or null if the property not found
      */
     public final String getString(String key) {
         String s = this.getProperty(key);
@@ -165,16 +154,13 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * CN://从配置文件中读取字符串类型的配置
-     * 与getProperty不同的是，我们会trim掉前后的空格，这样有利于进行格式转换
-     * <br>
-     * EN://Read a string value from properties by this key. We will trim
-     * the empty characters before return.
+     * Read a string value from properties by the specified key. We will trim the empty characters before return. We
+     * will return the specified default value if the property not found.
      *
      * @see #getProperty(String, String)
-     * @param key 待读取的配置的键
-     * @param defaultValue 待读取的配置的默认值
-     * @return 待读取的配置的值，如果配置不存在则返回<code>defaultValue</code>
+     * @param key the property key to be used to retrieve property
+     * @param defaultValue the default value
+     * @return the property value, or the <code>defaultValue</code> if the property not found
      */
     public final String getString(String key, String defaultValue) {
         String s = this.getProperty(key, defaultValue);
@@ -182,86 +168,87 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * 从配置文件中读取整数类型的配置
+     * Read an integer value from properties by the specified key.
      *
-     * @param key 待读取的配置的键
-     * @return 待读取的配置的值，如果配置不存在或者不是一个整数则抛出NumberFormatException
-     * @throws NumberFormatException 如果配置不存在,或者配置不是可以解析的整数
+     * @param key the property key to be used to retrieve property
+     * @return the property value as integer
+     * @throws NumberFormatException if the property not found or is not a valid integer
      */
     public final int getInteger(String key) {
         return Integer.parseInt(this.getString(key));
     }
 
     /**
-     * 从配置文件中读取整数类型的配置
+     * Read an integer value from properties by the specified key. If the property not found, we will use the specified
+     * default value.
      *
-     * @param key 待读取的配置的键
-     * @param defaultValue 待读取的配置的默认值，请确保该默认值是可以解析的整数
-     * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
-     * @throws NumberFormatException 如果配置不存在时<code>defaultValue</code>不是可以解析的整数，
-     *         或者配置不是可以解析的整数
+     * @param key the property key to be used to retrieve property
+     * @param defaultValue the default value, please make sure it's a valid integer
+     * @return the property value as integer, or the <code>defaultValue</code> if the property not found
+     * @throws NumberFormatException if the property not found or is not a valid integer or the specified
+     *             <code>defaultValue</code> is not a valid integer
      */
     public final int getInteger(String key, String defaultValue) {
         return Integer.parseInt(this.getString(key, defaultValue));
     }
 
     /**
-     * 从配置文件中读取整数类型的配置
+     * Read an integer value from properties by the specified key. If the property not found, we will use the specified
+     * default value.
      *
-     * @param key 待读取的配置的键
-     * @param defaultValue 待读取的配置的默认值
-     * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
-     * @throws NumberFormatException 如果配置不是可以解析的整数
+     * @param key the property key to be used to retrieve property
+     * @param defaultValue the default value
+     * @return the property value as integer, or the <code>defaultValue</code> if the property not found
+     * @throws NumberFormatException if the property not found or is not a valid integer
      */
     public final int getInteger(String key, int defaultValue) {
         return Integer.parseInt(this.getString(key, Integer.toString(defaultValue)));
     }
 
     /**
-     * 从配置文件中读取长整数类型的配置
+     * Read a long integer value from properties by the specified key.
      *
-     * @param key 待读取的配置的键
-     * @return 待读取的配置的值，如果配置不存在或者不是一个整数则抛出NumberFormatException
-     * @throws NumberFormatException 如果配置不存在,或者配置不是可以解析的整数
+     * @param key the property key to be used to retrieve property
+     * @return the property value as long integer
+     * @throws NumberFormatException if the property not found or is not a valid long integer
      */
     public final long getLong(String key) {
         return Long.parseLong(this.getString(key));
     }
 
     /**
-     * 从配置文件中读取长整数类型的配置
+     * Read a long integer value from properties by the specified key. If the property not found, we will use the
+     * specified default value.
      *
-     * @param key 待读取的配置的键
-     * @param defaultValue 待读取的配置的默认值，请确保该默认值是可以解析的整数
-     * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
-     * @throws NumberFormatException 如果配置不存在时<code>defaultValue</code>不是可以解析的整数，
-     *         或者配置不是可以解析的整数
+     * @param key the property key to be used to retrieve property
+     * @param defaultValue the default value, please make sure it's a valid long integer
+     * @return the property value as long integer, or the <code>defaultValue</code> if the property not found
+     * @throws NumberFormatException if the property not found or is not a valid long integer or the specified
+     *             <code>defaultValue</code> is not a valid long integer
      */
     public final long getLong(String key, String defaultValue) {
         return Long.parseLong(this.getString(key, defaultValue));
     }
 
     /**
-     * 从配置文件中读取长整数类型的配置
+     * Read a long integer value from properties by the specified key. If the property not found, we will use the
+     * specified default value.
      *
-     * @param key 待读取的配置的键
-     * @param defaultValue 待读取的配置的默认值
-     * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
-     * @throws NumberFormatException 如果配置不是可以解析的整数
+     * @param key the property key to be used to retrieve property
+     * @param defaultValue the default value
+     * @return the property value as long integer, or the <code>defaultValue</code> if the property not found
+     * @throws NumberFormatException if the property not found or is not a valid long integer
      */
     public final long getLong(String key, long defaultValue) {
         return Long.parseLong(this.getString(key, Long.toString(defaultValue)));
     }
 
     /**
-     * CN://从配置文件中读取布尔类型的配置
-     * 当且仅当配置为字符串"true", "1", "on", "yes"(忽略大小写)时，返回true,其他情况一概返回false
-     * <br>
-     * EN://Read boolean configuration value from properties by this key. We will
-     * interpret "true", "1", "on", "yes"(case insensitive) as true, all others as false.
+     * Read boolean value from properties by the specified key. We will
+     * interpret "true", "1", "on", "yes"(case insensitive) as true, all other values as false.
      *
-     * @param key 待读取的配置的键
-     * @return 待读取的配置的值，（请注意）如果配置不存在则返回false
+     * @param key the property key to be used to retrieve property
+     * @return the property value, or false if the property not found
      */
     public boolean getBoolean(String key) {
         String s = this.getString(key);
@@ -269,15 +256,12 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * CN://从配置文件中读取布尔类型的配置
-     * 当且仅当配置为字符串"true", "1", "on", "yes"(忽略大小写)时，返回true,其他情况一概返回false
-     * <br>
-     * EN://Read boolean configuration value from properties by this key. We will
-     * interpret "true", "1", "on", "yes"(case insensitive) as true, all others as false.
+     * Read boolean value from properties by the specified key. We will
+     * interpret "true", "1", "on", "yes"(case insensitive) as true, all other values as false.
      *
-     * @param key 待读取的配置的键
-     * @param defaultValue 待读取的配置的默认值
-     * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
+     * @param key the property key to be used to retrieve property
+     * @param defaultValue the default value
+     * @return the property value as boolean, or the <code>defaultValue</code> if the property not found
      */
     public boolean getBoolean(String key, String defaultValue) {
         String s = this.getString(key, defaultValue);
@@ -285,15 +269,12 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * CN://从配置文件中读取布尔类型的配置
-     * 当且仅当配置为字符串"true", "1", "on", "yes"(忽略大小写)时，返回true,其他情况一概返回false
-     * <br>
-     * EN://Read boolean configuration value from properties by this key. We will
-     * interpret "true", "1", "on", "yes"(case insensitive) as true, all others as false.
+     * Read boolean value from properties by the specified key. We will
+     * interpret "true", "1", "on", "yes"(case insensitive) as true, all other values as false.
      *
-     * @param key 待读取的配置的键
-     * @param defaultValue 待读取的配置的默认值
-     * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
+     * @param key the property key to be used to retrieve property
+     * @param defaultValue the default value
+     * @return the property value as boolean, or the <code>defaultValue</code> if the property not found
      */
     public boolean getBoolean(String key, boolean defaultValue) {
         String s = this.getString(key);
@@ -301,40 +282,40 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * CN://从配置文件中读取双精度类型的配置
-     * <br>
-     * EN://Read double configuration value from properties by this key.
+     * Read a double value from properties by the specified key.
      * 
-     * @param key 待读取的配置的键
-     * @return 待读取的配置的值
-     * @throws NullPointerException 如果配置不存在
-     * @throws NumberFormatException 如果配置不可以被解析成双精度浮点数
+     * @param key the property key to be used to retrieve property
+     * @return the property value as double
+     * @throws NullPointerException if the property not found
+     * @throws NumberFormatException if the property is not a valid double number
      */
     public double getDouble(String key) {
         return Double.parseDouble(this.getString(key));
     }
 
     /**
-     * CN://从配置文件中读取双精度类型的配置
-     * <br>
-     * EN://Read double configuration value from properties by this key.
+     * Read a double value from properties by the specified key. If the property not found, we will use the specified
+     * default value.
      * 
-     * @param key 待读取的配置的键
-     * @param defaultValue 待读取的配置的默认值
-     * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
+     * @param key the property key to be used to retrieve property
+     * @param defaultValue the default value
+     * @return the property value as double, or the <code>defaultValue</code> if the property not found
+     * @throws NullPointerException if the property not found and the <code>defaultValue</code> is null
+     * @throws NumberFormatException if the property is not a valid double number or the default value is not a valid
+     *             double number
      */
     public double getDouble(String key, String defaultValue) {
         return Double.parseDouble(this.getString(key, defaultValue));
     }
 
     /**
-     * CN://从配置文件中读取双精度类型的配置
-     * <br>
-     * EN://Read double configuration value from properties by this key.
+     * Read a double value from properties by the specified key. If the property not found, we will use the specified
+     * default value.
      * 
-     * @param key 待读取的配置的键
-     * @param defaultValue 待读取的配置的默认值
-     * @return 待读取的配置的值，如果配置不存在则使用<code>defaultValue</code>
+     * @param key the property key to be used to retrieve property
+     * @param defaultValue the default value
+     * @return the property value as double, or the <code>defaultValue</code> if the property not found
+     * @throws NumberFormatException if the property is not a valid double number
      */
     public double getDouble(String key, double defaultValue) {
         return Double.parseDouble(this.getString(key, Double.toString(defaultValue)));

@@ -481,4 +481,9 @@ public class PropertiesWrapperTest {
         Assert.assertEquals(3721.456, d, 0.000001);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testParseBoolean() throws Exception {
+        PropertiesWrapper.parseBoolean(null);
+    }
+
 }
