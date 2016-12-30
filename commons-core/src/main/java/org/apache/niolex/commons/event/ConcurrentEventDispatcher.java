@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.niolex.commons.concurrent.ConcurrentUtil;
 
 /**
- * 支持并发的事件分发器实现。此实现是完全高并发的，不需要任何的外部锁机制。
+ * The implementation of {@link Dispatcher} which supports fully concurrent operations on all methods.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0

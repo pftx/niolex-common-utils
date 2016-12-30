@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
-
 /**
  * Retain a number of items in this list after all data has been consumed.
  * This list can be used when someone want to remember the last K elements

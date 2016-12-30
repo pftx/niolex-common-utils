@@ -1,5 +1,5 @@
 /**
- * ZipUtil.java
+ * GZipUtil.java
  *
  * Copyright 2011 Niolex, Inc.
  *
@@ -22,7 +22,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.JavaType;
 
 /**
- * 利用GZIP算法进行数据压缩的工具类。
+ * Using the GZIP algorithm ({@link GZiper}) to compress data and decompress data.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0, $Date: 2011-3-28$
@@ -40,55 +40,52 @@ public abstract class GZipUtil {
     public static final Compressor getInstance() {
         return GZIP;
     }
+
     /**
-     * 压缩
+     * Compress data by the GZIP algorithm.
      *
-     * @param data
-     *            待压缩数据
-     * @return byte[] 压缩后的数据
+     * @param data the data to be compressed
+     * @return byte[] the compressed data
      */
     public static final byte[] compress(byte[] data) {
         return GZIP.compress(data);
     }
 
     /**
-     * 解压缩
+     * Decompress data by the GZIP algorithm.
      *
-     * @param data
-     *            待压缩的数据
-     * @return byte[] 解压缩后的数据
+     * @param data the compressed data
+     * @return byte[] the original data
      */
     public static final byte[] decompress(byte[] data) {
         return GZIP.decompress(data);
     }
 
     /**
-     * 压缩字符串
+     * Compress the specified string using UTF-8 encoding and GZIP algorithm.
      *
-     * @param str
-     *            准备压缩的字符串
-     * @return 压缩后的二进制数组
+     * @param str the string to be compressed
+     * @return the compressed result
      */
     public static final byte[] compressString(String str) {
         return GZIP.compressString(str);
     }
 
     /**
-     * 解压缩字符串
+     * Decompress the specified data to string using UTF-8 encoding and GZIP algorithm.
      *
-     * @param data
-     *            准备解压的数据
-     * @return 解压后的字符串
+     * @param data the compressed data
+     * @return the original string
      */
     public static final String decompressString(byte[] data) {
         return GZIP.decompressString(data);
     }
 
     /**
-     * 压缩对象，使用Json作为内部表现形式
+     * Compress the specified object using JSON as the internal format and then use the GZIP algorithm.
      *
      * @param value the object to be compressed
-     * @return 压缩后的数据
+     * @return the compressed result
      * @throws IOException if something goes wrong in Jackson JSON
      */
     public static byte[] compressObj(Object value) throws IOException {
@@ -96,12 +93,12 @@ public abstract class GZipUtil {
     }
 
     /**
-     * 解压缩对象，使用Json作为内部表现形式
+     * Decompress the data into object.
      *
      * @param <T> the value class type
      * @param data the binary data
      * @param valueType the value class type
-     * @return 解压后的对象
+     * @return the original object
      * @throws IOException if something goes wrong in Jackson JSON
      */
     public static final <T> T decompressObj(byte[] data, Class<T> valueType) throws IOException {
@@ -109,12 +106,12 @@ public abstract class GZipUtil {
     }
 
     /**
-     * 解压缩对象，使用Json作为内部表现形式
+     * Decompress the data into object.
      *
      * @param <T> the value class type
      * @param data the binary data
      * @param valueType the value class type
-     * @return 解压后的对象
+     * @return the original object
      * @throws IOException if something goes wrong in Jackson JSON
      */
     public static final <T> T decompressObj(byte[] data, JavaType valueType) throws IOException {

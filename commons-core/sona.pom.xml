@@ -6,7 +6,7 @@
 		<groupId>io.github.pftx</groupId>
 		<artifactId>niolex-parent</artifactId>
 		<version>2.1.0</version>
-		<relativePath>../sona.pom.xml</relativePath>
+		<relativePath/>
 	</parent>
 
 	<artifactId>commons-core</artifactId>

@@ -86,6 +86,28 @@ public class RSAUtilTest {
     }
 
     @Test
+    public void testSpeed() throws Exception {
+        String in = "This guide walks you through the steps to create asynchronous queries to GitHub. The focus is on the asynchronous part, a feature often used when scaling services.";
+        long start = System.currentTimeMillis();
+        byte[] data = null;
+        for (int i = 0; i < 2000; ++i) {
+            data = RSAUtil.encryptByPrivateKey(in.getBytes(), privateKey);
+        }
+        long time = System.currentTimeMillis() - start;
+
+        start = System.currentTimeMillis();
+        byte[] out = null;
+        for (int i = 0; i < 2000; ++i) {
+            out = RSAUtil.decryptByPublicKey(data, publicKey);
+        }
+        long time2 = System.currentTimeMillis() - start;
+
+        System.out.println("En " + time + ", Dec " + time2);
+        String outS = new String(out, StringUtil.UTF_8);
+        System.out.println(outS);
+    }
+
+    @Test
     public void testPublicEncription() throws Exception {
         String in = "问天下苍穹，谁敢不从！FTP分别是文件、传输、协议的英文单词的第一个字母，其全称是文件传输协议。";
         byte[] data = in.getBytes();

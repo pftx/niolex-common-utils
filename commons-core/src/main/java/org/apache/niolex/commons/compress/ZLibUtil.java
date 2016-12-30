@@ -1,5 +1,5 @@
 /**
- * ZLibUtils.java
+ * ZLibUtil.java
  *
  * Copyright 2011 Niolex, Inc.
  *
@@ -22,10 +22,10 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.JavaType;
 
 /**
- * ZLib压缩工具
+ * The compress tool using the Deflater to compress data and Inflater to decompress data.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
- * @version 1.0
+ * @version 3.0.1
  * @since 1.0
  */
 public abstract class ZLibUtil {
@@ -43,49 +43,47 @@ public abstract class ZLibUtil {
     }
 
     /**
-     * 压缩
+     * Compress data by the Deflater algorithm.
      *
-     * @param data
-     *            待压缩数据
-     * @return byte[] 压缩后的数据
+     * @param data the data to be compressed
+     * @return byte[] the compressed data
      */
     public static byte[] compress(byte[] data) {
         return ZLIB.compress(data);
     }
 
     /**
-     * 解压缩
+     * Decompress data by the Inflater algorithm.
      *
-     * @param data
-     *            待解压缩的数据
-     * @return byte[] 解压缩后的数据
+     * @param data the compressed data
+     * @return byte[] the original data
      */
     public static byte[] decompress(byte[] data) {
         return ZLIB.decompress(data);
     }
 
     /**
-     * 压缩字符串
+     * Compress the specified string using UTF-8 encoding and Deflater algorithm.
      *
-     * @param str 准备压缩的字符串
-     * @return 压缩后的数据
+     * @param str the string to be compressed
+     * @return the compressed result
      */
     public static final byte[] compressString(String str) {
         return ZLIB.compressString(str);
     }
 
     /**
-     * 解压缩字符串
+     * Decompress the specified data to string using UTF-8 encoding and Inflater algorithm.
      *
-     * @param data 准备解压的数据
-     * @return 解压后的字符串
+     * @param data the compressed data
+     * @return the original string
      */
     public static final String decompressString(byte[] data) {
         return ZLIB.decompressString(data);
     }
 
     /**
-     * 压缩对象，使用Json作为内部表现形式
+     * Compress the specified object using JSON as the internal format and then use the Deflater algorithm.
      *
      * @param value the object to be compressed
      * @return the compressed data
@@ -96,7 +94,7 @@ public abstract class ZLibUtil {
     }
 
     /**
-     * 解压缩对象
+     * Decompress the data into object.
      *
      * @param <T> the value class type
      * @param data the binary data
@@ -109,7 +107,7 @@ public abstract class ZLibUtil {
     }
 
     /**
-     * 解压缩对象
+     * Decompress the data into object.
      *
      * @param <T> the value class type
      * @param data the binary data

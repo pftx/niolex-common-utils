@@ -1,5 +1,5 @@
 /**
- * EventListener.java
+ * EventUtil.java
  *
  * Copyright 2012 Niolex, Inc.
  *
@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The public abstract class to listen event.
+ * The event utility to help dispatch events, do some dirty work here.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
