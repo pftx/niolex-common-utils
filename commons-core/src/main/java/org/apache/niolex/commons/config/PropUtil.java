@@ -22,10 +22,11 @@ import java.io.IOException;
 
 /**
  * The PropUtil can manage a list of properties files, the one loaded later will override the one loaded earlier. Users
- * can retrieve property as int, long, boolean, double and String from it.
+ * can retrieve property as int, long, boolean, double and trimmed string from it.
  * 
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
+ * @since 1.0.0
  */
 
 public abstract class PropUtil {
@@ -46,17 +47,17 @@ public abstract class PropUtil {
     }
 
     /**
-     * Load properties from the specified file. The <code>fileName</code> must be an
+     * Load properties from the specified file. The <code>filePath</code> must be an
      * absolute file path and name in the file system.
      *
-     * @param fileName the absolute file path and name
-     * @throws IOException if failed to read the resource file
+     * @param filePath the absolute file path and name
+     * @throws IOException if failed to read the property file
      * @throws IllegalArgumentException if the file contains illegal character
-     * @throws NullPointerException if any of the parameters is null
-     * @throws SecurityException the configured security manager rejected the requirement to read the specified file
+     * @throws NullPointerException if the parameter is null
+     * @throws SecurityException if the configured security manager rejected the requirement to read the specified file
      */
-    public static final void loadConfig(String fileName) throws IOException {
-        PROPS.load(new FileInputStream(fileName));
+    public static final void loadConfig(String filePath) throws IOException {
+        PROPS.load(new FileInputStream(filePath));
     }
 
     /**

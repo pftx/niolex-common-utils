@@ -27,7 +27,7 @@ import org.apache.niolex.commons.util.SystemUtil;
 
 /**
  * This class wraps the standard java.util.Properties, provides convenient methods for
- * accessing int, boolean, long and double values.
+ * accessing trimmed string, int, boolean, long and double values.
  *
  * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -53,7 +53,7 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * The default Constructor, doing nothing.
+     * The default Constructor, creates an empty property list with no default values..
      */
     public PropertiesWrapper() {
         super();
@@ -83,22 +83,26 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * Create a new PropertiesWrapper and read properties from the specified file. The <code>fileName</code> must be an
-     * absolute file path and name in the file system.
+     * Create a new PropertiesWrapper and read properties from the specified file. The <code>filePath</code> must be
+     * the absolute path of the file in the file system.
      *
-     * @param fileName the absolute file path and name
+     * @param filePath the absolute file path and name
      * @throws IOException if failed to read the resource file
      * @throws IllegalArgumentException if the file contains illegal character
-     * @throws NullPointerException if any of the parameters is null
-     * @throws SecurityException the configured security manager rejected the requirement to read the specified file
+     * @throws NullPointerException if the parameter is null
+     * @throws SecurityException if the configured security manager rejected the requirement to read the specified file
      */
-    public PropertiesWrapper(String fileName) throws IOException {
-        load(fileName);
+    public PropertiesWrapper(String filePath) throws IOException {
+        load(filePath);
     }
 
     /**
      * Read properties from the specified classpath resource file using the same
      * class loader which loaded the specified class.
+     * <p>
+     * If user call this method multiple times, the property with the same key will be overridden by the later
+     * loaded one.
+     * </p>
      *
      * @param resource the classpath resource file
      * @param cls the class object to be used to retrieve class loader
@@ -111,17 +115,21 @@ public class PropertiesWrapper extends Properties {
     }
 
     /**
-     * Read properties from the specified file. The <code>fileName</code> must be an
-     * absolute file path and name in the file system.
+     * Read properties from the specified file. The <code>filePath</code> must be the
+     * absolute path of the file in the file system.
+     * <p>
+     * If user call this method multiple times, the property with the same key will be overridden by the later
+     * loaded one.
+     * </p>
      *
-     * @param fileName the absolute file path and name
+     * @param filePath the absolute file path and name
      * @throws IOException if failed to read the resource file
      * @throws IllegalArgumentException if the file contains illegal character
-     * @throws NullPointerException if any of the parameters is null
-     * @throws SecurityException the configured security manager rejected the requirement to read the specified file
+     * @throws NullPointerException if the parameter is null
+     * @throws SecurityException if the configured security manager rejected the requirement to read the specified file
      */
-    public void load(String fileName) throws IOException {
-        load(new FileInputStream(fileName));
+    public void load(String filePath) throws IOException {
+        load(new FileInputStream(filePath));
     }
 
     /**
@@ -202,7 +210,8 @@ public class PropertiesWrapper extends Properties {
      * @throws NumberFormatException if the property not found or is not a valid integer
      */
     public final int getInteger(String key, int defaultValue) {
-        return Integer.parseInt(this.getString(key, Integer.toString(defaultValue)));
+        String val = this.getString(key);
+        return val == null ? defaultValue : Integer.parseInt(val);
     }
 
     /**
@@ -240,12 +249,14 @@ public class PropertiesWrapper extends Properties {
      * @throws NumberFormatException if the property not found or is not a valid long integer
      */
     public final long getLong(String key, long defaultValue) {
-        return Long.parseLong(this.getString(key, Long.toString(defaultValue)));
+        String val = this.getString(key);
+        return val == null ? defaultValue : Long.parseLong(val);
     }
 
     /**
      * Read boolean value from properties by the specified key. We will
      * interpret "true", "1", "on", "yes"(case insensitive) as true, all other values as false.
+     * Specially, we will return false if the property not found.
      *
      * @param key the property key to be used to retrieve property
      * @return the property value, or false if the property not found
@@ -318,7 +329,8 @@ public class PropertiesWrapper extends Properties {
      * @throws NumberFormatException if the property is not a valid double number
      */
     public double getDouble(String key, double defaultValue) {
-        return Double.parseDouble(this.getString(key, Double.toString(defaultValue)));
+        String val = this.getString(key);
+        return val == null ? defaultValue : Double.parseDouble(val);
     }
 
 }
