@@ -22,49 +22,35 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.esotericsoftware.reflectasm.MethodAccess;
 
 /**
- * <p>中： FastMethodUtil是一个通过Reflect ASM来操作Java方法的工具类
- * 注意！本类只能操作public/protected/package修饰的方法，私有方法请通过MethodUtil操作
- * </p><p>
- * En: FastMethodUtil using Reflect ASM to operate on Java bean to achieve high speed.
- * Notion! This utility can only operate on public/protected/package methods. For other
+ * FastMethodUtil using Reflect ASM to operate on Java bean to achieve high speed.<br>
+ * <b>Notion!</b> This utility can only operate on public/protected/package methods. For other
  * private methods, please use {@link org.apache.niolex.commons.reflect.MethodUtil}
- * </p><pre>
- * 目前提供的功能如下：
- * 1. public static final String[] getMethods(Class&lt;?&gt; clazz)
- * 获取一个Java类定义的所有非私有方法
- *
- * 2. public static final MethodAccess getMethodAccess(Class&lt;?&gt; clazz)
- * 获取一个Java类所对应的方法操作类
- *
- * 3. public static final Object invokeMethod(String methodName, Object host, Object[] args)
- * 在指定Java对象上调用指定的方法</pre>
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  * @see org.apache.niolex.commons.reflect.MethodUtil
  */
 public class FastMethodUtil {
-    
+
     private static final ConcurrentHashMap<Class<?>, MethodAccess> METHOD_ACCESS_MAP = new ConcurrentHashMap<Class<?>, MethodAccess>();
 
     /**
-     * En: Retrieve all the non-private methods defined in this class.<br>
-     * 中： 获取一个Java类定义的所有非私有方法
+     * Retrieve all the non-private method names defined in the specified class.
      *
-     * @param clazz 需要获取的类
-     * @return 所有方法数组
-     * @throws SecurityException 如果设置了安全检查并拒绝对这个类使用反射
+     * @param clazz the class to be used to retrieve method names
+     * @return all the non-private method names
+     * @throws RuntimeException if error occurred when constructing the method access class
      */
     public static final String[] getMethods(Class<?> clazz) {
         return getMethodAccess(clazz).getMethodNames();
     }
 
     /**
-     * En: Get the method access object of this class.<br>
-     * 中： 获取一个Java类所对应的方法操作类
+     * Get the method access object of the specified class.
      *
-     * @param clazz 需要获取的类
-     * @return 所对应的方法操作类
+     * @param clazz the class to be used to retrieve method access
+     * @return the method access object
+     * @throws RuntimeException if error occurred when constructing the method access class
      */
     public static final MethodAccess getMethodAccess(Class<?> clazz) {
         MethodAccess ma = METHOD_ACCESS_MAP.get(clazz);
@@ -76,15 +62,12 @@ public class FastMethodUtil {
     }
 
     /**
-     * En: Invoke this method on the host object.<br>
-     * 中： 在指定Java对象上调用指定的方法
+     * Invoke the specified method on the host object with the specified arguments.
      *
-     * @param host 用来调用指定方法的对象
-     * @param methodName 需要调用的方法
-     * @param args 用来调用指定方法的参数，如果指定方法不使用参数，则不输入
-     * @return 调用指定的方法的返回值如果接口方法的声明返回类型是基本类型，则此值一定
-     * 是相应基本包装对象类的实例；否则，它一定是可分配到声明返回类型的类型。如果此值为 null则
-     * 接口方法的返回类型是void或者接口方法返回了null
+     * @param host the host object used to invoke the specified method
+     * @param methodName the method name
+     * @param args the method arguments
+     * @return the object returned from invoking the specified method
      */
     public static final Object invokeMethod(Object host, String methodName, Object... args) {
     	MethodAccess access = getMethodAccess(host.getClass());
