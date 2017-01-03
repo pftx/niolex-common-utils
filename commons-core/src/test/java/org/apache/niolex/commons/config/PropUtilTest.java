@@ -172,4 +172,17 @@ public class PropUtilTest {
         System.out.println("rrr => " + hello);
         Assert.assertEquals(true, hello);
     }
+
+    @Test
+    public void testGetDoubleString() throws Exception {
+        double dbl = 0;
+        dbl = PropUtil.getDouble("db1");
+        Assert.assertEquals(123.321, dbl, 0.0000001);
+
+        dbl = PropUtil.getDouble("db1fafd", "111.222");
+        Assert.assertEquals(111.222, dbl, 0.0000001);
+
+        dbl = PropUtil.getDouble("db1fafd", 3344.595);
+        Assert.assertEquals(3344.595, dbl, 0.0000001);
+    }
 }

@@ -231,7 +231,7 @@ public abstract class PropUtil {
      * @throws NullPointerException if the property not found
      * @throws NumberFormatException if the property is not a valid double number
      */
-    public double getDouble(String key) {
+    public static double getDouble(String key) {
         return PROPS.getDouble(key);
     }
 
@@ -246,7 +246,7 @@ public abstract class PropUtil {
      * @throws NumberFormatException if the property is not a valid double number or the default value is not a valid
      *             double number
      */
-    public double getDouble(String key, String defaultValue) {
+    public static double getDouble(String key, String defaultValue) {
         return PROPS.getDouble(key, defaultValue);
     }
 
@@ -259,7 +259,7 @@ public abstract class PropUtil {
      * @return the property value as double, or the <code>defaultValue</code> if the property not found
      * @throws NumberFormatException if the property is not a valid double number
      */
-    public double getDouble(String key, double defaultValue) {
+    public static double getDouble(String key, double defaultValue) {
         return PROPS.getDouble(key, defaultValue);
     }
 
