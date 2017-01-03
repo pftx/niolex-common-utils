@@ -29,6 +29,7 @@ import org.apache.niolex.commons.collection.CollectionUtil;
 
 /**
  * MethodUtil is a utility class help programmers call methods reflectively.
+ * <b>Reflection is time consuming operation, please use them cautiously.</b>
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0

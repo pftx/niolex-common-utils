@@ -27,6 +27,7 @@ import org.apache.niolex.commons.config.PropertiesWrapper;
 
 /**
  * FieldUtil is a utility class help programmers access object fields.
+ * <b>Reflection is time consuming operation, please use them cautiously.</b>
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
@@ -41,7 +42,7 @@ public abstract class FieldUtil {
      * @param fieldName the field name
      * @return the field value
      * @throws ItemNotFoundException if field not found
-     * @throws SecurityException if using reflection method to access this field is refused
+     * @throws SecurityException if using reflection method to access this field is refused by the security manager
      */
     @SuppressWarnings("unchecked")
     public static final <T> T getValue(Object host, String fieldName) {
@@ -59,7 +60,7 @@ public abstract class FieldUtil {
      * @param fieldName the field name
      * @param value the new field value to set
      * @throws ItemNotFoundException if field not found
-     * @throws SecurityException if using reflection method to access this field is refused
+     * @throws SecurityException if using reflection method to access this field is refused by the security manager
      */
     public static final void setValue(Object host, String fieldName, Object value) {
         try {
@@ -70,8 +71,8 @@ public abstract class FieldUtil {
     }
 
     /**
-     * Set the field value into the host object and automatically convert the value into
-     * correct type.
+     * Automatically convert the specified value of string type into correct type and set the converted value into the
+     * host object.
      *
      * @param host the host object
      * @param fieldName the field name

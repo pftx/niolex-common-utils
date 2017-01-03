@@ -85,7 +85,7 @@ public class FieldFilter<FT> implements Filter {
      */
     public static final <ET> FieldFilter<ET> exactType(final Class<ET> type) {
         // Step 1. Create a new field filter.
-        FieldFilter<ET> e = new FieldFilter<ET>();
+        FieldFilter<ET> e = c();
         // Step 2. Add filter.
         e.filterList.add(new Filter() {
             @Override
@@ -118,7 +118,7 @@ public class FieldFilter<FT> implements Filter {
      */
     public static final <QT> FieldFilter<QT> retrieveAs(final Class<QT> type) {
         // Step 1. Create a new field filter.
-        FieldFilter<QT> e = new FieldFilter<QT>();
+        FieldFilter<QT> e = c();
         // Step 2. Add filter.
         e.add(new Filter() {
             @Override
@@ -137,7 +137,7 @@ public class FieldFilter<FT> implements Filter {
      */
     public static final <ST> FieldFilter<ST> setWith(final Class<ST> type) {
         // Step 1. Create a new field filter.
-        FieldFilter<ST> e = new FieldFilter<ST>();
+        FieldFilter<ST> e = c();
         // Step 2. Add filter.
         e.add(new Filter() {
             @Override

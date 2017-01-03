@@ -69,7 +69,7 @@ public class FieldResult<T> {
     }
 
     /**
-     * Use the first method.
+     * Use the first field.
      *
      * @return this
      */
@@ -84,7 +84,7 @@ public class FieldResult<T> {
     }
 
     /**
-     * Use the last method.
+     * Use the last field.
      *
      * @return this
      */
