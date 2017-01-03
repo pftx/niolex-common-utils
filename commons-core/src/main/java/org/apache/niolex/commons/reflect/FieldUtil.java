@@ -148,7 +148,7 @@ public abstract class FieldUtil {
      * Get the field with the specified name. If not found in this class, we will try
      * to locate it from the super classes, too.
      *
-     * @param clazz the class to be used to retrieve fields
+     * @param clazz the class to be used to retrieve field
      * @param name the name of the field to be retrieved
      * @return the field with the specified name
      * @throws SecurityException if the security manager refused the reflection access to the specified class.
@@ -426,7 +426,7 @@ public abstract class FieldUtil {
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
      *             the underlying field (or a subclass or implementor thereof), or if an unwrapping conversion fails.
      * @throws UnsupportedOperationException if we can not support this field type.
-     * @throws SecurityException if the security manager refused we set the accessible of this field to true.
+     * @throws SecurityException if the security manager refused we use reflection to set the filed value
      */
     public static final void unsafeSetFieldValueAutoConvert(Object host, Field field, String value) {
         Class<?> type = field.getType();

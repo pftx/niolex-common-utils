@@ -109,10 +109,10 @@ public class ReflectionTest {
 		System.out.println("Direct f Time: " + t);
 	}
 
-	public Integer compare(ProxyHandler h, KTestBean test) {
+    public Integer compare(ProxyHandler<Void> h, KTestBean test) {
 		h.invokeBefore(test, null, null);
 		Integer i = test.getB();
-		h.invokeAfter(h, null, null, test);
+        h.invokeAfter(h, null, null, test, null);
 		return i;
 	}
 
@@ -124,15 +124,19 @@ public class ReflectionTest {
 		final int SIZE = 2 << 22;
 		final Integer TEST = 123;
 
-		ProxyHandler h = new ProxyHandler() {
-			@Override
-			public void invokeBefore(Object proxy, Method method, Object[] args) {
-			}
+        ProxyHandler<Void> h = new ProxyHandler<Void>() {
 
-			@Override
-			public void invokeAfter(Object proxy, Method method, Object[] args, Object ret) {
-			}
+            @Override
+            public Void invokeBefore(Object host, Method method, Object[] args) {
+                return null;
+            }
+
+            @Override
+            public Object invokeAfter(Object host, Method method, Object[] args, Object ret, Void before) {
+                return ret;
+            }
 		};
+
 		KTestI proxy = ProxyUtil.newProxyInstance(test, h);
 
 		long in = System.currentTimeMillis();

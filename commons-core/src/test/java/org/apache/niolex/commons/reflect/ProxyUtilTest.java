@@ -27,8 +27,6 @@ import org.apache.niolex.commons.reflect.ProxyUtil;
 import org.apache.niolex.commons.reflect.ProxyUtil.ProxyHandler;
 import org.junit.Test;
 
-
-
 public class ProxyUtilTest {
 
     @Test
@@ -54,9 +52,7 @@ public class ProxyUtilTest {
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
  */
-class ProxyTestHandler implements ProxyHandler {
-    // Record the start time when invoke a method.
-    private long start;
+class ProxyTestHandler implements ProxyHandler<Long> {
     // Record the method invoke number.
     private int invokeNum = 0;
 
@@ -64,18 +60,20 @@ class ProxyTestHandler implements ProxyHandler {
      * @see com.gmail.veyron.reflect.ProxyUtil.ProxyHandler#invokeAfter(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], java.lang.Object)
      */
     @Override
-    public void invokeAfter(Object proxy, Method method, Object[] args, Object ret) {
+    public Object invokeAfter(Object proxy, Method method, Object[] args, Object ret, Long start) {
         System.out.println("Call method => " + method.getName() +
                 " consumed " + (System.currentTimeMillis() - start) + "ms.");
+        return ret;
     }
 
     /* (non-Javadoc)
      * @see com.gmail.veyron.reflect.ProxyUtil.ProxyHandler#invokeBefore(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
      */
     @Override
-    public void invokeBefore(Object proxy, Method method, Object[] args) {
-        start = System.currentTimeMillis();
+    public Long invokeBefore(Object proxy, Method method, Object[] args) {
         ++invokeNum;
+        // Record the start time when invoke a method.
+        return System.currentTimeMillis();
     }
 
     public int getInvokeNum() {

@@ -268,7 +268,7 @@ public class MethodUtil {
      * We have mainly three kinds of relax considered here:
      *  1. long &lt;= int &lt;= short (Small type can be relaxed to a larger type for primitives)
      *  2. int &lt;= Integer or Integer &lt;= int (Auto boxing and un-boxing)
-     *  3. A extends B then a &lt;= b (class hierarchy)
+     *  3. B extends A then a &lt;= b (class hierarchy)
      * </pre>
      * 
      * <b>Caution! We can not do relax on wrapper types!</b>
