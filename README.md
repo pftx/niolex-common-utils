@@ -14,8 +14,8 @@ niolex-common-utils
 
 Very Common, Very Base
 ======================
-For now, commons-core(current 3.X), commons-seri(current 3.X), commons-remote(current 3.X), commons-framework(current 1.X) and commons-notify(current 1.X) are ready for use!!!
-Search them in maven central -> http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.github.pftx%22%20
+For now, commons-core(current 3.X), commons-seri(current 3.X), commons-remote(current 3.X), commons-framework(current 1.X) and commons-notify(current 1.X) are ready for use!!!<br>
+Search them in -> [maven central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.github.pftx%22%20) <- for the newest version.<br>
 Other projects are still stabilizing...
 
 ## commons-core(current 3.X)
@@ -152,6 +152,8 @@ The notify framework based on Zookeeper.
 
 ### org.apache.niolex.queue
 * ZKBlockingQueue - The distributed blocking queue implementation powered by Zookeeper.
+
+***
 
 License
 ==================================
