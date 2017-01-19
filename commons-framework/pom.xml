@@ -14,7 +14,7 @@
 	<packaging>jar</packaging>
 
 	<name>commons-framework</name>
-	<description>Currenty only contain the SEDA framework.</description>
+	<description>Currently only contains the SEDA framework.</description>
 	<url>https://github.com/pftx/niolex-common-utils</url>
 
 	<licenses>
