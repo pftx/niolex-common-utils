@@ -4,10 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.apache.niolex.commons.net.RESTException.ErrorInfo;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class RESTResultTest {
 
@@ -68,6 +71,21 @@ public class RESTResultTest {
     }
 
     @Test
+    public void testRESTResultType() throws Exception {
+        HTTPResult http = new HTTPResult(200, null, "[{\"id\":202023,\"name\": \"Lex\"}]".getBytes(), null);
+        RESTResult<List<A>> rest = new RESTResult<List<A>>(http, new TypeReference<List<A>>() {
+        }, null);
+        List<A> l = rest.getResponse();
+        assertEquals(1, l.size());
+        A a = l.get(0);
+        
+        assertEquals(202023, a.id);
+        assertEquals("Lex", a.name);
+        assertEquals(http, rest.getResult());
+        assertEquals(200, rest.getRespCode());
+    }
+
+    @Test
     public void testGetResult() throws Exception {
         HTTPResult http = new HTTPResult(200, null, "{\"err\":202023,\"info\": \"Failed to connect to server.\"}".getBytes(),
                 null);
@@ -88,6 +106,26 @@ public class RESTResultTest {
                 null);
         RESTResult<A> rest = new RESTResult<A>(http, A.class, ErrorDecoder.RESTDecoder.INSTANCE);
         A a = rest.getResponse();
+
+        assertNull(a);
+        Exception ex = rest.getError();
+
+        assertTrue(ex instanceof RESTException);
+        assertEquals("Failed to connect to server.", ex.getMessage());
+        ErrorInfo info = ((RESTException) ex).getInfo();
+        assertEquals(202023, info.getStatus());
+        assertEquals(http, rest.getResult());
+        assertEquals(400, rest.getRespCode());
+    }
+
+    @Test
+    public void testGetErrType() throws Exception {
+        HTTPResult http = new HTTPResult(400, null,
+                "{\"status\":202023,\"message\": \"Failed to connect to server.\"}".getBytes(),
+                null);
+        RESTResult<List<A>> rest = new RESTResult<List<A>>(http, new TypeReference<List<A>>() {
+        }, ErrorDecoder.RESTDecoder.INSTANCE);
+        List<A> a = rest.getResponse();
 
         assertNull(a);
         Exception ex = rest.getError();

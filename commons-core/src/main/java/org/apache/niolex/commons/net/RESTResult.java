@@ -21,6 +21,8 @@ import java.io.IOException;
 
 import org.apache.niolex.commons.compress.JacksonUtil;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 /**
  * The Java Bean to store the REST result.
  * 
@@ -50,6 +52,31 @@ public class RESTResult<T> {
         this.respCode = result.getRespCode();
         if (respCode >= 200 && respCode < 300) {
             this.response = JacksonUtil.bin2Obj(result.getRespBody(), clazz);
+        } else {
+            this.response = null;
+        }
+
+        if (respCode >= 400 && errorDecoder != null) {
+            error = errorDecoder.decode(respCode, result.getRespBody());
+        } else {
+            error = null;
+        }
+    }
+
+    /**
+     * Construct a new RESTResult.
+     * 
+     * @param result the HTTP result
+     * @param typeRef the REST response type reference
+     * @param errorDecoder the error decoder to be used
+     * @throws IOException if tailed to parse the response JSON into the specified class type
+     */
+    public RESTResult(HTTPResult result, TypeReference<T> typeRef, ErrorDecoder errorDecoder) throws IOException {
+        super();
+        this.result = result;
+        this.respCode = result.getRespCode();
+        if (respCode >= 200 && respCode < 300) {
+            this.response = JacksonUtil.bin2Obj(result.getRespBody(), typeRef);
         } else {
             this.response = null;
         }

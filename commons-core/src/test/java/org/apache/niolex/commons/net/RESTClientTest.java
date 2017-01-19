@@ -11,6 +11,8 @@ import org.apache.niolex.commons.compress.JacksonUtil;
 import org.apache.niolex.commons.test.ObjToStringUtil;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 public class RESTClientTest {
 
     private RESTClient client = new RESTClient("http://httpbin.org", "utf8");
@@ -155,6 +157,40 @@ public class RESTClientTest {
     }
 
     @Test
+    public void testGetType() throws Exception {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("who", "Lily");
+        RESTResult<R> result = client.get("get", new TypeReference<R>() {
+        }, params);
+
+        System.out.println(result.getResponse());
+        assertEquals(200, result.getRespCode());
+        assertEquals("Lily", result.getResponse().getArgs().get("who"));
+    }
+
+    @Test
+    public void testDeleteType() throws Exception {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("who", "Lily");
+        RESTResult<R> result = client.delete("delete", new TypeReference<R>() {
+        }, params);
+
+        System.out.println(result.getResponse());
+        assertEquals(200, result.getRespCode());
+        assertEquals("Lily", result.getResponse().getArgs().get("who"));
+    }
+
+    @Test
+    public void testPostType() throws Exception {
+        RESTResult<R> result = client.post("post", new TypeReference<R>() {
+        }, "Who is Lily?");
+
+        System.out.println(result.getResponse());
+        assertEquals(200, result.getRespCode());
+        assertEquals("Who is Lily?", result.getResponse().getData());
+    }
+
+    @Test
     public void testPostJson() throws Exception {
         RESTClient client = new RESTClient("http://httpbin.org", "utf8", 3000, 3000);
         Map<String, String> params = new HashMap<String, String>();
@@ -174,6 +210,20 @@ public class RESTClientTest {
         params.put("who", "Lily");
         params.put("when", "Yesterday");
         RESTResult<R> result = client.put("put", R.class, params);
+
+        System.out.println(result.getResponse());
+        assertEquals(200, result.getRespCode());
+        assertEquals("Lily", result.getResponse().getJson().get("who"));
+        assertEquals("Yesterday", result.getResponse().getJson().get("when"));
+    }
+
+    @Test
+    public void testPutType() throws Exception {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("who", "Lily");
+        params.put("when", "Yesterday");
+        RESTResult<R> result = client.put("put", new TypeReference<R>() {
+        }, params);
 
         System.out.println(result.getResponse());
         assertEquals(200, result.getRespCode());

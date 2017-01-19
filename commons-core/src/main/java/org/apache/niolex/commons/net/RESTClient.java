@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.apache.niolex.commons.compress.JacksonUtil;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 /**
  * A convenient tool class to help you invoke the RESTful API.
  * 
@@ -78,9 +80,27 @@ public class RESTClient extends HTTPClient {
      * @throws NetException if network related error occurred
      * @throws IOException if can not interpret the response as the specified class
      */
-    public <T> RESTResult<T> get(String path, Class<T> clazz, Map<String, String> params) throws NetException, IOException {
+    public <T> RESTResult<T> get(String path, Class<T> clazz, Map<String, String> params)
+            throws NetException, IOException {
         HTTPResult res = get(path, params);
         return new RESTResult<T>(res, clazz, errorDecoder);
+    }
+
+    /**
+     * Using GET to invoke the RESTful API.
+     * 
+     * @param <T> the response class type
+     * @param path the API URL relative path
+     * @param typeRef the response type reference
+     * @param params the request parameters
+     * @return the REST result
+     * @throws NetException if network related error occurred
+     * @throws IOException if can not interpret the response as the specified class
+     */
+    public <T> RESTResult<T> get(String path, TypeReference<T> typeRef, Map<String, String> params)
+            throws NetException, IOException {
+        HTTPResult res = get(path, params);
+        return new RESTResult<T>(res, typeRef, errorDecoder);
     }
 
     /**
@@ -94,9 +114,27 @@ public class RESTClient extends HTTPClient {
      * @throws NetException if network related error occurred
      * @throws IOException if can not interpret the response as the specified class
      */
-    public <T> RESTResult<T> delete(String path, Class<T> clazz, Map<String, String> params) throws NetException, IOException {
+    public <T> RESTResult<T> delete(String path, Class<T> clazz, Map<String, String> params)
+            throws NetException, IOException {
         HTTPResult res = delete(path, params);
         return new RESTResult<T>(res, clazz, errorDecoder);
+    }
+
+    /**
+     * Using DELETE to invoke the RESTful API.
+     * 
+     * @param <T> the response class type
+     * @param path the API URL relative path
+     * @param typeRef the response type reference
+     * @param params the request parameters
+     * @return the REST result
+     * @throws NetException if network related error occurred
+     * @throws IOException if can not interpret the response as the specified class
+     */
+    public <T> RESTResult<T> delete(String path, TypeReference<T> typeRef, Map<String, String> params)
+            throws NetException, IOException {
+        HTTPResult res = delete(path, params);
+        return new RESTResult<T>(res, typeRef, errorDecoder);
     }
 
     /**
@@ -116,6 +154,22 @@ public class RESTClient extends HTTPClient {
     }
 
     /**
+     * Using POST to invoke the RESTful API.
+     * 
+     * @param <T> the response class type
+     * @param path the API URL relative path
+     * @param typeRef the response type reference
+     * @param requestBody the request body to be posted to server
+     * @return the REST result
+     * @throws NetException if network related error occurred
+     * @throws IOException if can not interpret the response as the specified class
+     */
+    public <T> RESTResult<T> post(String path, TypeReference<T> typeRef, Object requestBody) throws NetException, IOException {
+        HTTPResult res = post(path, obj2json(requestBody));
+        return new RESTResult<T>(res, typeRef, errorDecoder);
+    }
+
+    /**
      * Using PUT to invoke the RESTful API.
      * 
      * @param <T> the response class type
@@ -129,6 +183,22 @@ public class RESTClient extends HTTPClient {
     public <T> RESTResult<T> put(String path, Class<T> clazz, Object requestBody) throws NetException, IOException {
         HTTPResult res = put(path, obj2json(requestBody));
         return new RESTResult<T>(res, clazz, errorDecoder);
+    }
+
+    /**
+     * Using PUT to invoke the RESTful API.
+     * 
+     * @param <T> the response class type
+     * @param path the API URL relative path
+     * @param typeRef the response type reference
+     * @param requestBody the request body to be posted to server
+     * @return the REST result
+     * @throws NetException if network related error occurred
+     * @throws IOException if can not interpret the response as the specified class
+     */
+    public <T> RESTResult<T> put(String path, TypeReference<T> typeRef, Object requestBody) throws NetException, IOException {
+        HTTPResult res = put(path, obj2json(requestBody));
+        return new RESTResult<T>(res, typeRef, errorDecoder);
     }
 
     /**
