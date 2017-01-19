@@ -20,7 +20,7 @@ package org.apache.niolex.commons.test;
 import org.apache.niolex.commons.codec.StringUtil;
 
 /**
- * The utility to tidy string, generate formatted string, etc.
+ * The utility to tidy string, generate formatted string table, etc.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0
