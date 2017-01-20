@@ -38,78 +38,77 @@ public class ProtoStuffUtil {
 
     private static final int BUF_SIZE = 8 * Const.K;
 
-	/**
-	 * Serialize one object using protocol stuff.
-	 *
-	 * @param <T> the object type
-	 * @param o the object to be serialized
-	 * @return the byte array
-	 */
-	@SuppressWarnings("unchecked")
+    /**
+     * Serialize one object using protocol stuff.
+     *
+     * @param <T> the object type
+     * @param o the object to be serialized
+     * @return the byte array
+     */
+    @SuppressWarnings("unchecked")
     public static final <T> byte[] seriOne(T o) {
-	    Schema<T> schema = (Schema<T>) RuntimeSchema.getSchema(o.getClass());
-	    LinkedBuffer buffer = LinkedBuffer.allocate(BUF_SIZE);
-	    return ProtostuffIOUtil.toByteArray(o, schema, buffer);
-	}
+        Schema<T> schema = (Schema<T>) RuntimeSchema.getSchema(o.getClass());
+        LinkedBuffer buffer = LinkedBuffer.allocate(BUF_SIZE);
+        return ProtostuffIOUtil.toByteArray(o, schema, buffer);
+    }
 
-	/**
-	 * Parse one object of type <code>clazz</code> from the byte array.
-	 *
-	 * @param <T> the object type
-	 * @param data the object represented in wire format
-	 * @param clazz the object type
-	 * @return the object
-	 */
+    /**
+     * Parse one object of type <code>clazz</code> from the byte array.
+     *
+     * @param <T> the object type
+     * @param data the object represented in wire format
+     * @param clazz the object type
+     * @return the object
+     */
     public static final <T> T parseOne(byte[] data, Class<T> clazz) {
-		Schema<T> schema = RuntimeSchema.getSchema(clazz);
-		T ret = schema.newMessage();
-		ProtostuffIOUtil.mergeFrom(data, ret, schema);
-		return ret;
-	}
+        Schema<T> schema = RuntimeSchema.getSchema(clazz);
+        T ret = schema.newMessage();
+        ProtostuffIOUtil.mergeFrom(data, ret, schema);
+        return ret;
+    }
 
-	/**
-	 * Serialize multiple objects using protocol stuff into byte array.
-	 *
-	 * @param params the objects to be serialized
-	 * @return the byte array
-	 */
-	@SuppressWarnings("unchecked")
+    /**
+     * Serialize multiple objects using protocol stuff into byte array.
+     *
+     * @param params the objects to be serialized
+     * @return the byte array
+     */
+    @SuppressWarnings("unchecked")
     public static final byte[] seriMulti(Object[] params) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream(BUF_SIZE * 2);
-		LinkedBuffer buffer = LinkedBuffer.allocate(BUF_SIZE);
-		try {
-    		for (int i = 0; i < params.length; ++i) {
-    		    Schema<Object> schema = (Schema<Object>) RuntimeSchema.getSchema(params[i].getClass());
-    		    ProtostuffIOUtil.writeDelimitedTo(out, params[i], schema, buffer);
-    		    buffer.clear();
-    		}
-		} catch (Exception e) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(BUF_SIZE * 2);
+        LinkedBuffer buffer = LinkedBuffer.allocate(BUF_SIZE);
+        try {
+            for (int i = 0; i < params.length; ++i) {
+                Schema<Object> schema = (Schema<Object>) RuntimeSchema.getSchema(params[i].getClass());
+                ProtostuffIOUtil.writeDelimitedTo(out, params[i], schema, buffer);
+                buffer.clear();
+            }
+        } catch (Exception e) {
             throw new SeriException("Error occured when serialize using protostuff.", e);
         }
-		return out.toByteArray();
-	}
+        return out.toByteArray();
+    }
 
-
-	/**
-	 * Parse multiple objects of the specified type array from the byte array.
-	 *
-	 * @param data the objects represented in wire format
-	 * @param types the objects types array
-	 * @return the objects array
-	 */
+    /**
+     * Parse multiple objects of the specified type array from the byte array.
+     *
+     * @param data the objects represented in wire format
+     * @param types the objects types array
+     * @return the objects array
+     */
     public static final Object[] parseMulti(byte[] data, Class<Object>[] types) {
-		Object[] r = new Object[types.length];
-		ByteArrayInputStream in = new ByteArrayInputStream(data);
-		try {
-			for (int i = 0; i < types.length; ++i) {
-			    Schema<Object> schema = RuntimeSchema.getSchema(types[i]);
-			    Object ret = schema.newMessage();
-			    ProtostuffIOUtil.mergeDelimitedFrom(in, ret, schema);
-			    r[i] = ret;
-			}
-		} catch (Exception e) {
+        Object[] r = new Object[types.length];
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        try {
+            for (int i = 0; i < types.length; ++i) {
+                Schema<Object> schema = RuntimeSchema.getSchema(types[i]);
+                Object ret = schema.newMessage();
+                ProtostuffIOUtil.mergeDelimitedFrom(in, ret, schema);
+                r[i] = ret;
+            }
+        } catch (Exception e) {
             throw new SeriException("Error occured when parse multi using protostuff.", e);
         }
-		return r;
-	}
+        return r;
+    }
 }

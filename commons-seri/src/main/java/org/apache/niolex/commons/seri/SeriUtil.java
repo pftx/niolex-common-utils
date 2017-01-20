@@ -32,7 +32,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
  * @since Jun 28, 2016
  */
 public class SeriUtil {
-    
+
     /**
      * This class is used to pack a Java Type into a Jackson TypeReference.
      *
@@ -54,7 +54,7 @@ public class SeriUtil {
             return type;
         }
     }
-    
+
     /**
      * Pack the specified Java Type to Jackson TypeReference.
      * 
@@ -93,9 +93,9 @@ public class SeriUtil {
     public static final <T> Class<T> castJavaType(Type type) {
         // 1. Get raw type out of ParameterizedType.
         if (type instanceof ParameterizedType) {
-            type = ((ParameterizedType)(type)).getRawType();
+            type = ((ParameterizedType) (type)).getRawType();
         }
-        
+
         // 2. Check whether it's Java Class.
         if (type instanceof Class) {
             return (Class<T>) type;
@@ -103,7 +103,7 @@ public class SeriUtil {
             throw new ClassCastException(type + " can not be casted to Class.");
         }
     }
-    
+
     /**
      * Cast the generic java types array to Java Class array.
      *
@@ -115,11 +115,11 @@ public class SeriUtil {
     public static final <T> Class<T>[] castJavaTypes(Type[] generic) {
         @SuppressWarnings("unchecked")
         Class<T>[] array = (Class<T>[]) new Class[generic.length];
-        
+
         for (int i = 0; i < generic.length; ++i) {
             array[i] = castJavaType(generic[i]);
         }
         return array;
     }
-    
+
 }

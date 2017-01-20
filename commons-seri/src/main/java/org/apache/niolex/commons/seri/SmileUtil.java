@@ -45,12 +45,12 @@ public abstract class SmileUtil {
     private static final ObjectMapper mapper;
 
     static {
-    	/**
-    	 * Init the Object Mapper as follows.
-    	 */
-    	SmileFactory factory = new SmileFactory();
-    	factory.configure(SmileGenerator.Feature.WRITE_HEADER, false);
-    	factory.configure(SmileParser.Feature.REQUIRE_HEADER, false);
+        /**
+         * Init the Object Mapper as follows.
+         */
+        SmileFactory factory = new SmileFactory();
+        factory.configure(SmileGenerator.Feature.WRITE_HEADER, false);
+        factory.configure(SmileParser.Feature.REQUIRE_HEADER, false);
         mapper = new ObjectMapper(factory);
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.setSerializationInclusion(Include.NON_NULL);
@@ -117,7 +117,7 @@ public abstract class SmileUtil {
      */
     @SuppressWarnings("unchecked")
     public static final <T> T bin2Obj(byte[] bin, JavaType valueType) throws IOException {
-    	return (T)mapper.readValue(bin, valueType);
+        return (T) mapper.readValue(bin, valueType);
     }
 
     /**
@@ -131,7 +131,7 @@ public abstract class SmileUtil {
      */
     @SuppressWarnings("unchecked")
     public static final <T> T bin2Obj(byte[] bin, TypeReference<T> valueType) throws IOException {
-    	return (T)mapper.readValue(bin, valueType);
+        return (T) mapper.readValue(bin, valueType);
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class SmileUtil {
      * @throws IOException if I / O related error happened
      */
     public static final void writeObj(OutputStream out, Object value) throws IOException {
-    	mapper.writeValue(out, value);
+        mapper.writeValue(out, value);
     }
 
     /**
@@ -169,7 +169,7 @@ public abstract class SmileUtil {
      */
     @SuppressWarnings("unchecked")
     public static final <T> T readObj(InputStream in, JavaType valueType) throws IOException {
-        return (T)mapper.readValue(in, valueType);
+        return (T) mapper.readValue(in, valueType);
     }
 
     /**
@@ -183,7 +183,7 @@ public abstract class SmileUtil {
      */
     @SuppressWarnings("unchecked")
     public static final <T> T readObj(InputStream in, TypeReference<T> valueType) throws IOException {
-    	return (T)mapper.readValue(in, valueType);
+        return (T) mapper.readValue(in, valueType);
     }
 
 }

@@ -45,139 +45,141 @@ import com.google.protobuf.MessageLite;
  */
 public class ProtobufUtil {
 
-	/**
-	 * Store all the classes been parsed with fast method utility, for faster speed.
-	 */
-	private static final ConcurrentHashMap<Type, Method> ONE_MAP = new ConcurrentHashMap<Type, Method>();
-	private static final ConcurrentHashMap<Type, Method> MUL_MAP = new ConcurrentHashMap<Type, Method>();
-	private static final int BUF_SIZE = 8 * Const.K;
+    /**
+     * Store all the classes been parsed with fast method utility, for faster speed.
+     */
+    private static final ConcurrentHashMap<Type, Method> ONE_MAP = new ConcurrentHashMap<Type, Method>();
+    private static final ConcurrentHashMap<Type, Method> MUL_MAP = new ConcurrentHashMap<Type, Method>();
+    private static final int BUF_SIZE = 8 * Const.K;
 
-	private static boolean fasterAccess = true;
+    private static boolean fasterAccess = true;
 
-	/**
-	 * Set the faster access flag with this new value.
-	 *
-	 * @param faster the new faster access flag
-	 */
-	public static final void setUseFasterAccess(boolean faster) {
-	    fasterAccess = faster;
-	}
+    /**
+     * Set the faster access flag with this new value.
+     *
+     * @param faster the new faster access flag
+     */
+    public static final void setUseFasterAccess(boolean faster) {
+        fasterAccess = faster;
+    }
 
-	/**
-	 * Clear the internal methods maps.
-	 */
-	public static final void clearMethodsCache() {
-	    ONE_MAP.clear();
-	    MUL_MAP.clear();
-	}
+    /**
+     * Clear the internal methods maps.
+     */
+    public static final void clearMethodsCache() {
+        ONE_MAP.clear();
+        MUL_MAP.clear();
+    }
 
-	/**
-	 * Parse one object of type <code>type</code> from the byte array.
-	 *
-	 * @param <T> the object type
-	 * @param data the binary data
-	 * @param type the object type
-	 * @return the object
-	 */
-	public static final <T> T parseOne(byte[] data, Class<T> type) {
-		try {
-			Method method = ONE_MAP.get(type);
-			if (method == null) {
-				method = MethodUtil.getMethod(type, "parseFrom", byte[].class);
-				if (fasterAccess) method.setAccessible(true);
-				ONE_MAP.putIfAbsent(type, method);
-			}
-			@SuppressWarnings("unchecked")
+    /**
+     * Parse one object of type <code>type</code> from the byte array.
+     *
+     * @param <T> the object type
+     * @param data the binary data
+     * @param type the object type
+     * @return the object
+     */
+    public static final <T> T parseOne(byte[] data, Class<T> type) {
+        try {
+            Method method = ONE_MAP.get(type);
+            if (method == null) {
+                method = MethodUtil.getMethod(type, "parseFrom", byte[].class);
+                if (fasterAccess)
+                    method.setAccessible(true);
+                ONE_MAP.putIfAbsent(type, method);
+            }
+            @SuppressWarnings("unchecked")
             T r = (T) method.invoke(null, data);
-			return r;
-		} catch (Exception e) {
-			throw new SeriException("Return type is not protobuf type.", e);
-		}
-	}
+            return r;
+        } catch (Exception e) {
+            throw new SeriException("Return type is not protobuf type.", e);
+        }
+    }
 
-	/**
-	 * Parse delimited one object of type <code>type</code> from the input stream.
-	 *
-	 * @param input the input stream used to read data
-	 * @param type the object type
-	 * @return the object
-	 */
-	public static final Object parseDelimitedOne(InputStream input, Class<?> type) {
-		try {
-			Method method = MUL_MAP.get(type);
-			if (method == null) {
-				method = MethodUtil.getMethod(type, "parseDelimitedFrom", InputStream.class);
-				if (fasterAccess) method.setAccessible(true);
-				MUL_MAP.putIfAbsent(type, method);
-			}
-			return method.invoke(null, input);
-		} catch (Exception e) {
-			throw new SeriException("Return type is not protobuf type.", e);
-		}
-	}
+    /**
+     * Parse delimited one object of type <code>type</code> from the input stream.
+     *
+     * @param input the input stream used to read data
+     * @param type the object type
+     * @return the object
+     */
+    public static final Object parseDelimitedOne(InputStream input, Class<?> type) {
+        try {
+            Method method = MUL_MAP.get(type);
+            if (method == null) {
+                method = MethodUtil.getMethod(type, "parseDelimitedFrom", InputStream.class);
+                if (fasterAccess)
+                    method.setAccessible(true);
+                MUL_MAP.putIfAbsent(type, method);
+            }
+            return method.invoke(null, input);
+        } catch (Exception e) {
+            throw new SeriException("Return type is not protobuf type.", e);
+        }
+    }
 
-	/**
-	 * Parse multiple objects of the specified types from the byte array.
-	 *
-	 * @param data the binary data
-	 * @param types the types array
-	 * @return the objects array
-	 */
-	public static final Object[] parseMulti(byte[] data, Class<?>[] types) {
-		Object[] r = new Object[types.length];
-		ByteArrayInputStream binput = new ByteArrayInputStream(data);
-		for (int i = 0; i < types.length; ++i) {
-			r[i] = parseDelimitedOne(binput, types[i]);
-		}
-		return r;
-	}
+    /**
+     * Parse multiple objects of the specified types from the byte array.
+     *
+     * @param data the binary data
+     * @param types the types array
+     * @return the objects array
+     */
+    public static final Object[] parseMulti(byte[] data, Class<?>[] types) {
+        Object[] r = new Object[types.length];
+        ByteArrayInputStream binput = new ByteArrayInputStream(data);
+        for (int i = 0; i < types.length; ++i) {
+            r[i] = parseDelimitedOne(binput, types[i]);
+        }
+        return r;
+    }
 
-	/**
-	 * Serialize one object using protocol buffer.
-	 *
-	 * @param o the object to serialize
-	 * @return the byte array
-	 */
-	public static final byte[] seriOne(Object o) {
-		if (o instanceof MessageLite) {
-			MessageLite gen = (MessageLite)o;
-			return gen.toByteArray();
-		} else {
-			throw new SeriException("Message is not protobuf type: " + o.getClass());
-		}
-	}
+    /**
+     * Serialize one object using protocol buffer.
+     *
+     * @param o the object to serialize
+     * @return the byte array
+     */
+    public static final byte[] seriOne(Object o) {
+        if (o instanceof MessageLite) {
+            MessageLite gen = (MessageLite) o;
+            return gen.toByteArray();
+        } else {
+            throw new SeriException("Message is not protobuf type: " + o.getClass());
+        }
+    }
 
-	/**
-	 * Serialize one object delimited using protocol buffer.
-	 *
-	 * @param o the object to serialize
-	 * @param output where to write output
-	 */
-	public static final void seriDelimitedOne(Object o, OutputStream output) {
-		if (o instanceof MessageLite) {
-			MessageLite gen = (MessageLite)o;
-			try {
-				gen.writeDelimitedTo(output);
-			} catch (IOException e) {
-				throw new SeriException("Failed to write data to the output stream.", e);
-			}
-		} else {
-			throw new SeriException("Message is not protobuf type: " + o.getClass());
-		}
-	}
+    /**
+     * Serialize one object delimited using protocol buffer.
+     *
+     * @param o the object to serialize
+     * @param output where to write output
+     */
+    public static final void seriDelimitedOne(Object o, OutputStream output) {
+        if (o instanceof MessageLite) {
+            MessageLite gen = (MessageLite) o;
+            try {
+                gen.writeDelimitedTo(output);
+            } catch (IOException e) {
+                throw new SeriException("Failed to write data to the output stream.", e);
+            }
+        } else {
+            throw new SeriException("Message is not protobuf type: " + o.getClass());
+        }
+    }
 
-	/**
-	 * Serialize multiple protocol buffer objects into byte array.
-	 *
-	 * @param params the objects to be serialized
-	 * @return the byte array
-	 */
-	public static final byte[] seriMulti(Object[] params) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream(BUF_SIZE);
-		for (int i = 0; i < params.length; ++i) {
-			seriDelimitedOne(params[i], out);
-		}
-		return out.toByteArray();
-	}
+    /**
+     * Serialize multiple protocol buffer objects into byte array.
+     *
+     * @param params the objects to be serialized
+     * @return the byte array
+     */
+    public static final byte[] seriMulti(Object[] params) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(BUF_SIZE);
+        for (int i = 0; i < params.length; ++i) {
+            seriDelimitedOne(params[i], out);
+        }
+        return out.toByteArray();
+    }
 
 }
