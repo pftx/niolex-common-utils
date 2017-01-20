@@ -31,45 +31,45 @@ import com.esotericsoftware.kryo.io.Output;
  */
 public class KryoOutstream {
 
-	private final Kryo kryo;
-	private final Output outp;
+    private final Kryo kryo;
+    private final Output outp;
 
-	/**
-	 * Create a simple kryo to process this output stream.
-	 *
-	 * @param out the output stream
-	 */
-	public KryoOutstream(OutputStream out) {
-		this(new Kryo(), out);
-	}
+    /**
+     * Create a simple kryo to process this output stream.
+     *
+     * @param out the output stream
+     */
+    public KryoOutstream(OutputStream out) {
+        this(new Kryo(), out);
+    }
 
-	/**
-	 * Create a kryo out stream with the specified Kryo directly.
-	 *
-	 * @param kryo the kryo instance
-	 * @param out the output stream
-	 */
-	public KryoOutstream(Kryo kryo, OutputStream out) {
-		super();
-		this.kryo = kryo;
-		this.outp = new Output(out);
-	}
+    /**
+     * Create a kryo out stream with the specified Kryo directly.
+     *
+     * @param kryo the kryo instance
+     * @param out the output stream
+     */
+    public KryoOutstream(Kryo kryo, OutputStream out) {
+        super();
+        this.kryo = kryo;
+        this.outp = new Output(out);
+    }
 
-	/**
-	 * Write this object into the internal output stream, this method will not
-	 * close that stream. You can call it repeatedly.
-	 *
-	 * @param o the object
-	 */
-	public void writeObject(Object o) {
-		kryo.writeObject(outp, o);
-	}
+    /**
+     * Write this object into the internal output stream, this method will not
+     * close that stream. You can call it repeatedly.
+     *
+     * @param o the object
+     */
+    public void writeObject(Object o) {
+        kryo.writeObject(outp, o);
+    }
 
-	/**
-	 * Close the internal managed stream.
-	 */
-	public void close() {
-		outp.close();
-	}
+    /**
+     * Close the internal managed stream.
+     */
+    public void close() {
+        outp.close();
+    }
 
 }

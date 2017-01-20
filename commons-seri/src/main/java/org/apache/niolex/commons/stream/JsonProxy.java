@@ -36,44 +36,44 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 public class JsonProxy {
 
-	private static final JsonFactory FACTORY = JacksonUtil.getJsonFactory();
+    private static final JsonFactory FACTORY = JacksonUtil.getJsonFactory();
 
-	private final JsonParser jp;
+    private final JsonParser jp;
 
-	/**
-	 * Create a proxy using this input stream.
-	 *
-	 * @param in the input stream
-	 * @throws IOException if any I / O related exception occurred
-	 */
-	public JsonProxy(InputStream in) throws IOException {
-		super();
+    /**
+     * Create a proxy using this input stream.
+     *
+     * @param in the input stream
+     * @throws IOException if any I / O related exception occurred
+     */
+    public JsonProxy(InputStream in) throws IOException {
+        super();
         jp = FACTORY.createParser(in);
-	}
+    }
 
-	/**
-	 * Read an object from the input stream.
-	 *
-	 * @param <T> the object type
-	 * @param clazz the object class
-	 * @return the object
-	 * @throws IOException if any I / O related exception occurred
-	 */
-	public <T> T readObject(Class<T> clazz) throws IOException {
-		return jp.readValueAs(clazz);
-	}
+    /**
+     * Read an object from the input stream.
+     *
+     * @param <T> the object type
+     * @param clazz the object class
+     * @return the object
+     * @throws IOException if any I / O related exception occurred
+     */
+    public <T> T readObject(Class<T> clazz) throws IOException {
+        return jp.readValueAs(clazz);
+    }
 
-	/**
-	 * Read an object from the input stream.
-	 *
-	 * @param <T> the object type
-	 * @param valueTypeRef the object type reference
-	 * @return the object
-	 * @throws IOException if any I / O related exception occurred
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> T readObject(TypeReference<?> valueTypeRef) throws IOException {
-		return (T)jp.readValueAs(valueTypeRef);
-	}
+    /**
+     * Read an object from the input stream.
+     *
+     * @param <T> the object type
+     * @param valueTypeRef the object type reference
+     * @return the object
+     * @throws IOException if any I / O related exception occurred
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T readObject(TypeReference<?> valueTypeRef) throws IOException {
+        return (T) jp.readValueAs(valueTypeRef);
+    }
 
 }

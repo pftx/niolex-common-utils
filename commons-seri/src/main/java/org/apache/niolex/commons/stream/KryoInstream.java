@@ -31,47 +31,47 @@ import com.esotericsoftware.kryo.io.Input;
  */
 public class KryoInstream {
 
-	private final Kryo kryo;
-	private final Input inp;
+    private final Kryo kryo;
+    private final Input inp;
 
-	/**
-	 * Create a simple kryo to process this input stream.
-	 *
-	 * @param in the input stream
-	 */
-	public KryoInstream(InputStream in) {
-		this(new Kryo(), in);
-	}
+    /**
+     * Create a simple kryo to process this input stream.
+     *
+     * @param in the input stream
+     */
+    public KryoInstream(InputStream in) {
+        this(new Kryo(), in);
+    }
 
-	/**
-	 * Create a kryo in stream with the specified Kryo directly.
-	 *
-	 * @param kryo the kryo instance
-	 * @param in the input stream
-	 */
-	public KryoInstream(Kryo kryo, InputStream in) {
-		super();
-		this.kryo = kryo;
-		this.inp = new Input(in);
-	}
+    /**
+     * Create a kryo in stream with the specified Kryo directly.
+     *
+     * @param kryo the kryo instance
+     * @param in the input stream
+     */
+    public KryoInstream(Kryo kryo, InputStream in) {
+        super();
+        this.kryo = kryo;
+        this.inp = new Input(in);
+    }
 
-	/**
-	 * Read object from the internal stream, this method will not close the stream.
-	 * You can call it repeatedly.
-	 *
-	 * @param <T> the object type
-	 * @param clazz the object class
-	 * @return the object
-	 */
-	public <T> T readObject(Class<T> clazz) {
-		return kryo.readObject(inp, clazz);
-	}
+    /**
+     * Read object from the internal stream, this method will not close the stream.
+     * You can call it repeatedly.
+     *
+     * @param <T> the object type
+     * @param clazz the object class
+     * @return the object
+     */
+    public <T> T readObject(Class<T> clazz) {
+        return kryo.readObject(inp, clazz);
+    }
 
-	/**
-	 * Close the internal managed stream.
-	 */
-	public void close() {
-		inp.close();
-	}
+    /**
+     * Close the internal managed stream.
+     */
+    public void close() {
+        inp.close();
+    }
 
 }
