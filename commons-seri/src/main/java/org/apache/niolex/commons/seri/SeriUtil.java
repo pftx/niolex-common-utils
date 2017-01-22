@@ -38,7 +38,7 @@ public class SeriUtil {
      *
      * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
      * @version 1.0.0, Date: 2012-7-24
-     * @param <T> the java class type
+     * @param <T> the java class type parameter
      */
     public static class TypeRe<T> extends TypeReference<T> {
         // The real type
@@ -58,7 +58,7 @@ public class SeriUtil {
     /**
      * Pack the specified Java Type to Jackson TypeReference.
      * 
-     * @param <T> the java class type
+     * @param <T> the java class type parameter
      * @param type the Java type to be packed
      * @return the packed Jackson TypeReference
      */
@@ -69,7 +69,7 @@ public class SeriUtil {
     /**
      * Pack the Java Types array to Jackson TypeReference list.
      *
-     * @param <T> the java class type
+     * @param <T> the java class type parameter
      * @param generic the generic Java types array
      * @return the packed Jackson TypeReference list
      */
@@ -84,7 +84,7 @@ public class SeriUtil {
     /**
      * Cast the specified Java Type to Java Class.
      * 
-     * @param <T> the java class type
+     * @param <T> the java class type parameter
      * @param type the Java type
      * @return the Java class casted from the specified type
      * @throws ClassCastException if the Java Type is not a Java Class
@@ -107,7 +107,7 @@ public class SeriUtil {
     /**
      * Cast the generic java types array to Java Class array.
      *
-     * @param <T> the java class type
+     * @param <T> the java class type parameter
      * @param generic the generic type array
      * @return the casted java class array
      * @throws ClassCastException if any item in the generic array is not a class

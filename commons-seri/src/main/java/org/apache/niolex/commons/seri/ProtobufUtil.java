@@ -1,5 +1,5 @@
 /**
- * ProtoUtil.java
+ * ProtobufUtil.java
  *
  * Copyright 2012 Niolex, Inc.
  *

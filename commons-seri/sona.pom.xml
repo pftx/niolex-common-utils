@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commons-seri</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>commons-seri</name>

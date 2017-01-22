@@ -111,7 +111,7 @@ public abstract class SmileUtil {
      *
      * @param <T> the java bean type
      * @param bin the binary array data
-     * @param valueType the Java class type
+     * @param valueType the Java type
      * @return the java bean
      * @throws IOException if I / O related error happened
      */
@@ -125,7 +125,7 @@ public abstract class SmileUtil {
      *
      * @param <T> the java bean type
      * @param bin the binary array data
-     * @param valueType the Java class type
+     * @param valueType the Java type reference
      * @return the java bean
      * @throws IOException if I / O related error happened
      */
@@ -135,7 +135,7 @@ public abstract class SmileUtil {
     }
 
     /**
-     * Write object smile representation to the specified output stream.
+     * Write object in smile representation to the specified output stream.
      *
      * @param out the output stream used to write the output
      * @param value the object to be written
@@ -163,7 +163,7 @@ public abstract class SmileUtil {
      *
      * @param <T> the object type
      * @param in the input stream to read data from
-     * @param valueType the Java class type
+     * @param valueType the Java type
      * @return the java bean
      * @throws IOException if I / O related error happened
      */
@@ -177,7 +177,7 @@ public abstract class SmileUtil {
      *
      * @param <T> the object type
      * @param in the input stream to read data from
-     * @param valueType the Java class type
+     * @param valueType the Java type reference
      * @return the java bean
      * @throws IOException if I / O related error happened
      */

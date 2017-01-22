@@ -41,13 +41,12 @@ public class ProtoStuffUtil {
     /**
      * Serialize one object using protocol stuff.
      *
-     * @param <T> the object type
      * @param o the object to be serialized
      * @return the byte array
      */
-    @SuppressWarnings("unchecked")
-    public static final <T> byte[] seriOne(T o) {
-        Schema<T> schema = (Schema<T>) RuntimeSchema.getSchema(o.getClass());
+    public static final byte[] seriOne(Object o) {
+        @SuppressWarnings("unchecked")
+        Schema<Object> schema = (Schema<Object>) RuntimeSchema.getSchema(o.getClass());
         LinkedBuffer buffer = LinkedBuffer.allocate(BUF_SIZE);
         return ProtostuffIOUtil.toByteArray(o, schema, buffer);
     }
@@ -73,12 +72,12 @@ public class ProtoStuffUtil {
      * @param params the objects to be serialized
      * @return the byte array
      */
-    @SuppressWarnings("unchecked")
     public static final byte[] seriMulti(Object[] params) {
         ByteArrayOutputStream out = new ByteArrayOutputStream(BUF_SIZE * 2);
         LinkedBuffer buffer = LinkedBuffer.allocate(BUF_SIZE);
         try {
             for (int i = 0; i < params.length; ++i) {
+                @SuppressWarnings("unchecked")
                 Schema<Object> schema = (Schema<Object>) RuntimeSchema.getSchema(params[i].getClass());
                 ProtostuffIOUtil.writeDelimitedTo(out, params[i], schema, buffer);
                 buffer.clear();
@@ -111,4 +110,5 @@ public class ProtoStuffUtil {
         }
         return r;
     }
+
 }

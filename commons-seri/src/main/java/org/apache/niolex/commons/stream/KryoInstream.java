@@ -23,7 +23,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 
 /**
- * The input stream proxy for Kryo serialization algorithm.
+ * The input stream proxy for Kryo serialization algorithm. See
+ * <a href="https://github.com/EsotericSoftware/kryo">here</a>.
  *
  * @author <a href="mailto:xiejiyun@gmail.com">Xie, Jiyun</a>
  * @version 1.0.0

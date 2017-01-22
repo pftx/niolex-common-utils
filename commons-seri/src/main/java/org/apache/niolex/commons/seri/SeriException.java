@@ -31,12 +31,12 @@ public class SeriException extends RuntimeException {
      */
     private static final long serialVersionUID = 4658800212413782384L;
 
-    public SeriException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public SeriException(String message) {
         super(message);
+    }
+
+    public SeriException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }
