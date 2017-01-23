@@ -6,7 +6,7 @@
 		<groupId>org.apache.niolex</groupId>
 		<artifactId>niolex-parent</artifactId>
 		<version>2.1.1</version>
-		<relativePath/>
+		<relativePath />
 	</parent>
 
 	<artifactId>common-demo</artifactId>
@@ -17,6 +17,11 @@
 	<url>http://maven.apache.org</url>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.avro</groupId>
 			<artifactId>avro</artifactId>
@@ -137,7 +142,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
