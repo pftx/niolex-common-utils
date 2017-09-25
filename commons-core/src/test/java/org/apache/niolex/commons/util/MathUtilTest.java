@@ -83,4 +83,50 @@ public class MathUtilTest extends MathUtil {
         assertEquals(Integer.MIN_VALUE, CastUtil.toInt(avg(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE)));
         assertEquals((Integer.MAX_VALUE - 2) / 5, CastUtil.toInt(avg(Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE)));
     }
+
+    @Test
+    public void testHalfUp1() throws Exception {
+        assertEquals(0, halfUp(0, 7));
+        assertEquals(0, halfUp(1, 7));
+        assertEquals(0, halfUp(2, 7));
+        assertEquals(0, halfUp(3, 7));
+        assertEquals(7, halfUp(4, 7));
+        assertEquals(7, halfUp(5, 7));
+        assertEquals(7, halfUp(6, 7));
+        assertEquals(7, halfUp(7, 7));
+        assertEquals(7, halfUp(8, 7));
+    }
+
+    @Test
+    public void testHalfUp2() throws Exception {
+        for (int i = 0; i < 77; ++i)
+            assertEquals(1001, halfUp(963 + i, 77));
+    }
+
+    @Test
+    public void testHalfUp3() throws Exception {
+        assertEquals(0, Math.round(-0.49D));
+        assertEquals(0, Math.round(-0.50D));
+        assertEquals(-1, Math.round(-0.51D));
+        assertEquals(-21, halfUp(-18, 7));
+        assertEquals(-14, halfUp(-17, 7));
+        assertEquals(-14, halfUp(-16, 7));
+        assertEquals(-14, halfUp(-15, 7));
+        assertEquals(-14, halfUp(-14, 7));
+        assertEquals(-14, halfUp(-13, 7));
+        assertEquals(-14, halfUp(-12, 7));
+        assertEquals(-14, halfUp(-11, 7));
+        assertEquals(-7, halfUp(-10, 7));
+        assertEquals(-7, halfUp(-9, 7));
+        assertEquals(-7, halfUp(-8, 7));
+        assertEquals(-7, halfUp(-7, 7));
+        assertEquals(-7, halfUp(-6, 7));
+        assertEquals(-7, halfUp(-5, 7));
+        assertEquals(-7, halfUp(-4, 7));
+        assertEquals(0, halfUp(-3, 8));
+        assertEquals(0, halfUp(-4, 8));
+        assertEquals(-8, halfUp(-5, 8));
+        assertEquals(-8, halfUp(-9, 8));
+    }
+
 }

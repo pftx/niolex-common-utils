@@ -18,7 +18,9 @@
 package org.apache.niolex.commons.file;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.EnumMap;
 
@@ -56,7 +58,7 @@ public class FileMonitorTest {
         DirUtil.delete(TMP + "/file-monitor", true);
         monitor = new FileMonitor(10, TMP + "/file-monitor");
         String osName = SystemUtil.getSystemProperty("os.name");
-        if (osName.equalsIgnoreCase("Linux")) {
+        if (osName.equalsIgnoreCase("Linux") || osName.contains("Mac")) {
         	isLinux = true;
         }
     }
@@ -107,7 +109,7 @@ public class FileMonitorTest {
         WaitOn<String> wait = blocker.init("s");
 
         setFile("update");
-        wait.waitForResult(1000);
+        wait.waitForResult(3000);
         assertEquals(1, map.get(EventType.CREATE).intValue());
         assertEquals(1, map.get(EventType.UPDATE).intValue());
     }

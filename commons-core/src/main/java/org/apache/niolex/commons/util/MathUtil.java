@@ -153,4 +153,24 @@ public class MathUtil extends MockUtil {
         return ((double)s / values.length);
     }
 
+    /**
+     * Round the target value to the nearest value divisible by the divide value, with ties rounding up.
+     * 
+     * @param target the target value to be rounded
+     * @param divide the divide vale
+     * @return the target value to the nearest value divisible by the divide value, with ties rounding up
+     */
+    public static final long halfUp(long target, long divide) {
+        Check.lt(0, divide, "divide must greater than 0");
+        long rem = target % divide;
+        target -= rem;
+        if (rem < 0) {
+            rem = divide + rem;
+            target -= divide;
+        }
+        if (rem * 2 >= divide) {
+            target += divide;
+        }
+        return target;
+    }
 }

@@ -65,11 +65,15 @@ public class Doubler {
         double i = 0.0 / 0.0;
         double j = i;
 
+        System.out.println();
         System.out.println(i + ", " + j);
         System.out.println("i > j ? " + (i > j));
         System.out.println("i < j ? " + (i < j));
         System.out.println("i == j ? " + (i == j));
+        System.out.println();
         print(i, j);
+
+        print(10d, 10.003d);
     }
 
 }

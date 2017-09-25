@@ -18,7 +18,10 @@
 package org.apache.niolex.commons.file;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.FileOutputStream;
 import java.util.List;
@@ -32,8 +35,8 @@ import org.apache.niolex.commons.file.FileMonitor.EventType;
 import org.apache.niolex.commons.stream.StreamUtil;
 import org.apache.niolex.commons.test.AnnotationOrderedRunner;
 import org.apache.niolex.commons.test.AnnotationOrderedRunner.Order;
-import org.apache.niolex.commons.util.SystemUtil;
 import org.apache.niolex.commons.test.Counter;
+import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -61,7 +64,7 @@ public class DirMonitorTest {
         assertNull(monitor.currentChildren());
         assertNull(monitor.isDir);
         String osName = SystemUtil.getSystemProperty("os.name");
-        if (osName.equalsIgnoreCase("Linux")) {
+        if (osName.equalsIgnoreCase("Linux") || osName.contains("Mac")) {
         	isLinux = true;
         }
     }
