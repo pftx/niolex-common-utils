@@ -159,14 +159,15 @@
 					<flowInitContext>
 						<masterBranchName>stable</masterBranchName>
 						<developBranchName>master</developBranchName>
-						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<featureBranchPrefix>feature/</featureBranchPrefix>
 						<releaseBranchPrefix>release/</releaseBranchPrefix>
 						<hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
 						<versionTagPrefix>RELEASE-</versionTagPrefix>
 					</flowInitContext>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<pullMaster>true</pullMaster>
+					<pullDevelop>true</pullDevelop>
 					<noDeploy>true</noDeploy>
-					<squash>true</squash>
 					<scmCommentPrefix>[RELEASE] </scmCommentPrefix>
 					<releaseBranchVersionSuffix>RC</releaseBranchVersionSuffix>
 				</configuration>
