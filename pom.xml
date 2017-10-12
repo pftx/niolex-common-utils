@@ -4,7 +4,7 @@
 
 	<groupId>org.apache.niolex</groupId>
 	<artifactId>niolex-parent</artifactId>
-	<version>2.1.1</version>
+	<version>4.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>niolex-parent</name>
@@ -38,11 +38,11 @@
 		<!-- commons version -->
 		<commons.codec.version>1.10</commons.codec.version>
 		<commons.lang.version>3.5</commons.lang.version>
-		<commons.core.version>[3.0.0,4.0.0)</commons.core.version>
-		<commons.seri.version>[3.0.0,4.0.0)</commons.seri.version>
-		<commons.remote.version>[3.0.0,4.0.0)</commons.remote.version>
-		<commons.notify.version>[1.0.0,2.0.0)</commons.notify.version>
-		<commons.framework.version>[1.0.0,2.0.0)</commons.framework.version>
+		<commons.core.version>${project.version}</commons.core.version>
+		<commons.seri.version>${project.version}</commons.seri.version>
+		<commons.remote.version>${project.version}</commons.remote.version>
+		<commons.notify.version>${project.version}</commons.notify.version>
+		<commons.framework.version>${project.version}</commons.framework.version>
 		<!-- dependencies version -->
 		<guava.version>19.0</guava.version>
 		<jackson.version>[1.9.13,2.0.0)</jackson.version>
@@ -167,4 +167,12 @@
 			<url>http://local-repo:8081/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+	
+	<modules>
+        <module>commons-core</module>
+        <module>commons-seri</module>
+        <module>commons-framework</module>
+        <module>commons-notify</module>
+        <module>commons-remote</module>
+    </modules>
 </project>
