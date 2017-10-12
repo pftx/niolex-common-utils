@@ -152,6 +152,24 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>external.atlassian.jgitflow</groupId>
+				<artifactId>jgitflow-maven-plugin</artifactId>
+				<version>1.0-m5.1</version>
+				<configuration>
+					<flowInitContext>
+						<masterBranchName>stable</masterBranchName>
+						<developBranchName>master</developBranchName>
+						<featureBranchPrefix>feature/</featureBranchPrefix>
+						<releaseBranchPrefix>release/</releaseBranchPrefix>
+						<hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+						<versionTagPrefix>version-</versionTagPrefix>
+					</flowInitContext>
+					<noDeploy>true</noDeploy>
+					<squash>true</squash>
+					<scmCommentPrefix>[RELEASE] </scmCommentPrefix>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -167,12 +185,12 @@
 			<url>http://local-repo:8081/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
-	
+
 	<modules>
-        <module>commons-core</module>
-        <module>commons-seri</module>
-        <module>commons-framework</module>
-        <module>commons-notify</module>
-        <module>commons-remote</module>
-    </modules>
+		<module>commons-core</module>
+		<module>commons-seri</module>
+		<module>commons-framework</module>
+		<module>commons-notify</module>
+		<module>commons-remote</module>
+	</modules>
 </project>
