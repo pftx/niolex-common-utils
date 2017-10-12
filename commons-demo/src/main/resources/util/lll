@@ -1,0 +1,5 @@
+#!/bin/sh
+# Display all the files in the current directory.
+
+(printf "PERMISSIONS LINKS OWNER GROUP SIZE MONTH DAY HH:MM FILE-NAME\n" \
+; ls -ctlh | sed 1d) | column -t

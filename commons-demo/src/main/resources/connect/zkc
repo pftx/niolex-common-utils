@@ -1,0 +1,2 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/data/follower/local/zookeeper/lib cli_mt 10.22.241.233:2181

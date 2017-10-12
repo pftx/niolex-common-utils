@@ -1,0 +1,14 @@
+#!/bin/bash
+#Find all the jars in your home.
+
+jars=`find $HOME -name *.jar`
+clp="."
+counter=0
+for jar in $jars
+do
+  clp="$clp:$jar"
+  counter=$((counter+1))
+done
+
+echo "your new classpath contains $counter jars."
+export CLASSPATH=$clp

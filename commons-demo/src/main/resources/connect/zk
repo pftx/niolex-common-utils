@@ -1,0 +1,17 @@
+#!/bin/bash
+
+ped=`pwd`
+case $1 in
+start)
+	cd $HOME/local/zookeeper/zookeeper-3.4.3 && bin/zkServer.sh start
+	;;
+stop)
+	cd $HOME/local/zookeeper/zookeeper-3.4.3 && bin/zkServer.sh stop
+	;;
+connect)
+	cd $HOME/local/zookeeper/zookeeper-3.4.3 && bin/zkCli.sh -server 10.22.241.233:8181
+	;;
+*)
+	echo -e "Usage: $0 {start|stop|connect|online}" >&2
+esac
+cd $ped

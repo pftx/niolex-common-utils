@@ -1,0 +1,4 @@
+#!/bin/sh
+# Trucate a file.
+
+cat /dev/null > $*

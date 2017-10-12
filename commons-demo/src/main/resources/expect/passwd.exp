@@ -1,0 +1,34 @@
+#!/usr/bin/expect
+
+set timeout 30
+
+set user [lindex $argv 0]
+set passwd [lindex $argv 1]
+set host [lindex $argv 2]
+set newpass [lindex $argv 3]
+
+if {[llength $argv] == 0} {
+  send_user "Usage: passwd.exp username \'password\' hostname 'newpassword'\n"
+  exit 1
+}
+
+spawn ssh -l $user $host
+
+expect "*\$*"
+send "passwd\r"
+
+expect "*password:"
+send "$passwd\r"
+
+expect {
+  "*New*" {send "$newpass\r";exp_continue}
+  "*new*" {send "$newpass\r";exp_continue}
+  "*successfully*" {send_user "\n @expect: Password changed.\n"}
+  "*error*" {send_user "\n @expect: Error occurred, password not changed.\n"}
+  "*BAD*" {send_user "\n @expect: BAD password, please check your new password again.\n"}
+  timeout { send_user "\n @expect: Failed to get password prompt\n"; exit 1 }
+  eof { send_user "\n @expect: SSH failure for $host\n"; exit 1 }
+}
+
+sleep 1
+close

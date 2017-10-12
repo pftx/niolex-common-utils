@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+
+    <!-- commons-notify log configuration file. upgrade to logback      -->
+    <!--                                                                -->
+    <!-- For professional support please see                            -->
+    <!--    http://logback.qos.ch/manual/configuration.html             -->
+    <!--                                                                -->
+
+<configuration debug="false">
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <property name="log_pattern" value="%date{&quot;yyyy-MM-dd HH:mm:ss,SSS&quot;}%6p [%F:%L] - %m%n" />
+
+    <appender name="CONSOLE-WARN" class="ch.qos.logback.core.ConsoleAppender">
+        <Target>System.out</Target>
+        <encoder>
+            <pattern>${log_pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <Append>false</Append>
+        <file>./logs/file.log</file>
+        <encoder>
+            <pattern>${log_pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <Target>System.out</Target>
+        <encoder>
+            <pattern>${log_pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
+
+    <logger name="org.apache.niolex.election" level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+    <logger name="org.apache.niolex.notify" level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+    <logger name="org.apache.niolex.lock" level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+    <logger name="org.apache.niolex.zookeeper" level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>

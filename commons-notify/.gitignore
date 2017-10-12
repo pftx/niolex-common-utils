@@ -1,0 +1,11 @@
+/target
+/.settings
+log
+logs
+.gradle/
+gradle/
+build.gradle
+build/
+gradlew
+gradlew.bat
+settings.gradle

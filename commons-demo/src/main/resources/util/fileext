@@ -1,0 +1,17 @@
+#!/bin/bash
+# replace the file extension.
+# usage: fileext old_extension new_extension
+
+case $# in
+  0|1)
+    echo "Usage: `basename $0` old_extension new_extension"
+    exit -1
+    ;;
+esac
+
+for filename in *.$1
+do
+  mv $filename ${filename%$1}$2
+done
+
+exit 0

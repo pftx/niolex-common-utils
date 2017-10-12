@@ -1,0 +1,56 @@
+(3)[
+  0 => {
+    strName=Lex
+    intId=8575
+    intLevel=60903
+    age=(4)[
+      0 => 1
+      1 => 3
+      2 => 5
+      3 => 7
+    ]
+    next=null
+    tag=(3)[
+      0 => But
+      1 => As
+      2 => Main
+    ]
+    list=(0)[]
+  }
+  1 => {
+    strName=Joy
+    intId=8575
+    intLevel=60903
+    age=(4)[
+      0 => 1
+      1 => 3
+      2 => 5
+      3 => 7
+    ]
+    next=null
+    tag=(3)[
+      0 => But
+      1 => As
+      2 => Main
+    ]
+    list=(0)[]
+  }
+  2 => {
+    strName=Jen
+    intId=8575
+    intLevel=60903
+    age=(4)[
+      0 => 1
+      1 => 3
+      2 => 5
+      3 => 7
+    ]
+    next=null
+    tag=(3)[
+      0 => But
+      1 => As
+      2 => Main
+    ]
+    list=(0)[]
+  }
+]

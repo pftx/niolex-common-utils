@@ -1,0 +1,4 @@
+#!/bin/bash
+# Print the total memory used by the specified process.
+
+pmap $* | grep total | awk '{print $2}'

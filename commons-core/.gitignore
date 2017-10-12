@@ -1,0 +1,10 @@
+/target
+build
+build.gradle
+build.sh
+build.xml
+gradlew
+gradlew.bat
+.gradle/
+gradle/
+settings.gradle

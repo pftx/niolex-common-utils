@@ -1,0 +1,4 @@
+#!/bin/sh
+# Run Java with nohup and put it into background.
+
+nohup java -jar $* &

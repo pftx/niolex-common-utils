@@ -1,0 +1,2 @@
+#!/bin/sh
+mysql --socket=/home/lex/local/mysql/logs/my.sock -u root --port=15985 -p271613912
