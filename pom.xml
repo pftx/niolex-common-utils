@@ -194,5 +194,8 @@
 		<module>commons-framework</module>
 		<module>commons-notify</module>
 		<module>commons-remote</module>
+		<module>commons-spring</module>
+		<module>commons-demo</module>
+		<module>commons-storage</module>
 	</modules>
 </project>
