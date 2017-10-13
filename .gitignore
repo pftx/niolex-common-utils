@@ -1,5 +1,12 @@
 *.class
+/target
+/build
+
+# IDE files
 .settings
+.classpath
+.project
+
 # Package Files #
 *.jar
 *.war

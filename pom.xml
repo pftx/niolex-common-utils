@@ -3,7 +3,7 @@
 
 	<groupId>org.apache.niolex</groupId>
 	<artifactId>niolex-parent</artifactId>
-	<version>4.0.0</version>
+	<version>4.0.1</version>
 	<packaging>pom</packaging>
 
 	<name>niolex-parent</name>
@@ -68,6 +68,21 @@
 		<maven.dependency.version>2.10</maven.dependency.version>
 		<maven.jar.version>3.0.2</maven.jar.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+		<dependency>
+            <groupId>org.apache.niolex</groupId>
+            <artifactId>commons-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.niolex</groupId>
+            <artifactId>commons-seri</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<resources>
@@ -162,11 +177,14 @@
 						<featureBranchPrefix>feature/</featureBranchPrefix>
 						<releaseBranchPrefix>release/</releaseBranchPrefix>
 						<hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
-						<versionTagPrefix>version-</versionTagPrefix>
+						<versionTagPrefix>RELEASE-</versionTagPrefix>
 					</flowInitContext>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<pullMaster>true</pullMaster>
+					<pullDevelop>true</pullDevelop>
 					<noDeploy>true</noDeploy>
-					<squash>true</squash>
 					<scmCommentPrefix>[RELEASE] </scmCommentPrefix>
+					<releaseBranchVersionSuffix>RC</releaseBranchVersionSuffix>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -191,5 +209,8 @@
 		<module>commons-framework</module>
 		<module>commons-notify</module>
 		<module>commons-remote</module>
+		<module>commons-spring</module>
+		<module>commons-demo</module>
+		<module>commons-storage</module>
 	</modules>
 </project>

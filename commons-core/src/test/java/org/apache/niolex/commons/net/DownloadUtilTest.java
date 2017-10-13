@@ -1,7 +1,16 @@
 package org.apache.niolex.commons.net;
 
-import static org.apache.niolex.commons.net.DownloadUtil.*;
-import static org.junit.Assert.*;
+import static org.apache.niolex.commons.net.DownloadUtil.downloadFile;
+import static org.apache.niolex.commons.net.DownloadUtil.getByteBuffer;
+import static org.apache.niolex.commons.net.DownloadUtil.isTextFileType;
+import static org.apache.niolex.commons.net.DownloadUtil.setUseThreadLocalCache;
+import static org.apache.niolex.commons.net.DownloadUtil.unusualDownload;
+import static org.apache.niolex.commons.net.DownloadUtil.validateContentLength;
+import static org.apache.niolex.commons.net.DownloadUtil.validateHttpCode;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,7 +18,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import org.apache.niolex.commons.file.FileUtil;
-import org.apache.niolex.commons.net.NetException;
 import org.apache.niolex.commons.net.NetException.ExCode;
 import org.apache.niolex.commons.test.StopWatch;
 import org.apache.niolex.commons.test.StopWatch.Stop;
@@ -104,7 +112,8 @@ public class DownloadUtilTest {
 	        downloadFile("https://floatingsun.net/articles/thrift-vs-protocol-buffers",
 	                10000, 10000, 1000, false);
 	    } catch (NetException et) {
-	        assertEquals(et.getCode(), NetException.ExCode.IOEXCEPTION);
+            assertTrue(et.getCode() == NetException.ExCode.IOEXCEPTION
+                    || et.getCode() == NetException.ExCode.INVALID_SERVER_RESPONSE);
 	        throw et;
 	    }
 	}
