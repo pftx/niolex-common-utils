@@ -74,12 +74,12 @@
 		<dependency>
             <groupId>org.apache.niolex</groupId>
             <artifactId>commons-core</artifactId>
-            <version>${commons.core.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.niolex</groupId>
             <artifactId>commons-seri</artifactId>
-            <version>${commons.seri.version}</version>
+            <version>${project.version}</version>
         </dependency>
 		</dependencies>
 	</dependencyManagement>
