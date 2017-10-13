@@ -380,7 +380,7 @@ public class HTTPUtilTest extends HTTPUtil {
     @Test
     public final void testCheckServerStatusIOEx() {
         int f = checkServerStatus("http://www.facebook.com", 1000, 1000);
-        assertEquals(-1, f);
+        assertTrue(-1 == f || 301 == f);
     }
 
     @Test(expected=IllegalArgumentException.class)

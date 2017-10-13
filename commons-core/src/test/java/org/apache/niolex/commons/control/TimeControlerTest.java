@@ -17,10 +17,10 @@
  */
 package org.apache.niolex.commons.control;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.niolex.commons.concurrent.ThreadUtil;
-import org.apache.niolex.commons.util.SystemUtil;
 import org.junit.Test;
 
 /**
@@ -37,16 +37,13 @@ public class TimeControlerTest {
     @Test
     public void testInitTimeCheck() {
         TimeControler tc = new TimeControler();
-        tc.initTimeCheck("abc", 2, 2, 20);
+        tc.initTimeCheck("abc", 20, 2, 20);
         for (int i = 0; i < 21; ++i) {
             assertTrue(tc.check("abc"));
         }
-        long in = System.currentTimeMillis(), out;
-        do {
-            SystemUtil.sleep(1);
-            out = System.currentTimeMillis();
-        } while (out - in == 0);
-        System.out.println(out - in);
+
+        ThreadUtil.sleepAtLeast(11);
+
         for (int i = 0; i < 10; ++i) {
             assertTrue(tc.check("abc"));
         }

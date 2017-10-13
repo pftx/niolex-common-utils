@@ -48,7 +48,8 @@ public class NanoHTTPServer extends NanoHTTPD {
         handlerMap.put("/gbk", new GBKHandler());
         handlerMap.put("/get", new GetHandler());
         handlerMap.put("/post", new PostHandler());
-        handlerMap.put("/baidu1", new RedirectHandler(Status.REDIRECT, "https://www.baidu.com/"));
+        handlerMap.put("/baidu1",
+                new RedirectHandler(Status.REDIRECT, "http://postman-echo.com/get?msg=94KpKl4bRzntdtuqSUaau1NP4"));
         handlerMap.put("/baidu2", new RedirectHandler(Status.TEMPORARY_REDIRECT, "http://dict.cn/"));
         handlerMap.put("/chunk", new ChunkHandler());
         handlerMap.put("/zero", new TextHandler(Status.OK, ""));

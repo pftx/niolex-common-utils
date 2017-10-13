@@ -128,7 +128,7 @@ public class NewHTTPUtilTest extends HTTPUtil {
     @Test
     public void testGetBaidu1() throws Exception {
         String s = get(PREFIX + "baidu1");
-        assertTrue(s.contains("百度一下，你就知道"));
+        assertTrue(s.contains("94KpKl4bRzntdtuqSUaau1NP4"));
     }
 
     @Test
