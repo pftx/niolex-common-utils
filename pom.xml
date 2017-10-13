@@ -69,6 +69,21 @@
 		<maven.jar.version>3.0.2</maven.jar.version>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+		<dependency>
+            <groupId>org.apache.niolex</groupId>
+            <artifactId>commons-core</artifactId>
+            <version>${commons.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.niolex</groupId>
+            <artifactId>commons-seri</artifactId>
+            <version>${commons.seri.version}</version>
+        </dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<build>
 		<resources>
 			<resource>

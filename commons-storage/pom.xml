@@ -19,7 +19,6 @@
 		<dependency>
 			<groupId>org.apache.niolex</groupId>
 			<artifactId>commons-seri</artifactId>
-			<version>${commons.seri.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
