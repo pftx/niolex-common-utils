@@ -255,4 +255,17 @@ public class Check extends Validate {
         }
     }
 
+    /**
+     * Check that the specified value is false.
+     * 
+     * @param value the value
+     * @param msg the message used to create exception
+     * @throws IllegalArgumentException if the specified value is not false
+     */
+    public static void isFalse(boolean value, String msg) {
+        if (value) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
 }

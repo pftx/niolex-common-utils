@@ -17,9 +17,12 @@
  */
 package org.apache.niolex.commons.util;
 
-import static org.apache.niolex.commons.reflect.FieldUtil.*;
+import static org.apache.niolex.commons.reflect.FieldUtil.setValue;
 
 import org.apache.niolex.commons.codec.StringUtil;
+
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Preconditions;
 
 /**
  * The utility class for throwable related functions.
@@ -33,17 +36,31 @@ public class ThrowableUtil {
     /**
      * Get the root cause from the exception chain.
      *
-     * @param e the exception
+     * @param throwable the exception
      * @return the root cause
      */
-    public static final Throwable getRootCause(Throwable e) {
-        Throwable p = e.getCause();
+    public static final Throwable getRootCause(Throwable throwable) {
+        Throwable cause = throwable.getCause();
         int k = 0;
-        while (p != null && ++k < 1024) {
-            e = p;
-            p = e.getCause();
+        while (cause != null && throwable != cause && ++k < 1024) {
+            throwable = cause;
+            cause = throwable.getCause();
         }
-        return e;
+        return throwable;
+    }
+
+    public static String getExceptionMessage(Throwable e) {
+        Preconditions.checkNotNull(e);
+        String msg = e.getMessage();
+        Throwable cause = getRootCause(e);
+        if (msg == null && cause != null) {
+            msg = cause.getMessage();
+        }
+        if (msg == null) {
+            String name = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, e.getClass().getSimpleName());
+            return "We encountered " + name.replaceAll("_", " ") + ".";
+        }
+        return msg;
     }
 
     /**

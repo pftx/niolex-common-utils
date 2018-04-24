@@ -17,9 +17,9 @@
  */
 package org.apache.niolex.commons.util;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -75,6 +75,8 @@ public abstract class DateTimeUtil {
 
     // The China Standard time zone.
     public static final TimeZone CN_TZ = TimeZone.getTimeZone("GMT+08:00");
+
+    public static final TimeZone DEFAULT_TZ = TimeZone.getDefault();
 
     // /////////////////////////////////////////////////////////////////////////////////////
     // FORMART DATE TO STRING
@@ -352,6 +354,15 @@ public abstract class DateTimeUtil {
     }
 
     /**
+     * Get 24 hours before now.
+     *
+     * @return the date
+     */
+    public static final Date get24HBefore() {
+        return new Date(System.currentTimeMillis() - DAY);
+    }
+
+    /**
      * Get the date of today's mid night.
      *
      * @return the date
@@ -366,9 +377,7 @@ public abstract class DateTimeUtil {
      * @return the date
      */
     public static final Date getLastHour() {
-        GregorianCalendar cal = getCalender(new Date(), false);
-        cal.add(Calendar.HOUR_OF_DAY, -1);
-        return cal.getTime();
+        return new Date(System.currentTimeMillis() - HOUR);
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////
@@ -424,6 +433,17 @@ public abstract class DateTimeUtil {
     public static final int getYear(Date date) {
         GregorianCalendar cal = getCalender(date, false);
         return cal.get(Calendar.YEAR);
+    }
+
+    /**
+     * Get the complete days between the two specified dates.
+     * 
+     * @param from the from date
+     * @param to the to date
+     * @return complete days between the two dates
+     */
+    public static int getDaysBetween(Date from, Date to) {
+        return (int) ((to.getTime() - from.getTime()) / DateTimeUtil.DAY);
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////
@@ -485,6 +505,8 @@ public abstract class DateTimeUtil {
         simpleF.applyPattern(format);
         if (TIME_ZONE != null) {
             simpleF.setTimeZone(TIME_ZONE);
+        } else {
+            simpleF.setTimeZone(DEFAULT_TZ);
         }
         return simpleF;
     }

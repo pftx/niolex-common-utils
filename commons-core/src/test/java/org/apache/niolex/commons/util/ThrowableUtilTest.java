@@ -18,7 +18,9 @@
 package org.apache.niolex.commons.util;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -105,6 +107,30 @@ public class ThrowableUtilTest extends ThrowableUtil {
         assertNull(strToThrowable("Love This $)%*"));
     }
 
+    @Test
+    public void testGetExceptionMessage1() throws Exception {
+        Exception e = new RuntimeException("not yet implemented");
+        assertEquals("not yet implemented", getExceptionMessage(e));
+    }
+
+    @Test
+    public void testGetExceptionMessage2() throws Exception {
+        Exception e = new Exception(null, new RuntimeException("not yet implemented"));
+        assertEquals("not yet implemented", getExceptionMessage(e));
+    }
+
+    @Test
+    public void testGetExceptionMessage3() throws Exception {
+        Exception e = new RuntimeException(null, new NoTraceException());
+        assertEquals("We encountered runtime exception.", getExceptionMessage(e));
+    }
+
+    @Test
+    public void testGetExceptionMessage4() throws Exception {
+        Exception e = new RuntimeException();
+        assertEquals("We encountered runtime exception.", getExceptionMessage(e));
+    }
+
 }
 
 class NoTraceException extends Exception {
@@ -119,6 +145,7 @@ class NoTraceException extends Exception {
         super(message);
     }
 
+    @Override
     public StackTraceElement[] getStackTrace() {
         return null;
     }

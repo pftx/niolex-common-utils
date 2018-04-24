@@ -21,8 +21,6 @@ import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-
-import org.apache.niolex.commons.util.DateTimeUtil;
 import org.junit.Test;
 
 
@@ -314,6 +312,19 @@ public class DateTimeUtilTest {
     @Test
     public void testGetTimeZone() throws Exception {
         Assert.assertEquals(DateTimeUtil.getTimeZone(), DateTimeUtil.CN_TZ);
+    }
+
+    @Test
+    public void testGet24HBefore() throws Exception {
+        long diff = System.currentTimeMillis() - DateTimeUtil.get24HBefore().getTime();
+        Assert.assertTrue(diff >= DateTimeUtil.DAY && diff <= DateTimeUtil.DAY + DateTimeUtil.SECOND);
+    }
+
+    @Test
+    public void testGetDaysBetween() throws Exception {
+        Assert.assertEquals(1, DateTimeUtil.getDaysBetween(DateTimeUtil.get24HBefore(), new Date()));
+        Assert.assertEquals(1, DateTimeUtil.getDaysBetween(DateTimeUtil.getYesterday(), new Date()));
+        Assert.assertEquals(0, DateTimeUtil.getDaysBetween(DateTimeUtil.getTodayMidnight(), new Date()));
     }
 
 }

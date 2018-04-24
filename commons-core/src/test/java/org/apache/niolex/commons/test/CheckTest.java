@@ -22,6 +22,7 @@ import static org.apache.niolex.commons.test.Check.between;
 import static org.apache.niolex.commons.test.Check.bt;
 import static org.apache.niolex.commons.test.Check.eq;
 import static org.apache.niolex.commons.test.Check.equal;
+import static org.apache.niolex.commons.test.Check.isFalse;
 import static org.apache.niolex.commons.test.Check.isNull;
 import static org.apache.niolex.commons.test.Check.lessThan;
 import static org.apache.niolex.commons.test.Check.lt;
@@ -214,6 +215,16 @@ public class CheckTest {
     public void testIsNull() throws Exception {
         String c = null;
         isNull(c, "not yet implemented");
+    }
+
+    @Test
+    public void testIsFalse() throws Exception {
+        isFalse(false, "not yet implemented");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsFalseTrue() throws Exception {
+        isFalse(true, "not yet implemented");
     }
 
 }

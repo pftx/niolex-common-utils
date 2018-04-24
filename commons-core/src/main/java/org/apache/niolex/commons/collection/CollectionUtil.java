@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.niolex.commons.bean.Pair;
+import org.apache.niolex.commons.test.Check;
 
 /**
  * A collect of utility methods operating on collections.
@@ -229,6 +230,16 @@ public abstract class CollectionUtil {
             map.put(key, v);
         }
         return v;
+    }
+
+    public static <T> T getFirst(List<T> list) {
+        Check.isFalse(list.isEmpty(), "The list should not be empty.");
+        return list.get(0);
+    }
+
+    public static <T> T getLast(List<T> list) {
+        Check.isFalse(list.isEmpty(), "The list should not be empty.");
+        return list.get(list.size() - 1);
     }
 
 }

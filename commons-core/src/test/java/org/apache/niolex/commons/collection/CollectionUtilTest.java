@@ -29,9 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.niolex.commons.bean.Pair;
-import org.apache.niolex.commons.collection.CollectionUtil;
+import org.apache.niolex.commons.net.RESTClientTest.E;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -360,6 +361,32 @@ public class CollectionUtilTest extends CollectionUtil {
 
         Integer v = getOrInit(testMap, 34, Integer.class);
         assertEquals(v.intValue(), 0);
+    }
+
+    @Test
+    public void testGetFirst() throws Exception {
+        List<String> list = Lists.newArrayList("a", "b", "c");
+        assertEquals("a", getFirst(list));
+        assertEquals("c", getLast(list));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetFirstFail() throws Exception {
+        List<String> list = Lists.newArrayList();
+        assertEquals("a", getFirst(list));
+    }
+
+    @Test
+    public void testGetLast() throws Exception {
+        List<String> list = Lists.newArrayList("a");
+        assertEquals("a", getFirst(list));
+        assertEquals("a", getLast(list));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetLastFail() throws Exception {
+        List<String> list = Lists.newArrayList();
+        assertEquals("a", getLast(list));
     }
 
 }
