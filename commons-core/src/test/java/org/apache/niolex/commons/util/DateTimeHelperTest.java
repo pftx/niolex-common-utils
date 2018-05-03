@@ -16,22 +16,22 @@ public class DateTimeHelperTest {
     public void testSetTimezoneContext() throws Exception {
         DateFormat format = DateTimeUtil.getDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         String s1 = format.format(new Date());
-        System.out.println(s1);
+        System.out.println("s1: " + s1);
         assertTrue(DateTimeHelper.isValidDate(s1));
 
         format = DateTimeHelper.getContextFormatter();
         String s2 = format.format(new Date());
-        System.out.println(s2);
+        System.out.println("s2: " + s2);
         assertTrue(DateTimeHelper.isValidDate(s2));
 
-        format = DateTimeHelper.getFormatter(DateTimeHelper.DATE_TIME_FORMAT_WITH_TZ, DateTimeHelper.DEFAULT_TIME_ZONE);
+        format = DateTimeHelper.getFormatter(DateTimeHelper.ISO_8601_FORMAT, DateTimeHelper.DEFAULT_TIME_ZONE);
         String s3 = format.format(new Date());
-        System.out.println(s3);
+        System.out.println("s3: " + s3);
         assertTrue(DateTimeHelper.isValidDate(s3));
 
         format = DateTimeHelper.getFormatter(DateTimeHelper.LONG_FORMAT_WITH_TZ, "America/Los_Angeles");
         String s4 = format.format(new Date());
-        System.out.println(s4);
+        System.out.println("s4: " + s4);
         assertTrue(DateTimeHelper.isValidDate(s4));
     }
 
@@ -87,7 +87,8 @@ public class DateTimeHelperTest {
         assertEquals(1510369933000l, DateTimeHelper.parseDate("2017-11-11 10:12:13+07:00").getTime());
         assertEquals(1510369933456l, DateTimeHelper.parseDate("2017-11-11T10:12:13.456GMT+07").getTime());
         assertEquals(1510369933123l, DateTimeHelper.parseDate("2017-11-10 17:12:13.123-10").getTime());
-
+        assertEquals("2018-02-05 21:32:35",
+                DateTimeUtil.formatDate2DateTimeStr(DateTimeHelper.parseDate("2018-02-05T20:32:35+07:00")));
         assertEquals("1997-07-17 02:20:30",
                 DateTimeUtil.formatDate2DateTimeStr(DateTimeHelper.parseDate("1997-07-16T19:20:30+01:00")));
         assertEquals("2018-04-23 17:18:51",

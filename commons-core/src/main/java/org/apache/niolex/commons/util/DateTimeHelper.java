@@ -37,7 +37,7 @@ public class DateTimeHelper {
     /**
      * The date time format, including time zone info.
      */
-    public static final String DATE_TIME_FORMAT_WITH_TZ = "yyyy-MM-dd HH:mm:ssXXX";
+    public static final String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
     public static final String DEFAULT_TIME = "2017-11-11 00:00:00";
 
